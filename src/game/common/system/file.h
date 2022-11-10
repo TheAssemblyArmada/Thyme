@@ -89,7 +89,7 @@ public:
 
     bool Eof();
 
-    const char *Get_Name() { return m_name; }
+    const char *Get_Name() { return m_name.Str(); }
     void Set_Name(const char *name) { m_name = name; }
     int Get_Access() { return m_access; }
     void Delete_On_Close() { m_deleteOnClose = true; }

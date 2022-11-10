@@ -386,7 +386,7 @@ void W3DMouse::Init_W3D_Assets()
                 scale = cursor_info.w3d_scale * m_orthoZoom;
             }
 
-            asset = asset_manager->Create_Render_Obj(cursor_info.w3d_model_name, scale, 0, nullptr, nullptr);
+            asset = asset_manager->Create_Render_Obj(cursor_info.w3d_model_name.Str(), scale, 0, nullptr, nullptr);
             if (asset != nullptr) {
                 asset->Set_Position({ 0.0f, 0.0f, -1.0f });
             }
@@ -401,7 +401,7 @@ void W3DMouse::Init_W3D_Assets()
                 continue;
             }
 
-            asset = asset_manager->Get_HAnim(cursor_info.w3d_anim_name);
+            asset = asset_manager->Get_HAnim(cursor_info.w3d_anim_name.Str());
             if (asset != nullptr && asset_2 != nullptr) {
                 asset_2->Set_Animation(
                     asset, 0.0f, cursor_info.loop ? RenderObjClass::ANIM_MODE_LOOP : RenderObjClass::ANIM_MODE_ONCE);

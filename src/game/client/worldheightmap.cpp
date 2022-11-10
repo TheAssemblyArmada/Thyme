@@ -793,7 +793,7 @@ void WorldHeightMap::Read_Tex_Class(TXTextureClass *tex_class, TileData **tile_d
     TerrainType *terrain = g_theTerrainTypes->Find_Terrain(tex_class->name);
 
     if (!terrain) {
-        file = g_theFileSystem->Open_File(tex_class->name, File::BINARY | File::READ);
+        file = g_theFileSystem->Open_File(tex_class->name.Str(), File::BINARY | File::READ);
     } else {
         char fname[260];
         sprintf(fname, "%s%s", "Art/Terrain/", terrain->Get_Texture().Str());

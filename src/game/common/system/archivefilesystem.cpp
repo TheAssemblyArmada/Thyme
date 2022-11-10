@@ -189,7 +189,7 @@ void ArchiveFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
 void ArchiveFileSystem::Load_Mods()
 {
     if (g_theWriteableGlobalData->m_userModFile.Is_Not_Empty()) {
-        ArchiveFile *file = Open_Archive_File(g_theWriteableGlobalData->m_userModFile);
+        ArchiveFile *file = Open_Archive_File(g_theWriteableGlobalData->m_userModFile.Str());
 
         if (file != nullptr) {
             captainslog_debug("ArchiveFileSystem::Load_Mods - loading %s into the directory tree.",

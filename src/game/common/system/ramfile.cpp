@@ -160,7 +160,7 @@ bool RAMFile::Scan_Int(int &integer)
             m_pos++;
         } while (m_pos < m_size && m_data[m_pos] >= '0' && m_data[m_pos] <= '9');
 
-        integer = atoi(number);
+        integer = atoi(number.Str());
         return true;
     } else {
         m_pos = m_size;

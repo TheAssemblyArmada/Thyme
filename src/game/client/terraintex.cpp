@@ -304,8 +304,8 @@ void AlphaTerrainTextureClass::Apply(unsigned stage)
 }
 
 LightMapTerrainTextureClass::LightMapTerrainTextureClass(Utf8String name, MipCountType mips) :
-    TextureClass(name.Is_Empty() ? "TSNoiseUrb.tga" : name,
-        name.Is_Empty() ? "TSNoiseUrb.tga" : name,
+    TextureClass(name.Is_Empty() ? "TSNoiseUrb.tga" : name.Str(),
+        name.Is_Empty() ? "TSNoiseUrb.tga" : name.Str(),
         mips,
         WW3D_FORMAT_UNKNOWN,
         true,

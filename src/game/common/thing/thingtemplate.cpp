@@ -538,7 +538,7 @@ void ThingTemplate::Init_For_LTA(const Utf8String &name)
 {
     m_nameString = name;
     char buffer[1024];
-    strncpy(buffer, name, ARRAY_SIZE(buffer));
+    strncpy(buffer, name.Str(), ARRAY_SIZE(buffer));
     int i;
 
     for (i = 0; buffer[i]; ++i) {
@@ -1140,7 +1140,7 @@ void ThingTemplate::Validate_Audio()
 
     if (sounds != nullptr) {
         for (auto sound : *sounds) {
-            Validate_Sound(&sound.second, sound.first);
+            Validate_Sound(&sound.second, sound.first.Str());
         }
     }
 }

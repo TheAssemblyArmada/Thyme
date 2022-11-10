@@ -297,7 +297,7 @@ void LaserUpdate::Update_Start_Pos()
             if (m_masterBone.Is_Not_Empty()) {
                 Matrix3D m;
 
-                if (!drawable->Get_Current_Worldspace_Client_Bone_Positions(m_masterBone, m)) {
+                if (!drawable->Get_Current_Worldspace_Client_Bone_Positions(m_masterBone.Str(), m)) {
                     const Coord3D *pos = drawable->Get_Position();
                     m_startPos.Set(pos);
                     captainslog_debug("LaserUpdate::updateStartPos() -- Drawable %s is expecting to find a bone %s but "

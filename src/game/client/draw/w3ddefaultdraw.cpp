@@ -27,7 +27,7 @@ W3DDefaultDraw::W3DDefaultDraw(Thing *thing, ModuleData const *module_data) :
 
     if (!tmplate->Get_LTA_Name().Is_Empty()) {
         m_renderObject = W3DDisplay::s_assetManager->Create_Render_Obj(
-            tmplate->Get_LTA_Name(), drawable->Get_Scale(), 0, nullptr, nullptr);
+            tmplate->Get_LTA_Name().Str(), drawable->Get_Scale(), 0, nullptr, nullptr);
         Shadow::ShadowTypeInfo info;
         info.m_type = SHADOW_VOLUME;
         info.m_sizeX = 0;

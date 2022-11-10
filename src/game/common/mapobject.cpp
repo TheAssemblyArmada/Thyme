@@ -170,11 +170,11 @@ void MapObject::Verify_Valid_Unique_ID()
     const char *str;
 
     if (Get_Thing_Template()) {
-        str = Get_Thing_Template()->Get_Name();
+        str = Get_Thing_Template()->Get_Name().Str();
     } else if (Is_Waypoint()) {
-        str = Get_Waypoint_Name();
+        str = Get_Waypoint_Name().Str();
     } else {
-        str = Get_Name();
+        str = Get_Name().Str();
     }
 
     const char *str2 = str;
@@ -218,11 +218,11 @@ void MapObject::Fast_Assign_All_Unique_IDs()
         const char *str;
 
         if (m->Get_Thing_Template()) {
-            str = m->Get_Thing_Template()->Get_Name();
+            str = m->Get_Thing_Template()->Get_Name().Str();
         } else if (m->Is_Waypoint()) {
-            str = m->Get_Waypoint_Name();
+            str = m->Get_Waypoint_Name().Str();
         } else {
-            str = m->Get_Name();
+            str = m->Get_Name().Str();
         }
 
         const char *str2 = str;

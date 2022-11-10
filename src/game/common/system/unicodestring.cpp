@@ -422,7 +422,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
 
     // Find next instance of token or end of string
     for (unichar_t c = *start; c != U_CHAR('\0'); c = *(++start)) {
-        if (u_strchr(delims, c) == nullptr) {
+        if (u_strchr(delims.Str(), c) == nullptr) {
             break;
         }
     }
@@ -438,7 +438,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
 
     // Find next instance of token or end of string.
     for (unichar_t c = *end; c != U_CHAR('\0'); c = *(++end)) {
-        if (u_strchr(delims, c) != nullptr) {
+        if (u_strchr(delims.Str(), c) != nullptr) {
             break;
         }
     }

@@ -341,7 +341,7 @@ public:
             for (int i = 0; i < count; i++) {
                 xfer->xferAsciiString(&str);
 
-                if (!Set_Bit_By_Name(str)) {
+                if (!Set_Bit_By_Name(str.Str())) {
                     captainslog_error("invalid bit name %s", str.Str());
                     throw XFER_STATUS_READ_ERROR;
                 }

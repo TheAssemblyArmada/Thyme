@@ -83,7 +83,7 @@ void W3DDependencyModelDraw::Adjust_Transform_Mtx(Matrix3D &transform) const
                         Matrix3D m;
 
                         if (contained_drawable->Get_Current_Worldspace_Client_Bone_Positions(
-                                data->m_attachToDrawableBoneInContainer, m)) {
+                                data->m_attachToDrawableBoneInContainer.Str(), m)) {
                             transform = m;
                         } else {
                             transform = *contained_drawable->Get_Transform_Matrix();

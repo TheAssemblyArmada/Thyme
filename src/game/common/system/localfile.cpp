@@ -196,7 +196,7 @@ bool LocalFile::Scan_Int(int &integer)
             lseek(m_fileHandle, -1, CURRENT);
         }
 
-        integer = atoi(number);
+        integer = atoi(number.Str());
         return true;
     }
 }
@@ -230,7 +230,7 @@ bool LocalFile::Scan_Real(float &real)
             lseek(m_fileHandle, -1, CURRENT);
         }
 
-        real = atof(number);
+        real = atof(number.Str());
         return true;
     }
 }

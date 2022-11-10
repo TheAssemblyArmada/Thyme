@@ -185,7 +185,7 @@ void W3DDebrisDraw::Set_Model_Name(Utf8String name, unsigned int color, ShadowTy
         }
 
         m_renderObject =
-            W3DDisplay::s_assetManager->Create_Render_Obj(name, Get_Drawable()->Get_Scale(), col, nullptr, nullptr);
+            W3DDisplay::s_assetManager->Create_Render_Obj(name.Str(), Get_Drawable()->Get_Scale(), col, nullptr, nullptr);
         captainslog_dbgassert(m_renderObject, "Debris model %s not found!", name.Str());
 
         if (m_renderObject != nullptr) {
@@ -222,16 +222,16 @@ void W3DDebrisDraw::Set_Anim_Names(Utf8String initial, Utf8String flying, Utf8St
     if (initial.Is_Empty()) {
         m_anims[INITIAL] = nullptr;
     } else {
-        m_anims[INITIAL] = W3DDisplay::s_assetManager->Get_HAnim(initial);
+        m_anims[INITIAL] = W3DDisplay::s_assetManager->Get_HAnim(initial.Str());
     }
 
     if (flying.Is_Empty()) {
         m_anims[FLYING] = nullptr;
     } else {
-        m_anims[FLYING] = W3DDisplay::s_assetManager->Get_HAnim(flying);
+        m_anims[FLYING] = W3DDisplay::s_assetManager->Get_HAnim(flying.Str());
     }
 
-    if (strcasecmp(final, "STOP") == 0) {
+    if (strcasecmp(final.Str(), "STOP") == 0) {
         m_finalStop = true;
         final = flying;
     } else {
@@ -241,7 +241,7 @@ void W3DDebrisDraw::Set_Anim_Names(Utf8String initial, Utf8String flying, Utf8St
     if (final.Is_Empty()) {
         m_anims[FINAL] = nullptr;
     } else {
-        m_anims[FINAL] = W3DDisplay::s_assetManager->Get_HAnim(final);
+        m_anims[FINAL] = W3DDisplay::s_assetManager->Get_HAnim(final.Str());
     }
 
     m_state = INITIAL;

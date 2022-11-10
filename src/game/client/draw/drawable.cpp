@@ -1694,7 +1694,7 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
         for (int j = 0; j < count; j++) {
             Utf8String str;
             xfer->xferAsciiString(&str);
-            DrawableIconType index = Drawable_Icon_Name_To_Index(str);
+            DrawableIconType index = Drawable_Icon_Name_To_Index(str.Str());
             unsigned int timing;
             xfer->xferUnsignedInt(&timing);
             Get_Icon_Info()->timings[index] = timing;
@@ -1906,7 +1906,7 @@ void Drawable::Xfer_Drawable_Modules(Xfer *xfer)
         } else {
             for (int k = 0; k < module_count; k++) {
                 xfer->xferAsciiString(&str);
-                NameKeyType key = g_theNameKeyGenerator->Name_To_Key(str);
+                NameKeyType key = g_theNameKeyGenerator->Name_To_Key(str.Str());
                 Module *module = nullptr;
 
                 for (Module **j = m_modules[i]; j && *j; j++) {

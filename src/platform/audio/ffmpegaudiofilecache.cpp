@@ -271,7 +271,7 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(const Utf8String &filename)
     }
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open_File(filename, File::READ | File::BINARY | File::BUFFERED);
+    File *file = g_theFileSystem->Open_File(filename.Str(), File::READ | File::BINARY | File::BUFFERED);
 
     if (file == nullptr) {
         if (filename.Is_Not_Empty()) {
@@ -357,7 +357,7 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     }
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open_File(filename, File::READ | File::BINARY | File::BUFFERED);
+    File *file = g_theFileSystem->Open_File(filename.Str(), File::READ | File::BINARY | File::BUFFERED);
 
     if (file == nullptr) {
         if (!filename.Is_Empty()) {

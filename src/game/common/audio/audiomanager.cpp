@@ -299,7 +299,7 @@ bool AudioManager::Is_Music_Already_Loaded()
     rts_event.Set_Event_Info(event_info);
     rts_event.Generate_Filename();
 
-    return g_theFileSystem->Does_File_Exist(rts_event.Get_File_Name());
+    return g_theFileSystem->Does_File_Exist(rts_event.Get_File_Name().Str());
 }
 
 /**
@@ -348,7 +348,7 @@ bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
 {
     // Search preferred providers list against current provider.
     for (int i = 0; i < DRIVER_SOFTWARE; ++i) {
-        if (strcmp(m_audioSettings->Get_Preferred_Driver(i), Get_Provider_Name(Get_Selected_Provider())) == 0) {
+        if (strcmp(m_audioSettings->Get_Preferred_Driver(i).Str(), Get_Provider_Name(Get_Selected_Provider()).Str()) == 0) {
             return true;
         }
     }

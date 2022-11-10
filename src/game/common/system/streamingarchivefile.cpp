@@ -141,7 +141,7 @@ bool StreamingArchiveFile::Open_From_Archive(File *file, Utf8String const &name,
         return false;
     }
 
-    if (!File::Open(name, READ | BINARY | STREAMING)) {
+    if (!File::Open(name.Str(), READ | BINARY | STREAMING)) {
         return false;
     }
 

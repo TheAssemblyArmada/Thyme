@@ -119,12 +119,12 @@ ImageCollection::~ImageCollection()
 
 void ImageCollection::Add_Image(Image *image)
 {
-    m_imageMap[g_theNameKeyGenerator->Name_To_Lower_Case_Key(image->Get_Name())] = image;
+    m_imageMap[g_theNameKeyGenerator->Name_To_Lower_Case_Key(image->Get_Name().Str())] = image;
 }
 
 Image *ImageCollection::Find_Image_By_Name(const Utf8String &name)
 {
-    auto found = m_imageMap.find(g_theNameKeyGenerator->Name_To_Lower_Case_Key(name));
+    auto found = m_imageMap.find(g_theNameKeyGenerator->Name_To_Lower_Case_Key(name.Str()));
 
     if (found == m_imageMap.end()) {
         return nullptr;
@@ -143,7 +143,7 @@ void ImageCollection::Load(int texture_size)
         str.Format("%sINI\\MappedImages\\*.ini", g_theWriteableGlobalData->Get_Path_User_Data().Str());
         WIN32_FIND_DATAW data;
 
-        if (FindFirstFileW(UTF8To16(str), &data) != INVALID_HANDLE_VALUE) {
+        if (FindFirstFileW(UTF8To16(str.Str()), &data) != INVALID_HANDLE_VALUE) {
             str.Format("%sINI\\MappedImages", g_theWriteableGlobalData->Get_Path_User_Data().Str());
             ini.Load_Directory(str, true, INI_LOAD_OVERWRITE, nullptr);
         }

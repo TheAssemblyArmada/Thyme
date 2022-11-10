@@ -79,7 +79,7 @@ bool CachedFileInputStream::Eof()
  */
 bool CachedFileInputStream::Open(Utf8String filename)
 {
-    File *file = g_theFileSystem->Open_File(filename, File::BINARY | File::READ);
+    File *file = g_theFileSystem->Open_File(filename.Str(), File::BINARY | File::READ);
     m_cachedSize = 0;
 
     if (file != nullptr) {

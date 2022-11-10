@@ -207,7 +207,7 @@ bool Player::Has_Science(ScienceType t) const
 
 float Player::Get_Production_Cost_Change_Percent(Utf8String build_template_name) const
 {
-    auto iter = m_productionCostChanges.find(g_theNameKeyGenerator->Name_To_Key(build_template_name));
+    auto iter = m_productionCostChanges.find(g_theNameKeyGenerator->Name_To_Key(build_template_name.Str()));
 
     if (iter != m_productionCostChanges.end()) {
         return iter->second;
@@ -218,7 +218,7 @@ float Player::Get_Production_Cost_Change_Percent(Utf8String build_template_name)
 
 float Player::Get_Production_Time_Change_Percent(Utf8String build_template_name) const
 {
-    auto iter = m_productionTimeChanges.find(g_theNameKeyGenerator->Name_To_Key(build_template_name));
+    auto iter = m_productionTimeChanges.find(g_theNameKeyGenerator->Name_To_Key(build_template_name.Str()));
 
     if (iter != m_productionTimeChanges.end()) {
         return iter->second;

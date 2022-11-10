@@ -464,7 +464,7 @@ void AudioEventRTS::Adjust_For_Localization(Utf8String &filename)
         Utf8String localised_name = Generate_Filename_Prefix(m_eventInfo->Get_Event_Type(), true);
         localised_name += tmp;
 
-        if (g_theFileSystem->Does_File_Exist(localised_name)) {
+        if (g_theFileSystem->Does_File_Exist(localised_name.Str())) {
             filename = localised_name;
         }
     }
@@ -477,7 +477,7 @@ void AudioEventRTS::Adjust_For_Localization(Utf8String &filename)
  */
 void AudioEventRTS::Set_Event_Name(Utf8String name)
 {
-    if (strcmp(name, m_eventName) != 0 && m_eventInfo != nullptr) {
+    if (strcmp(name.Str(), m_eventName.Str()) != 0 && m_eventInfo != nullptr) {
         m_eventInfo = nullptr;
     }
 

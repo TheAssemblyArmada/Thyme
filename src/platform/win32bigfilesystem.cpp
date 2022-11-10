@@ -179,7 +179,7 @@ bool Win32BIGFileSystem::Load_Big_Files_From_Directory(Utf8String dir, Utf8Strin
     for (auto it = file_list.begin(); it != file_list.end(); ++it) {
         captainslog_debug(
             "Win32BIGFileSystem::Load_Big_Files_From_Directory - loading %s into the directory tree.", (*it).Str());
-        ArchiveFile *arch = Open_Archive_File((*it));
+        ArchiveFile *arch = Open_Archive_File((*it).Str());
 
         if (arch != nullptr) {
             Load_Into_Directory_Tree(arch, *it, overwrite);

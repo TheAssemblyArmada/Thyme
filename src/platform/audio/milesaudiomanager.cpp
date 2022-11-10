@@ -1023,7 +1023,7 @@ void MilesAudioManager::friend_Force_Play_Audio_Event(AudioEventRTS *event)
         }
     }
 
-    HAUDIO quick_aud = AIL_quick_load_and_play(tmp_event.Get_File_Name(), 1, 0);
+    HAUDIO quick_aud = AIL_quick_load_and_play(tmp_event.Get_File_Name().Str(), 1, 0);
     AIL_quick_set_volume(quick_aud, tmp_event.Get_Volume() * Get_Volume(AUDIOAFFECT_SPEECH), 0.5f);
     m_quickAudioList.push_back(quick_aud);
 }
@@ -1132,7 +1132,7 @@ float MilesAudioManager::Get_File_Length_MS(Utf8String file_name)
         return 0.0f;
     }
 
-    HSTREAM handle = AIL_open_stream(m_milesDigitalDriver, file_name, 0);
+    HSTREAM handle = AIL_open_stream(m_milesDigitalDriver, file_name.Str(), 0);
 
     if (handle == nullptr) {
         return 0.0f;
@@ -1752,7 +1752,7 @@ void MilesAudioManager::Play_Audio_Event(AudioEventRTS *event)
             if (kill_handle != 0 && !killed) {
                 stream_handle = 0;
             } else {
-                stream_handle = AIL_open_stream(m_milesDigitalDriver, name, 0);
+                stream_handle = AIL_open_stream(m_milesDigitalDriver, name.Str(), 0);
             }
 
             pa->miles.audio_event = event;

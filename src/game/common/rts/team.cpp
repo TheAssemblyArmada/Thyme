@@ -167,7 +167,7 @@ void TeamFactory::Init_From_Sides(SidesList *sides)
 void TeamFactory::Init_Team(const Utf8String &name, const Utf8String &owner, bool is_singleton, Dict *d)
 {
     captainslog_dbgassert(!Find_Team_Prototype(name), "team already exists");
-    Player *player = g_thePlayerList->Find_Player_With_NameKey(Name_To_Key(owner));
+    Player *player = g_thePlayerList->Find_Player_With_NameKey(Name_To_Key(owner.Str()));
     captainslog_dbgassert(player != nullptr, "no owner found for team %s (%s)", owner.Str(), name.Str());
 
     if (player == nullptr) {
@@ -184,7 +184,7 @@ void TeamFactory::Init_Team(const Utf8String &name, const Utf8String &owner, boo
 void TeamFactory::Add_Team_Prototype_To_List(TeamPrototype *team)
 {
     const Utf8String &name = team->Get_Name();
-    NameKeyType key = Name_To_Key(name);
+    NameKeyType key = Name_To_Key(name.Str());
     std::map<NameKeyType, TeamPrototype *>::iterator it = m_prototypes.find(key);
 
     if (it != m_prototypes.end()) {
@@ -198,7 +198,7 @@ void TeamFactory::Add_Team_Prototype_To_List(TeamPrototype *team)
 void TeamFactory::Remove_Team_Prototype_From_List(TeamPrototype *team)
 {
     const Utf8String &name = team->Get_Name();
-    NameKeyType key = Name_To_Key(name);
+    NameKeyType key = Name_To_Key(name.Str());
     std::map<NameKeyType, TeamPrototype *>::iterator it = m_prototypes.find(key);
 
     if (it != m_prototypes.end()) {
@@ -208,7 +208,7 @@ void TeamFactory::Remove_Team_Prototype_From_List(TeamPrototype *team)
 
 TeamPrototype *TeamFactory::Find_Team_Prototype(const Utf8String &name)
 {
-    NameKeyType key = Name_To_Key(name);
+    NameKeyType key = Name_To_Key(name.Str());
     std::map<NameKeyType, TeamPrototype *>::iterator it = m_prototypes.find(key);
 
     if (it != m_prototypes.end()) {
@@ -480,7 +480,7 @@ TeamTemplateInfo::TeamTemplateInfo(Dict *d) : m_numUnitsInfo(0)
         Utf8String str;
         Utf8String name = g_theNameKeyGenerator->Key_To_Name(g_teamGenericScriptHookKey);
         str.Format("%s%d", name.Str(), i);
-        m_genericScripts[i] = d->Get_AsciiString(Name_To_Key(str), &exists);
+        m_genericScripts[i] = d->Get_AsciiString(Name_To_Key(str.Str()), &exists);
 
         if (!exists) {
             m_genericScripts[i].Clear();

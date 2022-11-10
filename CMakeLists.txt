@@ -260,10 +260,20 @@ if(USE_FFMPEG)
 endif()
 
 if(USE_ZLIB)
-    find_package(ZLIB)
+    #find_package(ZLIB)
 
-    if(NOT ZLIB_FOUND)
+    if(TRUE)
         include(FetchContent)
+
+        # We define an empty test macro here, so zlib doesn't add it's tests to our global scope
+        set(EMPTY_ADD_TEST TRUE)
+        function(add_test)
+            if(EMPTY_ADD_TEST)
+                message(STATUS "Skipping test: ${ARGV0}")
+                return()
+            endif()
+            _add_test(${ARGV})
+        endfunction(add_test)
 
         FetchContent_Declare(
             zlib 

@@ -19,15 +19,15 @@
 /**
  * Decompresses zlib format.
  */
-int Zlib_Uncompress(void *dst, const void *src, int *size)
+int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size)
 {
-    if (size == nullptr) {
-        captainslog_error("Missing srcSize for Zlib data");
+    if (src_size == 0) {
+        captainslog_error("Missing src_size for Zlib data");
         return 0;
     }
 
-    uLongf dstSize = 0;
-    uLong srcSize = *size;
+    uLongf dstSize = dst_size;
+    uLong srcSize = src_size;
 
     int result = uncompress((Bytef *)dst, &dstSize, (const Bytef *)src, srcSize);
     if (result != Z_OK) {
@@ -35,9 +35,6 @@ int Zlib_Uncompress(void *dst, const void *src, int *size)
         return 0;
     }
 
-    if (size != nullptr) {
-        *size = dstSize;
-    }
     return dstSize;
 }
 

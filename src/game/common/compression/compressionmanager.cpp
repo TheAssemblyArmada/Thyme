@@ -47,6 +47,39 @@ bool CompressionManager::Is_Data_Compressed(const void *data, int size)
 }
 
 /**
+ * @brief Get the FourCC for the corresponding compression type
+ */
+const char *CompressionManager::Get_Compression_FourCC(CompressionType type)
+{
+    switch (type) {
+        case COMPRESSION_EAR:
+            return "EAR\0";
+        case COMPRESSION_ZL1:
+            return "ZL1\0";
+        case COMPRESSION_ZL2:
+            return "ZL2\0";
+        case COMPRESSION_ZL3:
+            return "ZL3\0";
+        case COMPRESSION_ZL4:
+            return "ZL4\0";
+        case COMPRESSION_ZL5:
+            return "ZL5\0";
+        case COMPRESSION_ZL6:
+            return "ZL6\0";
+        case COMPRESSION_ZL7:
+            return "ZL7\0";
+        case COMPRESSION_ZL8:
+            return "ZL8\0";
+        case COMPRESSION_ZL9:
+            return "ZL9\0";
+        case COMPRESSION_NONE:
+        default:
+            captainslog_error("Compression format '%s' unhandled, file a bug report.\n", Get_Compression_Name(type));
+            return "\0\0\0\0";
+    }
+}
+
+/**
  * @brief Get type of compression used based on a small header.
  */
 CompressionType CompressionManager::Get_Compression_Type(const void *data, int size)
@@ -156,7 +189,7 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
         case COMPRESSION_ZL9:
 #if BUILD_WITH_ZLIB
             src_size -= 8;
-            return Zlib_Uncompress(dst, static_cast<const uint8_t *>(src) + 8, &src_size);
+            return Zlib_Uncompress(dst, dst_size, static_cast<const uint8_t *>(src) + 8, src_size);
 #endif
         case COMPRESSION_NONE:
         case COMPRESSION_NOX:

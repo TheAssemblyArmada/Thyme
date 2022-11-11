@@ -29,6 +29,7 @@ public:
     virtual ~W3DMPO() {}
 };
 
+#ifndef __SANITIZE_ADDRESS__
 #define IMPLEMENT_NAMED_W3D_POOL(classname, poolname) \
 private: \
     static MemoryPool *Get_Class_Pool() \
@@ -51,5 +52,12 @@ public: \
     virtual int glueEnforcer() { return 4; }; \
 \
 private:
+#else
+#define IMPLEMENT_NAMED_W3D_POOL(classname, poolname) \
+public: \
+    virtual int glueEnforcer() { return 4; }; \
+\
+private:
+#endif
 
 #define IMPLEMENT_W3D_POOL(classname) IMPLEMENT_NAMED_W3D_POOL(classname, classname)

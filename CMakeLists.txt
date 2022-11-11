@@ -262,7 +262,7 @@ endif()
 if(USE_ZLIB)
     find_package(ZLIB)
 
-    if(NOT ZLIB_FOUND)
+    if(NOT ZLIB_FOUND AND NOT TARGET ZLIB::ZLIB)
         include(FetchContent)
 
         # We define an empty test macro here, so zlib doesn't add it's tests to our global scope
@@ -281,7 +281,16 @@ if(USE_ZLIB)
             GIT_TAG        v1.2.13
         )
         
-        FetchContent_MakeAvailable(zlib)
+        # We don't use FetchContent_MakeAvailable here because we don't want all zlib targets including, just our dependency.
+        FetchContent_GetProperties(zlib)
+        if(NOT zlib_POPULATED)
+            FetchContent_Populate(zlib)
+            add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
+        endif()
+
+        # Make sure headers are available for the static target and make an alias to match the Find module output.
+        target_include_directories(zlibstatic INTERFACE ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+        add_library(ZLIB::ZLIB ALIAS zlibstatic)
     endif()
 endif()
 

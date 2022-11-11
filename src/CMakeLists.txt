@@ -476,11 +476,7 @@ if(USE_ZLIB)
     list(APPEND GAMEENGINE_SRC
         game/common/compression/zlibcompr.cpp
     )
-    if(TARGET ZLIB::ZLIB)
-        list(APPEND GAME_LINK_LIBRARIES ZLIB::ZLIB)
-    else()
-        list(APPEND GAME_LINK_LIBRARIES zlibstatic)
-    endif()
+    list(APPEND GAME_LINK_LIBRARIES ZLIB::ZLIB)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_ZLIB)
 endif()
 

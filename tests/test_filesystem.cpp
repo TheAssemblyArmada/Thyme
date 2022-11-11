@@ -40,6 +40,7 @@ TEST(filesystem, win32bigfile)
     EXPECT_EQ(file_a->Read(dst_buf, sizeof(dst_buf)), 16);
     EXPECT_EQ(Utf8String(dst_buf), "This is sample A");
     memset(dst_buf, 0, sizeof(dst_buf));
+    file_a->Close();
 
     // b.txt does not exist
     File *file_b = bigfile->Open_File("b.txt", File::READ);
@@ -50,7 +51,9 @@ TEST(filesystem, win32bigfile)
     EXPECT_EQ(file_c->Size(), 16);
     EXPECT_EQ(file_c->Read(dst_buf, sizeof(dst_buf)), 16);
     EXPECT_EQ(Utf8String(dst_buf), "This is sample C");
+    file_c->Close();
 
+    delete bigfile;
     delete g_theLocalFileSystem;
 }
 
@@ -90,7 +93,9 @@ TEST_P(FileSystemTest, exists_file)
 
 TEST_P(FileSystemTest, open_file)
 {
-    EXPECT_NE(m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str(), File::READ), nullptr);
+    auto file = m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str(), File::READ);
+    EXPECT_NE(file, nullptr);
+    file->Close();
     EXPECT_EQ(m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/non_existant.big").Str(), File::READ), nullptr);
 }
 

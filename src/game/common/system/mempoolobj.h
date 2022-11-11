@@ -34,7 +34,10 @@ protected:
 
 #ifndef __SANITIZE_ADDRESS__
     void *operator new(size_t) = delete;
-    void operator delete(void *) { captainslog_dbgassert(0, "This should be impossible to call"); }
+    void operator delete(void *)
+    {
+        captainslog_dbgassert(0, "This should be impossible to call");
+    }
 #endif
     // Class implementing Get_Object_Pool needs to provide these
     // use macros below to generated them.
@@ -66,12 +69,18 @@ private: \
             The##classname##Pool->Get_Alloc_Size()); \
         return The##classname##Pool; \
     } \
-    virtual MemoryPool *Get_Object_Pool() override { return Get_Class_Pool(); } \
+    virtual MemoryPool *Get_Object_Pool() override \
+    { \
+        return Get_Class_Pool(); \
+    } \
 \
 public: \
     enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED = 0 }; \
 \
-    void *operator new(size_t size) { return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); } \
+    void *operator new(size_t size) \
+    { \
+        return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); \
+    } \
     void *operator new(size_t size, classname##MagicEnum) \
     { \
         captainslog_dbgassert(size == sizeof(classname), \
@@ -79,13 +88,19 @@ public: \
             "correctly"); \
         return Get_Class_Pool()->Allocate_Block(); \
     } \
-    void operator delete(void *ptr) { operator delete(ptr, classname##_GLUE_NOT_IMPLEMENTED); } \
+    void operator delete(void *ptr) \
+    { \
+        operator delete(ptr, classname##_GLUE_NOT_IMPLEMENTED); \
+    } \
     void operator delete(void *ptr, classname##MagicEnum) \
     { \
         captainslog_dbgassert(0, "Please call Delete_Instance instead of delete."); \
         Get_Class_Pool()->Free_Block(ptr); \
     } \
-    void *operator new(size_t size, void *where) { return where; } \
+    void *operator new(size_t size, void *where) \
+    { \
+        return where; \
+    } \
     void operator delete(void *ptr, void *where) {}
 
 /* NOTE: Operator delete above must exist because of the pairing operator new. However, it should never be called directly.
@@ -95,7 +110,10 @@ public: \
  */
 #define IMPLEMENT_ABSTRACT_POOL(classname) \
 protected: \
-    virtual MemoryPool *Get_Object_Pool() override { throw CODE_01; } \
+    virtual MemoryPool *Get_Object_Pool() override \
+    { \
+        throw CODE_01; \
+    } \
     void *operator new(size_t size) = delete; \
     void operator delete(void *ptr) \
     { \
@@ -107,13 +125,20 @@ private:
 #else
 #define IMPLEMENT_NAMED_POOL(classname, poolname) \
 private: \
-    virtual MemoryPool *Get_Object_Pool() override { return nullptr; } \
+    virtual MemoryPool *Get_Object_Pool() override \
+    { \
+        return nullptr; \
+    } \
+\
 public: \
-    enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED = 0 }; \
+    enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED = 0 };
 
 #define IMPLEMENT_ABSTRACT_POOL(classname) \
 protected: \
-    virtual MemoryPool *Get_Object_Pool() override { throw CODE_01; } \
+    virtual MemoryPool *Get_Object_Pool() override \
+    { \
+        throw CODE_01; \
+    } \
 \
 private:
 #endif
@@ -128,13 +153,13 @@ private:
 inline void MemoryPoolObject::Delete_Instance()
 {
     if (this != nullptr) {
-        #ifndef __SANITIZE_ADDRESS__
+#ifndef __SANITIZE_ADDRESS__
         MemoryPool *pool = Get_Object_Pool();
         this->~MemoryPoolObject();
         pool->Free_Block(this);
-        #else
+#else
         delete this;
-        #endif
+#endif
     }
 }
 

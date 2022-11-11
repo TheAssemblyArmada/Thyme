@@ -278,14 +278,22 @@ bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int
         m_data = nullptr;
     }
 
-    m_data = new char[size];
-    m_size = size;
-
     if (file->Seek(pos, START) != pos) {
         return false;
     }
 
+    m_data = new char[size];
+    m_size = size;
+
+    // #BUGFIX allocation check for robustness.
+    if (m_data == nullptr) {
+        return false;
+    }
+
     if (file->Read(m_data, m_size) != size) {
+        // #BUGFIX clean up on failure to prevent garbage read.
+        delete[] m_data;
+        m_data = nullptr;
         return false;
     }
 

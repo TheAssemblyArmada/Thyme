@@ -38,14 +38,12 @@ void RankInfoStore::Init()
  */
 void RankInfoStore::Reset()
 {
-    auto it = m_infoStore.begin();
-    while (it != m_infoStore.end()) {
-        if (*it != nullptr) { // Original code has this check but result will be infinte loop if it is null?
-            if ((*it)->Delete_Overrides() == nullptr) {
-                m_infoStore.erase(it);
-            } else {
-                ++it;
-            }
+    for (auto it = m_infoStore.begin(); it != m_infoStore.end();) {
+        if ((*it)->Delete_Overrides() == nullptr) {
+            // #BUGFIX invalidated iterator dereference.
+            it = m_infoStore.erase(it);
+        } else {
+            ++it;
         }
     }
 }

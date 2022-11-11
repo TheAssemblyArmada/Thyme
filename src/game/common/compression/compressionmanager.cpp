@@ -198,6 +198,63 @@ int CompressionManager::Get_Uncompressed_Size(const void *data, int size)
 }
 
 /**
+ * @brief Compress uncompressed data. Only handles RefPack and ZLib compression.
+ */
+int CompressionManager::Compress_Data(CompressionType type, void *src, int src_size, void *dst, int dst_size)
+{
+    if (dst_size < sizeof(ComprHeader)) {
+        return 0;
+    }
+
+    const char *fourcc = Get_Compression_FourCC(type);
+
+    // Initialize the header. We could think about not writing the fourcc when format is not supported,
+    // but probably doesn't really matter
+    ComprHeader *header = static_cast<ComprHeader *>(dst);
+    memcpy(header->fourcc, fourcc, 4);
+    header->uncomp_size = 0;
+
+    uint32_t compr_size = 0;
+    uint8_t *dst_data = static_cast<uint8_t *>(dst) + sizeof(ComprHeader);
+
+    switch (type) {
+        case COMPRESSION_EAR:
+            compr_size = RefPack_Compress(dst_data, src, src_size, false);
+            if (compr_size > 0) {
+                header->uncomp_size = src_size;
+                return compr_size + sizeof(ComprHeader);
+            }
+            break;
+        case COMPRESSION_ZL1:
+        case COMPRESSION_ZL2:
+        case COMPRESSION_ZL3:
+        case COMPRESSION_ZL4:
+        case COMPRESSION_ZL5:
+        case COMPRESSION_ZL6:
+        case COMPRESSION_ZL7:
+        case COMPRESSION_ZL8:
+        case COMPRESSION_ZL9:
+#if BUILD_WITH_ZLIB
+            compr_size = Zlib_Compress(dst_data, dst_size - sizeof(ComprHeader), src, src_size, type + 1 - COMPRESSION_ZL1);
+            if (compr_size > 0) {
+                header->uncomp_size = src_size;
+                return compr_size + sizeof(ComprHeader);
+            }
+#endif
+        case COMPRESSION_NONE:
+        case COMPRESSION_NOX:
+        case COMPRESSION_EAB:
+        case COMPRESSION_EAH:
+        default:
+            captainslog_error("Compression format '%s' unhandled, file a bug report.\n",
+                Get_Compression_Name(Get_Compression_Type(src, src_size)));
+            break;
+    }
+
+    return 0;
+}
+
+/**
  * @brief Decompress possibly compressed data. Only handles RefPack and ZLib compression.
  */
 int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int dst_size)
@@ -209,9 +266,7 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
     switch (Get_Compression_Type(src, src_size)) {
         case COMPRESSION_EAR: // RefPack
             src_size -= sizeof(ComprHeader);
-            return RefPack_Uncompress(dst, static_cast<const uint8_t *>(src) + 8, &src_size);
-
-        // Original game handles all these formats, ZH only appears to use RefPack however.
+            return RefPack_Uncompress(dst, static_cast<const uint8_t *>(src) + sizeof(ComprHeader), &src_size);
         case COMPRESSION_ZL1:
         case COMPRESSION_ZL2:
         case COMPRESSION_ZL3:
@@ -223,7 +278,7 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
         case COMPRESSION_ZL9:
 #if BUILD_WITH_ZLIB
             src_size -= sizeof(ComprHeader);
-            return Zlib_Uncompress(dst, dst_size, static_cast<const uint8_t *>(src) + 8, src_size);
+            return Zlib_Uncompress(dst, dst_size, static_cast<const uint8_t *>(src) + sizeof(ComprHeader), src_size);
 #endif
         case COMPRESSION_NONE:
         case COMPRESSION_NOX:

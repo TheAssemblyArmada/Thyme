@@ -23,32 +23,7 @@
 
 #define WRITE_DATA 0
 
-TEST(compression, refpack_encode)
-{
-    auto filepath = Utf8String(TESTDATA_PATH) + "/compr/uncompr.txt";
-    BufferedFileClass src_file(filepath.Str());
-    ASSERT_TRUE(src_file.Open(FM_READ));
-    size_t src_size = src_file.Size();
-    uint8_t *src_data = new uint8_t[src_size];
-    src_file.Read(src_data, src_size);
-
-    uint8_t *dst_data = new uint8_t[src_size + 8];
-    uint32_t dst_size = RefPack_Compress(dst_data, src_data, src_size, false);
-    EXPECT_GT(dst_size, 0);
-    EXPECT_LT(dst_size, src_size);
-#if WRITE_DATA
-    auto dst_filepath = Utf8String(TESTDATA_PATH) + "/compr/refpack.data";
-    BufferedFileClass dst_file(dst_filepath.Str());
-    ASSERT_TRUE(dst_file.Open(FM_WRITE));
-    CompressionType compr_type = COMPRESSION_EAR;
-    dst_file.Write(CompressionManager::Get_Compression_FourCC(compr_type), 4);
-    dst_file.Write((const void *)&src_size, sizeof(uint32_t));
-    dst_file.Write(dst_data, dst_size);
-#endif
-    delete[] src_data;
-    delete[] dst_data;
-}
-
+// Some special refpack mode that doesn't seem to be used by the game. Test it anyways :)
 TEST(compression, refpack_encode_quick)
 {
     auto filepath = Utf8String(TESTDATA_PATH) + "/compr/uncompr.txt";
@@ -62,72 +37,58 @@ TEST(compression, refpack_encode_quick)
     uint32_t dst_size = RefPack_Compress(dst_data, src_data, src_size, true);
     EXPECT_GT(dst_size, 0);
     EXPECT_LT(dst_size, src_size);
-#if WRITE_DATA
-    auto dst_filepath = Utf8String(TESTDATA_PATH) + "/compr/refpack_quick.data";
-    BufferedFileClass dst_file(dst_filepath.Str());
-    ASSERT_TRUE(dst_file.Open(FM_WRITE));
-    CompressionType compr_type = COMPRESSION_EAR;
-    dst_file.Write(CompressionManager::Get_Compression_FourCC(compr_type), 4);
-    dst_file.Write((const void *)&src_size, sizeof(uint32_t));
-    dst_file.Write(dst_data, dst_size);
-#endif
+
     delete[] src_data;
     delete[] dst_data;
 }
 
-class ZlibTest : public ::testing::TestWithParam<int>
+class CompressionTest : public ::testing::TestWithParam<CompressionType>
 {
 public:
-    void SetUp() override { m_level = GetParam(); }
+    void SetUp() override { m_type = GetParam(); }
+
+    struct PrintToStringParamName
+    {
+        template<class ParamType> std::string operator()(const testing::TestParamInfo<ParamType> &info) const
+        {
+            auto type = static_cast<CompressionType>(info.param);
+            return CompressionManager::Get_Compression_FourCC(type);
+        }
+    };
 
 protected:
-    int m_level;
+    CompressionType m_type;
 };
 
-TEST_P(ZlibTest, encode)
+TEST_P(CompressionTest, encode)
 {
     auto filepath = Utf8String(TESTDATA_PATH) + "/compr/uncompr.txt";
     BufferedFileClass src_file(filepath.Str());
-    ASSERT_TRUE(src_file.Open(FM_READ));
+    ASSERT_TRUE(src_file.Open(FM_READ)) << "Failed to open: " << filepath.Str();
     size_t src_size = src_file.Size();
     uint8_t *src_data = new uint8_t[src_size];
     src_file.Read(src_data, src_size);
 
-    uint8_t *dst_data = new uint8_t[src_size + 8];
-    uint32_t dst_size = Zlib_Compress(dst_data, src_data, src_size, m_level);
+    uint32_t dst_size = CompressionManager::Get_Max_Compressed_Size(src_size, m_type);
+    uint8_t *dst_data = new uint8_t[dst_size];
+    dst_size = CompressionManager::Compress_Data(m_type, src_data, src_size, dst_data, dst_size);
     EXPECT_GT(dst_size, 0);
     EXPECT_LT(dst_size, src_size);
 #if WRITE_DATA
-    Utf8String dst_filepath;
-    dst_filepath.Format("%s/compr/zlib%i.data", TESTDATA_PATH, m_level);
+    auto dst_filepath = Utf8String(TESTDATA_PATH) + "/compr/blob" + std::to_string(m_type).c_str() + ".data";
     BufferedFileClass dst_file(dst_filepath.Str());
     ASSERT_TRUE(dst_file.Open(FM_WRITE));
-    CompressionType compr_type = (CompressionType)(COMPRESSION_ZL1 + (m_level - 1));
-    dst_file.Write(CompressionManager::Get_Compression_FourCC(compr_type), 4);
-    dst_file.Write((const void *)&src_size, sizeof(uint32_t));
     dst_file.Write(dst_data, dst_size);
 #endif
     delete[] src_data;
     delete[] dst_data;
 }
 
-INSTANTIATE_TEST_CASE_P(compression, ZlibTest, testing::Range(1, 10));
-
-class DecodeTest : public ::testing::TestWithParam<std::string>
+TEST_P(CompressionTest, decode)
 {
-public:
-    void SetUp() override { m_file = GetParam(); }
-
-protected:
-    std::string m_file;
-    CompressionManager m_mngr;
-};
-
-TEST_P(DecodeTest, decode)
-{
-    auto filepath = Utf8String(TESTDATA_PATH) + "/compr/" + m_file.c_str();
+    auto filepath = Utf8String(TESTDATA_PATH) + "/compr/blob" + std::to_string(m_type).c_str() + ".data";
     BufferedFileClass src_file(filepath.Str());
-    ASSERT_TRUE(src_file.Open(FM_READ));
+    ASSERT_TRUE(src_file.Open(FM_READ)) << "Failed to open: " << filepath.Str();
     size_t src_size = src_file.Size();
     uint8_t *src_data = new uint8_t[src_size];
     src_file.Read(src_data, src_size);
@@ -141,20 +102,20 @@ TEST_P(DecodeTest, decode)
     delete[] dst_data;
 }
 
-std::string testfile_list[] = {
-    "refpack.data",
-    "refpack_quick.data",
+CompressionType compression_types[] = {
+    COMPRESSION_EAR,
 #ifdef BUILD_WITH_ZLIB
-    "zlib1.data",
-    "zlib2.data",
-    "zlib3.data",
-    "zlib4.data",
-    "zlib5.data",
-    "zlib6.data",
-    "zlib7.data",
-    "zlib8.data",
-    "zlib9.data",
+    COMPRESSION_ZL1,
+    COMPRESSION_ZL2,
+    COMPRESSION_ZL3,
+    COMPRESSION_ZL4,
+    COMPRESSION_ZL5,
+    COMPRESSION_ZL6,
+    COMPRESSION_ZL7,
+    COMPRESSION_ZL8,
+    COMPRESSION_ZL9,
 #endif
 };
 
-INSTANTIATE_TEST_CASE_P(compression, DecodeTest, testing::ValuesIn(testfile_list));
+INSTANTIATE_TEST_CASE_P(
+    compression, CompressionTest, testing::ValuesIn(compression_types), CompressionTest::PrintToStringParamName());

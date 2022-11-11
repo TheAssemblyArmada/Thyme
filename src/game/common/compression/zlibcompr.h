@@ -17,5 +17,5 @@
 #include "always.h"
 
 int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size);
-int Zlib_Compress(void *dst, const void *src, int size, int level);
+int Zlib_Compress(void *dst, int dst_size, const void *src, int src_size, int level);
 int Zlib_MaxSize(int size);

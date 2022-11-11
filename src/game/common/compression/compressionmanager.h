@@ -37,7 +37,7 @@ enum CompressionType : int32_t
 
 struct ComprHeader
 {
-    CompressionType type;
+    char fourcc[4];
     uint32_t uncomp_size;
 };
 

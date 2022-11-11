@@ -41,10 +41,10 @@ int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size)
 /**
  * Compresses to zlib data.
  */
-int Zlib_Compress(void *dst, const void *src, int size, int level)
+int Zlib_Compress(void *dst, int dst_size, const void *src, int src_size, int level)
 {
-    uLongf dstSize = compressBound(size);
-    int result = compress2((Bytef *)dst, &dstSize, (const Bytef *)src, size, level);
+    uLongf dstSize = dst_size;
+    int result = compress2((Bytef *)dst, &dstSize, (const Bytef *)src, src_size, level);
     if (result != Z_OK) {
         captainslog_error("Failed to compress Zlib data. Error=%i", result);
         return 0;

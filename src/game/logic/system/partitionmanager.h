@@ -196,12 +196,12 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override{};
 
-    bool Geom_Collides_With_Geom(Coord3D const *unk1,
-        GeometryInfo const &unk2,
-        float unk3,
-        Coord3D const *unk4,
-        GeometryInfo const &unk5,
-        float unk6) const;
+    bool Geom_Collides_With_Geom(Coord3D const *position,
+        GeometryInfo const &geometry,
+        float angle,
+        Coord3D const *position2,
+        GeometryInfo const &geometry2,
+        float angle2) const;
     int32_t Calc_Min_Radius(const ICoord2D &cur);
     void Calc_Radius_Vec();
     void Do_Shroud_Cover(float centerX, float centerY, float radius, uint16_t playerIndex);
@@ -248,6 +248,7 @@ public:
         Coord3D const *pos, float unk, DistanceCalculationType dc, PartitionFilter **filters, IterOrderType order);
     SimpleObjectIterator *Iterate_Potential_Collisions(Coord3D const *pos, GeometryInfo const &geom, float angle, bool unk);
     SimpleObjectIterator *Iterate_All_Objects(PartitionFilter **filters);
+    ObjectShroudStatus Get_Prop_Shroud_Status_For_Player(int id, const Coord3D *position) const;
 
     bool Find_Position_Around(Coord3D const *center, FindPositionOptions const *options, Coord3D *result);
 

@@ -172,6 +172,7 @@
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3dprojectedshadow.h"
+#include "w3dpropbuffer.h"
 #include "w3droadbuffer.h"
 #include "w3dscene.h"
 #include "w3dshroud.h"
@@ -2426,4 +2427,14 @@ void Setup_Hooks()
     Hook_Any(0x004469C0, FileSystem::Are_Music_Files_On_CD); // This one is part of the CD Check.
     Hook_Any(0x00446BF0, FileSystem::Load_Music_Files_From_CD);
     Hook_Any(0x00446D50, FileSystem::Unload_Music_Files_From_CD);
+
+    // w3dpropbuffer.h
+    Hook_Any(0x00797400, W3DPropBuffer::Hook_Dtor);
+    Hook_Any(0x007974D0, W3DPropBuffer::Hook_Ctor);
+    Hook_Any(0x00797600, W3DPropBuffer::Clear_All_Props);
+    Hook_Any(0x00797660, W3DPropBuffer::Add_Prop_Type);
+    Hook_Any(0x00797780, W3DPropBuffer::Add_Prop);
+    Hook_Any(0x00797A20, W3DPropBuffer::Remove_Props_For_Construction);
+    Hook_Any(0x00797B60, W3DPropBuffer::Notify_Shroud_Changed);
+    Hook_Any(0x00797BA0, W3DPropBuffer::Draw_Props);
 }

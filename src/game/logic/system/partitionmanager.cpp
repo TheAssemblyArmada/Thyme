@@ -126,12 +126,12 @@ void PartitionManager::Remove_From_Dirty_Modules(PartitionData *data)
 }
 
 // zh: 0x0053A820 wb: 0x0081CE95
-bool PartitionManager::Geom_Collides_With_Geom(Coord3D const *unk1,
-    GeometryInfo const &unk2,
-    float unk3,
-    Coord3D const *unk4,
-    GeometryInfo const &unk5,
-    float unk6) const
+bool PartitionManager::Geom_Collides_With_Geom(Coord3D const *position,
+    GeometryInfo const &geometry,
+    float angle,
+    Coord3D const *position2,
+    GeometryInfo const &geometry2,
+    float angle2) const
 {
 #ifdef GAME_DLL
     return Call_Method<bool,
@@ -141,7 +141,7 @@ bool PartitionManager::Geom_Collides_With_Geom(Coord3D const *unk1,
         float,
         Coord3D const *,
         GeometryInfo const &,
-        float>(PICK_ADDRESS(0x0053A820, 0x0081CE95), this, unk1, unk2, unk3, unk4, unk5, unk6);
+        float>(PICK_ADDRESS(0x0053A820, 0x0081CE95), this, position, geometry, angle, position2, geometry2, angle2);
 #else
     return false;
 #endif
@@ -803,4 +803,14 @@ bool PartitionFilterAlive::Allow(Object *obj)
 bool PartitionFilterSameMapStatus::Allow(Object *obj)
 {
     return m_object->Is_Outside_Map() == obj->Is_Outside_Map();
+}
+
+ObjectShroudStatus PartitionManager::Get_Prop_Shroud_Status_For_Player(int id, const Coord3D *position) const
+{
+#ifdef GAME_DLL
+    return Call_Method<ObjectShroudStatus, const PartitionManager, int, const Coord3D *>(
+        PICK_ADDRESS(0x0053C7F0, 0x0081F275), this, id, position);
+#else
+    return SHROUDED_INVALID;
+#endif
 }

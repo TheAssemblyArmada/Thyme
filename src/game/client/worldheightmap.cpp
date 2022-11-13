@@ -693,7 +693,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
         m_textureClasses[i].first_tile = file.Read_Int32();
         m_textureClasses[i].num_tiles = file.Read_Int32();
         m_textureClasses[i].width = file.Read_Int32();
-        file.Read_Int32();
+        m_textureClasses[i].is_blend_edge_tile = file.Read_Int32();
         m_textureClasses[i].name = file.Read_AsciiString();
         Read_Tex_Class(&m_textureClasses[i], m_sourceTiles);
     }

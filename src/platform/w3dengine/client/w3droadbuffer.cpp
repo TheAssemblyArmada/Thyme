@@ -25,6 +25,7 @@
 #include "terrainroads.h"
 #include "texture.h"
 #include "worldheightmap.h"
+#include <cmath>
 
 using GameMath::Fabs;
 bool g_dynamic;
@@ -2020,7 +2021,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         Vector2 v4(-v1.Y, v1.X);
         if (xp_sign(v4, v2) == 1 && xp_sign(v4, v3) == 1) {
             b3 = true;
-            f6 = Fabs(f2 + 0.70700002f) + Fabs(f1 + 0.70700002f);
+            f6 = Fabs(f2 + M_SQRT1_2) + Fabs(f1 + M_SQRT1_2);
         }
     }
 
@@ -2031,7 +2032,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         Vector2 v4(-v3.Y, v3.X);
         if (xp_sign(v4, v2) == 1 && xp_sign(v4, v1) == 1) {
             b1 = true;
-            f4 = Fabs(f3 + 0.70700002f) + Fabs(f2 + 0.70700002f);
+            f4 = Fabs(f3 + M_SQRT1_2) + Fabs(f2 + M_SQRT1_2);
         }
     }
 
@@ -2042,7 +2043,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         Vector2 v4(-v3.Y, v3.X);
         if (xp_sign(v4, v3) == 1 && xp_sign(v4, v1) == 1) {
             b2 = true;
-            f5 = Fabs(f3 + 0.70700002f) + Fabs(f1 + 0.70700002f);
+            f5 = Fabs(f3 + M_SQRT1_2) + Fabs(f1 + M_SQRT1_2);
         }
     }
 

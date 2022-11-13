@@ -64,7 +64,7 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
     // Try and open the file, if not, delete instance and return null.
     if (!file->Open(filename, mode)) {
         file->Delete_Instance();
-        return nullptr;
+        file = nullptr;
     } else {
         file->Delete_On_Close();
     }

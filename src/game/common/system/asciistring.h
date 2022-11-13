@@ -168,8 +168,8 @@ public:
     friend bool operator<(Utf8String const &left, const char *right) { return left.Compare(right) < 0; }
     friend bool operator<(const char *left, Utf8String const &right) { return right.Compare(left) >= 0; }
     friend bool operator>(Utf8String const &left, Utf8String const &right) { return left.Compare(right) > 0; }
-    friend bool operator>(Utf8String const &left, const char *right) { return left.Compare(right) < 0; }
-    friend bool operator>(const char *left, Utf8String const &right) { return right.Compare(left) >= 0; }
+    friend bool operator>(Utf8String const &left, const char *right) { return left.Compare(right) > 0; }
+    friend bool operator>(const char *left, Utf8String const &right) { return right.Compare(left) <= 0; }
 
     friend Utf8String operator+(const Utf8String &a, const Utf8String &b)
     {

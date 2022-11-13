@@ -507,7 +507,7 @@ void AudioManager::Lose_Focus()
     m_savedVolumes[0] = m_initialMusicVolume;
     m_savedVolumes[1] = m_initialSoundVolume;
     m_savedVolumes[2] = m_initial3DSoundVolume;
-    m_savedVolumes[3] = m_initialMusicVolume;
+    m_savedVolumes[3] = m_initialSpeechVolume;
     Set_Volume(0.0f, AUDIOAFFECT_MUSIC | AUDIOAFFECT_SOUND | AUDIOAFFECT_3DSOUND | AUDIOAFFECT_SPEECH | AUDIOAFFECT_BASEVOL);
 }
 

@@ -592,6 +592,7 @@ bool DDSFileClass::Load()
 
     if (data == 0) {
         captainslog_warn("DDSFile '%s' appears to contain no data, size is %d.", m_name, fp->Size());
+        fp->Close();
         return false;
     }
 

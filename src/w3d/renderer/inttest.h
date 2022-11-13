@@ -66,6 +66,7 @@ inline bool AABoxIntersectionTestClass::Cull(const Vector3 &cull_min, const Vect
     if ((box_min.Z > cull_max.Z) || (box_max.Z < cull_min.Z)) {
         return true;
     }
+    return false;
 }
 
 inline bool AABoxIntersectionTestClass::Cull(const AABoxClass &cull_box)
@@ -86,6 +87,7 @@ inline bool AABoxIntersectionTestClass::Cull(const AABoxClass &cull_box)
     if (GameMath::Fabs(dc.Z) > r.Z) {
         return true;
     }
+    return false;
 }
 
 inline bool AABoxIntersectionTestClass::Intersect_Triangle(const TriClass &tri)

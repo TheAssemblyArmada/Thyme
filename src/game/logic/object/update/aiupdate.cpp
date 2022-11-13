@@ -86,3 +86,27 @@ void AIUpdateInterface::Reset_Next_Mood_Check_Time()
     Call_Method<void, AIUpdateInterface>(PICK_ADDRESS(0x005D6030, 0x007FBAB5), this);
 #endif
 }
+
+AIStateType AIUpdateInterface::Get_AI_State_Type() const
+{
+    return static_cast<AIStateType>(Get_State_Machine()->Get_Current_State_ID());
+}
+
+int AIUpdateInterface::Friend_Get_Waypoint_Goal_Path_Size() const
+{
+    if (Get_AI_State_Type() != AI_FOLLOW_PATH) {
+        return 0;
+    }
+
+    return Get_State_Machine()->Get_Goal_Path_Count();
+}
+
+const Coord3D *AIUpdateInterface::Get_Goal_Path_Position(int i) const
+{
+    return Get_State_Machine()->Get_Goal_Path_Position(i);
+}
+
+const Coord3D *AIUpdateInterface::Get_Goal_Position() const
+{
+    return Get_State_Machine()->Get_Goal_Position();
+}

@@ -305,6 +305,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3dmouse.cpp
     platform/w3dengine/client/w3dterrainlogic.cpp
     platform/w3dengine/client/w3dterraintracks.cpp
+    platform/w3dengine/client/w3dwaypointbuffer.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/buff.cpp
     w3d/lib/bufffileclass.cpp

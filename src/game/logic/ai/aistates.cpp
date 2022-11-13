@@ -53,3 +53,12 @@ bool Out_Of_Weapon_Range_Object(State *state, void *user_data)
     return false;
 #endif
 }
+
+const Coord3D *AIStateMachine::Get_Goal_Path_Position(int i) const
+{
+    if (i < 0 || i >= static_cast<int>(m_goalPath.size())) {
+        return nullptr;
+    }
+
+    return &m_goalPath[i];
+}

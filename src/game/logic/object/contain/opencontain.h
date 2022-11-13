@@ -96,3 +96,38 @@ public:
     virtual unsigned int Get_Weapon_Bonus_Passed_To_Passengers() const = 0;
     virtual bool Get_Container_Pips_To_Show(int &max, int &count);
 };
+
+enum ExitDoorType
+{
+    EXIT_DOOR_UNK,
+};
+
+class ExitInterface
+{
+public:
+    virtual bool Is_Exit_Busy() const = 0;
+    virtual ExitDoorType Reserve_Door_For_Exit(const ThingTemplate *tmplate, Object *obj) = 0;
+    virtual void Exit_Object_Via_Door(Object *obj, ExitDoorType type) = 0;
+    virtual void Exit_Object_Via_Budding(Object *obj, Object *obj2) = 0;
+    virtual void Unreserve_Door_For_Exit(ExitDoorType type) = 0;
+    virtual void Exit_Object_In_A_Hurry(Object *obj) {}
+    virtual void Set_Rally_Point(const Coord3D *point) = 0;
+    virtual const Coord3D *Get_Rally_Point() = 0;
+    virtual bool Use_Spawn_Rally_Point() { return false; }
+
+    virtual bool Get_Natural_Rally_Point(Coord3D &coord, bool b)
+    {
+        coord.x = 0.0f;
+        coord.y = 0.0f;
+        coord.z = 0.0f;
+        return false;
+    }
+
+    virtual bool Get_Exit_Position(Coord3D &coord)
+    {
+        coord.x = 0.0f;
+        coord.y = 0.0f;
+        coord.z = 0.0f;
+        return false;
+    }
+};

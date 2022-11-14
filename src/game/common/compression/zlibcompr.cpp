@@ -29,8 +29,7 @@ int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size)
     uLongf zlib_dst_size = dst_size;
     uLong zlib_src_size = src_size;
 
-    int result =
-        uncompress(static_cast<Bytef *>(dst), &zlib_dst_size, static_cast<const Bytef *>(src), zlib_src_size);
+    int result = uncompress(static_cast<Bytef *>(dst), &zlib_dst_size, static_cast<const Bytef *>(src), zlib_src_size);
     if (result != Z_OK) {
         captainslog_error("Failed to compress Zlib data. Error=%i", result);
         return 0;

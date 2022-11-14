@@ -12,26 +12,34 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include <fstream>
 #include <gtest/gtest.h>
+#include <string>
 
 #include "always.h"
-#include "asciistring.h"
-#include "bufffileclass.h"
 #include "compressionmanager.h"
 #include "refpack.h"
 #include "zlibcompr.h"
 
-#define WRITE_DATA 0
+#define WRITE_DATA 1
+
+size_t get_filesize(std::ifstream &fin)
+{
+    fin.seekg(0, std::ios::end);
+    auto size = fin.tellg();
+    fin.seekg(0, std::ios::beg);
+    return size;
+}
 
 // Some special refpack mode that doesn't seem to be used by the game. Test it anyways :)
 TEST(compression, refpack_encode_quick)
 {
-    auto filepath = Utf8String(TESTDATA_PATH) + "/compr/uncompr.txt";
-    BufferedFileClass src_file(filepath.Str());
-    ASSERT_TRUE(src_file.Open(FM_READ));
-    size_t src_size = src_file.Size();
+    auto filepath = std::string(TESTDATA_PATH) + "/compr/uncompr.txt";
+    std::ifstream src_file(filepath, std::ios::binary);
+    ASSERT_TRUE(src_file.good()) << "Failed to open: " << filepath;
+    size_t src_size = get_filesize(src_file);
     uint8_t *src_data = new uint8_t[src_size];
-    src_file.Read(src_data, src_size);
+    src_file.read(reinterpret_cast<char *>(src_data), src_size);
 
     uint8_t *dst_data = new uint8_t[src_size + 8];
     uint32_t dst_size = RefPack_Compress(dst_data, src_data, src_size, true);
@@ -62,44 +70,41 @@ protected:
 
 TEST_P(CompressionTest, encode)
 {
-    auto filepath = Utf8String(TESTDATA_PATH) + "/compr/uncompr.txt";
-    BufferedFileClass src_file(filepath.Str());
-    ASSERT_TRUE(src_file.Open(FM_READ)) << "Failed to open: " << filepath.Str();
-    size_t src_size = src_file.Size();
-    uint8_t *src_data = new uint8_t[src_size];
-    src_file.Read(src_data, src_size);
+    auto filepath = std::string(TESTDATA_PATH) + "/compr/uncompr.txt";
+    std::ifstream src_file(filepath, std::ios::binary);
+    ASSERT_TRUE(src_file.good()) << "Failed to open: " << filepath;
+    size_t src_size = get_filesize(src_file);
+    std::unique_ptr<uint8_t[]> src_data(new uint8_t[src_size]);
+    src_file.read(reinterpret_cast<char *>(src_data.get()), src_size);
 
     uint32_t dst_size = CompressionManager::Get_Max_Compressed_Size(src_size, m_type);
-    uint8_t *dst_data = new uint8_t[dst_size];
-    dst_size = CompressionManager::Compress_Data(m_type, src_data, src_size, dst_data, dst_size);
+    std::unique_ptr<uint8_t[]> dst_data(new uint8_t[dst_size]);
+    dst_size = CompressionManager::Compress_Data(m_type, src_data.get(), src_size, dst_data.get(), dst_size);
     EXPECT_GT(dst_size, 0);
     EXPECT_LT(dst_size, src_size);
+
 #if WRITE_DATA
-    auto dst_filepath = Utf8String(TESTDATA_PATH) + "/compr/blob" + std::to_string(m_type).c_str() + ".data";
-    BufferedFileClass dst_file(dst_filepath.Str());
-    ASSERT_TRUE(dst_file.Open(FM_WRITE));
-    dst_file.Write(dst_data, dst_size);
+    auto dst_filepath = std::string(TESTDATA_PATH) + "/compr/blob" + std::to_string(m_type) + ".data";
+    std::ofstream dst_file(dst_filepath, std::ios::binary);
+    ASSERT_TRUE(dst_file.good()) << "Failed to open: " << dst_filepath;
+    dst_file.write(reinterpret_cast<char *>(dst_data.get()), dst_size);
 #endif
-    delete[] src_data;
-    delete[] dst_data;
 }
 
 TEST_P(CompressionTest, decode)
 {
-    auto filepath = Utf8String(TESTDATA_PATH) + "/compr/blob" + std::to_string(m_type).c_str() + ".data";
-    BufferedFileClass src_file(filepath.Str());
-    ASSERT_TRUE(src_file.Open(FM_READ)) << "Failed to open: " << filepath.Str();
-    size_t src_size = src_file.Size();
-    uint8_t *src_data = new uint8_t[src_size];
-    src_file.Read(src_data, src_size);
+    auto filepath = std::string(TESTDATA_PATH) + "/compr/blob" + std::to_string(m_type) + ".data";
+    std::ifstream src_file(filepath, std::ios::binary);
+    ASSERT_TRUE(src_file.good()) << "Failed to open: " << filepath;
+    size_t src_size = get_filesize(src_file);
+    std::unique_ptr<uint8_t[]> src_data(new uint8_t[src_size]);
+    src_file.read(reinterpret_cast<char *>(src_data.get()), src_size);
 
-    EXPECT_TRUE(CompressionManager::Is_Data_Compressed(src_data, src_size));
-    int dst_size = CompressionManager::Get_Uncompressed_Size(src_data, src_size);
+    EXPECT_TRUE(CompressionManager::Is_Data_Compressed(src_data.get(), src_size));
+    int dst_size = CompressionManager::Get_Uncompressed_Size(src_data.get(), src_size);
     EXPECT_GT(dst_size, src_size);
-    uint8_t *dst_data = new uint8_t[dst_size];
-    EXPECT_EQ(CompressionManager::Decompress_Data(src_data, src_size, dst_data, dst_size), dst_size);
-    delete[] src_data;
-    delete[] dst_data;
+    std::unique_ptr<uint8_t[]> dst_data(new uint8_t[dst_size]);
+    EXPECT_EQ(CompressionManager::Decompress_Data(src_data.get(), src_size, dst_data.get(), dst_size), dst_size);
 }
 
 CompressionType compression_types[] = {

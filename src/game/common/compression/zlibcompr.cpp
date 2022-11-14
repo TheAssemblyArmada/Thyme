@@ -21,21 +21,22 @@
  */
 int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size)
 {
-    if (src_size == 0) {
+    if (src_size <= 0) {
         captainslog_error("Missing src_size for Zlib data");
         return 0;
     }
 
-    uLongf dstSize = dst_size;
-    uLong srcSize = src_size;
+    uLongf zlib_dst_size = dst_size;
+    uLong zlib_src_size = src_size;
 
-    int result = uncompress((Bytef *)dst, &dstSize, (const Bytef *)src, srcSize);
+    int result =
+        uncompress(static_cast<Bytef *>(dst), &zlib_dst_size, static_cast<const Bytef *>(src), zlib_src_size);
     if (result != Z_OK) {
         captainslog_error("Failed to compress Zlib data. Error=%i", result);
         return 0;
     }
 
-    return dstSize;
+    return zlib_dst_size;
 }
 
 /**
@@ -43,14 +44,14 @@ int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size)
  */
 int Zlib_Compress(void *dst, int dst_size, const void *src, int src_size, int level)
 {
-    uLongf dstSize = dst_size;
-    int result = compress2((Bytef *)dst, &dstSize, (const Bytef *)src, src_size, level);
+    uLongf zlib_dst_size = dst_size;
+    int result = compress2(static_cast<Bytef *>(dst), &zlib_dst_size, static_cast<const Bytef *>(src), src_size, level);
     if (result != Z_OK) {
         captainslog_error("Failed to compress Zlib data. Error=%i", result);
         return 0;
     }
 
-    return dstSize;
+    return zlib_dst_size;
 }
 
 /**

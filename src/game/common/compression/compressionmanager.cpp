@@ -82,7 +82,7 @@ const char *CompressionManager::Get_Compression_FourCC(CompressionType type)
             return "ZL9\0";
         case COMPRESSION_NONE:
         default:
-            captainslog_error("Compression format '%s' unhandled, file a bug report.\n", Get_Compression_Name(type));
+            captainslog_error("Compression format '%s' unhandled", Get_Compression_Name(type));
             return "\0\0\0\0";
     }
 }
@@ -246,8 +246,8 @@ int CompressionManager::Compress_Data(CompressionType type, void *src, int src_s
         case COMPRESSION_EAB:
         case COMPRESSION_EAH:
         default:
-            captainslog_error("Compression format '%s' unhandled, file a bug report.\n",
-                Get_Compression_Name(Get_Compression_Type(src, src_size)));
+            captainslog_error(
+                "Compression format '%s' unhandled", Get_Compression_Name(Get_Compression_Type(src, src_size)));
             break;
     }
 
@@ -285,8 +285,8 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
         case COMPRESSION_EAB:
         case COMPRESSION_EAH:
         default:
-            captainslog_error("Compression format '%s' unhandled, file a bug report.\n",
-                Get_Compression_Name(Get_Compression_Type(src, src_size)));
+            captainslog_error(
+                "Compression format '%s' unhandled", Get_Compression_Name(Get_Compression_Type(src, src_size)));
             break;
     }
 

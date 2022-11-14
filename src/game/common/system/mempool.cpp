@@ -122,7 +122,6 @@ void *MemoryPool::Allocate_Block_No_Zero()
 
     MemoryPoolSingleBlock *block = m_firstBlobWithFreeBlocks->Allocate_Single_Block();
     ++m_usedBlocksInPool;
-    captainslog_info("Adding new block to pool: %p", this);
     m_peakUsedBlocksInPool = std::max(m_peakUsedBlocksInPool, m_usedBlocksInPool);
 
     return block->Get_User_Data();

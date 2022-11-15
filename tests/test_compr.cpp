@@ -21,7 +21,7 @@
 #include "refpack.h"
 #include "zlibcompr.h"
 
-#define WRITE_DATA 1
+#define WRITE_DATA 0
 
 size_t get_filesize(std::ifstream &fin)
 {

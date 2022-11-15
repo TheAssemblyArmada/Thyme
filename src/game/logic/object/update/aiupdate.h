@@ -92,7 +92,7 @@ public:
     static void Parse_Turret(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
-    std::map<LocomotorSetType, LocomotorTemplate const *> m_locomotorTemplates;
+    std::map<LocomotorSetType, std::vector<LocomotorTemplate const *>> m_locomotorTemplates;
     TurretAIData *m_turretData[MAX_TURRETS];
     unsigned int m_moodAttackCheckRate;
     bool m_forbidPlayerCommands;

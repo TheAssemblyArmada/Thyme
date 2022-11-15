@@ -248,6 +248,10 @@ public:
     void Reset_Next_Mood_Check_Time();
 
     bool Has_Locomotor_For_Surface(LocomotorSurfaceType t);
+    int Friend_Get_Waypoint_Goal_Path_Size() const;
+    AIStateType Get_AI_State_Type() const;
+    const Coord3D *Get_Goal_Path_Position(int i) const;
+    const Coord3D *Get_Goal_Position() const;
 
     const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
     Locomotor *Get_Cur_Locomotor() { return m_curLocomotor; }
@@ -270,6 +274,7 @@ public:
     void Set_Current_Turret(WhichTurretType t) { m_currentTurret = t; }
 
     bool Are_Turrets_Linked() const { return Get_AI_Update_Module_Data()->m_turretsLinked; }
+    int Get_Current_Goal_Path_Index() const { return m_currentGoalPathIndex; }
 
 private:
     unsigned char unk[0x8];
@@ -278,7 +283,9 @@ private:
     Path *m_path;
     unsigned char unk3[0x20];
     ObjectID m_ignoreObstacleID;
-    unsigned char unk4[0x48];
+    unsigned char unk4[0x3C];
+    int m_currentGoalPathIndex;
+    unsigned char unk5[0x8];
     LocomotorSet m_locomotorSet;
     Locomotor *m_curLocomotor;
     LocomotorSetType m_curLocomotorSet;
@@ -288,6 +295,6 @@ private:
     WhichTurretType m_currentTurret;
     AttitudeType m_attitude;
     unsigned int m_nextMoodCheckTime;
-    unsigned char unk5[0x16];
+    unsigned char unk6[0x16];
     bool m_isRecruitable;
 };

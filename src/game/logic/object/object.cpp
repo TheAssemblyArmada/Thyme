@@ -19,6 +19,7 @@
 #include "experiencetracker.h"
 #include "gamelogic.h"
 #include "globaldata.h"
+#include "opencontain.h"
 #include "playerlist.h"
 #include "team.h"
 #include "updatemodule.h"
@@ -284,6 +285,29 @@ void Object::On_Collide(Object *other, const Coord3D *loc, const Coord3D *normal
             collide->On_Collide(other, loc, normal);
         }
     }
+}
+
+ExitInterface *Object::Get_Object_Exit_Interface() const
+{
+    ExitInterface *exit = nullptr;
+
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        exit = (*module)->Get_Update_Exit_Interface();
+
+        if (exit != nullptr) {
+            break;
+        }
+    }
+
+    if (exit == nullptr) {
+        ContainModuleInterface *contain = Get_Contain();
+
+        if (contain != nullptr) {
+            return contain->Get_Contain_Exit_Interface();
+        }
+    }
+
+    return exit;
 }
 
 void Object::Set_Disabled(DisabledType type)

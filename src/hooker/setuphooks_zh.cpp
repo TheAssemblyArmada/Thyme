@@ -181,6 +181,7 @@
 #include "w3dview.h"
 #include "w3dvolumetricshadow.h"
 #include "w3dwater.h"
+#include "w3dwaypointbuffer.h"
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -2437,4 +2438,10 @@ void Setup_Hooks()
     Hook_Any(0x00797A20, W3DPropBuffer::Remove_Props_For_Construction);
     Hook_Any(0x00797B60, W3DPropBuffer::Notify_Shroud_Changed);
     Hook_Any(0x00797BA0, W3DPropBuffer::Draw_Props);
+
+    // w3dwaypointbuffer.h
+    Hook_Any(0x00789CB0, W3DWaypointBuffer::Hook_Ctor);
+    Hook_Any(0x00789DA0, W3DWaypointBuffer::Hook_Dtor);
+    Hook_Any(0x00789DE0, W3DWaypointBuffer::Draw_Waypoints);
+
 }

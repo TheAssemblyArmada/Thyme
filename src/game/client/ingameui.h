@@ -185,6 +185,7 @@ public:
     int Get_Drawable_Caption_Size() const { return m_drawableCaptionPointSize; }
     Utf8String Get_Drawable_Caption_Font() const { return m_drawableCaptionFont; }
     int Get_Drawable_Caption_Color() const { return m_drawableCaptionColor; }
+    bool Is_In_Waypoint_Mode() const { return m_waypointMode; }
 
 protected:
     struct MoveHintStruct
@@ -301,7 +302,7 @@ protected:
     float m_floatingTextMoveVanishRate;
     PopupMessageData *m_popupMessageData;
     int m_popupMessageColor;
-    bool m_unk1; // not 100% identified yet
+    bool m_waypointMode;
     bool m_unk2; // not 100% identified yet
     bool m_unk3; // not 100% identified yet
     bool m_unk4; // not 100% identified yet

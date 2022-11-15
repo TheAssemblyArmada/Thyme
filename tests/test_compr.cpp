@@ -60,7 +60,10 @@ public:
         template<class ParamType> std::string operator()(const testing::TestParamInfo<ParamType> &info) const
         {
             auto type = static_cast<CompressionType>(info.param);
-            return CompressionManager::Get_Compression_FourCC(type);
+            uint32_t fourcc = CompressionManager::Get_Compression_FourCC(type);
+            char fourcc_str[4];
+            memcpy(fourcc_str, &fourcc, sizeof(fourcc_str));
+            return fourcc_str;
         }
     };
 

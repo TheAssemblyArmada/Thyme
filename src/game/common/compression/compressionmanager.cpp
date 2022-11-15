@@ -15,12 +15,14 @@
 #include "compressionmanager.h"
 #include "endiantype.h"
 #include "refpack.h"
+#include "rtsutils.h"
 #if BUILD_WITH_ZLIB
 #include "zlibcompr.h"
 #endif
 #include <captainslog.h>
 #include <cstring>
 
+using rts::FourCC;
 using std::memcmp;
 
 const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = { "No compression",
@@ -57,33 +59,34 @@ CompressionType CompressionManager::Get_Prefered_Compression()
 /**
  * @brief Get the FourCC for the corresponding compression type
  */
-const char *CompressionManager::Get_Compression_FourCC(CompressionType type)
+uint32_t CompressionManager::Get_Compression_FourCC(CompressionType type)
 {
     switch (type) {
         case COMPRESSION_EAR:
-            return "EAR\0";
+            return FourCC<'E', 'A', 'R', '\0'>::value;
         case COMPRESSION_ZL1:
-            return "ZL1\0";
+            return FourCC<'Z', 'L', '1', '\0'>::value;
         case COMPRESSION_ZL2:
-            return "ZL2\0";
+            return FourCC<'Z', 'L', '2', '\0'>::value;
         case COMPRESSION_ZL3:
-            return "ZL3\0";
+            return FourCC<'Z', 'L', '3', '\0'>::value;
         case COMPRESSION_ZL4:
-            return "ZL4\0";
+            return FourCC<'Z', 'L', '4', '\0'>::value;
         case COMPRESSION_ZL5:
-            return "ZL5\0";
+            return FourCC<'Z', 'L', '5', '\0'>::value;
         case COMPRESSION_ZL6:
-            return "ZL6\0";
+            return FourCC<'Z', 'L', '6', '\0'>::value;
         case COMPRESSION_ZL7:
-            return "ZL7\0";
+            return FourCC<'Z', 'L', '7', '\0'>::value;
         case COMPRESSION_ZL8:
-            return "ZL8\0";
+            return FourCC<'Z', 'L', '8', '\0'>::value;
         case COMPRESSION_ZL9:
-            return "ZL9\0";
+            return FourCC<'Z', 'L', '9', '\0'>::value;
         case COMPRESSION_NONE:
         default:
             captainslog_error("Compression format '%s' unhandled", Get_Compression_Name(type));
-            return "\0\0\0\0";
+            return FourCC<0, 0, 0, 0>::value;
+            ;
     }
 }
 
@@ -206,12 +209,12 @@ int CompressionManager::Compress_Data(CompressionType type, void *src, int src_s
         return 0;
     }
 
-    const char *fourcc = Get_Compression_FourCC(type);
+    uint32_t fourcc = Get_Compression_FourCC(type);
 
     // Initialize the header. We could think about not writing the fourcc when format is not supported,
     // but probably doesn't really matter
     ComprHeader *header = static_cast<ComprHeader *>(dst);
-    memcpy(header->fourcc, fourcc, 4);
+    memcpy(header->fourcc, &fourcc, sizeof(uint32_t));
     header->uncomp_size = 0;
 
     uint32_t compr_size = 0;

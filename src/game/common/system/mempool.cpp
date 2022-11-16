@@ -90,7 +90,6 @@ int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 
     int blob_alloc = blob->m_totalBlocksInBlob * m_allocationSize + sizeof(*blob);
     m_usedBlocksInPool -= blob->m_usedBlocksInBlob;
-    captainslog_info("Removing %i blocks from pool: %p", blob->m_usedBlocksInBlob, this);
     m_totalBlocksInPool -= blob->m_totalBlocksInBlob;
 
     delete blob;
@@ -152,7 +151,6 @@ void MemoryPool::Free_Block(void *block)
     if (m_firstBlobWithFreeBlocks == nullptr) {
         m_firstBlobWithFreeBlocks = mp_blob;
         --m_usedBlocksInPool;
-        captainslog_info("Removing block from pool: %p", this);
     }
 }
 

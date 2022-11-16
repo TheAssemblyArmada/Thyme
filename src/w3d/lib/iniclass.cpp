@@ -99,6 +99,14 @@ INIClass::INIClass(FileClass &file) : m_fileName(nullptr)
 INIClass::~INIClass()
 {
     Clear();
+    Shutdown();
+}
+
+void INIClass::Shutdown()
+{
+    delete m_sectionList;
+    delete m_sectionIndex;
+    delete[] m_fileName;
 }
 
 void INIClass::Initialize()

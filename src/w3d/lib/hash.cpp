@@ -34,7 +34,7 @@ HashTableClass::HashTableClass(int size)
 HashTableClass::~HashTableClass()
 {
     if (m_hashTable) {
-        delete[] (m_hashTable);
+        delete[](m_hashTable);
     }
     m_hashTable = nullptr;
 }

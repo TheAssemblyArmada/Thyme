@@ -34,11 +34,13 @@ typedef ModuleData *(*moddatacreateproc_t)(INI *);
 class ModuleFactory : public SubsystemInterface, public SnapShot
 {
     ALLOW_HOOKING
-    struct ModuleTemplate
+    class ModuleTemplate
     {
+    public:
         modcreateproc_t create_proc;
         moddatacreateproc_t create_data_proc;
         int which_interfaces;
+        ModuleTemplate() : create_proc(nullptr), create_data_proc(nullptr), which_interfaces(0) {}
     };
 
 public:

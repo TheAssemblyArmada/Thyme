@@ -223,10 +223,10 @@ private:
     int m_fadeFramesHold;
     int m_fadeFramesDecrease;
     int m_objectCreationDestructionFrame;
-    std::map<Utf8String, unsigned> m_playerObjectCounts[16];
+    std::map<Utf8String, int> m_playerObjectCounts[MAX_PLAYER_COUNT];
     std::list<Utf8String> m_completedVideo;
-    std::list<std::pair<Utf8String, unsigned>> m_completedSpeech;
-    std::list<std::pair<Utf8String, unsigned>> m_completedAudio;
+    std::list<std::pair<Utf8String, unsigned int>> m_completedSpeech;
+    std::list<std::pair<Utf8String, unsigned int>> m_completedAudio;
     std::list<Utf8String> m_uiInteraction;
     std::list<std::pair<Utf8String, ObjectID>> m_triggeredSpecialPowers[MAX_PLAYER_COUNT];
     std::list<std::pair<Utf8String, ObjectID>> m_midwaySpecialPowers[MAX_PLAYER_COUNT];

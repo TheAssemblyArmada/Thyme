@@ -131,7 +131,9 @@ void DynamicMemoryAllocator::Remove_From_List(DynamicMemoryAllocator **head)
 
 void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
 {
-#ifndef __SANITIZE_ADDRESS__
+#ifdef __SANITIZE_ADDRESS__
+    return malloc(bytes);
+#else
     ScopedCriticalSectionClass cs(g_dmaCriticalSection);
 
     MemoryPool *mp = Find_Pool_For_Size(bytes);
@@ -146,8 +148,6 @@ void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
     ++m_usedBlocksInDma;
 
     return block;
-#else
-    return malloc(bytes);
 #endif
 }
 
@@ -164,7 +164,9 @@ void DynamicMemoryAllocator::Free_Bytes(void *block)
     if (block == nullptr) {
         return;
     }
-#ifndef __SANITIZE_ADDRESS__
+#ifdef __SANITIZE_ADDRESS__
+    free(block);
+#else
     ScopedCriticalSectionClass cs(g_dmaCriticalSection);
 
     MemoryPoolSingleBlock *sblock = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);
@@ -177,8 +179,6 @@ void DynamicMemoryAllocator::Free_Bytes(void *block)
     }
 
     --m_usedBlocksInDma;
-#else
-    free(block);
 #endif
 }
 

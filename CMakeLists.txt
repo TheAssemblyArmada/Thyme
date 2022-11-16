@@ -107,6 +107,9 @@ endif()
 
 # Only use GCC for now, we can support the others later
 if(USE_SANITIZER)
+    if(NOT STANDALONE)
+        message(FATAL_ERROR "Using sanitizers only works in standalone mode")
+    endif()
     if(MSVC)
     elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_C_FLAGS "-fsanitize=address -g")

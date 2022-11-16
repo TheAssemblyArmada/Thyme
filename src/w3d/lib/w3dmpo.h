@@ -29,7 +29,13 @@ public:
     virtual ~W3DMPO() {}
 };
 
-#ifndef __SANITIZE_ADDRESS__
+#ifdef __SANITIZE_ADDRESS__
+#define IMPLEMENT_NAMED_W3D_POOL(classname, poolname) \
+public: \
+    virtual int glueEnforcer() { return 4; }; \
+\
+private:
+#else
 #define IMPLEMENT_NAMED_W3D_POOL(classname, poolname) \
 private: \
     static MemoryPool *Get_Class_Pool() \
@@ -49,12 +55,6 @@ public: \
     void *operator new(size_t size, void *where) { return where; } \
     void operator delete(void *p, void *where) {} \
     void operator delete(void *ptr) { return Free_From_Pool(Get_Class_Pool(), ptr); } \
-    virtual int glueEnforcer() { return 4; }; \
-\
-private:
-#else
-#define IMPLEMENT_NAMED_W3D_POOL(classname, poolname) \
-public: \
     virtual int glueEnforcer() { return 4; }; \
 \
 private:

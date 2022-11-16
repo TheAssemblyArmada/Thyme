@@ -137,6 +137,7 @@ public:
     virtual ~INIClass();
 
     void Initialize();
+    void Shutdown();
     bool Clear(const char *section = nullptr, const char *entry = nullptr);
     bool Is_Loaded() const { return m_sectionList->First()->Is_Valid(); }
 

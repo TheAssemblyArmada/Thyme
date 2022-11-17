@@ -65,7 +65,6 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
     int i;
     int32_t *link;
     int32_t *hashtbl;
-    int32_t *hashptr;
 
     len = src_len;
     putp = static_cast<uint8_t *>(dst);
@@ -74,14 +73,12 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
 
     hashtbl = static_cast<int32_t *>(malloc(sizeof(int32_t) * 65536));
     link = static_cast<int32_t *>(malloc(sizeof(int32_t) * 131072));
-    hashptr = hashtbl;
     memset(hashtbl, 0xFF, sizeof(int32_t) * 65536);
 
     while (len > 0) {
         boffset = 0;
         blen = bcost = 2;
         mlen = min(len, 1028);
-        tptr = getp - 1;
         hash = 0x10 * getp[1] ^ (uint16_t)(getp[2] | ((uint16_t)getp[0] << 8));
         hoffset = hashtbl[hash];
         minhoffset = max(intptr_t(getp - static_cast<const uint8_t *>(src) - 131071), intptr_t(0));

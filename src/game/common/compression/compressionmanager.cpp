@@ -243,6 +243,7 @@ int CompressionManager::Compress_Data(CompressionType type, void *src, int src_s
                 header->uncomp_size = src_size;
                 return compr_size + sizeof(ComprHeader);
             }
+            break;
 #endif
         case COMPRESSION_NONE:
         case COMPRESSION_NOX:

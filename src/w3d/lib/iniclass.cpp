@@ -16,6 +16,7 @@
 #include "iniclass.h"
 #include "filestraw.h"
 #include "nstrdup.h"
+#include "profiler.h"
 #include "rawfileclass.h"
 #include "readline.h"
 #include <captainslog.h>
@@ -162,6 +163,9 @@ int INIClass::Load(FileClass &file)
 
 int INIClass::Load(Straw &straw)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+#endif
     char buffer[MAX_LINE_LENGTH];
     // char section[64];
     bool merge = false;

@@ -89,6 +89,7 @@ endif()
 option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 option(USE_FFMPEG "Use FFMPEG for codec handling." ${DEFAULT_FFMPEG})
+option(USE_TRACY "Use Tracy for profiling." OFF)
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
@@ -256,6 +257,21 @@ endif()
 
 if(USE_FFMPEG)
     find_package(FFmpeg COMPONENTS AVFORMAT AVCODEC AVUTIL REQUIRED)
+endif()
+
+if(USE_TRACY)
+    include(FetchContent)
+
+    set(TRACY_NO_EXIT ON CACHE BOOL "Keep application open after being finished")
+
+    FetchContent_Declare(
+        tracy
+        GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+        GIT_TAG        v0.9
+    )
+
+    # We don't use FetchContent_MakeAvailable here because we don't want all crashpad targets including, just our dependencies.
+    FetchContent_MakeAvailable(tracy)
 endif()
 
 if(USE_CRASHPAD)

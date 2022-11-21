@@ -60,7 +60,7 @@ protected:
         PROFILER_FREE_NAMED(ptr, #classname) \
     } \
     void *operator new(size_t size, void *where) { return where; } \
-    void operator delete(void *ptr, void *where) {} 
+    void operator delete(void *ptr, void *where) {}
 #else
 #define OPERATOR_IMPL(classname) \
     void *operator new(size_t size) { return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); } \
@@ -78,7 +78,7 @@ protected:
         Get_Class_Pool()->Free_Block(ptr); \
     } \
     void *operator new(size_t size, void *where) { return where; } \
-    void operator delete(void *ptr, void *where) {} 
+    void operator delete(void *ptr, void *where) {}
 #endif
 
 // Use within a class declaration on a none virtual MemoryPoolObject

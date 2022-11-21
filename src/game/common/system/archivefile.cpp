@@ -14,6 +14,7 @@
  */
 #include "archivefile.h"
 #include "file.h"
+#include "profiler.h"
 bool Search_String_Matches(Utf8String string, Utf8String search);
 
 const ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &filename) const
@@ -88,6 +89,10 @@ void ArchiveFile::Get_File_List_In_Directory(Utf8String const &subdir,
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
     bool search_subdir) const
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(dirpath.Str(), dirpath.Get_Length())
+#endif
     Utf8String path = dirpath;
     path.To_Lower();
     Utf8String token;

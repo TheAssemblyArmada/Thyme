@@ -18,6 +18,7 @@
 #include "filesystem.h"
 #include "gitverinfo.h"
 #include "optionpreferences.h"
+#include "profiler.h"
 #include "rtsutils.h"
 #include "version.h"
 #include "weapon.h"
@@ -667,6 +668,9 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
 
 GlobalData::GlobalData()
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+#endif
     if (s_theOriginal == nullptr) {
         s_theOriginal = this;
     }

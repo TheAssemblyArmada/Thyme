@@ -15,6 +15,7 @@
 #include "gametext.h"
 #include "filesystem.h"
 #include "main.h" // For g_applicationHWnd
+#include "profiler.h"
 #include "registry.h"
 #include "rtsutils.h"
 #include <algorithm>
@@ -398,6 +399,10 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
 // Parses older format string files which only support ascii.
 bool GameTextManager::Parse_String_File(const char *filename)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(filename, strlen(filename))
+#endif
     captainslog_info("Parsing string file '%s'.", filename);
     File *file = g_theFileSystem->Open_File(filename, File::TEXT | File::READ);
 
@@ -483,6 +488,10 @@ bool GameTextManager::Parse_String_File(const char *filename)
 // Parses CSF files which support UCS2 strings, essentially the BMP of unicode.
 bool GameTextManager::Parse_CSF_File(const char *filename)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(filename, strlen(filename))
+#endif
     captainslog_info("Parsing CSF file '%s'.", filename);
     CSFHeader header;
     File *file = g_theFileSystem->Open_File(filename, File::BINARY | File::READ);

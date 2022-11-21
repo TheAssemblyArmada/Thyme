@@ -20,10 +20,19 @@
 #define USE_PROFILER
 #include <tracy/Tracy.hpp>
 
-#define PROFILER_MSG(M) TracyMessageL(M);
+// Misc
+#define PROFILER_MSG(M) TracyMessage(M, strlen(M));
 #define PROFILER_FRAME_START(N) FrameMarkStart(N);
 #define PROFILER_FRAME_END(N) FrameMarkEnd(N);
 
+// Blocks
 #define PROFILER_BLOCK_SCOPED ZoneScoped;
 #define PROFILER_BLOCK_TEXT(N, S) ZoneText(N, S);
+
+// Memory profiling
+#define PROFILER_ALLOC(P, S) TracySecureAlloc(P, S);
+#define PROFILER_FREE(P) TracySecureFree(P);
+
+#define PROFILER_ALLOC_NAMED(P, S, N) TracySecureAllocN(P, S, N);
+#define PROFILER_FREE_NAMED(P, N) TracySecureFreeN(P, N);
 #endif

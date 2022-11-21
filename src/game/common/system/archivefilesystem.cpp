@@ -15,6 +15,7 @@
 #include "archivefilesystem.h"
 #include "archivefile.h"
 #include "globaldata.h"
+#include "profiler.h"
 #include <captainslog.h>
 
 #ifndef GAME_DLL
@@ -79,6 +80,10 @@ bool ArchiveFileSystem::Does_File_Exist(const char *filename) const
 // replace the backing for a file name if it already has an entry in the tree.
 void ArchiveFileSystem::Load_Into_Directory_Tree(ArchiveFile const *file, Utf8String const &archive_path, bool overwrite)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(archive_path.Str(), archive_path.Get_Length())
+#endif
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> file_list;
 
     // Retrieve a list of files in the archive

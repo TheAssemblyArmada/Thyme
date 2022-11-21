@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "crc.h"
+#include "profiler.h"
 #include <cctype>
 
 using std::toupper;
@@ -47,6 +48,9 @@ void CRC::Add_CRC(uint8_t byte)
 
 void CRC::Compute_CRC(void const *data, int bytes)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+#endif
     if (data == nullptr) {
         return;
     }

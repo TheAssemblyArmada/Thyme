@@ -262,8 +262,6 @@ endif()
 if(USE_TRACY)
     include(FetchContent)
 
-    set(TRACY_NO_EXIT ON CACHE BOOL "Keep application open after being finished")
-
     FetchContent_Declare(
         tracy
         GIT_REPOSITORY https://github.com/wolfpld/tracy.git

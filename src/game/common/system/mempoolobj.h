@@ -49,7 +49,7 @@ protected:
         captainslog_dbgassert(size == sizeof(classname), \
             "The wrong operator new is being called; ensure all objects in the hierarchy have MemoryPoolGlue set up " \
             "correctly"); \
-        void* ptr = Get_Class_Pool()->Allocate_Block(); \
+        void *ptr = Get_Class_Pool()->Allocate_Block(); \
         PROFILER_ALLOC_NAMED(ptr, size, #classname) \
         return ptr; \
     } \
@@ -59,13 +59,8 @@ protected:
         Get_Class_Pool()->Free_Block(ptr); \
         PROFILER_FREE_NAMED(ptr, #classname) \
     } \
-    void *operator new(size_t size, void *where) { \
-        PROFILER_ALLOC_NAMED(where, size, #classname) \
-        return where; \
-    } \
-    void operator delete(void *ptr, void *where) { \
-        PROFILER_FREE_NAMED(where, #classname) \
-    } 
+    void *operator new(size_t size, void *where) { return where; } \
+    void operator delete(void *ptr, void *where) {} 
 #else
 #define OPERATOR_IMPL(classname) \
     void *operator new(size_t size) { return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); } \

@@ -108,7 +108,7 @@ void GameEngine::Init(int argc, char *argv[])
     ini.Load("Data/INI/Default/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
-    // ini.Load("Data/INI/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
+    ini.Load("Data/INI/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
 
     // Text manager isn't controlled by ini files, it uses either a csf or str file.
     Init_Subsystem(g_theGameText, "TheGameText", GameTextManager::Create_Game_Text_Interface());
@@ -140,11 +140,11 @@ void GameEngine::Init(int argc, char *argv[])
         "Data/INI/Default/Roads.ini",
         "Data/INI/Roads.ini");
     Init_Subsystem(g_theGlobalLanguage, "TheGlobalLanguageData", new GlobalLanguage);
-    // Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
+    Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
 
-    // if (!g_theAudio->Is_Music_Already_Loaded()) {
-    //     Set_Quitting(true);
-    // }
+    if (!g_theAudio->Is_Music_Already_Loaded()) {
+        Set_Quitting(true);
+    }
 
     Init_Subsystem(g_theFunctionLexicon, "TheFunctionLexicon", Create_Function_Lexicon());
     Init_Subsystem(g_theModuleFactory, "TheModuleFactory", Create_Module_Factory());

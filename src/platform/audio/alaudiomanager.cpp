@@ -3,7 +3,7 @@
  *
  * @author feliwir
  *
- * @brief Audio manager implementation built on top of Mile Sound System mss32.dll.
+ * @brief Audio manager implementation built on top of OpenAL (with ALSoft as reference implementation)
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License

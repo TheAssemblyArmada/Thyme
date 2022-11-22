@@ -86,7 +86,6 @@ uint32_t CompressionManager::Get_Compression_FourCC(CompressionType type)
         default:
             captainslog_error("Compression format '%s' unhandled", Get_Compression_Name(type));
             return FourCC<0, 0, 0, 0>::value;
-            ;
     }
 }
 

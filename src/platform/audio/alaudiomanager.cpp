@@ -20,11 +20,18 @@
 #include "soundmanager.h"
 #include "videoplayer.h"
 
-using GameMath::Fast_To_Int_Truncate;
-
 namespace Thyme
 {
-ALAudioManager::ALAudioManager() : m_binkPlayingAudio(nullptr), m_2dSampleCount(0), m_3dSampleCount(0), m_streamCount(0) {}
+ALAudioManager::ALAudioManager() :
+    m_2dSampleCount(0),
+    m_3dSampleCount(0),
+    m_streamCount(0),
+#ifdef BUILD_WITH_FFMPEG
+    m_audioFileCache(new Thyme::FFmpegAudioFileCache),
+#endif
+    m_binkPlayingAudio(nullptr)
+{
+}
 
 ALAudioManager::~ALAudioManager()
 {
@@ -41,6 +48,9 @@ void ALAudioManager::Init()
 {
     AudioManager::Init();
     Open_Device();
+#if BUILD_WITH_FFMPEG
+    m_audioFileCache->Set_Max_Size(m_audioSettings->Get_Audio_Footprint());
+#endif
 }
 
 void ALAudioManager::Reset()
@@ -253,6 +263,9 @@ void ALAudioManager::Prev_Music_Track()
 bool ALAudioManager::Is_Music_Playing()
 {
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+            return true;
+        }
     }
 
     return false;
@@ -334,7 +347,7 @@ bool ALAudioManager::Is_Currently_Playing(uintptr_t event)
  */
 void ALAudioManager::Open_Device()
 {
-    if (!g_theWriteableGlobalData->m_audioOn) {
+    if (g_theWriteableGlobalData && !g_theWriteableGlobalData->m_audioOn) {
         return;
     }
 
@@ -1130,8 +1143,13 @@ float ALAudioManager::Get_File_Length_MS(Utf8String file_name)
         return 0.0f;
     }
 
-    // TODO:
-    int32_t length;
+    float length = 0.0f;
+
+#ifdef BUILD_WITH_FFMPEG
+    AudioDataHandle handle = m_audioFileCache->Open_File(file_name);
+    length = m_audioFileCache->Get_File_Length_MS(handle);
+    m_audioFileCache->Close_File(handle);
+#endif
 
     return length;
 }

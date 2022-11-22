@@ -42,6 +42,7 @@ struct FFmpegOpenAudioFile
     AVIOContext *avio_ctx = nullptr;
     AVCodecContext *codec_ctx = nullptr;
     uint8_t *wave_data = nullptr;
+    float duration = 0.0f;
     int ref_count = 0;
     int data_size = 0;
     const AudioEventInfo *audio_event_info = nullptr;
@@ -67,6 +68,8 @@ public:
     void Set_Max_Size(unsigned size);
     inline unsigned Get_Max_Size() const { return m_maxSize; }
     inline unsigned Get_Current_Size() const { return m_currentSize; }
+
+    float Get_File_Length_MS(AudioDataHandle file);
 
     // #FEATURE: We can maybe call this during loading to free any old sounds we won't need ingame and decrease computation
     // ingame

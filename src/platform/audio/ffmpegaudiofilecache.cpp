@@ -178,6 +178,7 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
     AVFrame *frame = av_frame_alloc();
 
     int result = 0;
+    int64_t total_samples = 0;
 
     // Read all packets inside the file
     while (av_read_frame(file->fmt_ctx, packet) >= 0) {
@@ -200,7 +201,7 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
                 captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
                 return false;
             }
-
+            total_samples += frame->nb_samples;
             int frame_data_size = av_samples_get_buffer_size(
                 NULL, file->codec_ctx->channels, frame->nb_samples, file->codec_ctx->sample_fmt, 1);
             file->wave_data = static_cast<uint8_t *>(av_realloc(file->wave_data, file->data_size + frame_data_size));
@@ -213,6 +214,9 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
 
     av_packet_free(&packet);
     av_frame_free(&frame);
+
+    // Calculate the duration in MS
+    file->duration = (total_samples / (float)file->codec_ctx->sample_rate) * 1000.0f;
 
     return true;
 }
@@ -426,6 +430,26 @@ void FFmpegAudioFileCache::Close_File(AudioDataHandle file)
             break;
         }
     }
+}
+
+/**
+ * Get the length of the file in MS.
+ */
+float FFmpegAudioFileCache::Get_File_Length_MS(AudioDataHandle file)
+{
+    if (file == nullptr) {
+        return 0.0f;
+    }
+
+    ScopedMutexClass lock(&m_mutex);
+
+    for (auto it = m_cacheMap.begin(); it != m_cacheMap.end(); ++it) {
+        if (static_cast<AudioDataHandle>(it->second.wave_data) == file) {
+            return it->second.duration;
+        }
+    }
+
+    return 0.0f;
 }
 
 /**

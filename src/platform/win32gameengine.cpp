@@ -23,7 +23,7 @@
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
-#ifdef BUILD_WITH_ALSOFT
+#ifdef BUILD_WITH_OPENAL
 #include "alaudiomanager.h"
 #endif
 
@@ -181,7 +181,7 @@ ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()
 
 AudioManager *Win32GameEngine::Create_Audio_Manager()
 {
-#ifdef BUILD_WITH_ALSOFT
+#ifdef BUILD_WITH_OPENAL
     return new Thyme::ALAudioManager;
 #elif defined BUILD_WITH_MILES
     return new MilesAudioManager;

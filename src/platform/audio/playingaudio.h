@@ -44,7 +44,7 @@ struct MilesPlayingAudio
 
 #endif
 
-#ifdef BUILD_WITH_ALSOFT
+#ifdef BUILD_WITH_OPENAL
 #include <AL/al.h>
 
 struct OpenALPlayingAudio
@@ -68,7 +68,7 @@ struct PlayingAudio
         MilesPlayingAudio miles;
 #endif
         int unused;
-#ifdef BUILD_WITH_ALSOFT
+#ifdef BUILD_WITH_OPENAL
         OpenALPlayingAudio openal;
 #endif
     };

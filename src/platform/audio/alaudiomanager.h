@@ -18,6 +18,12 @@
 #include "audiomanager.h"
 #include <new>
 
+#ifdef BUILD_WITH_FFMPEG
+#include "ffmpegaudiofilecache.h"
+#else
+#error "Requiring FFmpeg for OpenAL support"
+#endif
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alext.h>
@@ -91,6 +97,13 @@ public:
     virtual void Process_Fading_List() override;
     virtual void Process_Stopped_List() override;
 
+    // Only added for testing really
+#ifdef BUILD_WITH_FFMPEG
+    void Set_Cache_Max_Size(int byte_size)
+    {
+        m_audioFileCache->Set_Max_Size(byte_size);
+    }
+#endif
 private:
     void Release_Playing_Audio(PlayingAudio *audio);
     void Stop_All_Audio_Immediately();
@@ -105,9 +118,8 @@ private:
     void Process_Request(AudioRequest *request);
     void Stop_All_Speech();
     Coord3D *Get_Current_Position_From_Event(AudioEventRTS *event);
-    // TODO: Open_File & Close_File
-    void *Open_File(AudioEventRTS *event) { return nullptr; }
-    void Close_File(void *handle) {}
+    AudioDataHandle Open_File(AudioEventRTS *event) { return m_audioFileCache->Open_File(event); }
+    void Close_File(AudioDataHandle handle) { m_audioFileCache->Close_File(handle); }
     bool Process_Request_This_Frame(AudioRequest *request);
     void Adjust_Request(AudioRequest *request);
     bool Check_For_Sample(AudioRequest *request);
@@ -125,6 +137,9 @@ private:
     std::list<PlayingAudio *> m_positionalAudioList;
     std::list<PlayingAudio *> m_streamList;
     std::list<PlayingAudio *> m_stoppedList;
+#ifdef BUILD_WITH_FFMPEG
+    Thyme::FFmpegAudioFileCache *m_audioFileCache;
+#endif
     PlayingAudio *m_binkPlayingAudio;
     int m_2dSampleCount;
     int m_3dSampleCount;

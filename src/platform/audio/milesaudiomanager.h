@@ -16,12 +16,13 @@
 
 #include "always.h"
 #include "audiomanager.h"
-#include "milesaudiofilecache.h"
 #include <miles.h>
 #include <new>
 
 #ifdef BUILD_WITH_FFMPEG
 #include "ffmpegaudiofilecache.h"
+#else
+#include "milesaudiofilecache.h"
 #endif
 
 #define MSEC_PER_LOGICFRAME_REAL (1000.0f / 30.0f)

@@ -26,15 +26,15 @@ jobs:
       id: vars
       run: |
         If ("${{ matrix.platform }}" -eq "x86") {
-          echo "::set-output name=build::x86"
-          echo "::set-output name=build_type::Win32"
-          echo "::set-output name=arc_path::i686"
+          echo "build=x86" >> $GITHUB_OUTPUT
+          echo "build_type=Win32" >> $GITHUB_OUTPUT
+          echo "arc_path=i686" >> $GITHUB_OUTPUT
         } else {
-          echo "::set-output name=build::x64"
-          echo "::set-output name=build_type::x64"
-          echo "::set-output name=arc_path::x86_64"
+          echo "build=x64" >> $GITHUB_OUTPUT
+          echo "build_type=x64" >> $GITHUB_OUTPUT
+          echo "arc_path=x86_64" >> $GITHUB_OUTPUT
         }
-        echo "::set-output name=wx_ver::wxWidgets-3.0.5"
+        echo "wx_ver=wxWidgets-3.0.5" >> $GITHUB_OUTPUT
         
     - name: Install dependencies
       run: |

@@ -422,7 +422,7 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
             switch (playing->openal.playing_type) {
                 case PAT_2DSAMPLE:
                     Close_File(playing->openal.file_handle);
-                    playing->openal.file_handle = Play_Sample(playing->openal.audio_event, playing->openal.source);
+                    playing->openal.file_handle = Play_Sample(playing->openal.audio_event, playing);
 
                     if (playing->openal.file_handle != nullptr) {
                         return;
@@ -430,7 +430,7 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
                     break;
                 case PAT_3DSAMPLE:
                     Close_File(playing->openal.file_handle);
-                    playing->openal.file_handle = Play_Sample3D(playing->openal.audio_event, playing->openal.source);
+                    playing->openal.file_handle = Play_Sample3D(playing->openal.audio_event, playing);
 
                     if (playing->openal.file_handle != nullptr) {
                         return;
@@ -652,19 +652,21 @@ void ALAudioManager::Adjust_Volume_Of_Playing_Audio(Utf8String name, float adjus
     for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
         if (*it != nullptr && (*it)->openal.audio_event->Get_Event_Name() == name) {
             (*it)->openal.audio_event->Set_Volume(adjust);
-            float volume = (*it)->openal.audio_event->Get_Volume() * (*it)->openal.audio_event->Get_Volume_Shift();
+            Adjust_Playing_Volume(*it);
         }
     }
 
     for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
         if (*it != nullptr && (*it)->openal.audio_event->Get_Event_Name() == name) {
             (*it)->openal.audio_event->Set_Volume(adjust);
+            Adjust_Playing_Volume(*it);
         }
     }
 
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
         if (*it != nullptr && (*it)->openal.audio_event->Get_Event_Name() == name) {
             (*it)->openal.audio_event->Set_Volume(adjust);
+            Adjust_Playing_Volume(*it);
         }
     }
 }
@@ -792,15 +794,8 @@ void ALAudioManager::Release_Bink_Handle()
  */
 void ALAudioManager::friend_Force_Play_Audio_Event(AudioEventRTS *event)
 {
-    if (event->Get_Event_Info() == nullptr) {
-        Get_Info_For_Audio_Event(event);
-        if (event->Get_Event_Info() == nullptr) {
-            captainslog_warn("No info for forced audio event '%s'", event->Get_Event_Name().Str());
-            return;
-        }
-    }
-
-    // TODO:
+    captainslog_warn("ALAudioManager just forwards Force_Play_Audio_Event to regular Play_Audio_Event");
+    Play_Audio_Event(event);
 }
 
 /**
@@ -962,8 +957,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
                 m_positionalAudioList.push_back(pa);
 
                 if (source_handle != 0) {
-                    // TODO:
-                    // pa->openal.file_handle = Play_Sample3D(event, source_handle);
+                    pa->openal.file_handle = Play_Sample3D(event, pa);
                     m_soundManager->Notify_Of_3D_Sample_Start();
                 }
 
@@ -999,8 +993,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
                 m_globalAudioList.push_back(pa);
 
                 if (source_handle != 0) {
-                    // TODO:
-                    // pa->openal.file_handle = Play_Sample(event, sample_handle);
+                    pa->openal.file_handle = Play_Sample(event, pa);
                     m_soundManager->Notify_Of_2D_Sample_Start();
                 }
 
@@ -1037,8 +1030,7 @@ void ALAudioManager::Stop_Audio_Event(uintptr_t handle)
         for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
             if ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
                 if (handle == 5) {
-                    // TODO:
-                    // m_fadingList.push_back(*it);
+                    m_fadingList.push_back(*it);
                 } else {
                     Release_Playing_Audio(*it);
                 }
@@ -1189,6 +1181,59 @@ void ALAudioManager::Set_Device_Listener_Position()
 }
 
 /**
+ * Gets the effective volume of the event.s
+ */
+float ALAudioManager::Get_Effective_Volume(AudioEventRTS *event) const
+{
+    float vol = event->Get_Volume() * event->Get_Volume_Shift() * 1.0f;
+
+    // Handle easy cases for none positional stuff.
+    if (event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+        return vol * m_musicVolume;
+    } else if (event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
+        return vol * m_speechVolume;
+    } else if (!event->Is_Positional_Audio()) {
+        return vol * m_soundVolume;
+    }
+
+    // Coord3D being used as Vector3 essentially here.
+    Coord3D *event_pos = event->Get_Current_Pos();
+    Coord3D difference = m_listenerPosition;
+    vol *= m_3dSoundVolume;
+
+    if (event_pos == nullptr) {
+        return vol;
+    }
+
+    // Get a vector representing the difference between listerner and sound.
+    difference.Sub(event_pos);
+    float min_dist;
+    float max_dist;
+
+    if (event->Get_Event_Info()->Get_Visibility() & VISIBILITY_GLOBAL) {
+        min_dist = Get_Audio_Settings()->Global_Min_Range();
+        max_dist = Get_Audio_Settings()->Global_Max_Range();
+    } else {
+        min_dist = event->Get_Event_Info()->Min_Range();
+        max_dist = event->Get_Event_Info()->Max_Range();
+    }
+
+    // Calculate distance from our vector between source and listener.
+    float dist = difference.Length();
+
+    // Based on distance and range limits, calculate volume.
+    if (dist > min_dist) {
+        vol *= 1.0f / (float)(dist / min_dist);
+    }
+
+    if (dist >= max_dist) {
+        vol = 0.0f;
+    }
+
+    return vol;
+}
+
+/**
  * Finds a playing audio that uses a given handle and is a given type.
  */
 PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned type)
@@ -1257,7 +1302,25 @@ void ALAudioManager::Process_Playing_List()
  */
 void ALAudioManager::Process_Fading_List()
 {
-    // TODO:
+    for (auto it = m_fadingList.begin(); it != m_fadingList.end();) {
+        if (*it == nullptr) {
+            // TODO BUGFIX This appears to be an infinite loop if any entry is null.
+            continue;
+        }
+
+        if ((*it)->openal.time_fading < Get_Audio_Settings()->Get_Time_To_Fade()) {
+            ++(*it)->openal.time_fading;
+            float adjustment = (float)(*it)->openal.time_fading / (float)Get_Audio_Settings()->Get_Time_To_Fade();
+            float effective_vol = (float)(1.0f - adjustment) * Get_Effective_Volume((*it)->openal.audio_event);
+            alSourcef((*it)->openal.source, AL_GAIN, effective_vol);
+            ++it;
+        } else {
+            (*it)->openal.stopped = 1;
+            (*it)->openal.disable_loops = true;
+            Release_Playing_Audio(*it);
+            it = m_fadingList.erase(it);
+        }
+    }
 }
 
 /**
@@ -1285,9 +1348,10 @@ void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
         }
     }
 
-    // TODO: free file
+    if (audio->openal.buffer)
+        alDeleteBuffers(1, &audio->openal.buffer);
     alDeleteSources(1, &audio->openal.source);
-    // Close_File(audio->openal.file_handle);
+    Close_File(audio->openal.file_handle);
 
     if (audio->openal.release_event) {
         Release_Audio_Event_RTS(audio->openal.audio_event);
@@ -1318,6 +1382,12 @@ void ALAudioManager::Stop_All_Audio_Immediately()
             Release_Playing_Audio(*it);
         }
     }
+
+    for (auto it = m_fadingList.begin(); it != m_fadingList.end(); it = m_fadingList.erase(it)) {
+        if (*it != nullptr) {
+            Release_Playing_Audio(*it);
+        }
+    }
 }
 
 /**
@@ -1334,9 +1404,27 @@ void ALAudioManager::Play_Stream(AudioEventRTS *event, ALuint source)
 }
 
 /**
+ * Utility method to get the OpenAL format.
+ */
+ALenum ALAudioManager::Get_AL_Format(uint8_t channels, uint8_t bits_per_sample)
+{
+    if (channels == 1 && bits_per_sample == 8)
+        return AL_FORMAT_MONO8;
+    if (channels == 1 && bits_per_sample == 16)
+        return AL_FORMAT_MONO16;
+    if (channels == 2 && bits_per_sample == 8)
+        return AL_FORMAT_STEREO8;
+    if (channels == 2 && bits_per_sample == 16)
+        return AL_FORMAT_STEREO16;
+
+    captainslog_warn("Unknown OpenAL format: %i channels, %i bits per sample", channels, bits_per_sample);
+    return AL_FORMAT_MONO8;
+}
+
+/**
  * Loads a file an attached it to an OpenAL source. Returns a pointer to the file data.
  */
-void *ALAudioManager::Play_Sample3D(AudioEventRTS *event, ALuint source)
+AudioDataHandle ALAudioManager::Play_Sample3D(AudioEventRTS *event, PlayingAudio *audio)
 {
     Coord3D *pos = Get_Current_Position_From_Event(event);
 
@@ -1344,11 +1432,12 @@ void *ALAudioManager::Play_Sample3D(AudioEventRTS *event, ALuint source)
         return nullptr;
     }
 
-    void *handle = Open_File(event);
+    // We can just reuse our existing function
+    AudioDataHandle handle = Play_Sample(event, audio);
 
     if (handle != nullptr) {
-        // TODO: query data
-        alSource3f(source, AL_POSITION, pos->x, pos->y, pos->z);
+        auto openal = audio->openal;
+        alSource3f(openal.source, AL_POSITION, pos->x, pos->y, pos->z);
     }
 
     return handle;
@@ -1357,13 +1446,22 @@ void *ALAudioManager::Play_Sample3D(AudioEventRTS *event, ALuint source)
 /**
  * Loads a file an attached it to an OpenAL source. Returns a pointer to the file data.
  */
-void *ALAudioManager::Play_Sample(AudioEventRTS *event, ALuint source)
+AudioDataHandle ALAudioManager::Play_Sample(AudioEventRTS *event, PlayingAudio *audio)
 {
-    void *handle = Open_File(event);
+    AudioDataHandle handle = Open_File(event);
 
     if (handle != nullptr) {
-        // TODO: query data
-        alSourcePlay(source);
+        uint8_t *data = nullptr;
+        uint32_t size = 0, freq = 0;
+        uint8_t channels = 1, bits_per_sample = 16;
+#if BUILD_WITH_FFMPEG
+        Thyme::FFmpegAudioFileCache::Get_Wave_Data(handle, data, size, freq, channels, bits_per_sample);
+#endif
+        auto openal = audio->openal;
+        alGenBuffers(1, &openal.buffer);
+        alBufferData(openal.buffer, Get_AL_Format(channels, bits_per_sample), data, size, freq);
+        alSourcei(openal.source, AL_BUFFER, openal.buffer);
+        alSourcePlay(openal.source);
     }
 
     return handle;
@@ -1414,12 +1512,11 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
         return true;
     }
 
-    // TODO:
-    // if (audio->openal.playing_type == PAT_3DSAMPLE) {
-    //     audio->openal.file_handle = Play_Sample3D(audio->openal.audio_event, audio->openal.sample_3d);
-    // } else {
-    //     audio->openal.file_handle = Play_Sample(audio->openal.audio_event, audio->openal.sample);
-    // }
+    if (audio->openal.playing_type == PAT_3DSAMPLE) {
+        audio->openal.file_handle = Play_Sample3D(audio->openal.audio_event, audio);
+    } else {
+        audio->openal.file_handle = Play_Sample(audio->openal.audio_event, audio);
+    }
 
     return audio->openal.file_handle != nullptr;
 }
@@ -1427,7 +1524,11 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
 /**
  * Adjusts the volume of a playing audio object at the Miles audio level.
  */
-void ALAudioManager::Adjust_Playing_Volume(PlayingAudio *audio) {}
+void ALAudioManager::Adjust_Playing_Volume(PlayingAudio *audio)
+{
+    float adjusted_vol = audio->openal.audio_event->Get_Volume() * audio->openal.audio_event->Get_Volume_Shift();
+    alSourcef(audio->openal.source, AL_GAIN, adjusted_vol);
+}
 
 /**
  * Gets the position the event is supposed to play at currently.
@@ -1448,6 +1549,7 @@ void ALAudioManager::Init_Playing_Audio(PlayingAudio *audio)
 {
     if (audio != nullptr) {
         audio->openal.source = 0;
+        audio->openal.buffer = 0;
         audio->openal.playing_type = PAT_NONE;
         audio->openal.audio_event = nullptr;
         audio->openal.disable_loops = false;

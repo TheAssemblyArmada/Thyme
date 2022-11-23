@@ -69,27 +69,35 @@ public:
     inline unsigned Get_Max_Size() const { return m_maxSize; }
     inline unsigned Get_Current_Size() const { return m_currentSize; }
 
-    float Get_File_Length_MS(AudioDataHandle file);
+    float Get_File_Length_MS(AudioDataHandle file) const;
 
     // #FEATURE: We can maybe call this during loading to free any old sounds we won't need ingame and decrease computation
     // ingame
     unsigned Free_Space(unsigned required = 0);
 
+    // Wave helpers
+    static void Fill_Wave_Data(FFmpegOpenAudioFile *open_audio);
+    static void Get_Wave_Data(AudioDataHandle wave_data,
+        uint8_t *&data,
+        uint32_t &size,
+        uint32_t &freq,
+        uint8_t &channels,
+        uint8_t &bits_per_sample);
+
 private:
     bool Free_Space_For_Sample(const FFmpegOpenAudioFile &open_audio);
     void Release_Open_Audio(FFmpegOpenAudioFile *open_audio);
 
-    bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio, File *file);
-    bool Decode_FFmpeg(FFmpegOpenAudioFile *open_audio);
-    void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio);
+    // FFmpeg utilities
+    static bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio, File *file);
+    static bool Decode_FFmpeg(FFmpegOpenAudioFile *open_audio);
+    static void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio);
     static int Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf_size);
-
-    void Fill_Wave_Data(FFmpegOpenAudioFile *open_audio);
 
 private:
     ffmpegaudiocachemap_t m_cacheMap;
     unsigned m_currentSize;
     unsigned m_maxSize;
-    SimpleMutexClass m_mutex;
+    mutable SimpleMutexClass m_mutex;
 };
 } // namespace Thyme

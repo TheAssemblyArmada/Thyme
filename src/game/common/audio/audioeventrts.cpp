@@ -312,6 +312,18 @@ void AudioEventRTS::Generate_Filename()
 }
 
 /**
+ * Apply the filename inside the info directly
+ */
+void AudioEventRTS::Apply_Filename_From_Info()
+{
+    if (m_eventInfo == nullptr) {
+        return;
+    }
+
+    m_filename = m_eventInfo->Get_File_Name();
+}
+
+/**
  * Generates the information needed to play this event from the event info.
  *
  * 0x00445380

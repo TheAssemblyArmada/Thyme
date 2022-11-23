@@ -50,6 +50,7 @@ struct MilesPlayingAudio
 struct OpenALPlayingAudio
 {
     ALuint source;
+    ALuint buffer;
     PlayingAudioType playing_type;
     int stopped;
     AudioEventRTS *audio_event;

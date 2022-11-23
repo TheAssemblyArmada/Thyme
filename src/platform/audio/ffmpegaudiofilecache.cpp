@@ -243,6 +243,9 @@ void FFmpegAudioFileCache::Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio
     }
 }
 
+/**
+ * Write a wav header in front of our existing audio data.
+ */
 void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
 {
     WavHeader wav;
@@ -254,6 +257,21 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
     wav.bytes_per_sec = open_audio->codec_ctx->sample_rate * open_audio->codec_ctx->channels * wav.bits_per_sample / 8;
     wav.block_align = open_audio->codec_ctx->channels * wav.bits_per_sample / 8;
     memcpy(open_audio->wave_data, &wav, sizeof(WavHeader));
+}
+
+/**
+ * Parse wave data and return the parameters
+ */
+void FFmpegAudioFileCache::Get_Wave_Data(
+    AudioDataHandle wave_data, uint8_t *&data, uint32_t &size, uint32_t &freq, uint8_t &channels, uint8_t &bits_per_sample)
+{
+    WavHeader *header = reinterpret_cast<WavHeader *>(wave_data);
+    data = static_cast<uint8_t *>(wave_data) + sizeof(WavHeader);
+
+    size = header->subchunk2_size;
+    freq = header->samples_per_sec;
+    channels = header->channels;
+    bits_per_sample = header->bits_per_sample;
 }
 
 /**
@@ -435,7 +453,7 @@ void FFmpegAudioFileCache::Close_File(AudioDataHandle file)
 /**
  * Get the length of the file in MS.
  */
-float FFmpegAudioFileCache::Get_File_Length_MS(AudioDataHandle file)
+float FFmpegAudioFileCache::Get_File_Length_MS(AudioDataHandle file) const
 {
     if (file == nullptr) {
         return 0.0f;

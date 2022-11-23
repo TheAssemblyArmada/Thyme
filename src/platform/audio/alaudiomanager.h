@@ -60,7 +60,7 @@ public:
     virtual bool Is_Currently_Playing(uintptr_t event) override;
     virtual void Open_Device() override;
     virtual void Close_Device() override;
-    virtual void *Get_Device() override { return nullptr; }
+    virtual AudioDevice Get_Device() override { return m_alcDevice; }
     virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) override;
     virtual int Get_Provider_Count() override { return 0; }
     virtual Utf8String Get_Provider_Name(unsigned provider) const override;
@@ -81,7 +81,7 @@ public:
     virtual void Remove_Playing_Audio(Utf8String name) override;
     virtual void Remove_All_Disabled_Audio() override;
     virtual bool Has_3D_Sensitive_Streams_Playing() override;
-    virtual void *Get_Bink_Handle() override;
+    virtual BinkHandle Get_Bink_Handle() override;
     virtual void Release_Bink_Handle() override;
     virtual void friend_Force_Play_Audio_Event(AudioEventRTS *event) override;
     virtual void Process_Request_List() override;
@@ -99,18 +99,18 @@ public:
 
     // Only added for testing really
 #ifdef BUILD_WITH_FFMPEG
-    void Set_Cache_Max_Size(int byte_size)
-    {
-        m_audioFileCache->Set_Max_Size(byte_size);
-    }
+    void Set_Cache_Max_Size(int byte_size) { m_audioFileCache->Set_Max_Size(byte_size); }
 #endif
 private:
     void Release_Playing_Audio(PlayingAudio *audio);
+    void Release_OpenAL_Handles(PlayingAudio *audio);
+    void Free_All_OpenAL_Handles();
     void Stop_All_Audio_Immediately();
     void Play_Stream(AudioEventRTS *event, ALuint source);
-    void *Play_Sample3D(AudioEventRTS *event, ALuint source);
-    void *Play_Sample(AudioEventRTS *event, ALuint source);
+    AudioDataHandle Play_Sample3D(AudioEventRTS *event, PlayingAudio *audio);
+    AudioDataHandle Play_Sample(AudioEventRTS *event, PlayingAudio *audio);
     void Adjust_Playing_Volume(PlayingAudio *audio);
+    float Get_Effective_Volume(AudioEventRTS *event) const;
     bool Start_Next_Loop(PlayingAudio *audio);
     void Play_Audio_Event(AudioEventRTS *event);
     void Pause_Audio_Event(uintptr_t handle);
@@ -123,6 +123,10 @@ private:
     bool Process_Request_This_Frame(AudioRequest *request);
     void Adjust_Request(AudioRequest *request);
     bool Check_For_Sample(AudioRequest *request);
+    ALenum Get_AL_Format(uint8_t channels, uint8_t bits_per_sample);
+    void Enumerate_Devices();
+    bool Check_AL_Error();
+    bool Check_ALC_Error();
 
     static void Init_Playing_Audio(PlayingAudio *audio);
 
@@ -136,6 +140,7 @@ private:
     std::list<PlayingAudio *> m_globalAudioList;
     std::list<PlayingAudio *> m_positionalAudioList;
     std::list<PlayingAudio *> m_streamList;
+    std::list<PlayingAudio *> m_fadingList;
     std::list<PlayingAudio *> m_stoppedList;
 #ifdef BUILD_WITH_FFMPEG
     Thyme::FFmpegAudioFileCache *m_audioFileCache;

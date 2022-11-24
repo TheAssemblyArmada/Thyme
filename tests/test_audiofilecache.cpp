@@ -14,20 +14,21 @@
  */
 #include <audioeventinfo.h>
 #include <audioeventrts.h>
-#include <gtest/gtest.h>
+#include <audiofilecache.h>
 #include <win32localfilesystem.h>
 #ifdef BUILD_WITH_FFMPEG
 #include <ffmpegaudiofilecache.h>
 #endif
+#ifdef BUILD_WITH_MILES
+#include <milesaudiofilecache.h>
+#endif
+
+#include <gtest/gtest.h>
 
 extern LocalFileSystem *g_theLocalFileSystem;
 
-#ifdef BUILD_WITH_FFMPEG
-TEST(audio, ffmpegaudiofilecache)
+void test_audiofilecache(Thyme::AudioFileCache &cache)
 {
-    g_theLocalFileSystem = new Win32LocalFileSystem;
-    Thyme::FFmpegAudioFileCache cache;
-
     EXPECT_EQ(cache.Get_Max_Size(), 0);
     EXPECT_EQ(cache.Get_Current_Size(), 0);
 
@@ -53,5 +54,21 @@ TEST(audio, ffmpegaudiofilecache)
 
     EXPECT_EQ(cache.Free_Space(), cache_size);
     EXPECT_EQ(cache.Get_Current_Size(), 0);
+}
+
+#ifdef BUILD_WITH_FFMPEG
+TEST(audio, ffmpegaudiofilecache)
+{
+    g_theLocalFileSystem = new Win32LocalFileSystem;
+    Thyme::FFmpegAudioFileCache cache;
+    test_audiofilecache(cache);
+}
+#endif
+#ifdef BUILD_WITH_MILES
+TEST(audio, milesaudiofilecache)
+{
+    g_theLocalFileSystem = new Win32LocalFileSystem;
+    MilesAudioFileCache cache;
+    test_audiofilecache(cache);
 }
 #endif

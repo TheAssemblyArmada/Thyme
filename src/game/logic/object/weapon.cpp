@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "weapon.h"
+#include "gamelogic.h"
 #include "ini.h"
 #include "weaponset.h"
 
@@ -101,8 +102,251 @@ void WeaponStore::Parse_Weapon_Template(INI *ini, void *, void *store, const voi
 {
     const char *name = ini->Get_Next_Token();
     const WeaponTemplate *w = g_theWeaponStore->Find_Weapon_Template(name);
-    captainslog_dbgassert(w != nullptr && !strcasecmp(name, "None"), "WeaponTemplate %s not found!", name);
+    captainslog_dbgassert(w != nullptr || strcasecmp(name, "None") == 0, "WeaponTemplate %s not found!", name);
     *static_cast<const WeaponTemplate **>(store) = w;
+}
+
+Weapon *WeaponStore::Allocate_New_Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot) const
+{
+    return new Weapon(tmpl, wslot);
+}
+
+Weapon::Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot) :
+    m_template(tmpl),
+    m_wslot(wslot),
+    m_status(OUT_OF_AMMO),
+    m_ammoInClip(0),
+    m_whenWeCanFireAgain(0),
+    m_whenPreAttackFinished(0),
+    m_whenLastReloadStarted(0),
+    m_lastFireFrame(0),
+    m_projectileStreamID(OBJECT_UNK),
+    m_maxShotCount(0x7FFFFFFF),
+    m_curBarrel(0),
+    m_leechWeaponRangeActive(false)
+{
+    m_pitchLimited = m_template->Get_Min_Target_Pitch() > -GAMEMATH_PI || m_template->Get_Max_Target_Pitch() < GAMEMATH_PI;
+    m_numShotsForCurBarrel = m_template->Get_Shots_Per_Barrel();
+    m_suspendFXDelay = m_template->Get_Suspend_FX_Delay() + g_theGameLogic->Get_Frame();
+}
+
+Weapon::Weapon(const Weapon &that) :
+    m_template(that.m_template),
+    m_wslot(that.m_wslot),
+    m_status(OUT_OF_AMMO),
+    m_ammoInClip(0),
+    m_whenWeCanFireAgain(0),
+    m_whenPreAttackFinished(0),
+    m_whenLastReloadStarted(0),
+    m_lastFireFrame(0),
+    m_projectileStreamID(OBJECT_UNK),
+    m_maxShotCount(0x7FFFFFFF),
+    m_curBarrel(0),
+    m_leechWeaponRangeActive(false)
+{
+    m_pitchLimited = m_template->Get_Min_Target_Pitch() > -GAMEMATH_PI || m_template->Get_Max_Target_Pitch() < GAMEMATH_PI;
+    m_numShotsForCurBarrel = m_template->Get_Shots_Per_Barrel();
+    m_suspendFXDelay = that.Get_Suspend_FX_Delay();
+}
+
+Weapon &Weapon::operator=(const Weapon &that)
+{
+    if (this != &that) {
+        m_template = that.m_template;
+        m_wslot = that.m_wslot;
+        m_status = OUT_OF_AMMO;
+        m_ammoInClip = 0;
+        m_whenPreAttackFinished = 0;
+        m_whenLastReloadStarted = 0;
+        m_whenWeCanFireAgain = 0;
+        m_leechWeaponRangeActive = 0;
+        m_pitchLimited =
+            m_template->Get_Min_Target_Pitch() > -GAMEMATH_PI || m_template->Get_Max_Target_Pitch() < GAMEMATH_PI;
+        m_maxShotCount = 0x7FFFFFFF;
+        m_curBarrel = 0;
+        m_lastFireFrame = 0;
+        m_suspendFXDelay = that.Get_Suspend_FX_Delay();
+        m_numShotsForCurBarrel = m_template->Get_Shots_Per_Barrel();
+        m_projectileStreamID = OBJECT_UNK;
+    }
+
+    return *this;
+}
+
+void Weapon::CRC_Snapshot(Xfer *xfer)
+{
+#ifdef GAME_DEBUG_STRUCTS
+    Utf8String str1;
+    Utf8String str2;
+    // todo
+#endif
+
+    Utf8String name = m_template->Get_Name();
+    xfer->xferAsciiString(&name);
+    xfer->xferUser(&m_wslot, sizeof(m_wslot));
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferUnsignedInt(&m_ammoInClip);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferUnsignedInt(&m_whenWeCanFireAgain);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferUnsignedInt(&m_whenPreAttackFinished);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferUnsignedInt(&m_whenLastReloadStarted);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferUnsignedInt(&m_lastFireFrame);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferObjectID(&m_projectileStreamID);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    ObjectID laser = OBJECT_UNK;
+    xfer->xferObjectID(&laser);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferInt(&m_maxShotCount);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferInt(&m_curBarrel);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferInt(&m_numShotsForCurBarrel);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    unsigned short scatter_count = static_cast<unsigned short>(m_scatterTargetIndexes.size());
+    xfer->xferUnsignedShort(&scatter_count);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    for (auto i = m_scatterTargetIndexes.begin(); i != m_scatterTargetIndexes.end(); i++) {
+        int index = *i;
+        xfer->xferInt(&index);
+
+#ifdef GAME_DEBUG_STRUCTS
+        // todo
+#endif
+    }
+
+    xfer->xferBool(&m_pitchLimited);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+
+    xfer->xferBool(&m_leechWeaponRangeActive);
+
+#ifdef GAME_DEBUG_STRUCTS
+    // todo
+#endif
+}
+
+void Weapon::Xfer_Snapshot(Xfer *xfer)
+{
+    unsigned char version = 3;
+    xfer->xferVersion(&version, 3);
+
+    if (version >= 2) {
+        Utf8String name;
+        name = m_template->Get_Name();
+        xfer->xferAsciiString(&name);
+
+        if (xfer->Get_Mode() == XFER_LOAD) {
+            m_template = g_theWeaponStore->Find_Weapon_Template(name);
+
+            if (m_template == nullptr) {
+                throw CODE_06;
+            }
+        }
+    }
+
+    xfer->xferUser(&m_wslot, sizeof(m_wslot));
+    xfer->xferUser(&m_status, sizeof(m_status));
+    xfer->xferUnsignedInt(&m_ammoInClip);
+    xfer->xferUnsignedInt(&m_whenWeCanFireAgain);
+    xfer->xferUnsignedInt(&m_whenPreAttackFinished);
+    xfer->xferUnsignedInt(&m_whenLastReloadStarted);
+    xfer->xferUnsignedInt(&m_lastFireFrame);
+
+    if (version < 3) {
+        m_suspendFXDelay = 0;
+    } else {
+        xfer->xferUnsignedInt(&m_suspendFXDelay);
+    }
+
+    xfer->xferObjectID(&m_projectileStreamID);
+    ObjectID laser = OBJECT_UNK;
+    xfer->xferObjectID(&laser);
+    xfer->xferInt(&m_maxShotCount);
+    xfer->xferInt(&m_curBarrel);
+    xfer->xferInt(&m_numShotsForCurBarrel);
+
+    unsigned short size = static_cast<unsigned short>(m_scatterTargetIndexes.size());
+    xfer->xferUnsignedShort(&size);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (auto i = m_scatterTargetIndexes.begin(); i != m_scatterTargetIndexes.end(); i++) {
+            int index = *i;
+            xfer->xferInt(&index);
+        }
+    } else {
+        m_scatterTargetIndexes.clear();
+        for (unsigned short i = 0; i < size; i++) {
+            int index;
+            xfer->xferInt(&index);
+            m_scatterTargetIndexes.push_back(index);
+        }
+    }
+
+    xfer->xferBool(&m_pitchLimited);
+    xfer->xferBool(&m_leechWeaponRangeActive);
+}
+
+void Weapon::Load_Post_Process()
+{
+    if (m_projectileStreamID != OBJECT_UNK) {
+        if (g_theGameLogic->Find_Object_By_ID(m_projectileStreamID) == nullptr) {
+            m_projectileStreamID = OBJECT_UNK;
+        }
+    }
 }
 
 bool Weapon::Is_Within_Attack_Range(const Object *source, const Object *target) const
@@ -132,9 +376,4 @@ float Weapon::Get_Attack_Range(const Object *source) const
 #else
     return 0;
 #endif
-}
-
-Weapon *WeaponSet::Get_Weapon_In_Weapon_Slot(WeaponSlotType slot) const
-{
-    return m_weapons[slot];
 }

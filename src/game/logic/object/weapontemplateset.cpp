@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "weapontemplateset.h"
+#include "weapon.h"
 #include <cstddef>
 
 template<>
@@ -34,6 +35,8 @@ const char *BitFlags<WEAPONSET_COUNT>::s_bitNamesList[] = { "VETERAN",
     "WEAPON_RIDER7",
     "WEAPON_RIDER8",
     nullptr };
+
+static const char *s_theWeaponSlotTypeNames[] = { "PRIMARY", "SECONDARY", "TERTIARY", nullptr };
 
 /**
  * @brief Clears the template set.
@@ -58,7 +61,7 @@ void WeaponTemplateSet::Clear()
  *
  * 0x00605E40
  */
-bool WeaponTemplateSet::Has_Any_Weapon()
+bool WeaponTemplateSet::Has_Any_Weapons() const
 {
     for (int i = 0; i < WEAPONSLOT_COUNT; ++i) {
         if (m_template[i] != nullptr) {
@@ -110,11 +113,9 @@ void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate 
  */
 void WeaponTemplateSet::Parse_Weapon(INI *ini, void *formal, void *store, const void *user_data)
 {
-    // TODO requires WeaponTemplate parser
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x00605E60, 0x006DE34C), ini, formal, store, user_data);
-#endif
+    int index = ini->Scan_IndexList(ini->Get_Next_Token(), s_theWeaponSlotTypeNames);
+    WeaponTemplateSet *tmplate = static_cast<WeaponTemplateSet *>(formal);
+    WeaponStore::Parse_Weapon_Template(ini, tmplate, &tmplate->m_template[index], nullptr);
 }
 
 /**

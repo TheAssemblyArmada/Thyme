@@ -970,7 +970,7 @@ void ThingTemplate::Parse_Overrideable_By_Like_Kind(INI *ini, void *instance, vo
 bool ThingTemplate::Can_Possibly_Have_Any_Weapon() const
 {
     for (auto &set : m_weaponTemplateSets) {
-        if (set.Has_Valid()) {
+        if (set.Has_Any_Weapons()) {
             return true;
         }
     }

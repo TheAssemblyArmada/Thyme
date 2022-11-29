@@ -45,7 +45,7 @@ jobs:
         
     - name: Build Thyme
       run: |
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DUSE_CRASHPAD=ON -B build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_IGNORE_PATH=C:/Strawberry/c/lib -DBUILD_TESTS=ON -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DUSE_CRASHPAD=ON -B build
         cmake --build build --config RelWithDebInfo
 
     - name: Test Thyme

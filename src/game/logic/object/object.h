@@ -106,31 +106,6 @@ enum ObjectScriptStatusBit
     STATUS_TARGETABLE = 1 << 4,
 };
 
-enum DeathType
-{
-    DEATH_NORMAL,
-    DEATH_NONE,
-    DEATH_CRUSHED,
-    DEATH_BURNED,
-    DEATH_EXPLODED,
-    DEATH_POISONED,
-    DEATH_TOPPLED,
-    DEATH_FLOODED,
-    DEATH_SUICIDED,
-    DEATH_LASERED,
-    DEATH_DETONATED,
-    DEATH_SPLATTED,
-    DEATH_POISONED_BETA,
-    DEATH_EXTRA_2,
-    DEATH_EXTRA_3,
-    DEATH_EXTRA_4,
-    DEATH_EXTRA_5,
-    DEATH_EXTRA_6,
-    DEATH_EXTRA_7,
-    DEATH_EXTRA_8,
-    DEATH_POISONED_GAMMA,
-};
-
 enum SpecialPowerType
 {
     SPECIAL_INVALID,
@@ -289,7 +264,7 @@ public:
     bool Is_Effectively_Dead() const { return (m_privateStatus & STATUS_EFFECTIVELY_DEAD) != 0; }
     bool Is_Undetected_Defector() const { return (m_privateStatus & STATUS_UNDETECTED_DEFECTOR) != 0; }
     bool Is_Airborne_Target() const { return m_status.Test(OBJECT_STATUS_AIRBORNE_TARGET); }
-    bool Is_Shared_Reload_Time() const { return m_weaponSet.Is_Shared_Reload_Time(); }
+    bool Is_Share_Weapon_Reload_Time() const { return m_weaponSet.Is_Share_Weapon_Reload_Time(); }
     bool Is_Destroyed() const { return m_status.Test(OBJECT_STATUS_DESTROYED); }
     bool Is_Outside_Map() const { return (m_privateStatus & STATUS_OUTSIDE_MAP) != 0; }
     bool Is_Disabled() const { return m_disabledStates.Any(); }

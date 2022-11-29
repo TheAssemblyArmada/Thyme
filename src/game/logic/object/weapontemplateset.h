@@ -53,29 +53,23 @@ class WeaponTemplateSet
 public:
     WeaponTemplateSet() : m_type(nullptr) { Clear(); }
     void Clear();
-    bool Has_Any_Weapon();
+    bool Has_Any_Weapons() const;
     bool Test_Weapon_Set_Flag(WeaponSetType set);
     void Parse_Weapon_Template_Set(INI *ini, const ThingTemplate *type);
-
-    bool Has_Valid() const
-    {
-        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
-            if (m_template[i] != nullptr) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     static void Parse_Weapon(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Auto_Choose(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Preferred_Against(INI *ini, void *formal, void *store, const void *user_data);
 
     const BitFlags<WEAPONSET_COUNT> &Get_Conditions_Yes(int condition_idx) const { return m_conditions; }
+    const BitFlags<WEAPONSET_COUNT> &Get_Conditions() const { return m_conditions; }
     int Get_Conditions_Count() const { return 1; }
     // BUGFIX : Original returned ArmorTemplateSet here, clearly a bug
     Utf8String Get_Definition() const { return "WeaponTemplateSet"; }
+    bool Is_Lock_Shared_Across_Sets() const { return m_weaponLockSharedAcrossSets; }
+    WeaponTemplate *Get_Nth(WeaponSlotType type) const { return m_template[type]; }
+    const ThingTemplate *Get_Type() const { return m_type; }
+    bool Is_Share_Weapon_Reload_Time() const { return m_shareWeaponReloadTime; }
 
 private:
     const ThingTemplate *m_type;

@@ -248,6 +248,7 @@ set(GAMEENGINE_SRC
     game/logic/object/objectcreationlist.cpp
     game/logic/object/objecttypes.cpp
     game/logic/object/weapon.cpp
+    game/logic/object/weaponset.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/object/update/aiupdate.cpp
     game/logic/object/update/laserupdate.cpp

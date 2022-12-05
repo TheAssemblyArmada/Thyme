@@ -183,6 +183,8 @@
 #include "w3dwater.h"
 #include "w3dwaypointbuffer.h"
 #include "weapon.h"
+#include "weaponset.h"
+#include "weapontemplateset.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include "win32mouse.h"
@@ -564,8 +566,10 @@ void Setup_Hooks()
     Hook_Method(0x004939A0, &GameState::Real_To_Portable_Map_Path);
     Hook_Method(0x00493C90, &GameState::Portable_To_Real_Map_Path);
 
-    // weapon.h WeaponBonusSet
+    // weapon.h
     Hook_Function(0x004C9860, WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr);
+    Hook_Any(0x004C5E70, Weapon::Hook_Ctor);
+    Hook_Any(0x004C4CF0, WeaponStore::Allocate_New_Weapon);
 
     // globaldata.h GlobalData
     Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definition);
@@ -2444,4 +2448,11 @@ void Setup_Hooks()
     Hook_Any(0x00789DA0, W3DWaypointBuffer::Hook_Dtor);
     Hook_Any(0x00789DE0, W3DWaypointBuffer::Draw_Waypoints);
 
+    // weaponset.h
+    Hook_Any(0x00606940, WeaponSet::Get_Model_Condition_For_Weapon_Slot);
+    Hook_Any(0x006061D0, WeaponSet::Hook_Ctor);
+    Hook_Any(0x00606220, WeaponSet::Hook_Dtor);
+
+    // weapontemplateset.h
+    Hook_Any(0x00606190, WeaponTemplateSet::Test_Weapon_Set_Flag)
 }

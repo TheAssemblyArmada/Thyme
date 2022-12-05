@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief
+ * @brief Weapon Set
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -67,6 +67,31 @@ enum DamageType
     DAMAGE_NUM_TYPES,
 };
 
+enum DeathType
+{
+    DEATH_NORMAL,
+    DEATH_NONE,
+    DEATH_CRUSHED,
+    DEATH_BURNED,
+    DEATH_EXPLODED,
+    DEATH_POISONED,
+    DEATH_TOPPLED,
+    DEATH_FLOODED,
+    DEATH_SUICIDED,
+    DEATH_LASERED,
+    DEATH_DETONATED,
+    DEATH_SPLATTED,
+    DEATH_POISONED_BETA,
+    DEATH_EXTRA_2,
+    DEATH_EXTRA_3,
+    DEATH_EXTRA_4,
+    DEATH_EXTRA_5,
+    DEATH_EXTRA_6,
+    DEATH_EXTRA_7,
+    DEATH_EXTRA_8,
+    DEATH_POISONED_GAMMA,
+};
+
 enum WeaponSetConditionType
 {
     WSF_NONE,
@@ -113,12 +138,12 @@ public:
     WeaponSet();
     ~WeaponSet();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    virtual void Load_Post_Process() override {}
 
     void Update_Weapon_Set(const Object *obj);
-    BitFlags<MODELCONDITION_COUNT> Get_Model_Condition_For_Weapon_Slot(
+    static BitFlags<MODELCONDITION_COUNT> Get_Model_Condition_For_Weapon_Slot(
         WeaponSlotType slot, WeaponSetConditionType condition);
     void Weapon_Set_On_Weapon_Bonus_Change(const Object *obj);
     bool Is_Any_Within_Target_Pitch(const Object *obj, const Object *obj2) const;
@@ -141,7 +166,8 @@ public:
     void Release_Weapon_Lock(WeaponLockType lock);
     Weapon *Get_Weapon_In_Weapon_Slot(WeaponSlotType slot) const;
     void Clear_Leech_Range_Mode_For_All_Weapons();
-    bool Is_Shared_Reload_Time() const;
+    bool Is_Share_Weapon_Reload_Time() const;
+    bool Has_Any_Damage_Weapon() const;
 
     bool Is_Cur_Weapon_Locked() const { return m_curWeaponLocked != NOT_LOCKED; }
     bool Has_Any_Weapon() const { return m_filledWeaponSlotMask != 0; }
@@ -150,11 +176,16 @@ public:
     const Weapon *Get_Cur_Weapon() const { return m_weapons[m_curWeapon]; }
     Weapon *Get_Cur_Weapon() { return m_weapons[m_curWeapon]; }
 
+#ifdef GAME_DLL
+    WeaponSet *Hook_Ctor() { return new (this) WeaponSet(); }
+    void Hook_Dtor() { WeaponSet::~WeaponSet(); }
+#endif
+
 private:
-    WeaponTemplateSet *m_curWeaponTemplateSet;
+    const WeaponTemplateSet *m_curWeaponTemplateSet;
     Weapon *m_weapons[WEAPONSLOT_COUNT];
     WeaponSlotType m_curWeapon;
-    int m_curWeaponLocked;
+    WeaponSlotType m_curWeaponLocked;
     unsigned int m_filledWeaponSlotMask;
     int m_totalAntiMask;
     BitFlags<DAMAGE_NUM_TYPES> m_damageTypes;

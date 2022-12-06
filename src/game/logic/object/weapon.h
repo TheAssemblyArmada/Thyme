@@ -122,8 +122,8 @@ protected:
     virtual ~WeaponBonusSet() override {}
 
 public:
-    static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data);
-    static void Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, void const *user_data);
+    static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, const void *user_data);
     void Parse_Weapon_Bonus_Set(INI *ini);
     WeaponBonusSet() {}
     void Append_Bonuses(unsigned int flags, WeaponBonus &bonus)
@@ -158,11 +158,98 @@ public:
     virtual ~WeaponTemplate() override;
     WeaponTemplate &operator=(const WeaponTemplate &that);
 
+    void Reset();
+    void Post_Process_Load();
+    bool Is_Contact_Weapon() const;
+    void Trim_Old_Historic_Damage() const;
+
+    float Estimate_Weapon_Template_Damage(
+        const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos, const WeaponBonus &bonus) const;
+
+    bool Should_Projectile_Collide_With(
+        const Object *source_obj, const Object *projectile, const Object *collide_with, ObjectID id) const;
+
+    unsigned int Fire_Weapon_Template(const Object *source_obj,
+        WeaponSlotType wslot,
+        int barrel,
+        const Object *victim_obj,
+        const Coord3D *victim_pos,
+        const WeaponBonus &bonus,
+        bool is_projectile_detonation,
+        bool ignore_ranges,
+        Weapon *firing_weapon,
+        ObjectID projectile_id,
+        bool do_damage) const;
+
+    void Deal_Damage_Internal(ObjectID source_id,
+        ObjectID victim_id,
+        const Coord3D *pos,
+        const WeaponBonus &bonus,
+        bool is_projectile_detonation) const;
+
+    float Get_Attack_Range() const;
+    float Get_Minimum_Attack_Range() const;
+    float Get_Unmodified_Attack_Range() const;
+    int Get_Delay_Between_Shots(const WeaponBonus &bonus) const;
+    int Get_Clip_Reload_Time(const WeaponBonus &bonus) const;
+    int Get_Pre_Attack_Delay(const WeaponBonus &bonus) const;
+    float Get_Primary_Damage(const WeaponBonus &bonus) const;
+    float Get_Primary_Damage_Radius(const WeaponBonus &bonus) const;
+    float Get_Secondary_Damage(const WeaponBonus &bonus) const;
+    float Get_Secondary_Damage_Radius(const WeaponBonus &bonus) const;
+
     float Get_Min_Target_Pitch() const { return m_minTargetPitch; }
     float Get_Max_Target_Pitch() const { return m_maxTargetPitch; }
     int Get_Shots_Per_Barrel() const { return m_shotsPerBarrel; }
     unsigned int Get_Suspend_FX_Delay() const { return m_suspendFXDelay; }
     Utf8String Get_Name() const { return m_name; }
+    int Get_Anti_Mask() const { return m_antiMask; }
+    DamageType Get_Damage_Type() const { return m_damageType; }
+    DeathType Get_Death_Type() const { return m_deathType; }
+    int Get_Collide_Mash() const { return m_collideMask; }
+    float Get_Weapon_Speed() const { return m_weaponSpeed; }
+    float Get_Weapon_Recoil() const { return m_weaponRecoil; }
+    const ThingTemplate *Get_Projectile_Template() const { return m_projectileTemplate; }
+    FXList *Get_Fire_FX(VeterancyLevel level) const { return m_fireFX[level]; }
+    FXList *Get_Projectile_Detonate_FX(VeterancyLevel level) const { return m_projectileDetonateFX[level]; }
+    ObjectCreationList *Get_Fire_OCL(VeterancyLevel level) const { return m_fireOCL[level]; }
+    Utf8String Get_Laser_Name() const { return m_laserName; }
+    float Get_Radius_Damage_Angle() const { return m_radiusDamageAngle; }
+    ObjectStatusTypes Get_Damage_Status_Type() const { return m_damageStatusType; }
+    int Get_Affects_Mask() const { return m_affectsMask; }
+    NameKeyType Get_Name_Key() const { return m_nameKey; }
+    const WeaponTemplate *Get_Next_Template() const { return m_nextTemplate; }
+    const AudioEventRTS *Get_Fire_Sound() const { return &m_fireSound; }
+    WeaponBonusSet *Get_Extra_Bonus() const { return m_extraBonus; }
+    int Get_Clip_Size() const { return m_clipSize; }
+    const std::vector<Coord2D> &Get_Scatter_Targets() const { return m_scatterTarget; }
+    Utf8String Get_Projectile_Stream_Name() const { return m_projectileStreamName; }
+    const Utf8String &Get_Laser_Bone_Name() const { return m_laserBoneName; }
+    float Get_Request_Assist_Range() const { return m_requestAssistRange; }
+    float Get_Scatter_Target_Scalar() const { return m_scatterTargetScalar; }
+    AttackType Get_Pre_Attack_Type() const { return m_preAttackType; }
+    float Get_Continue_Attack_Range() const { return m_continueAttackRange; }
+    float Get_Aim_Delta() const { return m_aimDelta; }
+
+    ObjectCreationList *Get_Projectile_Detonation_OCL(VeterancyLevel level) const
+    {
+        return m_projectileDetonationOCL[level];
+    }
+
+    bool Is_Show_Ammo_Pips() const { return m_showAmmoPips; }
+    bool Is_Capable_Of_Following_Waypoint() const { return m_capableOfFollowingWaypoint; }
+    bool Is_Damage_Dealt_At_Self_Position() const { return m_damageDealtAtSelfPosition; }
+    bool Is_Leech_Range_Weapon() const { return m_leechRangeWeapon; }
+    bool Is_Auto_Reloads_Clip() const { return m_autoReloadsClip == AUTO_RELOADS_CLIP_YES; }
+    bool Is_Play_FX_When_Stealthed() const { return m_playFXWhenStealthed; }
+
+    void Friend_Set_Next_Template(WeaponTemplate *tmplate) { m_nextTemplate = tmplate; }
+    void Friend_Clear_Next_Template() { m_nextTemplate = nullptr; }
+
+    static void Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Scatter_Target(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Shot_Delay(INI *ini, void *formal, void *store, const void *user_data);
+    static FieldParse *Get_Field_Parse() { return s_fieldParseTable; }
 
 private:
     WeaponTemplate *m_nextTemplate;
@@ -196,13 +283,13 @@ private:
     float m_radiusDamageAngle;
     Utf8String m_projectileObject;
     ThingTemplate *m_projectileTemplate;
-    Utf8String m_fireOCLName[4];
-    Utf8String m_projectileDetonationOCLName[4];
-    ParticleSystemTemplate *m_projectileExhaust[4];
-    ObjectCreationList *m_fireOCL[4];
-    ObjectCreationList *m_projectileDetonationOCL[4];
-    FXList *m_fireFX[4];
-    FXList *m_projectileDetonateFX[4];
+    Utf8String m_fireOCLName[VETERANCY_COUNT];
+    Utf8String m_projectileDetonationOCLName[VETERANCY_COUNT];
+    ParticleSystemTemplate *m_projectileExhaust[VETERANCY_COUNT];
+    ObjectCreationList *m_fireOCL[VETERANCY_COUNT];
+    ObjectCreationList *m_projectileDetonationOCL[VETERANCY_COUNT];
+    FXList *m_fireFX[VETERANCY_COUNT];
+    FXList *m_projectileDetonateFX[VETERANCY_COUNT];
     AudioEventRTS m_fireSound;
     unsigned int m_fireSoundLoopTime;
     WeaponBonusSet *m_extraBonus;
@@ -236,7 +323,9 @@ private:
     ObjectStatusTypes m_damageStatusType;
     unsigned int m_suspendFXDelay;
     bool m_missileCallsOnDie;
-    std::list<HistoricWeaponDamageInfo> m_historicDamage;
+    mutable std::list<HistoricWeaponDamageInfo> m_historicDamage;
+
+    static FieldParse s_fieldParseTable[];
 };
 
 class Weapon : public MemoryPoolObject, public SnapShot
@@ -262,11 +351,125 @@ public:
 
     Weapon &operator=(const Weapon &that);
 
-    bool Is_Within_Attack_Range(const Object *source, const Object *target) const;
-    bool Is_Within_Attack_Range(const Object *source, const Coord3D *target) const;
-    float Get_Attack_Range(const Object *source) const;
+    bool Is_Within_Attack_Range(const Object *source_obj, const Object *target_obj) const;
+    bool Is_Within_Attack_Range(const Object *source_obj, const Coord3D *target_pos) const;
+    bool Is_Within_Target_Pitch(const Object *source_obj, const Object *target_obj) const;
+    bool Is_Damage_Weapon() const;
+    bool Is_Too_Close(const Object *source_obj, const Object *target_obj) const;
+    bool Is_Too_Close(const Object *source_obj, const Coord3D *target_pos) const;
+    bool Is_Clear_Firing_Line_Of_Sight_Terrain(const Object *source_obj, const Object *target_obj) const;
+    bool Is_Clear_Firing_Line_Of_Sight_Terrain(const Object *source_obj, const Coord3D &target_pos) const;
 
+    bool Is_Goal_Pos_Within_Attack_Range(
+        const Object *source_obj, const Coord3D *goal_pos, const Object *target_obj, const Coord3D *target_pos) const;
+
+    bool Is_Source_Object_With_Goal_Position_Within_Attack_Range(
+        const Object *source_obj, const Coord3D *goal_pos, const Object *target_obj, const Coord3D *target_pos) const;
+
+    bool Is_Clear_Goal_Firing_Line_Of_Sight_Terrain(
+        const Object *source_obj, const Coord3D &goal_pos, const Object *target_obj) const;
+
+    bool Is_Clear_Goal_Firing_Line_Of_Sight_Terrain(
+        const Object *source_obj, const Coord3D &goal_pos, const Coord3D &target_pos) const;
+
+    float Get_Attack_Range(const Object *source_obj) const;
+    WeaponStatus Get_Status() const;
+    float Get_Percent_Ready_To_Fire() const;
+    int Get_Clip_Reload_Time(const Object *source_obj) const;
+    float Get_Attack_Distance(const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos) const;
+    float Get_Primary_Damage_Radius(const Object *source_obj) const;
+    int Get_Pre_Attack_Delay(const Object *source_obj, const Object *target_obj) const;
+    void Get_Firing_Line_Of_Sight_Origin(const Object *source_obj, Coord3D &pos) const;
+
+    void On_Weapon_Bonus_Change(const Object *source_obj);
+    void Load_Ammo_Now(const Object *source_obj);
+    void Reload_Ammo(const Object *source_obj);
+    void Compute_Bonus(const Object *source_obj, int flags, WeaponBonus &bonus) const;
+    void Set_Clip_Percent_Full(float percent, bool b);
+    void Rebuild_Scatter_Targets();
+    void Reload_With_Bonus(const Object *source_obj, const WeaponBonus &bonus, bool load_instantly);
+    float Estimate_Weapon_Damage(const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos);
+    void Create_Laser(const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos);
+    void Pre_Fire_Weapon(const Object *source_obj, const Object *victim_obj);
+    bool Fire_Weapon(const Object *source_obj, Object *victim_obj, ObjectID *projectile_id);
+    bool Fire_Weapon(const Object *source_obj, const Coord3D *victim_pos, ObjectID *projectile_id);
+    Object *Force_Fire_Weapon(const Object *source_obj, const Coord3D *victim_pos);
+    void Process_Request_Assistance(const Object *source_obj, Object *target_obj);
+    void Transfer_Next_Shot_Stats_From(const Weapon &weapon);
+
+    void Position_Projectile_For_Launch(
+        Object *projectile_obj, const Object *source_obj, WeaponSlotType wslot, int ammo_index);
+
+    bool Compute_Approach_Target(const Object *source_obj,
+        const Object *target_obj,
+        const Coord3D *target_pos,
+        float angle_offset,
+        Coord3D &approach_target_pos) const;
+
+    void New_Projectile_Fired(
+        const Object *source_obj, const Object *projectile_obj, const Object *target_obj, const Coord3D *target_pos);
+
+    bool Private_Fire_Weapon(const Object *source_obj,
+        Object *victim_obj,
+        const Coord3D *victim_pos,
+        bool is_projectile_detonation,
+        bool ignore_ranges,
+        unsigned int bonus_condition,
+        ObjectID *projectile_id,
+        bool do_damage);
+
+    bool Fire_Projectile_Detonation_Weapon(
+        const Object *source_obj, Object *victim_obj, unsigned int bonus_condition, bool do_damage);
+
+    bool Fire_Projectile_Detonation_Weapon(
+        const Object *source_obj, const Coord3D *victim_pos, unsigned int bonus_condition, bool do_damage);
+
+    void Calc_Projectile_Launch_Position(
+        const Object *source_obj, WeaponSlotType wslot, int ammo_index, Matrix3D &launch_transform, Coord3D &launch_pos);
+
+    int Get_Anti_Mask() const { return m_template->Get_Anti_Mask(); }
+    DamageType Get_Damage_Type() const { return m_template->Get_Damage_Type(); }
     unsigned int Get_Suspend_FX_Delay() const { return m_suspendFXDelay; }
+    unsigned int Get_Next_Shot() const { return m_whenWeCanFireAgain; }
+    float Get_Scatter_Target_Scalar() const { return m_template->Get_Scatter_Target_Scalar(); }
+    unsigned int Get_Last_Reload_Started() const { return m_whenLastReloadStarted; }
+    int Get_Clip_Size() const { return m_template->Get_Clip_Size(); }
+    int Get_Last_Fire_Frame() const { return m_lastFireFrame; }
+    unsigned int Get_When_Pre_Attack_Finished() const { return m_whenPreAttackFinished; }
+    WeaponSlotType Get_Weapon_Slot() const { return m_wslot; }
+    Utf8String Get_Name() const { return m_template->Get_Name(); }
+    float Get_Continue_Attack_Range() const { return m_template->Get_Continue_Attack_Range(); }
+    float Get_Aim_Delta() const { return m_template->Get_Aim_Delta(); }
+    int Get_Max_Shot_Count() const { return m_maxShotCount; }
+
+    unsigned int Get_Ammo_In_Clip() const
+    {
+        if (Get_Status() == RELOADING_CLIP) {
+            return 0;
+        } else {
+            return m_ammoInClip;
+        }
+    }
+
+    bool Is_Pitch_Limited() const { return m_pitchLimited; }
+    bool Is_Show_Ammo_Pips() const { return m_template->Is_Show_Ammo_Pips(); }
+    bool Is_Capable_Of_Following_Waypoint() const { return m_template->Is_Capable_Of_Following_Waypoint(); }
+    bool Is_Contact_Weapon() const { return m_template->Is_Contact_Weapon(); }
+    bool Is_Auto_Reloads_Clip() const { return m_template->Is_Auto_Reloads_Clip(); }
+    bool Is_Leech_Weapon_Range_Active() const { return m_leechWeaponRangeActive; }
+
+    void Set_Leech_Range_Active(bool set) { m_leechWeaponRangeActive = set; }
+    void Set_Next_Shot(unsigned int time) { m_whenWeCanFireAgain = time; }
+    void Set_Status(WeaponStatus status) { m_status = status; }
+    void Set_Pre_Attack_Finished(bool set) { m_whenPreAttackFinished = set; }
+    void Set_Max_Shot_Count(int count) { m_maxShotCount = count; }
+
+    bool Has_Laser() const { return m_template->Get_Laser_Name().Is_Not_Empty(); }
+
+    float Estimate_Weapon_Damage(const Object *source_obj, const Object *victim_obj)
+    {
+        return Estimate_Weapon_Damage(source_obj, victim_obj, nullptr);
+    }
 
 #ifdef GAME_DLL
     Weapon *Hook_Ctor(const WeaponTemplate *tmpl, WeaponSlotType wslot) { return new (this) Weapon(tmpl, wslot); }
@@ -291,13 +494,54 @@ private:
     bool m_leechWeaponRangeActive;
 };
 
-class WeaponStore
+class WeaponStore : public SubsystemInterface
 {
 public:
+    struct WeaponDelayedDamageInfo
+    {
+        int m_delayedWeapon;
+        Coord3D m_delayDamagePos;
+        int m_delayDamageFrame;
+        int m_delaySourceID;
+        int m_delayIntendedVictimID;
+        WeaponBonus m_bonus;
+    };
+
+    virtual ~WeaponStore() override;
+    virtual void Init() override {}
+    virtual void PostProcessLoad() override;
+    virtual void Reset() override;
+    virtual void Update() override;
+
+    void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmplate, const Object *source_obj, const Coord3D *victim_pos);
+    void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmplate, const Object *source_obj, const Object *victim_obj);
     const WeaponTemplate *Find_Weapon_Template(Utf8String name) const;
-    void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmpl, const Object *obj, const Coord3D *pos);
-    static void Parse_Weapon_Template(INI *ini, void *, void *store, const void *);
+    const WeaponTemplate *Find_Weapon_Template_Private(NameKeyType key) const;
+    static void Parse_Weapon_Template(INI *ini, void *formal, void *store, const void *user_data);
     Weapon *Allocate_New_Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot) const;
+    WeaponTemplate *New_Weapon_Template(Utf8String name);
+    WeaponTemplate *New_Override(WeaponTemplate *tmplate);
+    void Delete_All_Delayed_Damage();
+    void Reset_All_Weapon_Templates();
+
+    void Handle_Projectile_Detonation(const WeaponTemplate *tmplate,
+        const Object *source_obj,
+        const Coord3D *victim_pos,
+        int bonus_condition,
+        bool do_damage) const;
+
+    void Set_Delayed_Damage(const WeaponTemplate *weapon,
+        const Coord3D *pos,
+        unsigned int which_frame,
+        ObjectID source_id,
+        ObjectID victim_id,
+        const WeaponBonus &bonus);
+
+    static void Parse_Weapon_Template_Definition(INI *ini);
+
+private:
+    std::vector<WeaponTemplate *> m_weaponTemplateVector;
+    std::list<WeaponDelayedDamageInfo> m_weaponDDI;
 };
 
 #ifdef GAME_DLL

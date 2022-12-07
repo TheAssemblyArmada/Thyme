@@ -42,6 +42,7 @@ ALAudioManager::~ALAudioManager()
 
     Unselect_Provider();
     g_theAudio = nullptr;
+    delete m_audioFileCache;
 }
 
 void ALAudioManager::Init()

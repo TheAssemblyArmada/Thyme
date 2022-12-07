@@ -2,6 +2,8 @@
 #include <gtest/gtest.h>
 #include <iostream>
 
+#include "gamememory.h"
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
@@ -11,5 +13,13 @@ int main(int argc, char **argv)
     captains_settings.console = true;
     captainslog_init(&captains_settings);
 
-    return RUN_ALL_TESTS();
+    Init_Memory_Manager();
+
+    int result = RUN_ALL_TESTS();
+
+    Shutdown_Memory_Manager();
+
+    captainslog_deinit();
+
+    return result;
 }

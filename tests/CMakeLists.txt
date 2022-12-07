@@ -7,6 +7,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 
 set(TEST_SRCS
+  main.cpp
   globals.cpp
   test_audiofilecache.cpp
   test_crc.cpp
@@ -16,7 +17,7 @@ set(TEST_SRCS
 )
 
 add_executable(thyme_tests ${TEST_SRCS})
-target_link_libraries(thyme_tests gtest gtest_main)
+target_link_libraries(thyme_tests gtest)
 target_compile_definitions(thyme_tests PRIVATE -DTESTDATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data")
 
 if(STANDALONE)

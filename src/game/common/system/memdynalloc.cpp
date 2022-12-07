@@ -36,6 +36,7 @@ DynamicMemoryAllocator::DynamicMemoryAllocator() :
 
 void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, PoolInitRec const *const params)
 {
+#ifndef __SANITIZE_ADDRESS__
     PoolInitRec const defaults[7] = {
         { "dmaPool_16", 16, 64, 64 },
         { "dmaPool_32", 32, 64, 64 },
@@ -65,6 +66,7 @@ void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, Pool
     for (int i = 0; i < m_poolCount; ++i) {
         m_pools[i] = m_factory->Create_Memory_Pool(&init_list[i]);
     }
+#endif
 }
 
 DynamicMemoryAllocator::~DynamicMemoryAllocator()
@@ -129,6 +131,9 @@ void DynamicMemoryAllocator::Remove_From_List(DynamicMemoryAllocator **head)
 
 void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
 {
+#ifdef __SANITIZE_ADDRESS__
+    return malloc(bytes);
+#else
     ScopedCriticalSectionClass cs(g_dmaCriticalSection);
 
     MemoryPool *mp = Find_Pool_For_Size(bytes);
@@ -143,6 +148,7 @@ void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
     ++m_usedBlocksInDma;
 
     return block;
+#endif
 }
 
 void *DynamicMemoryAllocator::Allocate_Bytes(int bytes)
@@ -158,7 +164,9 @@ void DynamicMemoryAllocator::Free_Bytes(void *block)
     if (block == nullptr) {
         return;
     }
-
+#ifdef __SANITIZE_ADDRESS__
+    free(block);
+#else
     ScopedCriticalSectionClass cs(g_dmaCriticalSection);
 
     MemoryPoolSingleBlock *sblock = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);
@@ -171,16 +179,18 @@ void DynamicMemoryAllocator::Free_Bytes(void *block)
     }
 
     --m_usedBlocksInDma;
+#endif
 }
 
 int DynamicMemoryAllocator::Get_Actual_Allocation_Size(int bytes)
 {
+#ifndef __SANITIZE_ADDRESS__
     MemoryPool *mp = Find_Pool_For_Size(bytes);
 
     if (mp != nullptr) {
         return mp->m_allocationSize;
     }
-
+#endif
     return bytes;
 }
 

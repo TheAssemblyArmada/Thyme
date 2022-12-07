@@ -40,6 +40,7 @@ TEST(filesystem, win32bigfile)
     EXPECT_EQ(file_a->Read(dst_buf, sizeof(dst_buf)), 16);
     EXPECT_EQ(Utf8String(dst_buf), "This is sample A");
     memset(dst_buf, 0, sizeof(dst_buf));
+    file_a->Close();
 
     // b.txt does not exist
     File *file_b = bigfile->Open_File("b.txt", File::READ);
@@ -50,27 +51,29 @@ TEST(filesystem, win32bigfile)
     EXPECT_EQ(file_c->Size(), 16);
     EXPECT_EQ(file_c->Read(dst_buf, sizeof(dst_buf)), 16);
     EXPECT_EQ(Utf8String(dst_buf), "This is sample C");
+    file_c->Close();
 
+    delete bigfile;
     delete g_theLocalFileSystem;
 }
 
-class FileSystemTest : public ::testing::TestWithParam<LocalFileSystem *>
+class FileSystemTest : public ::testing::TestWithParam<std::shared_ptr<LocalFileSystem>>
 {
 public:
-    void SetUp() override { m_filesystem = GetParam(); }
+    void SetUp() override { m_filesystem = GetParam().get(); }
     void TearDown() override {}
 
     struct PrintToStringParamName
     {
         template<class ParamType> std::string operator()(const testing::TestParamInfo<ParamType> &info) const
         {
-            auto filesystem = static_cast<LocalFileSystem *>(info.param);
+            auto filesystem = std::dynamic_pointer_cast<LocalFileSystem>(info.param);
 
-            if (dynamic_cast<Win32LocalFileSystem *>(filesystem) != nullptr) {
+            if (std::dynamic_pointer_cast<Win32LocalFileSystem>(filesystem) != nullptr) {
                 return "Win32LocalFileSystem";
             }
 #ifdef BUILD_WITH_STDFS
-            if (dynamic_cast<Thyme::StdLocalFileSystem *>(filesystem) != nullptr) {
+            if (std::dynamic_pointer_cast<Thyme::StdLocalFileSystem>(filesystem) != nullptr) {
                 return "StdLocalFileSystem";
             }
 #endif
@@ -90,7 +93,9 @@ TEST_P(FileSystemTest, exists_file)
 
 TEST_P(FileSystemTest, open_file)
 {
-    EXPECT_NE(m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str(), File::READ), nullptr);
+    auto file = m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str(), File::READ);
+    EXPECT_NE(file, nullptr);
+    file->Close();
     EXPECT_EQ(m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/non_existant.big").Str(), File::READ), nullptr);
 }
 
@@ -122,10 +127,10 @@ TEST_P(FileSystemTest, list_dir_unfiltered)
     EXPECT_EQ(files.size(), 2);
 }
 
-LocalFileSystem *filesystem_list[] = {
-    new Win32LocalFileSystem,
+std::shared_ptr<LocalFileSystem> filesystem_list[] = {
+    std::make_shared<Win32LocalFileSystem>(),
 #ifdef BUILD_WITH_STDFS
-    new Thyme::StdLocalFileSystem,
+    std::make_shared<Thyme::StdLocalFileSystem>(),
 #endif
 };
 

@@ -64,11 +64,12 @@ TEST(audio, ffmpegaudiofilecache)
     test_audiofilecache(cache);
 }
 #endif
-#ifdef BUILD_WITH_MILES
-TEST(audio, milesaudiofilecache)
-{
-    g_theLocalFileSystem = new Win32LocalFileSystem;
-    MilesAudioFileCache cache;
-    test_audiofilecache(cache);
-}
-#endif
+// This would only work when we have more than miles stubs
+// #ifdef BUILD_WITH_MILES  
+// TEST(audio, milesaudiofilecache)
+// {
+//     g_theLocalFileSystem = new Win32LocalFileSystem;
+//     MilesAudioFileCache cache;
+//     test_audiofilecache(cache);
+// }
+// #endif

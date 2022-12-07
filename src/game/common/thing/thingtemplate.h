@@ -383,8 +383,8 @@ private:
     float m_shadowOffsetY;
     int m_energyProduction;
     int m_energyBonus;
-    unsigned int m_displayColor;
-    unsigned int m_occlusionDelay;
+    int32_t m_displayColor;
+    uint32_t m_occlusionDelay;
     NameKeyType m_maxSimultaneousLinkKey;
     unsigned short m_templateID;
     unsigned short m_buildCost;

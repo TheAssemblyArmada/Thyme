@@ -168,11 +168,13 @@ protected:
     ParticleType m_particleType;
     Utf8String m_particleTypeName;
 #ifndef GAME_DLL
+    // Absent in ZH, but present in other versions of the Engine.
     GameClientRandomVariable m_angleX;
     GameClientRandomVariable m_angleY;
 #endif
     GameClientRandomVariable m_angleZ;
 #ifndef GAME_DLL
+    // Absent in ZH, but present in other versions of the Engine.
     GameClientRandomVariable m_angularRateX;
     GameClientRandomVariable m_angularRateY;
 #endif

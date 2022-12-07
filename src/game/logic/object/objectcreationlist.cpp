@@ -61,7 +61,7 @@ static const FieldParse s_theObjectCreationListFieldParse[] = {
     { "FireWeapon",         reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004BD7E0, 0x00756E00)) /*&FireWeaponNugget::Parse */,                      nullptr,  0 },
     { "Attack",             reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004BD9A0, 0x007572C0)) /*&AttackNugget::Parse */,                          nullptr,  0 },
 #endif
-    { nullptr,              nullptr, nullptr,  0 },
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

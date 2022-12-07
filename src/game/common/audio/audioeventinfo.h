@@ -38,7 +38,7 @@ enum AudioType : int32_t
     EVENT_3D_UNKVAL4
 };
 
-enum AudioControlType : int32_t
+enum AudioControlType : uint32_t
 {
     CONTROL_LOOP = 1 << 0,
     CONTROL_RANDOM = 1 << 1,
@@ -47,7 +47,7 @@ enum AudioControlType : int32_t
     CONTROL_INTERRUPT = 1 << 4,
 };
 
-enum AudioVisibilityType : int32_t
+enum AudioVisibilityType : uint32_t
 {
     VISIBILITY_UI = 1 << 0,
     VISIBILITY_WORLD = 1 << 1,
@@ -78,11 +78,11 @@ public:
 
     const Utf8String &Get_Event_Name() const { return m_eventName; }
     const Utf8String &Get_File_Name() const { return m_filename; }
-    int Get_Visibility() const { return m_visibility; }
+    uint32_t Get_Visibility() const { return m_visibility; }
     AudioType Get_Event_Type() const { return m_eventType; }
     float Get_Volume() const { return m_volume; }
     int Get_Loop_Count() const { return m_loopCount; }
-    int Get_Control() const { return m_control; }
+    uint32_t Get_Control() const { return m_control; }
     int Get_Priority() const { return m_priority; }
     int Get_Limit() const { return m_limit; }
     float Get_Pitch_Shift() const { return Get_Audio_Random_Value_Real(m_pitchShiftLow, m_pitchShiftHigh); }
@@ -119,8 +119,8 @@ protected:
     int m_limit;
     int m_loopCount;
     int m_priority;
-    int32_t m_visibility;
-    int32_t m_control;
+    uint32_t m_visibility;
+    uint32_t m_control;
     std::vector<Utf8String> m_soundsMorning;
     std::vector<Utf8String> m_sounds;
     std::vector<Utf8String> m_soundsNight;

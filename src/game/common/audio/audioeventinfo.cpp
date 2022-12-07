@@ -17,38 +17,66 @@
 #include <captainslog.h>
 #include <cstddef>
 
+// clang-format off
 namespace
 {
-const char *g_audio_priority_names[] = { "LOWEST", "LOW", "NORMAL", "HIGH", "CRITICAL", nullptr };
-const char *g_sound_type_names[] = {
-    "UI", "WORLD", "SHROUDED", "GLOBAL", "VOICE", "PLAYER", "ALLIES", "ENEMIES", "EVERYONE", nullptr
+constexpr const char *const g_audio_priority_names[] = {
+    "LOWEST",
+    "LOW",
+    "NORMAL",
+    "HIGH",
+    "CRITICAL",
+    nullptr
 };
-const char *g_audio_control_names[] = { "LOOP", "RANDOM", "ALL", "POSTDELAY", "INTERRUPT", nullptr };
+
+constexpr const char *const g_sound_type_names[] = {
+    "UI",
+    "WORLD",
+    "SHROUDED",
+    "GLOBAL",
+    "VOICE",
+    "PLAYER",
+    "ALLIES",
+    "ENEMIES",
+    "EVERYONE",
+    nullptr
+};
+
+constexpr const char *const g_audio_control_names[] = {
+    "LOOP",
+    "RANDOM",
+    "ALL",
+    "POSTDELAY",
+    "INTERRUPT",
+    nullptr
+};
 } // namespace
 
+// wb: 0x00C25790
 const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
-    { "Filename", &INI::Parse_AsciiString, nullptr, offsetof(AudioEventInfo, m_filename) },
-    { "Volume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volume) },
-    { "VolumeShift", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volumeShift) },
-    { "MinVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_minVolume) },
-    { "PitchShift", &AudioEventInfo::Parse_Pitch_Shift, nullptr, 0 },
-    { "Delay", &AudioEventInfo::Parse_Delay, nullptr, 0 },
-    { "Limit", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_limit) },
-    { "LoopCount", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_loopCount) },
-    { "Priority", &INI::Parse_Index_List, g_audio_priority_names, offsetof(AudioEventInfo, m_priority) },
-    { "Type", &INI::Parse_Bitstring32, g_sound_type_names, offsetof(AudioEventInfo, m_visibility) },
-    { "Control", &INI::Parse_Bitstring32, g_audio_control_names, offsetof(AudioEventInfo, m_control) },
-    { "Sounds", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_sounds) },
-    { "SoundsNight", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsNight) },
-    { "SoundsEvening", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsEvening) },
-    { "SoundsMorning", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsMorning) },
-    { "Attack", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_attack) },
-    { "Decay", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_decay) },
-    { "MinRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_minRange) },
-    { "MaxRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_maxRange) },
-    { "LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_ASCIISTRING("Filename", AudioEventInfo, m_filename),
+    FIELD_PARSE_PERCENT_TO_REAL("Volume", AudioEventInfo, m_volume),
+    FIELD_PARSE_PERCENT_TO_REAL("VolumeShift", AudioEventInfo, m_volumeShift),
+    FIELD_PARSE_PERCENT_TO_REAL("MinVolume", AudioEventInfo, m_minVolume),
+    FIELD_PARSE_AUDIO_PITCH_SHIFT("PitchShift", AudioEventInfo),
+    FIELD_PARSE_AUDIO_DELAY("Delay", AudioEventInfo),
+    FIELD_PARSE_INT("Limit", AudioEventInfo, m_limit),
+    FIELD_PARSE_INT("LoopCount", AudioEventInfo, m_loopCount),
+    FIELD_PARSE_INDEX_LIST("Priority", g_audio_priority_names, AudioEventInfo, m_priority),
+    FIELD_PARSE_BITSTRING32("Type", g_sound_type_names, AudioEventInfo, m_visibility),
+    FIELD_PARSE_BITSTRING32("Control", g_audio_control_names, AudioEventInfo, m_control),
+    FIELD_PARSE_SOUNDS_LIST("Sounds", AudioEventInfo, m_sounds),
+    FIELD_PARSE_SOUNDS_LIST("SoundsNight", AudioEventInfo, m_soundsNight),
+    FIELD_PARSE_SOUNDS_LIST("SoundsEvening", AudioEventInfo, m_soundsEvening),
+    FIELD_PARSE_SOUNDS_LIST("SoundsMorning", AudioEventInfo, m_soundsMorning),
+    FIELD_PARSE_SOUNDS_LIST("Attack", AudioEventInfo, m_attack),
+    FIELD_PARSE_SOUNDS_LIST("Decay", AudioEventInfo, m_decay),
+    FIELD_PARSE_REAL("MinRange", AudioEventInfo, m_minRange),
+    FIELD_PARSE_REAL("MaxRange", AudioEventInfo, m_maxRange),
+    FIELD_PARSE_PERCENT_TO_REAL("LowPassCutoff", AudioEventInfo, m_lowPassCutoff),
+    FIELD_PARSE_LAST
 };
+// clang-format on
 
 // wb: 0x006E6800
 AudioEventInfo::AudioEventInfo() :
@@ -83,7 +111,7 @@ AudioEventInfo::AudioEventInfo() :
 /**
  * Parses audio event definition information from an INI instance.
  *
- * 0x0044ED70
+ * zh: 0x0044ED70 wb: 0x00738DB7
  * Was originally INI::parseAudioEventDefintion
  */
 void AudioEventInfo::Parse_Audio_Event_Definition(INI *ini)
@@ -107,7 +135,7 @@ void AudioEventInfo::Parse_Audio_Event_Definition(INI *ini)
  * Parses a pitch shift field from an INI file instance.
  *
  * Was originally parsePitchShift
- * 0x0044F290
+ * zh: 0x0044F290
  */
 void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -115,7 +143,7 @@ void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, cons
     float lo = INI::Scan_Real(ini->Get_Next_Token());
     float hi = INI::Scan_Real(ini->Get_Next_Token());
 
-    captainslog_assert(lo > -100.0f && hi >= lo);
+    captainslog_dbgassert(lo > -100.0f && hi >= lo, "Bad pitch shift values for audio event %s", info->m_eventName.Str());
     info->m_pitchShiftLow = float(lo / 100.0f) + 1.0f;
     info->m_pitchShiftHigh = float(hi / 100.0f) + 1.0f;
 }
@@ -124,7 +152,7 @@ void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, cons
  * Parses a delay field from an INI file instance.
  *
  * Was originally parseDelay
- * 0x0044F250
+ * zh: 0x0044F250
  */
 void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -132,7 +160,7 @@ void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void
     float lo = INI::Scan_Real(ini->Get_Next_Token());
     float hi = INI::Scan_Real(ini->Get_Next_Token());
 
-    captainslog_assert(lo >= 0.0f && hi >= lo);
+    captainslog_dbgassert(lo >= 0.0f && hi >= lo, "Bad delay values for audio event %s", info->m_eventName.Str());
     info->m_delayLow = lo;
     info->m_delayHigh = hi;
 }

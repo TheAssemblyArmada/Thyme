@@ -38,6 +38,7 @@ enum StaticGameLODLevel : int32_t
     STATLOD_CUSTOM,
     STATLOD_COUNT,
 };
+DEFINE_ENUMERATION_OPERATORS_T(StaticGameLODLevel, int32_t)
 
 enum CPUType : int32_t
 {

@@ -123,7 +123,7 @@ class Mouse : public SubsystemInterface
     ALLOW_HOOKING
 
 protected:
-    enum RedrawMode
+    enum RedrawMode : int32_t // Is INI parsed type
     {
         RM_WINDOWS,
         RM_W3D,

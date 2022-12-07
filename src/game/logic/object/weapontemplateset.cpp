@@ -89,18 +89,17 @@ bool WeaponTemplateSet::Test_Weapon_Set_Flag(WeaponSetType set)
  */
 void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate *type)
 {
+    // clang-format off
     static const FieldParse _parse_table[] = {
-        { "Conditions", &BitFlags<WEAPONSET_COUNT>::Parse_From_INI, nullptr, offsetof(WeaponTemplateSet, m_conditions) },
+        FIELD_PARSE_BITFLAGS_FROM_INI("Conditions", WeaponTemplateSet, m_conditions),
         { "Weapon", &WeaponTemplateSet::Parse_Weapon, nullptr, 0 },
         { "AutoChooseSources", &WeaponTemplateSet::Parse_Auto_Choose, nullptr, 0 },
         { "PreferredAgainst", &WeaponTemplateSet::Parse_Preferred_Against, nullptr, 0 },
-        { "ShareWeaponReloadTime", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplateSet, m_shareWeaponReloadTime) },
-        { "WeaponLockSharedAcrossSets",
-            &INI::Parse_Bool,
-            nullptr,
-            offsetof(WeaponTemplateSet, m_weaponLockSharedAcrossSets) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_BOOL("ShareWeaponReloadTime", WeaponTemplateSet, m_shareWeaponReloadTime),
+        FIELD_PARSE_BOOL("WeaponLockSharedAcrossSets", WeaponTemplateSet, m_weaponLockSharedAcrossSets),
+        FIELD_PARSE_LAST
     };
+    // clang-format on
 
     ini->Init_From_INI(this, _parse_table);
     m_type = type;

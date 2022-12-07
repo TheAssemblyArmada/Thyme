@@ -28,7 +28,7 @@ class WeaponBonusSet;
 #define LIGHT_COUNT 3
 
 // These enums need moving when we work out where they should go.
-enum TerrainLOD
+enum TerrainLOD : int32_t // Is INI parsed type
 {
     TERRAIN_LOD_INVALID = 0,
     TERRAIN_LOD_MIN,
@@ -141,7 +141,7 @@ public:
     float m_vertexWaterAttenuationRange[4];
     float m_downWindAngle;
     float m_skyBoxPositionZ;
-    float m_drawSkyBox; // is used as a bool and appears to be defined wrong
+    float m_drawSkyBox; // #TODO parse type is float, but parse function is for bool
     float m_skyBoxScale;
     float m_cameraPitch;
     float m_cameraYaw;
@@ -219,7 +219,7 @@ public:
     bool m_showTerrainNormals;
     // char pad[2]
     int32_t m_frameToJumpTo; // Perhaps not a float, set to frame number in worldbuilder as an int.
-    int32_t m_debugAI; // Possibly old BOOL typedef for int?, keep int for ABI compat until sure
+    int32_t m_debugAI; // #TODO parse type is int, but parse function is for bool
     bool m_logSupplyCenterPlacement;
     bool m_debugObstacleAI;
     bool m_showObjectHealth;
@@ -265,12 +265,12 @@ public:
     bool m_sendDelay;
     // char pad[3]
     int32_t m_firewallPortOverrides;
-    int16_t m_firewallPortAllocationDelta;
+    int16_t m_firewallPortAllocationDelta; // #TODO parse type is short, but parse function is for int
     // char pad[2]
     int32_t m_valuesPerSupplyBox;
     float m_buildSpeed;
     float m_minDistanceFromMapEdgeForBuild;
-    int32_t m_supplyBuildOrder;
+    int32_t m_supplyBuildOrder; // #TODO parse type is int, but parse function is for float
     float m_allowedHeightVariationForBuildings;
     float m_minLowEnergyProductionSpeed;
     float m_maxLowEnergyProductionSpeed;

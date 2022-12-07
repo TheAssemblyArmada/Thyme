@@ -23,14 +23,16 @@
 ImageCollection *g_theMappedImageCollection = nullptr;
 #endif
 
+// clang-format off
 const FieldParse Image::s_imageFieldParseTable[] = {
-    { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(Image, m_filename) },
-    { "TextureWidth", &INI::Parse_Int, nullptr, offsetof(Image, m_textureSize.x) },
-    { "TextureHeight", &INI::Parse_Int, nullptr, offsetof(Image, m_textureSize.y) },
-    { "Coords", &Parse_Image_Coords, nullptr, offsetof(Image, m_UVCoords) },
-    { "Status", &Parse_Image_Status, nullptr, offsetof(Image, m_status) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_ASCIISTRING("Texture", Image, m_filename),
+    FIELD_PARSE_INT("TextureWidth", Image, m_textureSize.x),
+    FIELD_PARSE_INT("TextureHeight", Image, m_textureSize.y),
+    FIELD_PARSE_IMAGE_COORDS("Coords", Image, m_UVCoords),
+    FIELD_PARSE_IMAGE_STATUS("Status", Image, m_status),
+    FIELD_PARSE_LAST
 };
+// clang-format on
 
 Image::Image() : m_name(), m_filename(), m_textureSize(), m_imageSize(), m_rawTextureData(), m_status(0)
 {
@@ -96,12 +98,12 @@ void Image::Parse_Image_Coords(INI *ini, void *formal, void *store, const void *
 }
 
 // 0x00519030
-void Image::Parse_Image_Status(INI *ini, void *instance, void *store, const void *user_data)
+void Image::Parse_Image_Status(INI *ini, void *formal, void *store, const void *user_data)
 {
     const char *_imageStatusNames[3] = { "ROTATED_90_CLOCKWISE", "RAW_TEXTURE", nullptr };
 
-    Image *image = static_cast<Image *>(instance);
-    ini->Parse_Bitstring32(ini, instance, store, _imageStatusNames);
+    Image *image = static_cast<Image *>(formal);
+    ini->Parse_Bitstring32(ini, formal, store, _imageStatusNames);
     uint8_t *byte = static_cast<uint8_t *>(store);
     if (*byte & IMAGE_STATUS_ROTATED_90_CLOCKWISE) {
         int oldx = image->m_imageSize.x;

@@ -430,28 +430,30 @@ int GameLODManager::Get_Recommended_Texture_Reduction()
 // Was originally INI::parseStaticGameLODDefinition
 void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
 {
+    // clang-format off
     static const FieldParse _static_lod_parsers[] = {
-        { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_fps) },
-        { "MinimumProcessorFps", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_cpu_fps) },
-        { "SampleCount2D", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, sample_count_2D) },
-        { "SampleCount3D", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, sample_count_3D) },
-        { "StreamCount", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, stream_count) },
-        { "MaxParticleCount", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_particle_count) },
-        { "UseShadowVolumes", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_shadow_volumes) },
-        { "UseShadowDecals", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_shadow_decals) },
-        { "UseCloudMap", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_cloud_map) },
-        { "UseLightMap", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_light_map) },
-        { "ShowSoftWaterEdge", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, show_soft_water_edges) },
-        { "MaxTankTrackEdges", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_tank_track_edges) },
-        { "MaxTankTrackOpaqueEdges", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_tank_track_opaque_edges) },
-        { "MaxTankTrackFadeDelay", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_tank_track_fade_delay) },
-        { "UseBuildupScaffolds", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_buildup_scaffolds) },
-        { "UseTreeSway", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_tree_sway) },
-        { "UseEmissiveNightMaterials", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_emissive_night_materials) },
-        { "UseHeatEffects", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_heat_effects) },
-        { "TextureReductionFactor", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, texture_reduction_factor) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_INT("MinimumFPS", StaticGameLOD, minimum_fps),
+        FIELD_PARSE_INT("MinimumProcessorFps", StaticGameLOD, minimum_cpu_fps),
+        FIELD_PARSE_INT("SampleCount2D", StaticGameLOD, sample_count_2D),
+        FIELD_PARSE_INT("SampleCount3D", StaticGameLOD, sample_count_3D),
+        FIELD_PARSE_INT("StreamCount", StaticGameLOD, stream_count),
+        FIELD_PARSE_INT("MaxParticleCount", StaticGameLOD, max_particle_count),
+        FIELD_PARSE_BOOL("UseShadowVolumes", StaticGameLOD, use_shadow_volumes),
+        FIELD_PARSE_BOOL("UseShadowDecals", StaticGameLOD, use_shadow_decals),
+        FIELD_PARSE_BOOL("UseCloudMap", StaticGameLOD, use_cloud_map),
+        FIELD_PARSE_BOOL("UseLightMap", StaticGameLOD, use_light_map),
+        FIELD_PARSE_BOOL("ShowSoftWaterEdge", StaticGameLOD, show_soft_water_edges),
+        FIELD_PARSE_INT("MaxTankTrackEdges", StaticGameLOD, max_tank_track_edges),
+        FIELD_PARSE_INT("MaxTankTrackOpaqueEdges", StaticGameLOD, max_tank_track_opaque_edges),
+        FIELD_PARSE_INT("MaxTankTrackFadeDelay", StaticGameLOD, max_tank_track_fade_delay),
+        FIELD_PARSE_BOOL("UseBuildupScaffolds", StaticGameLOD, use_buildup_scaffolds),
+        FIELD_PARSE_BOOL("UseTreeSway", StaticGameLOD, use_tree_sway),
+        FIELD_PARSE_BOOL("UseEmissiveNightMaterials", StaticGameLOD, use_emissive_night_materials),
+        FIELD_PARSE_BOOL("UseHeatEffects", StaticGameLOD, use_heat_effects),
+        FIELD_PARSE_INT("TextureReductionFactor", StaticGameLOD, texture_reduction_factor),
+        FIELD_PARSE_LAST
     };
+    // clang-format on
 
     Utf8String token = ini->Get_Next_Token();
 
@@ -464,40 +466,43 @@ void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
     }
 }
 
+namespace
+{
+// clang-format off
+constexpr const char *const s_particle_prioritiy_names[] = {
+    "NONE",
+    "WEAPON_EXPLOSION",
+    "SCORCHMARK",
+    "DUST_TRAIL",
+    "BUILDUP",
+    "DEBRIS_TRAIL",
+    "UNIT_DAMAGE_FX",
+    "DEATH_EXPLOSION",
+    "SEMI_CONSTANT",
+    "CONSTANT",
+    "WEAPON_TRAIL",
+    "AREA_EFFECT",
+    "CRITICAL",
+    "ALWAYS_RENDER",
+    nullptr
+};
+// clang-format on
+} // namespace
+
 // Was originally INI::parseDynamicGameLODDefinition
 void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
 {
-    static const char *_particle_prioritiy_names[] = { "NONE",
-        "WEAPON_EXPLOSION",
-        "SCORCHMARK",
-        "DUST_TRAIL",
-        "BUILDUP",
-        "DEBRIS_TRAIL",
-        "UNIT_DAMAGE_FX",
-        "DEATH_EXPLOSION",
-        "SEMI_CONSTANT",
-        "CONSTANT",
-        "WEAPON_TRAIL",
-        "AREA_EFFECT",
-        "CRITICAL",
-        "ALWAYS_RENDER",
-        nullptr };
-
+    // clang-format off
     static const FieldParse _dynamic_lod_parsers[] = {
-        { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, minimum_fps) },
-        { "ParticleSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, particle_skip_mask) },
-        { "DebrisSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, debris_skip_mask) },
-        { "SlowDeathScale", &INI::Parse_Real, nullptr, offsetof(DynamicGameLOD, slow_death_scale) },
-        { "MinParticlePriority",
-            &INI::Parse_Index_List,
-            _particle_prioritiy_names,
-            offsetof(DynamicGameLOD, min_particle_priority) },
-        { "MinParticleSkipPriority",
-            &INI::Parse_Index_List,
-            _particle_prioritiy_names,
-            offsetof(DynamicGameLOD, min_particle_skip_priority) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_INT("MinimumFPS", DynamicGameLOD, minimum_fps),
+        FIELD_PARSE_INT("ParticleSkipMask", DynamicGameLOD, particle_skip_mask),
+        FIELD_PARSE_INT("DebrisSkipMask", DynamicGameLOD, debris_skip_mask),
+        FIELD_PARSE_REAL("SlowDeathScale", DynamicGameLOD, slow_death_scale),
+        FIELD_PARSE_INDEX_LIST("MinParticlePriority", s_particle_prioritiy_names, DynamicGameLOD, min_particle_priority),
+        FIELD_PARSE_INDEX_LIST("MinParticleSkipPriority", s_particle_prioritiy_names, DynamicGameLOD, min_particle_skip_priority),
+        FIELD_PARSE_LAST
     };
+    // clang-format on
 
     Utf8String token = ini->Get_Next_Token();
 
@@ -570,9 +575,9 @@ void GameLODManager::Parse_Static_Game_LOD_Level(INI *ini, void *formal, void *s
 {
     const char *str = ini->Get_Next_Token();
 
-    for (unsigned int i = 0; i < ARRAY_SIZE(g_staticGameLODNames); i++) {
+    for (StaticGameLODLevel i = StaticGameLODLevel(0); i < ARRAY_SIZE(g_staticGameLODNames); ++i) {
         if (!strcasecmp(str, g_staticGameLODNames[i])) {
-            *static_cast<unsigned int *>(store) = i;
+            *static_cast<StaticGameLODLevel *>(store) = i;
             return;
         }
     }

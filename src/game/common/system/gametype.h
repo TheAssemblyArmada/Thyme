@@ -252,16 +252,95 @@ enum Relationship
     ALLIES,
 };
 
-extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
-extern const char *g_weatherNames[WEATHER_COUNT + 1];
-extern const char *g_bodyDamageNames[BODY_COUNT + 1];
-extern const char *g_speakerTypes[SPEAKERS_COUNT + 1];
-extern const char *g_audioPriorityNames[PRIORITY_COUNT + 1];
-extern const char *g_buildableStatusNames[BSTATUS_COUNT + 1];
-extern const char *g_surfaceNames[SURFACE_COUNT + 1];
-extern const char *g_shakeIntensityNames[SHAKE_COUNT + 1];
-extern const char *g_weaponSlotNames[WEAPONSLOT_COUNT + 1];
-extern const char *g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1];
-extern const char *g_veterancyNames[VETERANCY_COUNT + 1];
+constexpr const char *const g_timeOfDayNames[TIME_OF_DAY_COUNT + 1] = {
+    "NONE",
+    "MORNING",
+    "AFTERNOON",
+    "EVENING",
+    "NIGHT",
+    nullptr,
+};
+
+constexpr const char *const g_weatherNames[WEATHER_COUNT + 1]{
+    "NORMAL",
+    "SNOWY",
+    nullptr,
+};
+
+constexpr const char *const g_bodyDamageNames[BODY_COUNT + 1] = {
+    "PRISTINE",
+    "DAMAGED",
+    "REALLYDAMAGED",
+    "RUBBLE",
+    nullptr,
+};
+
+constexpr const char *const g_speakerTypes[SPEAKERS_COUNT + 1] = {
+    "2 Speakers",
+    "Headphones",
+    "Surround Sound",
+    "4 Speaker",
+    "5.1 Surround",
+    "7.1 Surround",
+    nullptr,
+};
+
+constexpr const char *const g_audioPriorityNames[PRIORITY_COUNT + 1] = {
+    "LOWEST",
+    "LOW",
+    "NORMAL",
+    "HIGH",
+    "CRITICAL",
+    nullptr,
+};
+
+constexpr const char *const g_buildableStatusNames[BSTATUS_COUNT + 1] = {
+    "Yes",
+    "Ignore_Prerequisites",
+    "No",
+    "Only_By_AI",
+    nullptr,
+};
+
+constexpr const char *const g_surfaceNames[SURFACE_COUNT + 1] = {
+    "Ground",
+    "Air",
+    "Ground or Air",
+    nullptr,
+};
+
+constexpr const char *const g_shakeIntensityNames[SHAKE_COUNT + 1] = {
+    "Subtle",
+    "Normal",
+    "Strong",
+    "Severe",
+    "Cine_Extreme",
+    "Cine_Insane",
+    nullptr,
+};
+
+constexpr const char *const g_weaponSlotNames[WEAPONSLOT_COUNT + 1] = {
+    "PRIMARY",
+    "SECONDARY",
+    "TERTIARY",
+    nullptr,
+};
+
+constexpr const char *const g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1] = {
+    "FROM_PLAYER",
+    "FROM_SCRIPT",
+    "FROM_AI",
+    "FROM_DOZER",
+    "DEFAULT_SWITCH_WEAPON",
+    nullptr,
+};
+
+constexpr const char *const g_veterancyNames[VETERANCY_COUNT + 1] = {
+    "REGULAR",
+    "VETERAN",
+    "ELITE",
+    "HEROIC",
+    nullptr,
+};
 
 constexpr int32_t MAX_PLAYER_COUNT = 16;

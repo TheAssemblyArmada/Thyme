@@ -144,9 +144,9 @@ void ModelConditionInfo::Validate_Stuff(RenderObjClass *robj, float scale, std::
     Validate_Weapon_Barrel_Info();
 }
 
-bool Test_Animation_Flag(int flags, AnimationStateFlag flag)
+bool Test_Animation_Flag(uint32_t flags, AnimationStateFlag flag)
 {
-    return ((1 << flag) & flags) != 0;
+    return ((1u << flag) & flags) != 0;
 }
 
 bool Find_Single_Bone(RenderObjClass *r, Utf8String const &bone, Matrix3D &transform, int &index)
@@ -610,7 +610,7 @@ W3DModelDrawModuleData::W3DModelDrawModuleData() :
     m_attachToDrawableBoneOffsetSet(false),
     m_timeAndWeatherFlags(false),
     m_particlesAttachedToAnimatedBones(false),
-    m_projectileBoneFeedbackEnabledSlots(false),
+    m_projectileBoneFeedbackEnabledSlots(0),
     m_initialRecoil(2.0f),
     m_maxRecoil(3.0f),
     m_recoilDamping(0.4f),
@@ -724,7 +724,14 @@ const ModelConditionInfo *W3DModelDrawModuleData::Find_Best_Info(BitFlags<MODELC
     return m_conditionStateMap.Find_Best_Info(m_conditionStates, set_flags);
 }
 
-static const char *s_theWeaponSlotTypeNames[] = { "PRIMARY", "SECONDARY", "TERTIARY", nullptr };
+// clang-format off
+constexpr const char *const s_theWeaponSlotTypeNames[WEAPONSLOT_COUNT + 1] = {
+    "PRIMARY",
+    "SECONDARY",
+    "TERTIARY",
+    nullptr
+};
+// clang-format on
 
 void Parse_Ascii_String_LC(INI *ini, void *formal, void *store, void const *user_data)
 {
@@ -737,25 +744,25 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
     static const FieldParse dataFieldParse[] = {
-        { "InitialRecoilSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DModelDrawModuleData, m_initialRecoil) },
-        { "MaxRecoilDistance", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_maxRecoil) },
-        { "RecoilDamping", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_recoilDamping) },
-        { "RecoilSettleSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DModelDrawModuleData, m_recoilSettle) },
-        { "OkToChangeModelColor", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_okToChangeModelColor) },
-        { "AnimationsRequirePower", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_animationsRequirePower) },
-        { "ParticlesAttachedToAnimatedBones", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_particlesAttachedToAnimatedBones) },
-        { "MinLODRequired", &GameLODManager::Parse_Static_Game_LOD_Level, nullptr, offsetof(W3DModelDrawModuleData, m_minLodRequired) },
-        { "ProjectileBoneFeedbackEnabledSlots", &INI::Parse_Bitstring32, s_theWeaponSlotTypeNames, offsetof(W3DModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots) },
-        { "DefaultConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_DEFAULT), 0 },
-        { "ConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_NORMAL), 0 },
-        { "AliasConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_ALIAS), 0 },
-        { "TransitionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_TRANSITION), 0 },
-        { "TrackMarks", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_trackFile) },
-        { "ExtraPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, offsetof(W3DModelDrawModuleData, m_extraPublicBone) },
-        { "AttachToBoneInAnotherModule", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_attachToBoneInAnotherModule) },
-        { "IgnoreConditionStates", &BitFlags<117ul>::Parse_From_INI, nullptr, offsetof(W3DModelDrawModuleData, m_ignoreConditionStates) },
-        { "ReceivesDynamicLights", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_recievesDynamicLights) },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_VELOCITY_REAL("InitialRecoilSpeed", W3DModelDrawModuleData, m_initialRecoil),
+        FIELD_PARSE_REAL("MaxRecoilDistance", W3DModelDrawModuleData, m_maxRecoil),
+        FIELD_PARSE_REAL("RecoilDamping", W3DModelDrawModuleData, m_recoilDamping),
+        FIELD_PARSE_VELOCITY_REAL("RecoilSettleSpeed", W3DModelDrawModuleData, m_recoilSettle),
+        FIELD_PARSE_BOOL("OkToChangeModelColor", W3DModelDrawModuleData, m_okToChangeModelColor),
+        FIELD_PARSE_BOOL("AnimationsRequirePower", W3DModelDrawModuleData, m_animationsRequirePower),
+        FIELD_PARSE_BOOL("ParticlesAttachedToAnimatedBones", W3DModelDrawModuleData, m_particlesAttachedToAnimatedBones),
+        FIELD_PARSE_STATIC_GAME_LOD_LEVEL("MinLODRequired", W3DModelDrawModuleData, m_minLodRequired),
+        FIELD_PARSE_BITSTRING32("ProjectileBoneFeedbackEnabledSlots", s_theWeaponSlotTypeNames, W3DModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots),
+        FIELD_PARSE_W3D_CONDITION_STATE("DefaultConditionState", ParseCondStateType::PARSE_DEFAULT),
+        FIELD_PARSE_W3D_CONDITION_STATE("ConditionState", ParseCondStateType::PARSE_NORMAL),
+        FIELD_PARSE_W3D_CONDITION_STATE("AliasConditionState", ParseCondStateType::PARSE_ALIAS),
+        FIELD_PARSE_W3D_CONDITION_STATE("TransitionState", ParseCondStateType::PARSE_TRANSITION),
+        FIELD_PARSE_W3D_LOWER_ASCIISTRING("TrackMarks", W3DModelDrawModuleData, m_trackFile),
+        FIELD_PARSE_ASCIISTRING_VECTOR_APPEND("ExtraPublicBone", W3DModelDrawModuleData, m_extraPublicBone),
+        FIELD_PARSE_W3D_LOWER_ASCIISTRING("AttachToBoneInAnotherModule", W3DModelDrawModuleData, m_attachToBoneInAnotherModule),
+        FIELD_PARSE_BITFLAGS_FROM_INI("IgnoreConditionStates", W3DModelDrawModuleData, m_ignoreConditionStates),
+        FIELD_PARSE_BOOL("ReceivesDynamicLights", W3DModelDrawModuleData, m_recievesDynamicLights),
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -939,11 +946,19 @@ void Parse_Real_Range(INI *ini, void *instance, void *store, void const *user_da
     info->m_animationSpeedFactorMax = ini->Scan_Real(ini->Get_Next_Token());
 }
 
-static const char *s_theAnimModeNames[] = {
-    "MANUAL", "LOOP", "ONCE", "LOOP_PINGPONG", "LOOP_BACKWARDS", "ONCE_BACKWARDS", nullptr
+// clang-format off
+constexpr const char *const s_theAnimModeNames[] = {
+    "MANUAL",
+    "LOOP",
+    "ONCE",
+    "LOOP_PINGPONG",
+    "LOOP_BACKWARDS",
+    "ONCE_BACKWARDS",
+    nullptr
 };
 
-static const char *s_ACBitsNames[] = { "RANDOMSTART",
+constexpr const char *const s_ACBitsNames[] = {
+    "RANDOMSTART",
     "START_FRAME_FIRST",
     "START_FRAME_LAST",
     "ADJUST_HEIGHT_BY_CONSTRUCTION_PERCENT",
@@ -953,7 +968,9 @@ static const char *s_ACBitsNames[] = { "RANDOMSTART",
     "MAINTAIN_FRAME_ACROSS_STATES2",
     "MAINTAIN_FRAME_ACROSS_STATES3",
     "MAINTAIN_FRAME_ACROSS_STATES4",
-    nullptr };
+    nullptr
+};
+// clang-format on
 
 void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, void *store, void const *user_data)
 {
@@ -1101,32 +1118,33 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
     }
 
     // clang-format off
+    // wb: 0x00C1E910
     static const FieldParse myFieldParse[] = {
-        { "Model", &Parse_Ascii_String_LC, nullptr, offsetof(ModelConditionInfo, m_modelName) },
-        { "Turret", &Parse_Bone_Name_Key, nullptr, offsetof(ModelConditionInfo, m_turretInfo[0].m_turretAngleName) },
-        { "TurretArtAngle", &INI::Parse_Angle_Real, nullptr, offsetof(ModelConditionInfo, m_turretInfo[0].m_turretArtAngle) },
-        { "TurretPitch", &Parse_Bone_Name_Key, nullptr, offsetof(ModelConditionInfo, m_turretInfo[0].m_turretPitchName) },
-        { "TurretArtPitch", &INI::Parse_Angle_Real, nullptr, offsetof(ModelConditionInfo, m_turretInfo[0].m_turretArtPitch) },
-        { "AltTurret", &Parse_Bone_Name_Key, nullptr, offsetof(ModelConditionInfo, m_turretInfo[1].m_turretAngleName) },
-        { "AltTurretArtAngle", &INI::Parse_Angle_Real, nullptr, offsetof(ModelConditionInfo, m_turretInfo[1].m_turretArtAngle) },
-        { "AltTurretPitch", &Parse_Bone_Name_Key, nullptr, offsetof(ModelConditionInfo, m_turretInfo[1].m_turretPitchName) },
-        { "AltTurretArtPitch", &INI::Parse_Angle_Real, nullptr, offsetof(ModelConditionInfo, m_turretInfo[1].m_turretArtPitch) },
-        { "ShowSubObject", &Parse_Show_Hide_Sub_Object, reinterpret_cast<const void *>(0), offsetof(ModelConditionInfo, m_hideShowVec) },
-        { "HideSubObject", &Parse_Show_Hide_Sub_Object, reinterpret_cast<const void *>(1), offsetof(ModelConditionInfo, m_hideShowVec) },
-        { "WeaponFireFXBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponFireFXBoneName) },
-        { "WeaponRecoilBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponRecoilBoneName) },
-        { "WeaponMuzzleFlash", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponMuzzleFlashName) },
-        { "WeaponLaunchBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponLaunchBoneName) },
-        { "WeaponHideShowBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponHideShowBoneName) },
-        { "Animation", &Parse_Animation, reinterpret_cast<const void *>(0), offsetof(ModelConditionInfo, m_animations) },
-        { "IdleAnimation", &Parse_Animation, reinterpret_cast<const void *>(1), offsetof(ModelConditionInfo, m_animations) },
-        { "AnimationMode", &INI::Parse_Index_List, s_theAnimModeNames, offsetof(ModelConditionInfo, m_mode) },
-        { "TransitionKey", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_transitionKey) },
-        { "WaitForStateToFinishIfPossible", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_allowToFinishKey) },
-        { "Flags", &INI::Parse_Bitstring32, &s_ACBitsNames, offsetof(ModelConditionInfo, m_flags) },
-        { "ParticleSysBone", &Parse_Particle_Sys_Bone, nullptr, 0 },
-        { "AnimationSpeedFactorRange", &Parse_Real_Range, nullptr, 0 },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_W3D_LOWER_ASCIISTRING("Model", ModelConditionInfo, m_modelName),
+        FIELD_PARSE_W3D_BONE_NAME_KEY("Turret", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_MAIN].m_turretAngleName),
+        FIELD_PARSE_ANGLE_REAL("TurretArtAngle", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_MAIN].m_turretArtAngle),
+        FIELD_PARSE_W3D_BONE_NAME_KEY("TurretPitch", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_MAIN].m_turretPitchName),
+        FIELD_PARSE_ANGLE_REAL("TurretArtPitch", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_MAIN].m_turretArtPitch),
+        FIELD_PARSE_W3D_BONE_NAME_KEY("AltTurret", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_ALT].m_turretAngleName),
+        FIELD_PARSE_ANGLE_REAL("AltTurretArtAngle", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_ALT].m_turretArtAngle),
+        FIELD_PARSE_W3D_BONE_NAME_KEY("AltTurretPitch", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_ALT].m_turretPitchName),
+        FIELD_PARSE_ANGLE_REAL("AltTurretArtPitch", ModelConditionInfo, m_turretInfo[WhichTurretType::TURRET_ALT].m_turretArtPitch),
+        FIELD_PARSE_W3D_SHOW_HIDE_SUB_OBJECT("ShowSubObject", false, ModelConditionInfo, m_hideShowVec),
+        FIELD_PARSE_W3D_SHOW_HIDE_SUB_OBJECT("HideSubObject", true, ModelConditionInfo, m_hideShowVec),
+        FIELD_PARSE_W3D_WEAPON_BONE_NAME("WeaponFireFXBone", ModelConditionInfo, m_weaponFireFXBoneName),
+        FIELD_PARSE_W3D_WEAPON_BONE_NAME("WeaponRecoilBone", ModelConditionInfo, m_weaponRecoilBoneName),
+        FIELD_PARSE_W3D_WEAPON_BONE_NAME("WeaponMuzzleFlash", ModelConditionInfo, m_weaponMuzzleFlashName),
+        FIELD_PARSE_W3D_WEAPON_BONE_NAME("WeaponLaunchBone", ModelConditionInfo, m_weaponLaunchBoneName),
+        FIELD_PARSE_W3D_WEAPON_BONE_NAME("WeaponHideShowBone", ModelConditionInfo, m_weaponHideShowBoneName),
+        FIELD_PARSE_W3D_ANIMATION("Animation", 0, ModelConditionInfo, m_animations),
+        FIELD_PARSE_W3D_ANIMATION("IdleAnimation", 1, ModelConditionInfo, m_animations),
+        FIELD_PARSE_INDEX_LIST("AnimationMode", s_theAnimModeNames, ModelConditionInfo, m_mode),
+        FIELD_PARSE_W3D_LOWER_NAME_KEY("TransitionKey", ModelConditionInfo, m_transitionKey),
+        FIELD_PARSE_W3D_LOWER_NAME_KEY("WaitForStateToFinishIfPossible", ModelConditionInfo, m_allowToFinishKey),
+        FIELD_PARSE_BITSTRING32("Flags", s_ACBitsNames, ModelConditionInfo, m_flags),
+        FIELD_PARSE_W3D_PARTICLE_SYS_BONE("ParticleSysBone"),
+        FIELD_PARSE_W3D_REAL_RANGE("AnimationSpeedFactorRange"),
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -1474,17 +1492,17 @@ const ModelConditionInfo *W3DModelDraw::Find_Transition_For_Sig(uint64_t sig) co
 
 namespace
 {
-constexpr int g_maintain_frame_across_states_flags = (1 << MAINTAIN_FRAME_ACROSS_STATES)
-    | (1 << MAINTAIN_FRAME_ACROSS_STATES2) | (1 << MAINTAIN_FRAME_ACROSS_STATES3)
-    | (1 << MAINTAIN_FRAME_ACROSS_STATES4); // 0x3A0
+constexpr uint32_t g_maintain_frame_across_states_flags = (1u << MAINTAIN_FRAME_ACROSS_STATES)
+    | (1u << MAINTAIN_FRAME_ACROSS_STATES2) | (1u << MAINTAIN_FRAME_ACROSS_STATES3)
+    | (1u << MAINTAIN_FRAME_ACROSS_STATES4); // 0x3A0
 }
 
-bool Maintain_Frame_Across_States(int flags)
+bool Maintain_Frame_Across_States(uint32_t flags)
 {
     return (flags & g_maintain_frame_across_states_flags) != 0;
 }
 
-bool Maintain_Frame_Across_States_2(int flags, int flags2)
+bool Maintain_Frame_Across_States_2(uint32_t flags, uint32_t flags2)
 {
     return (flags2 & flags & g_maintain_frame_across_states_flags) != 0;
 }
@@ -2813,7 +2831,7 @@ bool W3DModelDraw::Is_Visible() const
 
 void W3DModelDraw::Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot)
 {
-    if (((1 << wslot) & Get_W3D_Model_Draw_Module_Data()->m_projectileBoneFeedbackEnabledSlots) != 0) {
+    if (((1u << wslot) & Get_W3D_Model_Draw_Module_Data()->m_projectileBoneFeedbackEnabledSlots) != 0) {
         Do_Hide_Show_Projectile_Objects(show, count, wslot);
     }
 }

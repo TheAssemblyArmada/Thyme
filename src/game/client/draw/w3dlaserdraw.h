@@ -35,15 +35,15 @@ public:
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
-    int m_innerColor;
-    int m_outerColor;
+    int32_t m_innerColor;
+    int32_t m_outerColor;
     float m_innerBeamWidth;
     float m_outerBeamWidth;
     float m_scrollRate;
     bool m_tile;
     unsigned int m_numBeams;
-    int m_maxIntensityFrames;
-    int m_fadeFrames;
+    uint32_t m_maxIntensityFrames;
+    uint32_t m_fadeFrames;
     Utf8String m_textureName;
     unsigned int m_segments;
     float m_arcHeight;

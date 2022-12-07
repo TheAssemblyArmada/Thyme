@@ -242,7 +242,7 @@ constexpr const char *DistributionTypeNames[] = {
 };
 
 // zh: 0x0041D9F0 wb: 0x007A4B4C
-void GameClientRandomVariable::Parse(INI *ini, void *, void *store, const void *)
+void GameClientRandomVariable::Parse(INI *ini, void *formal, void *store, const void *user_data)
 {
     const auto min = ini->Scan_Real(ini->Get_Next_Token());
     const auto max = ini->Scan_Real(ini->Get_Next_Token());

@@ -16,7 +16,7 @@
 #include "ini.h"
 #include "particlesysmanager.h"
 
-constexpr const char *ParticlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
+constexpr const char *const ParticlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
     "NONE",
     "WEAPON_EXPLOSION",
     "SCORCHMARK",
@@ -34,7 +34,7 @@ constexpr const char *ParticlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
     nullptr,
 };
 
-constexpr const char *ParticleShaderTypeNames[] = {
+constexpr const char *const ParticleShaderTypeNames[] = {
     "NONE",
     "ADDITIVE",
     "ALPHA",
@@ -43,7 +43,7 @@ constexpr const char *ParticleShaderTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *ParticleTypeNames[] = {
+constexpr const char *const ParticleTypeNames[] = {
     "NONE",
     "PARTICLE",
     "DRAWABLE",
@@ -53,7 +53,7 @@ constexpr const char *ParticleTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *EmissionVelocityTypeNames[] = {
+constexpr const char *const EmissionVelocityTypeNames[] = {
     "NONE",
     "ORTHO",
     "SPHERICAL",
@@ -63,7 +63,7 @@ constexpr const char *EmissionVelocityTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *EmssionVolumeTypeNames[] = {
+constexpr const char *const EmssionVolumeTypeNames[] = {
     "NONE",
     "POINT",
     "LINE",
@@ -73,7 +73,7 @@ constexpr const char *EmssionVolumeTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *WindMotionTypeNames[] = {
+constexpr const char *const WindMotionTypeNames[] = {
     "NONE",
     "Unused",
     "PingPong",
@@ -83,90 +83,90 @@ constexpr const char *WindMotionTypeNames[] = {
 
 // clang-format off
 const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
-     { "Priority", &INI::Parse_Index_List,  ParticlePriorityNames,  offsetof(ParticleSystemTemplate, m_priority) },
-     { "IsOneShot", &INI::Parse_Bool,  nullptr,  offsetof(ParticleSystemTemplate, m_isOneShot) },
-     { "Shader", &INI::Parse_Index_List,  ParticleShaderTypeNames,  offsetof(ParticleSystemTemplate, m_shaderType) },
-     { "Type", &INI::Parse_Index_List,  ParticleTypeNames,  offsetof(ParticleSystemTemplate, m_particleType) },
-     { "ParticleName", &INI::Parse_AsciiString,  nullptr,  offsetof(ParticleSystemTemplate, m_particleTypeName) },
+     FIELD_PARSE_INDEX_LIST("Priority", ParticlePriorityNames, ParticleSystemTemplate, m_priority),
+     FIELD_PARSE_BOOL("IsOneShot", ParticleSystemTemplate, m_isOneShot),
+     FIELD_PARSE_INDEX_LIST("Shader", ParticleShaderTypeNames, ParticleSystemTemplate, m_shaderType),
+     FIELD_PARSE_INDEX_LIST("Type", ParticleTypeNames, ParticleSystemTemplate, m_particleType),
+     FIELD_PARSE_ASCIISTRING("ParticleName", ParticleSystemTemplate, m_particleTypeName),
 #ifndef GAME_DLL
-     { "AngleX", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angleX) },
-     { "AngleY", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angleY) },
+     FIELD_PARSE_RANDOM_VARIABLE("AngleX", ParticleSystemTemplate, m_angleX),
+     FIELD_PARSE_RANDOM_VARIABLE("AngleY", ParticleSystemTemplate, m_angleY),
 #endif
-     { "AngleZ", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angleZ) },
+     FIELD_PARSE_RANDOM_VARIABLE("AngleZ", ParticleSystemTemplate, m_angleZ),
 #ifndef GAME_DLL
-     { "AngularRateX", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularRateX) },
-     { "AngularRateY", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularRateY) },
+     FIELD_PARSE_RANDOM_VARIABLE("AngularRateX", ParticleSystemTemplate, m_angularRateX),
+     FIELD_PARSE_RANDOM_VARIABLE("AngularRateY", ParticleSystemTemplate, m_angularRateY),
 #endif
-     { "AngularRateZ", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularRateZ) },
-     { "AngularDamping", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularDamping) },
-     { "VelocityDamping", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_velDamping) },
-     { "Gravity", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_gravity) },
-     { "SlaveSystem", &INI::Parse_AsciiString,  nullptr,  offsetof(ParticleSystemTemplate, m_slaveSystemName) },
-     { "SlavePosOffset", &INI::Parse_Coord3D,  nullptr,  offsetof(ParticleSystemTemplate, m_slavePosOffset) },
-     { "PerParticleAttachedSystem", &INI::Parse_AsciiString,  nullptr,  offsetof(ParticleSystemTemplate, m_attachedSystemName) },
-     { "Lifetime", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_lifetime) },
-     { "SystemLifetime", &INI::Parse_Unsigned_Int,  nullptr,  offsetof(ParticleSystemTemplate, m_systemLifetime) },
-     { "Size", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_startSize) },
-     { "StartSizeRate", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_startSizeRate) },
-     { "SizeRate", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_sizeRate) },
-     { "SizeRateDamping", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_sizeRateDamping) },
-     { "Alpha1", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[0]) },
-     { "Alpha2", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[1]) },
-     { "Alpha3", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[2]) },
-     { "Alpha4", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[3]) },
-     { "Alpha5", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[4]) },
-     { "Alpha6", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[5]) },
-     { "Alpha7", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[6]) },
-     { "Alpha8", &ParticleSystemTemplate::Parse_Random_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_alphaKey[7]) },
-     { "Color1", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[0]) },
-     { "Color2", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[1]) },
-     { "Color3", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[2]) },
-     { "Color4", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[3]) },
-     { "Color5", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[4]) },
-     { "Color6", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[5]) },
-     { "Color7", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[6]) },
-     { "Color8", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe,  nullptr,  offsetof(ParticleSystemTemplate, m_colorKey[7]) },
-     { "ColorScale", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_colorScale) },
-     { "BurstDelay", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_burstDelay) },
-     { "BurstCount", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_burstCount) },
-     { "InitialDelay", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_initialDelay) },
-     { "DriftVelocity", &INI::Parse_Coord3D,  nullptr,  offsetof(ParticleSystemTemplate, m_driftVelocity) },
-     { "VelocityType", &INI::Parse_Index_List,  EmissionVelocityTypeNames,  offsetof(ParticleSystemTemplate, m_emissionVelocityType) },
-     { "VelOrthoX", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.ortho.x) },
-     { "VelOrthoY", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.ortho.y) },
-     { "VelOrthoZ", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.ortho.z) },
-     { "VelSpherical", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.spherical) },
-     { "VelHemispherical", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.hemispherical) },
-     { "VelCylindricalRadial", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.cylindrical.radial) },
-     { "VelCylindricalNormal", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.cylindrical.normal) },
-     { "VelOutward", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.outward.outward) },
-     { "VelOutwardOther", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVelocity.outward.other) },
-     { "VolumeType", &INI::Parse_Index_List,  EmssionVolumeTypeNames,  offsetof(ParticleSystemTemplate, m_emissionVolumeType) },
-     { "VolLineStart", &INI::Parse_Coord3D,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVolume.line.start) },
-     { "VolLineEnd", &INI::Parse_Coord3D,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVolume.line.end) },
-     { "VolBoxHalfSize", &INI::Parse_Coord3D,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVolume.box) },
-     { "VolSphereRadius", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVolume.sphere) },
-     { "VolCylinderRadius", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVolume.cylinder.radius) },
-     { "VolCylinderLength", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_emissionVolume.cylinder.length) },
-     { "IsHollow", &INI::Parse_Bool,  nullptr,  offsetof(ParticleSystemTemplate, m_isEmissionVolumeHollow) },
-     { "IsGroundAligned", &INI::Parse_Bool,  nullptr,  offsetof(ParticleSystemTemplate, m_isGroundAligned) },
-     { "IsEmitAboveGroundOnly", &INI::Parse_Bool,  nullptr,  offsetof(ParticleSystemTemplate, m_isEmitAboveGroundOnly) },
-     { "IsParticleUpTowardsEmitter", &INI::Parse_Bool,  nullptr,  offsetof(ParticleSystemTemplate, m_isParticleUpTowardsEmitter) },
-     { "WindMotion", &INI::Parse_Index_List,  WindMotionTypeNames,  offsetof(ParticleSystemTemplate, m_windMotion) },
-     { "WindAngleChangeMin", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_windAngleChangeMin) },
-     { "WindAngleChangeMax", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_windAngleChangeMax) },
-     { "WindPingPongStartAngleMin", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_windMotionStartAngleMin) },
-     { "WindPingPongStartAngleMax", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_windMotionStartAngleMax) },
-     { "WindPingPongEndAngleMin", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_windMotionEndAngleMin) },
-     { "WindPingPongEndAngleMax", &INI::Parse_Real,  nullptr,  offsetof(ParticleSystemTemplate, m_windMotionEndAngleMax) },
-     { nullptr, nullptr,  nullptr,  0 },
+     FIELD_PARSE_RANDOM_VARIABLE("AngularRateZ", ParticleSystemTemplate, m_angularRateZ),
+     FIELD_PARSE_RANDOM_VARIABLE("AngularDamping", ParticleSystemTemplate, m_angularDamping),
+     FIELD_PARSE_RANDOM_VARIABLE("VelocityDamping", ParticleSystemTemplate, m_velDamping),
+     FIELD_PARSE_REAL("Gravity", ParticleSystemTemplate, m_gravity),
+     FIELD_PARSE_ASCIISTRING("SlaveSystem", ParticleSystemTemplate, m_slaveSystemName),
+     FIELD_PARSE_COORD3D("SlavePosOffset", ParticleSystemTemplate, m_slavePosOffset),
+     FIELD_PARSE_ASCIISTRING("PerParticleAttachedSystem", ParticleSystemTemplate, m_attachedSystemName),
+     FIELD_PARSE_RANDOM_VARIABLE("Lifetime", ParticleSystemTemplate, m_lifetime),
+     FIELD_PARSE_UNSIGNED_INT("SystemLifetime", ParticleSystemTemplate, m_systemLifetime),
+     FIELD_PARSE_RANDOM_VARIABLE("Size", ParticleSystemTemplate, m_startSize),
+     FIELD_PARSE_RANDOM_VARIABLE("StartSizeRate", ParticleSystemTemplate, m_startSizeRate),
+     FIELD_PARSE_RANDOM_VARIABLE("SizeRate", ParticleSystemTemplate, m_sizeRate),
+     FIELD_PARSE_RANDOM_VARIABLE("SizeRateDamping", ParticleSystemTemplate, m_sizeRateDamping),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha1", ParticleSystemTemplate, m_alphaKey[0]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha2", ParticleSystemTemplate, m_alphaKey[1]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha3", ParticleSystemTemplate, m_alphaKey[2]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha4", ParticleSystemTemplate, m_alphaKey[3]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha5", ParticleSystemTemplate, m_alphaKey[4]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha6", ParticleSystemTemplate, m_alphaKey[5]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha7", ParticleSystemTemplate, m_alphaKey[6]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha8", ParticleSystemTemplate, m_alphaKey[7]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color1", ParticleSystemTemplate, m_colorKey[0]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color2", ParticleSystemTemplate, m_colorKey[1]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color3", ParticleSystemTemplate, m_colorKey[2]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color4", ParticleSystemTemplate, m_colorKey[3]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color5", ParticleSystemTemplate, m_colorKey[4]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color6", ParticleSystemTemplate, m_colorKey[5]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color7", ParticleSystemTemplate, m_colorKey[6]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color8", ParticleSystemTemplate, m_colorKey[7]),
+     FIELD_PARSE_RANDOM_VARIABLE("ColorScale", ParticleSystemTemplate, m_colorScale),
+     FIELD_PARSE_RANDOM_VARIABLE("BurstDelay", ParticleSystemTemplate, m_burstDelay),
+     FIELD_PARSE_RANDOM_VARIABLE("BurstCount", ParticleSystemTemplate, m_burstCount),
+     FIELD_PARSE_RANDOM_VARIABLE("InitialDelay", ParticleSystemTemplate, m_initialDelay),
+     FIELD_PARSE_COORD3D("DriftVelocity", ParticleSystemTemplate, m_driftVelocity),
+     FIELD_PARSE_INDEX_LIST("VelocityType", EmissionVelocityTypeNames, ParticleSystemTemplate, m_emissionVelocityType),
+     FIELD_PARSE_RANDOM_VARIABLE("VelOrthoX", ParticleSystemTemplate, m_emissionVelocity.ortho.x),
+     FIELD_PARSE_RANDOM_VARIABLE("VelOrthoY", ParticleSystemTemplate, m_emissionVelocity.ortho.y),
+     FIELD_PARSE_RANDOM_VARIABLE("VelOrthoZ", ParticleSystemTemplate, m_emissionVelocity.ortho.z),
+     FIELD_PARSE_RANDOM_VARIABLE("VelSpherical", ParticleSystemTemplate, m_emissionVelocity.spherical),
+     FIELD_PARSE_RANDOM_VARIABLE("VelHemispherical", ParticleSystemTemplate, m_emissionVelocity.hemispherical),
+     FIELD_PARSE_RANDOM_VARIABLE("VelCylindricalRadial", ParticleSystemTemplate, m_emissionVelocity.cylindrical.radial),
+     FIELD_PARSE_RANDOM_VARIABLE("VelCylindricalNormal", ParticleSystemTemplate, m_emissionVelocity.cylindrical.normal),
+     FIELD_PARSE_RANDOM_VARIABLE("VelOutward", ParticleSystemTemplate, m_emissionVelocity.outward.outward),
+     FIELD_PARSE_RANDOM_VARIABLE("VelOutwardOther", ParticleSystemTemplate, m_emissionVelocity.outward.other),
+     FIELD_PARSE_INDEX_LIST("VolumeType", EmssionVolumeTypeNames, ParticleSystemTemplate, m_emissionVolumeType),
+     FIELD_PARSE_COORD3D("VolLineStart", ParticleSystemTemplate, m_emissionVolume.line.start),
+     FIELD_PARSE_COORD3D("VolLineEnd", ParticleSystemTemplate, m_emissionVolume.line.end),
+     FIELD_PARSE_COORD3D("VolBoxHalfSize", ParticleSystemTemplate, m_emissionVolume.box),
+     FIELD_PARSE_REAL("VolSphereRadius", ParticleSystemTemplate, m_emissionVolume.sphere),
+     FIELD_PARSE_REAL("VolCylinderRadius", ParticleSystemTemplate, m_emissionVolume.cylinder.radius),
+     FIELD_PARSE_REAL("VolCylinderLength", ParticleSystemTemplate, m_emissionVolume.cylinder.length),
+     FIELD_PARSE_BOOL("IsHollow", ParticleSystemTemplate, m_isEmissionVolumeHollow),
+     FIELD_PARSE_BOOL("IsGroundAligned", ParticleSystemTemplate, m_isGroundAligned),
+     FIELD_PARSE_BOOL("IsEmitAboveGroundOnly", ParticleSystemTemplate, m_isEmitAboveGroundOnly),
+     FIELD_PARSE_BOOL("IsParticleUpTowardsEmitter", ParticleSystemTemplate, m_isParticleUpTowardsEmitter),
+     FIELD_PARSE_INDEX_LIST("WindMotion", WindMotionTypeNames, ParticleSystemTemplate, m_windMotion),
+     FIELD_PARSE_REAL("WindAngleChangeMin", ParticleSystemTemplate, m_windAngleChangeMin),
+     FIELD_PARSE_REAL("WindAngleChangeMax", ParticleSystemTemplate, m_windAngleChangeMax),
+     FIELD_PARSE_REAL("WindPingPongStartAngleMin", ParticleSystemTemplate, m_windMotionStartAngleMin),
+     FIELD_PARSE_REAL("WindPingPongStartAngleMax", ParticleSystemTemplate, m_windMotionStartAngleMax),
+     FIELD_PARSE_REAL("WindPingPongEndAngleMin", ParticleSystemTemplate, m_windMotionEndAngleMin),
+     FIELD_PARSE_REAL("WindPingPongEndAngleMax", ParticleSystemTemplate, m_windMotionEndAngleMax),
+     FIELD_PARSE_LAST
 };
 // clang-format on
 
 /**
  * @brief Parses random keyframe data.
  *
- * 0x004D1540;
+ * zh: 0x004D1540;
  */
 void ParticleSystemTemplate::Parse_Random_Keyframe(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -183,7 +183,7 @@ void ParticleSystemTemplate::Parse_Random_Keyframe(INI *ini, void *formal, void 
 /**
  * @brief Parses RGB key frame data.
  *
- * 0x004D15A0;
+ * zh: 0x004D15A0;
  */
 void ParticleSystemTemplate::Parse_RGB_Color_Keyframe(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -193,7 +193,7 @@ void ParticleSystemTemplate::Parse_RGB_Color_Keyframe(INI *ini, void *formal, vo
 }
 
 // zh: 0x0041CD00 wb: 0x007A3AE0
-void ParticleSystemTemplate::Parse(INI *ini, void *, void *store, const void *)
+void ParticleSystemTemplate::Parse(INI *ini, void *formal, void *store, const void *user_data)
 {
     Utf8String template_name = ini->Get_Next_Token();
 

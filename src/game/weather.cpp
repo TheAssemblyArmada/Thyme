@@ -19,20 +19,24 @@
 Override<WeatherSetting> g_theWeatherSetting;
 #endif
 
-const FieldParse WeatherSetting::s_weatherSettingParseTable[] = { { "SnowTexture", &INI::Parse_AsciiString, nullptr, 12 },
-    { "SnowFrequencyScaleX", &INI::Parse_Real, nullptr, 16 },
-    { "SnowFrequencyScaleY", &INI::Parse_Real, nullptr, 20 },
-    { "SnowAmplitude", &INI::Parse_Real, nullptr, 24 },
-    { "SnowPointSize", &INI::Parse_Real, nullptr, 28 },
-    { "SnowMaxPointSize", &INI::Parse_Real, nullptr, 32 },
-    { "SnowMinPointSize", &INI::Parse_Real, nullptr, 36 },
-    { "SnowQuadSize", &INI::Parse_Real, nullptr, 40 },
-    { "SnowBoxDimensions", &INI::Parse_Real, nullptr, 44 },
-    { "SnowBoxDensity", &INI::Parse_Real, nullptr, 48 },
-    { "SnowVelocity", &INI::Parse_Real, nullptr, 52 },
-    { "SnowPointSprites", &INI::Parse_Bool, nullptr, 56 },
-    { "SnowEnabled", &INI::Parse_Bool, nullptr, 57 },
-    { nullptr, nullptr, nullptr, 0 } };
+// clang-format off
+const FieldParse WeatherSetting::s_weatherSettingParseTable[] = {
+    FIELD_PARSE_ASCIISTRING("SnowTexture", WeatherSetting, m_snowTexture),
+    FIELD_PARSE_REAL("SnowFrequencyScaleX", WeatherSetting, m_snowFreqScaleX),
+    FIELD_PARSE_REAL("SnowFrequencyScaleY", WeatherSetting, m_snowFreqScaleY),
+    FIELD_PARSE_REAL("SnowAmplitude", WeatherSetting, m_snowAmplitude),
+    FIELD_PARSE_REAL("SnowPointSize", WeatherSetting, m_snowPointSize),
+    FIELD_PARSE_REAL("SnowMaxPointSize", WeatherSetting, m_snowMaxPointSize),
+    FIELD_PARSE_REAL("SnowMinPointSize", WeatherSetting, m_snowMinPointSize),
+    FIELD_PARSE_REAL("SnowQuadSize", WeatherSetting, m_snowQuadSize),
+    FIELD_PARSE_REAL("SnowBoxDimensions", WeatherSetting, m_snowBoxDimensions),
+    FIELD_PARSE_REAL("SnowBoxDensity", WeatherSetting, m_snowBoxDensity),
+    FIELD_PARSE_REAL("SnowVelocity", WeatherSetting, m_snowVelocity),
+    FIELD_PARSE_BOOL("SnowPointSprites", WeatherSetting, m_snowPointSprites),
+    FIELD_PARSE_BOOL("SnowEnabled", WeatherSetting, m_snowEnabled),
+    FIELD_PARSE_LAST
+};
+// clang-format on
 
 WeatherSetting::WeatherSetting() :
     m_snowTexture("EXSnowFlake.tga"),

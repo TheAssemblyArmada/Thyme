@@ -24,19 +24,19 @@ DrawGroupInfo *g_theDrawGroupInfo;
 
 // clang-format off
 const FieldParse DrawGroupInfo::s_parseTable[] = {
-    {"UsePlayerColor", &INI::Parse_Bool, nullptr, offsetof(DrawGroupInfo, m_usePlayerColor)},
-    {"ColorForText", &INI::Parse_Color_Int, nullptr, offsetof(DrawGroupInfo, m_colorForText)},
-    {"ColorForTextDropShadow", &INI::Parse_Color_Int, nullptr, offsetof(DrawGroupInfo, m_colorForTextDropShadow)},
-    {"FontName", &INI::Parse_Quoted_AsciiString, nullptr, offsetof(DrawGroupInfo, m_fontName)},
-    {"FontSize", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_fontSize)},
-    {"FontIsBold", &INI::Parse_Bool, nullptr, offsetof(DrawGroupInfo, m_fontIsBold)},
-    {"DropShadowOffsetX", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_dropShadowOffsetX)},
-    {"DropShadowOffsetY", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_dropShadowOffsetY)},
+    FIELD_PARSE_BOOL("UsePlayerColor", DrawGroupInfo, m_usePlayerColor),
+    FIELD_PARSE_COLOR_INT("ColorForText", DrawGroupInfo, m_colorForText),
+    FIELD_PARSE_COLOR_INT("ColorForTextDropShadow", DrawGroupInfo, m_colorForTextDropShadow),
+    FIELD_PARSE_QUOTED_ASCIISTRING("FontName", DrawGroupInfo, m_fontName),
+    FIELD_PARSE_INT("FontSize", DrawGroupInfo, m_fontSize),
+    FIELD_PARSE_BOOL("FontIsBold", DrawGroupInfo, m_fontIsBold),
+    FIELD_PARSE_INT("DropShadowOffsetX", DrawGroupInfo, m_dropShadowOffsetX),
+    FIELD_PARSE_INT("DropShadowOffsetY", DrawGroupInfo, m_dropShadowOffsetY),
     {"DrawPositionXPixel", &Parse_Int, reinterpret_cast<const void *>(0), 0},
     {"DrawPositionXPercent", &Parse_Percent_To_Real, reinterpret_cast<const void *>(0), 0},
     {"DrawPositionYPixel", &Parse_Int, reinterpret_cast<const void *>(1), 0},
     {"DrawPositionYPercent", &Parse_Percent_To_Real, reinterpret_cast<const void *>(1), 0},
-    {nullptr, nullptr, nullptr, 0}
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

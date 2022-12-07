@@ -22,12 +22,14 @@ using GameMath::Floor;
 MultiplayerSettings *g_theMultiplayerSettings = nullptr;
 #endif
 
+// clang-format off
 const FieldParse MultiplayerColorDefinition::s_colorFieldParsetable[] = {
-    { "TooltipName", &INI::Parse_AsciiString, nullptr, offsetof(MultiplayerColorDefinition, m_tooltipName) },
-    { "RGBColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbValue) },
-    { "RGBNightColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbNightValue) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_ASCIISTRING("TooltipName", MultiplayerColorDefinition, m_tooltipName),
+    FIELD_PARSE_RGB_COLOR("RGBColor", MultiplayerColorDefinition, m_rgbValue),
+    FIELD_PARSE_RGB_COLOR("RGBNightColor", MultiplayerColorDefinition, m_rgbNightValue),
+    FIELD_PARSE_LAST
 };
+// clang-format on
 
 void MultiplayerColorDefinition::Set_Color(RGBColor rgb)
 {

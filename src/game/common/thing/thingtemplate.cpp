@@ -26,16 +26,38 @@
 #include "productionprerequisite.h"
 #include "w3dshadow.h"
 #include <cstring>
+
 using std::strcpy;
 using std::strncpy;
 
-static const char *s_radarPriorityNames[] = { "INVALID", "NOT_ON_RADAR", "STRUCTURE", "UNIT", "LOCAL_UNIT_ONLY", nullptr };
+// clang-format off
+constexpr const char *const s_radarPriorityNames[] =
+{
+    "INVALID",
+    "NOT_ON_RADAR",
+    "STRUCTURE",
+    "UNIT",
+    "LOCAL_UNIT_ONLY",
+    nullptr
+};
 
-static const char *s_buildableStatusNames[] = { "Yes", "Ignore_Prerequisites", "No", "Only_By_AI", nullptr };
+constexpr const char *const s_buildableStatusNames[] = {
+    "Yes",
+    "Ignore_Prerequisites",
+    "No",
+    "Only_By_AI",
+    nullptr
+};
 
-static const char *s_buildCompletionNames[] = { "INVALID", "APPEARS_AT_RALLY_POINT", "PLACED_BY_PLAYER", nullptr };
+constexpr const char *const s_buildCompletionNames[] = {
+    "INVALID",
+    "APPEARS_AT_RALLY_POINT",
+    "PLACED_BY_PLAYER",
+    nullptr
+};
 
-static const char *s_editorSortingNames[] = { "NONE",
+constexpr const char *const s_editorSortingNames[] = {
+    "NONE",
     "STRUCTURE",
     "INFANTRY",
     "VEHICLE",
@@ -49,149 +71,152 @@ static const char *s_editorSortingNames[] = { "NONE",
     "FOR_REVIEW",
     "ROAD",
     "WAYPOINT",
-    nullptr };
+    nullptr
+};
 
-static const char *s_theShadowNames[] = { "SHADOW_DECAL",
+constexpr const char *const s_theShadowNames[] = {
+    "SHADOW_DECAL",
     "SHADOW_VOLUME",
     "SHADOW_PROJECTION",
     "SHADOW_DYNAMIC_PROJECTION",
     "SHADOW_DIRECTIONAL_PROJECTION",
     "SHADOW_ALPHA_DECAL",
     "SHADOW_ADDITIVE_DECAL",
-    nullptr };
+    nullptr
+};
 
 #ifndef GAME_DLL
 AudioEventRTS ThingTemplate::s_audioEventNoSound;
 #endif
 
-// clang-format off
+// wb: 0x00C24648
 const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
-    {"DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ThingTemplate, m_displayName)},
-    {"RadarPriority", &INI::Parse_Byte_Sized_Index_List, &s_radarPriorityNames, offsetof(ThingTemplate, m_radarPriority)},
-    {"TransportSlotCount", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_transportSlotCount)},
-    {"FenceWidth", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_fenceWidth)},
-    {"FenceXOffset", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_fenceXOffset)},
-    {"IsBridge", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_isBridge)},
-    {"ArmorSet", &ThingTemplate::Parse_Armor_Template_Set, nullptr, 0},
-    {"WeaponSet", &ThingTemplate::Parse_Weapon_Template_Set, nullptr, 0},
-    {"VisionRange", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_visionRange)},
-    {"ShroudClearingRange", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_shroudClearingRange)},
-    {"ShroudRevealToAllRange", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_shroudRevealToAllRange)},
-    {"PlacementViewAngle", &INI::Parse_Angle_Real, nullptr, offsetof(ThingTemplate, m_placementViewAngle)},
-    {"FactoryExitWidth", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_factoryExitWidth)},
-    {"FactoryExtraBibWidth", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_factoryExtraBibWidth)},
-    {"SkillPointValue", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_skillPointValues)},
-    {"ExperienceValue", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_experienceValues)},
-    {"ExperienceRequired", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_experienceRequired)},
-    {"IsTrainable", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_isTrainable)},
-    {"EnterGuard", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_enterGuard)},
-    {"HijackGuard", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_hijackGuard)},
-    {"Side", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_defaultOwningSide)},
-    {"Prerequisites", &ThingTemplate::Parse_Prerequisites, nullptr, 0},
-    {"Buildable", &INI::Parse_Byte_Sized_Index_List, s_buildableStatusNames, offsetof(ThingTemplate, m_buildable)},
-    {"BuildCost", &INI::Parse_Unsigned_Short, nullptr, offsetof(ThingTemplate, m_buildCost)},
-    {"BuildTime", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_buildTime)},
-    {"RefundValue", &INI::Parse_Unsigned_Short, nullptr, offsetof(ThingTemplate, m_refundValue)},
-    {"BuildCompletion", &INI::Parse_Byte_Sized_Index_List, s_buildCompletionNames, offsetof(ThingTemplate, m_buildCompletion)},
-    {"EnergyProduction", &INI::Parse_Int, nullptr, offsetof(ThingTemplate, m_energyProduction)},
-    {"EnergyBonus", &INI::Parse_Int, nullptr, offsetof(ThingTemplate, m_energyBonus)},
-    {"IsForbidden", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_isForbidden)},
-    {"IsPrerequisite", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_isPrerequisite)},
-    {"DisplayColor", &INI::Parse_Color_Int, nullptr, offsetof(ThingTemplate, m_displayColor)},
-    {"EditorSorting", &INI::Parse_Byte_Sized_Index_List, s_editorSortingNames, offsetof(ThingTemplate, m_editorSorting)},
-    {"KindOf", &BitFlags<KINDOF_COUNT>::Parse_From_INI, nullptr, offsetof(ThingTemplate, m_kindOf)},
-    {"CommandSet", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_commandSetString)},
-    {"BuildVariations", &INI::Parse_AsciiString_Vector, nullptr, offsetof(ThingTemplate, m_buildVariations)},
-    {"Behavior", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(0), offsetof(ThingTemplate, m_body)},
-    {"Body", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(999), offsetof(ThingTemplate, m_body)},
-    {"Draw", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(1), offsetof(ThingTemplate, m_draws)},
-    {"ClientUpdate", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(2), offsetof(ThingTemplate, m_clientUpdates)},
-    {"SelectPortrait", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_selectedPortraitImageName)},
-    {"ButtonImage", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_buttonImageName)},
-    {"UpgradeCameo1", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_upgradeCameoNames[0])},
-    {"UpgradeCameo2", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_upgradeCameoNames[1])},
-    {"UpgradeCameo3", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_upgradeCameoNames[2])},
-    {"UpgradeCameo4", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_upgradeCameoNames[3])},
-    {"UpgradeCameo5", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_upgradeCameoNames[4])},
-    {"VoiceSelect", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[0])},
-    {"VoiceGroupSelect", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[1])},
-    {"VoiceMove", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[3])},
-    {"VoiceAttack", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[4])},
-    {"VoiceEnter", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[5])},
-    {"VoiceFear", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[6])},
-    {"VoiceSelectElite", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[2])},
-    {"VoiceCreated", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[7])},
-    {"VoiceTaskUnable", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[9])},
-    {"VoiceTaskComplete", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[10])},
-    {"VoiceMeetEnemy", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[11])},
-    {"VoiceGarrison", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[30])},
-    {"VoiceDefect", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[32])},
-    {"VoiceAttackSpecial", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[33])},
-    {"VoiceAttackAir", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[34])},
-    {"VoiceGuard", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[35])},
-    {"SoundMoveStart", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[12])},
-    {"SoundMoveStartDamaged", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[13])},
-    {"SoundMoveLoop", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[14])},
-    {"SoundMoveLoopDamaged", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[15])},
-    {"SoundAmbient", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[16])},
-    {"SoundAmbientDamaged", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[17])},
-    {"SoundAmbientReallyDamaged", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[18])},
-    {"SoundAmbientRubble", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[19])},
-    {"SoundStealthOn", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[20])},
-    {"SoundStealthOff", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[21])},
-    {"SoundCreated", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[22])},
-    {"SoundOnDamaged", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[23])},
-    {"SoundOnReallyDamaged", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[24])},
-    {"SoundEnter", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[25])},
-    {"SoundExit", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[26])},
-    {"SoundPromotedVeteran", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[27])},
-    {"SoundPromotedElite", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[28])},
-    {"SoundPromotedHero", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[29])},
-    {"SoundFallingFromPlane", &INI::Parse_Dynamic_Audio_Event_RTS, nullptr, offsetof(ThingTemplate, m_audio.sound[31])},
-    {"UnitSpecificSounds", &ThingTemplate::Parse_Per_Unit_Sounds, nullptr, offsetof(ThingTemplate, m_perUnitSounds)},
-    {"UnitSpecificFX", &ThingTemplate::Parse_Per_Unit_FX, nullptr, offsetof(ThingTemplate, m_perUnitEffects)},
-    {"Scale", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_assetScale)},
-    {"Geometry", &GeometryInfo::Parse_Geometry_Type, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryMajorRadius", &GeometryInfo::Parse_Geometry_MajorRadius, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryMinorRadius", &GeometryInfo::Parse_Geometry_MinorRadius, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryHeight", &GeometryInfo::Parse_Geometry_Height, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryIsSmall", &GeometryInfo::Parse_Geometry_IsSmall, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"Shadow", &INI::Parse_Bitstring8, s_theShadowNames, offsetof(ThingTemplate, m_shadowType)},
-    {"ShadowSizeX", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_shadowSizeX)},
-    {"ShadowSizeY", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_shadowSizeY)},
-    {"ShadowOffsetX", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_shadowOffsetX)},
-    {"ShadowOffsetY", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_shadowOffsetY)},
-    {"ShadowTexture", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_shadowTextureName)},
-    {"OcclusionDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(ThingTemplate, m_occlusionDelay)},
-    {"AddModule", &ThingTemplate::Parse_Add_Module, nullptr, 0},
-    {"RemoveModule", &ThingTemplate::Parse_Remove_Module, nullptr, 0},
-    {"ReplaceModule", &ThingTemplate::Parse_Replace_Module, nullptr, 0},
-    {"InheritableModule", &ThingTemplate::Parse_Inheritable_Module, nullptr, 0},
-    {"OverrideableByLikeKind", &ThingTemplate::Parse_Overrideable_By_Like_Kind, nullptr, 0},
+    FIELD_PARSE_AND_TRANSLATE_LABEL("DisplayName", ThingTemplate, m_displayName),
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("RadarPriority", s_radarPriorityNames, ThingTemplate, m_radarPriority),
+    FIELD_PARSE_UNSIGNED_BYTE("TransportSlotCount", ThingTemplate, m_transportSlotCount),
+    FIELD_PARSE_REAL("FenceWidth", ThingTemplate, m_fenceWidth),
+    FIELD_PARSE_REAL("FenceXOffset", ThingTemplate, m_fenceXOffset),
+    FIELD_PARSE_BOOL("IsBridge", ThingTemplate, m_isBridge),
+    FIELD_PARSE_THING_ARMOR_TEMPLATE_SET("ArmorSet"),
+    FIELD_PARSE_THING_WEAPON_TEMPLATE_SET("WeaponSet"),
+    FIELD_PARSE_REAL("VisionRange", ThingTemplate, m_visionRange),
+    FIELD_PARSE_REAL("ShroudClearingRange", ThingTemplate, m_shroudClearingRange),
+    FIELD_PARSE_REAL("ShroudRevealToAllRange", ThingTemplate, m_shroudRevealToAllRange),
+    FIELD_PARSE_ANGLE_REAL("PlacementViewAngle", ThingTemplate, m_placementViewAngle),
+    FIELD_PARSE_REAL("FactoryExitWidth", ThingTemplate, m_factoryExitWidth),
+    FIELD_PARSE_REAL("FactoryExtraBibWidth", ThingTemplate, m_factoryExtraBibWidth),
+    FIELD_PARSE_THING_INT_LIST("SkillPointValue", ThingTemplate, m_skillPointValues),
+    FIELD_PARSE_THING_INT_LIST("ExperienceValue", ThingTemplate, m_experienceValues),
+    FIELD_PARSE_THING_INT_LIST("ExperienceRequired", ThingTemplate, m_experienceRequired),
+    FIELD_PARSE_BOOL("IsTrainable", ThingTemplate, m_isTrainable),
+    FIELD_PARSE_BOOL("EnterGuard", ThingTemplate, m_enterGuard),
+    FIELD_PARSE_BOOL("HijackGuard", ThingTemplate, m_hijackGuard),
+    FIELD_PARSE_ASCIISTRING("Side", ThingTemplate, m_defaultOwningSide),
+    FIELD_PARSE_THING_PREREQUISITE("Prerequisites"),
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("Buildable", s_buildableStatusNames, ThingTemplate, m_buildable),
+    FIELD_PARSE_UNSIGNED_SHORT("BuildCost", ThingTemplate, m_buildCost),
+    FIELD_PARSE_REAL("BuildTime", ThingTemplate, m_buildTime),
+    FIELD_PARSE_UNSIGNED_SHORT("RefundValue", ThingTemplate, m_refundValue),
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("BuildCompletion", s_buildCompletionNames, ThingTemplate, m_buildCompletion),
+    FIELD_PARSE_INT("EnergyProduction", ThingTemplate, m_energyProduction),
+    FIELD_PARSE_INT("EnergyBonus", ThingTemplate, m_energyBonus),
+    FIELD_PARSE_BOOL("IsForbidden", ThingTemplate, m_isForbidden),
+    FIELD_PARSE_BOOL("IsPrerequisite", ThingTemplate, m_isPrerequisite),
+    FIELD_PARSE_COLOR_INT("DisplayColor", ThingTemplate, m_displayColor),
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("EditorSorting", s_editorSortingNames, ThingTemplate, m_editorSorting),
+    FIELD_PARSE_BITFLAGS_FROM_INI("KindOf", ThingTemplate, m_kindOf),
+    FIELD_PARSE_ASCIISTRING("CommandSet", ThingTemplate, m_commandSetString),
+    FIELD_PARSE_ASCIISTRING_VECTOR("BuildVariations", ThingTemplate, m_buildVariations),
+    FIELD_PARSE_THING_MODULE_NAME("Behavior", ModuleType::MODULE_DEFAULT, ThingTemplate, m_body),
+    FIELD_PARSE_THING_MODULE_NAME("Body", ModuleType(999), ThingTemplate, m_body), /* Reuses member */
+    FIELD_PARSE_THING_MODULE_NAME("Draw", ModuleType::MODULE_DRAW, ThingTemplate, m_draws),
+    FIELD_PARSE_THING_MODULE_NAME("ClientUpdate", ModuleType::MODULE_CLIENT_UPDATE, ThingTemplate, m_clientUpdates),
+    FIELD_PARSE_ASCIISTRING("SelectPortrait", ThingTemplate, m_selectedPortraitImageName),
+    FIELD_PARSE_ASCIISTRING("ButtonImage", ThingTemplate, m_buttonImageName),
+    FIELD_PARSE_ASCIISTRING("UpgradeCameo1", ThingTemplate, m_upgradeCameoNames[0]),
+    FIELD_PARSE_ASCIISTRING("UpgradeCameo2", ThingTemplate, m_upgradeCameoNames[1]),
+    FIELD_PARSE_ASCIISTRING("UpgradeCameo3", ThingTemplate, m_upgradeCameoNames[2]),
+    FIELD_PARSE_ASCIISTRING("UpgradeCameo4", ThingTemplate, m_upgradeCameoNames[3]),
+    FIELD_PARSE_ASCIISTRING("UpgradeCameo5", ThingTemplate, m_upgradeCameoNames[4]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceSelect", ThingTemplate, m_audio.sound[0]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceGroupSelect", ThingTemplate, m_audio.sound[1]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceMove", ThingTemplate, m_audio.sound[3]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceAttack", ThingTemplate, m_audio.sound[4]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceEnter", ThingTemplate, m_audio.sound[5]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceFear", ThingTemplate, m_audio.sound[6]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceSelectElite", ThingTemplate, m_audio.sound[2]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceCreated", ThingTemplate, m_audio.sound[7]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceTaskUnable", ThingTemplate, m_audio.sound[9]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceTaskComplete", ThingTemplate, m_audio.sound[10]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceMeetEnemy", ThingTemplate, m_audio.sound[11]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceGarrison", ThingTemplate, m_audio.sound[30]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceDefect", ThingTemplate, m_audio.sound[32]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceAttackSpecial", ThingTemplate, m_audio.sound[33]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceAttackAir", ThingTemplate, m_audio.sound[34]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("VoiceGuard", ThingTemplate, m_audio.sound[35]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundMoveStart", ThingTemplate, m_audio.sound[12]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundMoveStartDamaged", ThingTemplate, m_audio.sound[13]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundMoveLoop", ThingTemplate, m_audio.sound[14]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundMoveLoopDamaged", ThingTemplate, m_audio.sound[15]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundAmbient", ThingTemplate, m_audio.sound[16]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundAmbientDamaged", ThingTemplate, m_audio.sound[17]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundAmbientReallyDamaged", ThingTemplate, m_audio.sound[18]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundAmbientRubble", ThingTemplate, m_audio.sound[19]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundStealthOn", ThingTemplate, m_audio.sound[20]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundStealthOff", ThingTemplate, m_audio.sound[21]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundCreated", ThingTemplate, m_audio.sound[22]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundOnDamaged", ThingTemplate, m_audio.sound[23]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundOnReallyDamaged", ThingTemplate, m_audio.sound[24]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundEnter", ThingTemplate, m_audio.sound[25]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundExit", ThingTemplate, m_audio.sound[26]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundPromotedVeteran", ThingTemplate, m_audio.sound[27]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundPromotedElite", ThingTemplate, m_audio.sound[28]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundPromotedHero", ThingTemplate, m_audio.sound[29]),
+    FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundFallingFromPlane", ThingTemplate, m_audio.sound[31]),
+    FIELD_PARSE_THING_PER_UNIT_SOUNDS("UnitSpecificSounds", ThingTemplate, m_perUnitSounds),
+    FIELD_PARSE_THING_PER_UNIT_FX("UnitSpecificFX", ThingTemplate, m_perUnitEffects),
+    FIELD_PARSE_REAL("Scale", ThingTemplate, m_assetScale),
+    FIELD_PARSE_GEOMETRY_TYPE("Geometry", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_MAJOR_RADIUS("GeometryMajorRadius", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_MINOR_RADIUS("GeometryMinorRadius", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_HEIGHT("GeometryHeight", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_IS_SMALL("GeometryIsSmall", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_BITSTRING8("Shadow", s_theShadowNames, ThingTemplate, m_shadowType),
+    FIELD_PARSE_REAL("ShadowSizeX", ThingTemplate, m_shadowSizeX),
+    FIELD_PARSE_REAL("ShadowSizeY", ThingTemplate, m_shadowSizeY),
+    FIELD_PARSE_REAL("ShadowOffsetX", ThingTemplate, m_shadowOffsetX),
+    FIELD_PARSE_REAL("ShadowOffsetY", ThingTemplate, m_shadowOffsetY),
+    FIELD_PARSE_ASCIISTRING("ShadowTexture", ThingTemplate, m_shadowTextureName),
+    FIELD_PARSE_DURATION_UNSIGNED_INT("OcclusionDelay", ThingTemplate, m_occlusionDelay),
+    FIELD_PARSE_THING_ADD_MODULE("AddModule"),
+    FIELD_PARSE_THING_REMOVE_MODULE("RemoveModule"),
+    FIELD_PARSE_THING_REPLACE_MODULE("ReplaceModule"),
+    FIELD_PARSE_THING_INHERITABLE_MODULE("InheritableModule"),
+    FIELD_PARSE_THING_OVERRIDEABLE_BY_LIKE_KIND("OverrideableByLikeKind"),
     {"Locomotor", &AIUpdateModuleData::Parse_Locomotor_Set, nullptr, 0},
-    {"InstanceScaleFuzziness", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_instanceScaleFuzziness)},
-    {"StructureRubbleHeight", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_structureRubbleHeight)},
-    {"ThreatValue", &INI::Parse_Unsigned_Short, nullptr, offsetof(ThingTemplate, m_threatValue)},
-    {"MaxSimultaneousOfType", &ThingTemplate::Parse_Max_Simultaneous, nullptr, offsetof(ThingTemplate, m_maxSimultaneousOfType)},
-    {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
-    {"CrusherLevel", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_crusherLevel)},
-    {"CrushableLevel", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_crushableLevel)},
-    {nullptr, nullptr, nullptr, 0}
+    FIELD_PARSE_REAL("InstanceScaleFuzziness", ThingTemplate, m_instanceScaleFuzziness),
+    FIELD_PARSE_UNSIGNED_BYTE("StructureRubbleHeight", ThingTemplate, m_structureRubbleHeight),
+    FIELD_PARSE_UNSIGNED_SHORT("ThreatValue", ThingTemplate, m_threatValue),
+    FIELD_PARSE_THING_MAX_SIMULTANEOUS("MaxSimultaneousOfType", ThingTemplate, m_maxSimultaneousOfType),
+    FIELD_PARSE_STRING_AS_NAMEKEYTYPE("MaxSimultaneousLinkKey", ThingTemplate, m_maxSimultaneousLinkKey),
+    FIELD_PARSE_UNSIGNED_BYTE("CrusherLevel", ThingTemplate, m_crusherLevel),
+    FIELD_PARSE_UNSIGNED_BYTE("CrushableLevel", ThingTemplate, m_crushableLevel),
+    FIELD_PARSE_LAST
 };
 
 const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] = 
 {
-    {"Draw", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(1), offsetof(ThingTemplate, m_draws)},
-    {"Geometry", &GeometryInfo::Parse_Geometry_Type, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryMajorRadius", &GeometryInfo::Parse_Geometry_MajorRadius, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryMinorRadius", &GeometryInfo::Parse_Geometry_MinorRadius, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryHeight", &GeometryInfo::Parse_Geometry_Height, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"GeometryIsSmall", &GeometryInfo::Parse_Geometry_IsSmall, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"FenceWidth", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_fenceWidth)},
-    {"FenceXOffset", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_fenceXOffset)},
-    {"MaxSimultaneousOfType", &ThingTemplate::Parse_Max_Simultaneous, nullptr, offsetof(ThingTemplate, m_maxSimultaneousOfType)},
-    {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
-    {nullptr, nullptr, nullptr, 0}
+    FIELD_PARSE_THING_MODULE_NAME("Draw", ModuleType::MODULE_DRAW, ThingTemplate, m_draws),
+    FIELD_PARSE_GEOMETRY_TYPE("Geometry", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_MAJOR_RADIUS("GeometryMajorRadius", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_MINOR_RADIUS("GeometryMinorRadius", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_HEIGHT("GeometryHeight", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_GEOMETRY_IS_SMALL("GeometryIsSmall", ThingTemplate, m_geometryInfo),
+    FIELD_PARSE_REAL("FenceWidth", ThingTemplate, m_fenceWidth),
+    FIELD_PARSE_REAL("FenceXOffset", ThingTemplate, m_fenceXOffset),
+    FIELD_PARSE_THING_MAX_SIMULTANEOUS("MaxSimultaneousOfType", ThingTemplate, m_maxSimultaneousOfType),
+    FIELD_PARSE_STRING_AS_NAMEKEYTYPE("MaxSimultaneousLinkKey", ThingTemplate, m_maxSimultaneousLinkKey),
+    FIELD_PARSE_LAST
 };
 // clang-format on
 
@@ -709,7 +734,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
 {
     ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
     ModuleInfo *info = static_cast<ModuleInfo *>(store);
-    int data = reinterpret_cast<intptr_t>(user_data);
+    ModuleType data = static_cast<ModuleType>(reinterpret_cast<intptr_t>(user_data));
     Utf8String name = ini->Get_Next_Token();
     Utf8String tag_name = ini->Get_Next_Token();
 
@@ -724,12 +749,12 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
 
     int mask;
 
-    if (data == 999) {
-        data = 0;
+    if (data == ModuleType(999)) {
+        data = MODULE_DEFAULT;
         mask = g_theModuleFactory->Find_Module_Interface_Mask(name, MODULE_DEFAULT);
         captainslog_relassert((mask & MODULEINTERFACE_BODY) != 0, CODE_06, "Only Body allowed here");
     } else {
-        mask = g_theModuleFactory->Find_Module_Interface_Mask(name, (ModuleType)data);
+        mask = g_theModuleFactory->Find_Module_Interface_Mask(name, data);
         captainslog_relassert((mask & MODULEINTERFACE_BODY) == 0, CODE_06, "No Body allowed here");
     }
 
@@ -767,7 +792,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
         name.Str(),
         tmplate->Get_Name().Str());
 
-    ModuleData *m = g_theModuleFactory->New_Module_Data_From_INI(ini, name, (ModuleType)data, tag_name);
+    ModuleData *m = g_theModuleFactory->New_Module_Data_From_INI(ini, name, data, tag_name);
 
     if (m->Is_AI_Module_Data()) {
         info->Clear_Ai_Module_Info();
@@ -782,15 +807,17 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
         tmplate->m_moduleParseState == MODULEPARSE_REPLACE_BY_LIKE_KIND);
 }
 
+// wb: 0x006EA1D0
 void ThingTemplate::Parse_Per_Unit_FX(INI *ini, void *instance, void *store, const void *user_data)
 {
     std::map<Utf8String, FXList *> *map = static_cast<std::map<Utf8String, FXList *> *>(store);
     map->clear();
 
     // clang-format off
+    // wb: 0x00C24DE8
     static const FieldParse myFieldParse[] = {
         { nullptr, &Parse_Arbitrary_FX_Into_Map, nullptr, 0},
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -815,8 +842,8 @@ void ThingTemplate::Parse_Per_Unit_Sounds(INI *ini, void *instance, void *store,
 
     // clang-format off
     static const FieldParse myFieldParse[] = {
-        { nullptr, &Parse_Arbitrary_Sounds_Into_Map, nullptr, 0},
-        { nullptr, nullptr, nullptr, 0 },
+        { nullptr, &Parse_Arbitrary_Sounds_Into_Map, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -848,9 +875,9 @@ void ThingTemplate::Parse_Prerequisites(INI *ini, void *instance, void *store, c
 
     // clang-format off
     static const FieldParse myFieldParse[] = {
-        { "Object", &Parse_Prerequisite_Unit, nullptr, 0},
-        { "Science", &Parse_Prerequisite_Science, nullptr, 0},
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_THING_PREREQUISITE_UNIT("Object"),
+        FIELD_PARSE_THING_PREREQUISITE_SCIENCE("Science"),
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

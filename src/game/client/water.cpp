@@ -22,39 +22,38 @@ WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
 Override<WaterTransparencySetting> g_theWaterTransparency;
 #endif
 
+// clang-format off
 const FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
-    { "SkyTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_skyTextureFile) },
-    { "WaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_waterTextureFile) },
-    { "Vertex00Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex00Diffuse) },
-    { "Vertex10Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex10Diffuse) },
-    { "Vertex01Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex01Diffuse) },
-    { "Vertex11Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex11Diffuse) },
-    { "DiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_waterDiffuseColor) },
-    { "TransparentDiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_transparentWaterDiffuse) },
-    { "UScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_uScrollPerMs) },
-    { "VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs) },
-    { "SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit) },
-    { "WaterRepeatCount", &INI::Parse_Int, nullptr, offsetof(WaterSetting, m_waterRepeatCount) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_ASCIISTRING("SkyTexture", WaterSetting, m_skyTextureFile),
+    FIELD_PARSE_ASCIISTRING("WaterTexture", WaterSetting, m_waterTextureFile),
+    FIELD_PARSE_RGBA_COLOR_INT("Vertex00Color", WaterSetting, m_vertex00Diffuse),
+    FIELD_PARSE_RGBA_COLOR_INT("Vertex10Color", WaterSetting, m_vertex10Diffuse),
+    FIELD_PARSE_RGBA_COLOR_INT("Vertex01Color", WaterSetting, m_vertex01Diffuse),
+    FIELD_PARSE_RGBA_COLOR_INT("Vertex11Color", WaterSetting, m_vertex11Diffuse),
+    FIELD_PARSE_RGBA_COLOR_INT("DiffuseColor", WaterSetting, m_waterDiffuseColor),
+    FIELD_PARSE_RGBA_COLOR_INT("TransparentDiffuseColor", WaterSetting, m_transparentWaterDiffuse),
+    FIELD_PARSE_REAL("UScrollPerMS", WaterSetting, m_uScrollPerMs),
+    FIELD_PARSE_REAL("VScrollPerMS", WaterSetting, m_vScrollPerMs),
+    FIELD_PARSE_REAL("SkyTexelsPerUnit", WaterSetting, m_skyTexelsPerUnit),
+    FIELD_PARSE_INT("WaterRepeatCount", WaterSetting, m_waterRepeatCount),
+    FIELD_PARSE_LAST
 };
 
 const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
-    { "TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth) },
-    { "TransparentWaterMinOpacity",
-        &INI::Parse_Real,
-        nullptr,
-        offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity) },
-    { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
-    { "StandingWaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_standingWaterTexture) },
-    { "AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending) },
-    { "RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor) },
-    { "SkyboxTextureN", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureN) },
-    { "SkyboxTextureE", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureE) },
-    { "SkyboxTextureS", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureS) },
-    { "SkyboxTextureW", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureW) },
-    { "SkyboxTextureT", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureT) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_REAL("TransparentWaterDepth", WaterTransparencySetting, m_transparentWaterDepth),
+    FIELD_PARSE_REAL("TransparentWaterMinOpacity", WaterTransparencySetting, m_transparentWaterMinOpacity),
+    FIELD_PARSE_RGB_COLOR("StandingWaterColor", WaterTransparencySetting, m_standingWaterColor),
+    FIELD_PARSE_ASCIISTRING("StandingWaterTexture", WaterTransparencySetting, m_standingWaterTexture),
+    FIELD_PARSE_BOOL("AdditiveBlending", WaterTransparencySetting, m_additiveBlending),
+    FIELD_PARSE_RGB_COLOR("RadarWaterColor", WaterTransparencySetting, m_radarWaterColor),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureN", WaterTransparencySetting, m_skyboxTextureN),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureE", WaterTransparencySetting, m_skyboxTextureE),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureS", WaterTransparencySetting, m_skyboxTextureS),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureW", WaterTransparencySetting, m_skyboxTextureW),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureT", WaterTransparencySetting, m_skyboxTextureT),
+    FIELD_PARSE_LAST
 };
+// clang-format on
 
 // Was originally INI::parseWaterSettingDefinition
 void WaterSetting::Parse_Water_Setting_Definition(INI *ini)

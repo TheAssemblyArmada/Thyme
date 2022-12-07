@@ -21,7 +21,7 @@ void W3DOverlordTruckDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
     static const FieldParse dataFieldParse[] = {
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

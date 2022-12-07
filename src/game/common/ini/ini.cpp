@@ -684,7 +684,7 @@ void INI::Parse_Color_Int(INI *ini, void *formal, void *store, const void *user_
 {
     int colors[4];
     const char *names[4] = { "R", "G", "B", "A" };
-    uint32_t *rgba = static_cast<uint32_t *>(store);
+    int32_t *rgba = static_cast<int32_t *>(store);
 
     for (int i = 0; i < 4; ++i) {
         const char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);

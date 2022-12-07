@@ -19,7 +19,7 @@
 
 class Anim2DCollection;
 
-enum Anim2DMode
+enum Anim2DMode : int32_t // Is INI parsed type
 {
     ANIM2D_MODE_NONE,
     ANIM2D_MODE_ONCE,

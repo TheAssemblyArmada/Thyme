@@ -85,11 +85,11 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
 {
     // clang-format off
     static const FieldParse _parse_table[] = {
-        { "RankName", &INI::Parse_And_Translate_Label, nullptr, offsetof(RankInfo, m_rankName) },
-        { "SkillPointsNeeded", &INI::Parse_Int, nullptr, offsetof(RankInfo, m_skillPointsNeeded) },
-        { "SciencesGranted", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
-        { "SciencePurchasePointsGranted", &INI::Parse_Unsigned_Int, nullptr, offsetof(RankInfo, m_sciencePurchasePointsGranted) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_AND_TRANSLATE_LABEL("RankName", RankInfo, m_rankName),
+        FIELD_PARSE_INT("SkillPointsNeeded", RankInfo, m_skillPointsNeeded),
+        FIELD_PARSE_SCIENCE_VECTOR("SciencesGranted", RankInfo, m_sciencesGranted),
+        FIELD_PARSE_UNSIGNED_INT("SciencePurchasePointsGranted", RankInfo, m_sciencePurchasePointsGranted),
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

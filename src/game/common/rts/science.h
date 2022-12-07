@@ -51,8 +51,8 @@ public:
 
     static void Parse_Science_Definition(INI *ini);
 
-    static void Parse_Science_Vector(INI *ini, void *, void *store, const void *);
-    static void Parse_Science(INI *ini, void *, void *store, const void *);
+    static void Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Science(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     bool Has_Science(ScienceType science) const { return Get_Science_Info(science) != nullptr; }

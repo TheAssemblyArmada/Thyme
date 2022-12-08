@@ -56,7 +56,7 @@ jobs:
           CC: ${{ steps.vars.outputs.cc }}
           CXX: ${{ steps.vars.outputs.cxx }}
         run: |
-          cmake -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DUSE_CRASHPAD=ON -DUSE_SANITIZER=ON -B build -G Ninja
+          cmake -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DBUILD_COVERAGE=ON -DUSE_CRASHPAD=ON -DUSE_SANITIZER=ON -B build -G Ninja
 
       - name: Formatting check
         if: matrix.os != 'ubuntu-22.04'
@@ -78,3 +78,8 @@ jobs:
         run: |
           cd build
           ctest . --output-on-failure
+
+      - uses: codecov/codecov-action@v3
+        with:
+          verbose: true
+          gcov: true

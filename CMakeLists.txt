@@ -94,6 +94,7 @@ option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
 option(BUILD_TESTS "Builds the unit tests." OFF)
 option(USE_SANITIZER "Builds with address sanitizer" OFF)
+option(BUILD_COVERAGE "Instruments the code with coverage." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
 include(CMakeDependentOption)
@@ -167,6 +168,15 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     set(DINPUT8_FOUND TRUE)
 endif()
 
+# Enable coverage flags when we support coverage
+if(BUILD_COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+    message(STATUS "Building with gcov code coverage")
+
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+endif()
+
+
 find_package(ICU COMPONENTS data i18n io tu uc)
 
 if(NOT WIN32 OR NOT "${CMAKE_SYSTEM}" MATCHES "Windows")
@@ -179,7 +189,7 @@ endif()
 find_package(wxWidgets COMPONENTS core base xrc xml html adv)
 
 if(NOT wxWidgets_FOUND AND BUILD_TOOLS)
-    message(INFO "Debug tools are enabled, but wxWidgets was not found. wxWidgets will be fetched and built.")
+    message(STATUS "Debug tools are enabled, but wxWidgets was not found. wxWidgets will be fetched and built.")
 endif()
 
 # Set where the build results will end up

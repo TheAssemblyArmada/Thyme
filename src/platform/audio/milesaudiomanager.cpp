@@ -51,15 +51,10 @@ MilesAudioManager::MilesAudioManager() :
  */
 MilesAudioManager::~MilesAudioManager()
 {
-    if (m_binkPlayingAudio != nullptr) {
-        Release_Playing_Audio(m_binkPlayingAudio);
-        m_binkPlayingAudio = nullptr;
-    }
-
-    Free_All_Miles_Handles();
-    Unselect_Provider();
-    AIL_shutdown();
+    Release_Bink_Handle();
+    Close_Device();
     g_theAudio = nullptr;
+    delete m_audioFileCache;
 }
 
 /**

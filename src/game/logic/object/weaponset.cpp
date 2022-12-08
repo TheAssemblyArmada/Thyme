@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "weaponset.h"
+#include "object.h"
 #include "thingfactory.h"
 #include "weapon.h"
 #include "weapontemplateset.h"
@@ -63,7 +64,7 @@ const char *BitFlags<DAMAGE_NUM_TYPES>::s_bitNamesList[] = {
 WeaponSet::WeaponSet() :
     m_curWeaponTemplateSet(nullptr),
     m_curWeapon(WEAPONSLOT_PRIMARY),
-    m_curWeaponLocked(WEAPONSLOT_PRIMARY),
+    m_curWeaponLocked(NOT_LOCKED),
     m_filledWeaponSlotMask(0),
     m_totalAntiMask(0),
     m_pitchLimited(false),
@@ -160,7 +161,7 @@ void WeaponSet::Xfer_Snapshot(Xfer *xfer)
 }
 
 BitFlags<MODELCONDITION_COUNT> WeaponSet::Get_Model_Condition_For_Weapon_Slot(
-    WeaponSlotType slot, WeaponSetConditionType condition)
+    WeaponSlotType wslot, WeaponSetConditionType condition)
 {
     static_assert(WEAPONSLOT_COUNT == 3, "WEAPONSLOT_COUNT is wrong size");
     static_assert(WSF_COUNT == 5, "WSF_COUNT is wrong size");
@@ -187,14 +188,14 @@ BitFlags<MODELCONDITION_COUNT> WeaponSet::Get_Model_Condition_For_Weapon_Slot(
 
     BitFlags<MODELCONDITION_COUNT> flags;
 
-    ModelConditionFlagType flag = Lookup[condition][slot];
+    ModelConditionFlagType flag = Lookup[condition][wslot];
 
     if (flag != MODELCONDITION_INVALID) {
         flags.Set(flag, true);
     }
 
     if (condition != WSF_NONE) {
-        flags.Set(Using[slot], true);
+        flags.Set(Using[wslot], true);
     }
 
     return flags;
@@ -214,50 +215,217 @@ bool WeaponSet::Has_Any_Damage_Weapon() const
     return m_damageWeapon;
 }
 
+void WeaponSet::Update_Weapon_Set(const Object *source_obj)
+{
+    const WeaponTemplateSet *templateset =
+        source_obj->Get_Template()->Find_Weapon_Template_Set(source_obj->Get_Weapon_Set_Flags());
+    captainslog_dbgassert(templateset != nullptr, "findWeaponSet should never return null");
+
+    if (templateset != nullptr && templateset != m_curWeaponTemplateSet) {
+        if (!templateset->Is_Lock_Shared_Across_Sets()) {
+            if (Is_Cur_Weapon_Locked()) {
+                captainslog_debug("changing WeaponSet while Weapon is Locked... implicit unlock occurring!");
+            }
+
+            Release_Weapon_Lock(LOCKED_LEVEL_2);
+            m_curWeapon = WEAPONSLOT_PRIMARY;
+        }
+
+        m_filledWeaponSlotMask = 0;
+        m_totalAntiMask = 0;
+        m_damageTypes.Clear();
+        m_pitchLimited = false;
+        m_damageWeapon = false;
+
+        for (int i = WEAPONSLOT_TERTIARY; i >= WEAPONSLOT_PRIMARY; i--) {
+            if (m_weapons[i] != nullptr) {
+                m_weapons[i]->Delete_Instance();
+                m_weapons[i] = nullptr;
+            }
+
+            if (templateset->Get_Nth(static_cast<WeaponSlotType>(i)) != nullptr) {
+                m_weapons[i] = g_theWeaponStore->Allocate_New_Weapon(
+                    templateset->Get_Nth(static_cast<WeaponSlotType>(i)), static_cast<WeaponSlotType>(i));
+                m_weapons[i]->Load_Ammo_Now(source_obj);
+                m_filledWeaponSlotMask |= 1 << i;
+                m_totalAntiMask |= m_weapons[i]->Get_Anti_Mask();
+                m_damageTypes.Set(m_weapons[i]->Get_Damage_Type(), 1);
+
+                if (m_weapons[i]->Is_Pitch_Limited()) {
+                    m_pitchLimited = true;
+                }
+
+                if (m_weapons[i]->Is_Damage_Weapon()) {
+                    m_damageWeapon = true;
+                }
+            }
+        }
+
+        m_curWeaponTemplateSet = templateset;
+    }
+}
+
+void WeaponSet::Weapon_Set_On_Weapon_Bonus_Change(const Object *source_obj)
+{
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr) {
+            m_weapons[i]->On_Weapon_Bonus_Change(source_obj);
+        }
+    }
+}
+
+bool WeaponSet::Is_Any_Within_Target_Pitch(const Object *source_obj, const Object *victim_obj) const
+{
+    if (!m_pitchLimited) {
+        return true;
+    }
+
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr && m_weapons[i]->Is_Within_Target_Pitch(source_obj, victim_obj)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void WeaponSet::Reload_All_Ammo(const Object *source_obj, bool now)
+{
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr) {
+            if (now) {
+                m_weapons[i]->Load_Ammo_Now(source_obj);
+            } else {
+                m_weapons[i]->Reload_Ammo(source_obj);
+            }
+        }
+    }
+}
+
+bool WeaponSet::Is_Out_Of_Ammo() const
+{
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr && m_weapons[i]->Get_Status() != Weapon::OUT_OF_AMMO) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+const Weapon *WeaponSet::Find_Ammo_Pip_Showing_Weapon() const
+{
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr && m_weapons[i]->Is_Show_Ammo_Pips()) {
+            return m_weapons[i];
+        }
+    }
+
+    return nullptr;
+}
+
+Weapon *WeaponSet::Find_Waypoint_Following_Capable_Weapon()
+{
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr && m_weapons[i]->Is_Capable_Of_Following_Waypoint()) {
+            return m_weapons[i];
+        }
+    }
+
+    return nullptr;
+}
+
+bool WeaponSet::Set_Weapon_Lock(WeaponSlotType wslot, WeaponLockType lock)
+{
+    if (lock != NOT_LOCKED) {
+        if (m_weapons[wslot] != nullptr) {
+            if (lock == LOCKED_LEVEL_2) {
+                m_curWeapon = wslot;
+                m_curWeaponLocked = LOCKED_LEVEL_2;
+            } else if (lock == LOCKED_LEVEL_1 && m_curWeaponLocked != LOCKED_LEVEL_2) {
+                m_curWeapon = wslot;
+                m_curWeaponLocked = LOCKED_LEVEL_1;
+            }
+
+            return true;
+        } else {
+            captainslog_dbgassert(false, "setWeaponLock: weapon %d not found (missing an upgrade?)", wslot);
+            return false;
+        }
+    } else {
+        captainslog_dbgassert(false,
+            "calling setWeaponLock with NOT_LOCKED, so I am doing nothing... did you mean to use releaseWeaponLock()?");
+        return false;
+    }
+}
+
+void WeaponSet::Release_Weapon_Lock(WeaponLockType lock)
+{
+    if (m_curWeaponLocked != NOT_LOCKED) {
+        if (lock == LOCKED_LEVEL_2) {
+            m_curWeaponLocked = NOT_LOCKED;
+        } else if (lock == LOCKED_LEVEL_1) {
+            if (m_curWeaponLocked == LOCKED_LEVEL_1) {
+                m_curWeaponLocked = NOT_LOCKED;
+            }
+        } else {
+            captainslog_dbgassert(false, "calling releaseWeaponLock with NOT_LOCKED makes no sense. why did you do this?");
+        }
+    }
+}
+
+void WeaponSet::Clear_Leech_Range_Mode_For_All_Weapons()
+{
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr) {
+            m_weapons[i]->Set_Leech_Range_Active(false);
+        }
+    }
+}
+
+unsigned int WeaponSet::Get_Most_Percent_Ready_To_Fire_Any_Weapon() const
+{
+    unsigned int percent = 0;
+
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        if (m_weapons[i] != nullptr) {
+            unsigned int fire = m_weapons[i]->Get_Percent_Ready_To_Fire() * 100.0f;
+
+            if (fire > percent) {
+                percent = fire;
+            }
+
+            if (percent >= 100) {
+                return percent;
+            }
+        }
+    }
+
+    return percent;
+}
+
+Weapon *WeaponSet::Get_Weapon_In_Weapon_Slot(WeaponSlotType wslot) const
+{
+    return m_weapons[wslot];
+}
+
 #if 0
-void WeaponSet::Update_Weapon_Set(const Object *obj) {}
-
-void WeaponSet::Weapon_Set_On_Weapon_Bonus_Change(const Object *obj) {}
-
-bool WeaponSet::Is_Any_Within_Target_Pitch(const Object *obj, const Object *obj2) const {}
-
 bool WeaponSet::Choose_Best_Weapon_For_Target(
-    const Object *obj, const Object *obj2, WeaponChoiceCriteria criteria, CommandSourceType source)
+    const Object *source_obj, const Object *victim_obj, WeaponChoiceCriteria criteria, CommandSourceType source)
 {
 }
 
-void WeaponSet::Reload_All_Ammo(const Object *obj, bool now) {}
-
-bool WeaponSet::Is_Out_Of_Ammo() const {}
-
-const Weapon *WeaponSet::Find_Ammo_Pip_Showing_Weapon() const {}
-
-Weapon *WeaponSet::Find_Waypoint_Following_Capable_Weapon() {}
-
-unsigned int WeaponSet::Get_Most_Percent_Ready_To_Fire_Any_Weapon() const {}
-
 CanAttackResult WeaponSet::Get_Able_To_Attack_Specific_Object(
-    AbleToAttackType type, const Object *obj, const Object *obj2, CommandSourceType source, WeaponSlotType slot) const
+    AbleToAttackType type, const Object *source_obj, const Object *victim_obj, CommandSourceType source, WeaponSlotType wslot) const
 {
 }
 
 CanAttackResult WeaponSet::Get_Able_To_Use_Weapon_Against_Target(AbleToAttackType type,
-    const Object *obj,
+    const Object *source_obj,
     const Object *obj2,
     const Coord3D *location,
     CommandSourceType source,
-    WeaponSlotType slot) const
+    WeaponSlotType wslot) const
 {
 }
-
-bool WeaponSet::Set_Weapon_Lock(WeaponSlotType slot, WeaponLockType lock) {}
-
-void WeaponSet::Release_Weapon_Lock(WeaponLockType lock) {}
-
-void WeaponSet::Clear_Leech_Range_Mode_For_All_Weapons() {}
 #endif
-
-Weapon *WeaponSet::Get_Weapon_In_Weapon_Slot(WeaponSlotType slot) const
-{
-    return m_weapons[slot];
-}

@@ -68,6 +68,8 @@ public:
     Utf8String Get_Definition() const { return "WeaponTemplateSet"; }
     bool Is_Lock_Shared_Across_Sets() const { return m_weaponLockSharedAcrossSets; }
     WeaponTemplate *Get_Nth(WeaponSlotType type) const { return m_template[type]; }
+    uint32_t Get_Nth_Auto_Choose_Mask(WeaponSlotType type) const { return m_autoChooseMask[type]; }
+    BitFlags<KINDOF_COUNT> Get_Nth_Preferred_Against_Mask(WeaponSlotType type) const { return m_preferredAgainst[type]; }
     const ThingTemplate *Get_Type() const { return m_type; }
     bool Is_Share_Weapon_Reload_Time() const { return m_shareWeaponReloadTime; }
 

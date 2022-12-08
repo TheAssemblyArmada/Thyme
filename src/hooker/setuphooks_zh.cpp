@@ -2452,6 +2452,15 @@ void Setup_Hooks()
     Hook_Any(0x00606940, WeaponSet::Get_Model_Condition_For_Weapon_Slot);
     Hook_Any(0x006061D0, WeaponSet::Hook_Ctor);
     Hook_Any(0x00606220, WeaponSet::Hook_Dtor);
+    Hook_Any(0x006067D0, WeaponSet::Update_Weapon_Set);
+    Hook_Any(0x00607380, WeaponSet::Reload_All_Ammo);
+    Hook_Any(0x006073C0, WeaponSet::Is_Out_Of_Ammo);
+    Hook_Any(0x00607420, WeaponSet::Find_Waypoint_Following_Capable_Weapon);
+    Hook_Any(0x006074B0, WeaponSet::Release_Weapon_Lock);
+    Hook_Any(0x006074F0, WeaponSet::Clear_Leech_Range_Mode_For_All_Weapons);
+    Hook_Any(0x00606A00, WeaponSet::Weapon_Set_On_Weapon_Bonus_Change);
+    Hook_Any(0x006073F0, WeaponSet::Find_Ammo_Pip_Showing_Weapon);
+    Hook_Any(0x00607460, WeaponSet::Set_Weapon_Lock);
 
     // weapontemplateset.h
     Hook_Any(0x00606190, WeaponTemplateSet::Test_Weapon_Set_Flag)

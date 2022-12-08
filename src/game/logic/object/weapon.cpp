@@ -61,13 +61,13 @@ const char *TheWeaponBonusFieldNames[] = {
     nullptr,
 };
 
-void WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data)
+void WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, const void *user_data)
 {
     WeaponBonusSet *wbs = *static_cast<WeaponBonusSet **>(store);
     wbs->Parse_Weapon_Bonus_Set(ini);
 }
 
-void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, void const *user_data)
+void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, const void *user_data)
 {
     WeaponBonusSet *wbs = static_cast<WeaponBonusSet *>(store);
     wbs->Parse_Weapon_Bonus_Set(ini);
@@ -90,15 +90,16 @@ const WeaponTemplate *WeaponStore::Find_Weapon_Template(Utf8String name) const
 #endif
 }
 
-void WeaponStore::Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmpl, const Object *obj, const Coord3D *pos)
+void WeaponStore::Create_And_Fire_Temp_Weapon(
+    const WeaponTemplate *tmplate, const Object *source_obj, const Coord3D *victim_pos)
 {
 #ifdef GAME_DLL
     Call_Method<void, WeaponStore, const WeaponTemplate *, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C50A0, 0x006D6661), this, tmpl, obj, pos);
+        PICK_ADDRESS(0x004C50A0, 0x006D6661), this, tmplate, source_obj, victim_pos);
 #endif
 }
 
-void WeaponStore::Parse_Weapon_Template(INI *ini, void *, void *store, const void *)
+void WeaponStore::Parse_Weapon_Template(INI *ini, void *formal, void *store, const void *user_data)
 {
     const char *name = ini->Get_Next_Token();
     const WeaponTemplate *w = g_theWeaponStore->Find_Weapon_Template(name);
@@ -349,31 +350,89 @@ void Weapon::Load_Post_Process()
     }
 }
 
-bool Weapon::Is_Within_Attack_Range(const Object *source, const Object *target) const
+bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Object *victim_obj) const
 {
 #ifdef GAME_DLL
     return Call_Method<bool, const Weapon, const Object *, const Object *>(
-        PICK_ADDRESS(0x004C72A0, 0x006D7E7F), this, source, target);
+        PICK_ADDRESS(0x004C72A0, 0x006D7E7F), this, source_obj, victim_obj);
 #else
     return false;
 #endif
 }
 
-bool Weapon::Is_Within_Attack_Range(const Object *source, const Coord3D *target) const
+bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Coord3D *victim_obj) const
 {
 #ifdef GAME_DLL
     return Call_Method<bool, const Weapon, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C7170, 0x006D7DF0), this, source, target);
+        PICK_ADDRESS(0x004C7170, 0x006D7DF0), this, source_obj, victim_obj);
 #else
     return false;
 #endif
 }
 
-float Weapon::Get_Attack_Range(const Object *source) const
+float Weapon::Get_Attack_Range(const Object *source_obj) const
 {
 #ifdef GAME_DLL
-    return Call_Method<float, const Weapon, const Object *>(PICK_ADDRESS(0x004C77A0, 0x006D843A), this, source);
+    return Call_Method<float, const Weapon, const Object *>(PICK_ADDRESS(0x004C77A0, 0x006D843A), this, source_obj);
 #else
     return 0;
+#endif
+}
+
+void Weapon::On_Weapon_Bonus_Change(const Object *source_obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Weapon, const Object *>(PICK_ADDRESS(0x004C68E0, 0x006D76F8), this, source_obj);
+#endif
+}
+
+bool Weapon::Is_Within_Target_Pitch(const Object *source_obj, const Object *victim_obj) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Weapon, const Object *, const Object *>(
+        PICK_ADDRESS(0x004C85F0, 0x006D91B7), this, source_obj, victim_obj);
+#else
+    return true;
+#endif
+}
+
+void Weapon::Load_Ammo_Now(const Object *source_obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Weapon, const Object *>(PICK_ADDRESS(0x004C6170, 0x006D7405), this, source_obj);
+#endif
+}
+
+bool Weapon::Is_Damage_Weapon() const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Weapon>(PICK_ADDRESS(0x004C87F0, 0x006D931D), this);
+#else
+    return true;
+#endif
+}
+
+void Weapon::Reload_Ammo(const Object *source_obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Weapon, const Object *>(PICK_ADDRESS(0x004C62A0, 0x006D7440), this, source_obj);
+#endif
+}
+
+Weapon::WeaponStatus Weapon::Get_Status() const
+{
+#ifdef GAME_DLL
+    return Call_Method<Weapon::WeaponStatus, const Weapon>(PICK_ADDRESS(0x004C85B0, 0x006D915A), this);
+#else
+    return READY_TO_FIRE;
+#endif
+}
+
+float Weapon::Get_Percent_Ready_To_Fire() const
+{
+#ifdef GAME_DLL
+    return Call_Method<float, const Weapon>(PICK_ADDRESS(0x004C76C0, 0x006D8259), this);
+#else
+    return 0.0f;
 #endif
 }

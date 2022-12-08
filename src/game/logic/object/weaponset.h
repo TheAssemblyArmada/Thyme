@@ -142,29 +142,32 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    void Update_Weapon_Set(const Object *obj);
+    void Update_Weapon_Set(const Object *source_obj);
     static BitFlags<MODELCONDITION_COUNT> Get_Model_Condition_For_Weapon_Slot(
-        WeaponSlotType slot, WeaponSetConditionType condition);
-    void Weapon_Set_On_Weapon_Bonus_Change(const Object *obj);
-    bool Is_Any_Within_Target_Pitch(const Object *obj, const Object *obj2) const;
+        WeaponSlotType wslot, WeaponSetConditionType condition);
+    void Weapon_Set_On_Weapon_Bonus_Change(const Object *source_obj);
+    bool Is_Any_Within_Target_Pitch(const Object *source_obj, const Object *victim_obj) const;
     bool Choose_Best_Weapon_For_Target(
-        const Object *obj, const Object *obj2, WeaponChoiceCriteria criteria, CommandSourceType source);
-    void Reload_All_Ammo(const Object *obj, bool now);
+        const Object *source_obj, const Object *victim_obj, WeaponChoiceCriteria criteria, CommandSourceType source);
+    void Reload_All_Ammo(const Object *source_obj, bool now);
     bool Is_Out_Of_Ammo() const;
     const Weapon *Find_Ammo_Pip_Showing_Weapon() const;
     Weapon *Find_Waypoint_Following_Capable_Weapon();
     unsigned int Get_Most_Percent_Ready_To_Fire_Any_Weapon() const;
-    CanAttackResult Get_Able_To_Attack_Specific_Object(
-        AbleToAttackType type, const Object *obj, const Object *obj2, CommandSourceType source, WeaponSlotType slot) const;
+    CanAttackResult Get_Able_To_Attack_Specific_Object(AbleToAttackType type,
+        const Object *source_obj,
+        const Object *victim_obj,
+        CommandSourceType source,
+        WeaponSlotType wslot) const;
     CanAttackResult Get_Able_To_Use_Weapon_Against_Target(AbleToAttackType type,
-        const Object *obj,
-        const Object *obj2,
+        const Object *source_obj,
+        const Object *victim_obj,
         const Coord3D *location,
         CommandSourceType source,
-        WeaponSlotType slot) const;
-    bool Set_Weapon_Lock(WeaponSlotType slot, WeaponLockType lock);
+        WeaponSlotType wslot) const;
+    bool Set_Weapon_Lock(WeaponSlotType wslot, WeaponLockType lock);
     void Release_Weapon_Lock(WeaponLockType lock);
-    Weapon *Get_Weapon_In_Weapon_Slot(WeaponSlotType slot) const;
+    Weapon *Get_Weapon_In_Weapon_Slot(WeaponSlotType wslot) const;
     void Clear_Leech_Range_Mode_For_All_Weapons();
     bool Is_Share_Weapon_Reload_Time() const;
     bool Has_Any_Damage_Weapon() const;
@@ -185,7 +188,7 @@ private:
     const WeaponTemplateSet *m_curWeaponTemplateSet;
     Weapon *m_weapons[WEAPONSLOT_COUNT];
     WeaponSlotType m_curWeapon;
-    WeaponSlotType m_curWeaponLocked;
+    WeaponLockType m_curWeaponLocked;
     unsigned int m_filledWeaponSlotMask;
     int m_totalAntiMask;
     BitFlags<DAMAGE_NUM_TYPES> m_damageTypes;

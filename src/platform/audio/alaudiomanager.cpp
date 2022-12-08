@@ -35,12 +35,8 @@ ALAudioManager::ALAudioManager() :
 
 ALAudioManager::~ALAudioManager()
 {
-    if (m_binkPlayingAudio != nullptr) {
-        Release_Playing_Audio(m_binkPlayingAudio);
-        m_binkPlayingAudio = nullptr;
-    }
-
-    Unselect_Provider();
+    Release_Bink_Handle();
+    Close_Device();
     g_theAudio = nullptr;
     delete m_audioFileCache;
 }

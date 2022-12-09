@@ -436,3 +436,24 @@ float Weapon::Get_Percent_Ready_To_Fire() const
     return 0.0f;
 #endif
 }
+
+float Weapon::Estimate_Weapon_Damage(const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos)
+{
+#ifdef GAME_DLL
+    return Call_Method<float, Weapon, const Object *, const Object *, const Coord3D *>(
+        PICK_ADDRESS(0x004C7970, 0x006D84C3), this, source_obj, victim_obj, victim_pos);
+#else
+    return 0.0f;
+#endif
+}
+
+bool Weapon::Is_Source_Object_With_Goal_Position_Within_Attack_Range(
+    const Object *source_obj, const Coord3D *goal_pos, const Object *target_obj, const Coord3D *target_pos) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Weapon, const Object *, const Coord3D *, const Object *, const Coord3D *>(
+        PICK_ADDRESS(0x004C7010, 0x006D7D2B), this, source_obj, goal_pos, target_obj, target_pos);
+#else
+    return false;
+#endif
+}

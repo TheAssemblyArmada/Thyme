@@ -100,7 +100,7 @@ public:
             m_field[i] = 1.0f;
         }
     }
-    float Get_Field(Field f) { return m_field[f]; }
+    float Get_Field(Field f) const { return m_field[f]; }
     void Set_Field(Field f, float bonus) { m_field[f] = bonus; }
     void Append_Bonuses(WeaponBonus &bonus)
     {
@@ -155,8 +155,11 @@ class WeaponTemplate : public MemoryPoolObject
 public:
     WeaponTemplate();
 
+#ifdef GAME_DLL
+    WeaponTemplate *Hook_Ctor() { return new (this) WeaponTemplate(); }
+#endif
+
     virtual ~WeaponTemplate() override;
-    WeaponTemplate &operator=(const WeaponTemplate &that);
 
     void Reset();
     void Post_Process_Load();
@@ -187,7 +190,7 @@ public:
         const WeaponBonus &bonus,
         bool is_projectile_detonation) const;
 
-    float Get_Attack_Range() const;
+    float Get_Attack_Range(const WeaponBonus &bonus) const;
     float Get_Minimum_Attack_Range() const;
     float Get_Unmodified_Attack_Range() const;
     int Get_Delay_Between_Shots(const WeaponBonus &bonus) const;

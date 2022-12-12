@@ -570,6 +570,17 @@ void Setup_Hooks()
     Hook_Function(0x004C9860, WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr);
     Hook_Any(0x004C5E70, Weapon::Hook_Ctor);
     Hook_Any(0x004C4CF0, WeaponStore::Allocate_New_Weapon);
+    Hook_Any(0x004C2BF0, WeaponTemplate::Hook_Ctor);
+    Hook_Any(0x004C33B0, WeaponTemplate::Post_Process_Load);
+    Hook_Any(0x004C34A0, WeaponTemplate::Get_Attack_Range);
+    Hook_Any(0x004C34D0, WeaponTemplate::Get_Minimum_Attack_Range);
+    Hook_Any(0x004C34F0, WeaponTemplate::Get_Unmodified_Attack_Range);
+    Hook_Any(0x004C3500, WeaponTemplate::Get_Delay_Between_Shots);
+    Hook_Any(0x004C3580, WeaponTemplate::Get_Primary_Damage);
+    Hook_Any(0x004C3590, WeaponTemplate::Get_Primary_Damage_Radius);
+    Hook_Any(0x004C35A0, WeaponTemplate::Get_Secondary_Damage);
+    Hook_Any(0x004C35B0, WeaponTemplate::Get_Secondary_Damage_Radius);
+    Hook_Any(0x004C35C0, WeaponTemplate::Is_Contact_Weapon);
 
     // globaldata.h GlobalData
     Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definition);

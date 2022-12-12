@@ -246,6 +246,7 @@ public:
     unsigned int Get_Mood_Matrix_Action_Adjustment(MoodMatrixAction action) const;
     Object *Get_Next_Mood_Target(bool called_by_ai, bool called_during_idle);
     void Reset_Next_Mood_Check_Time();
+    bool Is_Weapon_Slot_On_Turret_And_Aiming_At_Target(WeaponSlotType wslot, const Object *victim) const;
 
     bool Has_Locomotor_For_Surface(LocomotorSurfaceType t);
     int Friend_Get_Waypoint_Goal_Path_Size() const;

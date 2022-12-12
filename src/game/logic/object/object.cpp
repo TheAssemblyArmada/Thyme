@@ -24,6 +24,7 @@
 #include "team.h"
 #include "updatemodule.h"
 #include "w3ddebugicons.h"
+#include "weaponset.h"
 
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 {
@@ -488,4 +489,23 @@ bool Object::Did_Exit(const PolygonTrigger *trigger) const
     }
 
     return false;
+}
+
+CanAttackResult Object::Get_Able_To_Use_Weapon_Against_Target(
+    AbleToAttackType type, const Object *obj, const Coord3D *pos, CommandSourceType source, WeaponSlotType slot) const
+{
+    return m_weaponSet.Get_Able_To_Use_Weapon_Against_Target(type, this, obj, pos, source, slot);
+}
+
+SpawnBehaviorInterface *Object::Get_Spawn_Behavior_Interface() const
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpawnBehaviorInterface *behavior = (*module)->Get_Spawn_Behavior_Interface();
+
+        if (behavior != nullptr) {
+            return behavior;
+        }
+    }
+
+    return nullptr;
 }

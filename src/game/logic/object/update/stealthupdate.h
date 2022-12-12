@@ -70,6 +70,7 @@ public:
 
     float Get_Friendly_Opacity() const { return Get_Stealth_Update_Module_Data()->m_friendlyOpacityMin; }
     bool Has_Disguised_Template() const { return m_disguisedTemplate != nullptr; }
+    int Get_Player_Index() const { return m_playerIndex; }
 
 private:
     unsigned int m_framesTillStealthAllowed;
@@ -78,7 +79,7 @@ private:
     bool m_unk4;
     float m_unk5;
     float m_unk6;
-    unsigned int m_playerIndex;
+    int m_playerIndex;
     ThingTemplate *m_disguisedTemplate;
     unsigned int m_disguiseTransitionTime;
     bool m_disguised;

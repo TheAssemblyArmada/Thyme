@@ -110,3 +110,14 @@ const Coord3D *AIUpdateInterface::Get_Goal_Position() const
 {
     return Get_State_Machine()->Get_Goal_Position();
 }
+
+bool AIUpdateInterface::Is_Weapon_Slot_On_Turret_And_Aiming_At_Target(WeaponSlotType wslot, const Object *victim) const
+{
+    for (int i = 0; i < MAX_TURRETS; i++) {
+        if (m_turretAI[i] != nullptr && m_turretAI[i]->Is_Weapon_Slot_On_Turret(wslot)) {
+            return m_turretAI[i]->Is_Trying_To_Aim_At_Target(victim);
+        }
+    }
+
+    return false;
+}

@@ -2461,6 +2461,9 @@ void Setup_Hooks()
     Hook_Any(0x00606A00, WeaponSet::Weapon_Set_On_Weapon_Bonus_Change);
     Hook_Any(0x006073F0, WeaponSet::Find_Ammo_Pip_Showing_Weapon);
     Hook_Any(0x00607460, WeaponSet::Set_Weapon_Lock);
+    Hook_Any(0x006070B0, WeaponSet::Choose_Best_Weapon_For_Target);
+    Hook_Any(0x00606C90, WeaponSet::Get_Able_To_Use_Weapon_Against_Target);
+    Hook_Any(0x00606A30, WeaponSet::Get_Able_To_Attack_Specific_Object);
 
     // weapontemplateset.h
     Hook_Any(0x00606190, WeaponTemplateSet::Test_Weapon_Set_Flag)

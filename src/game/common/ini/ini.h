@@ -109,6 +109,10 @@ public:
     Utf8String Get_Filename() const { return m_fileName; }
     INILoadType Get_Load_Type() const { return m_loadType; }
     int Get_Line_Number() const { return m_lineNumber; }
+    const char *Get_Seps() const { return m_seps; }
+    const char *Get_Seps_Percent() const { return m_sepsPercent; }
+    const char *Get_Seps_Colon() const { return m_sepsColon; }
+    const char *Get_Seps_Quote() const { return m_sepsQuote; }
 
     // Scan functions
     static ScienceType Scan_Science(const char *token);

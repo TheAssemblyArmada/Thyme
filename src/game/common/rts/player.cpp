@@ -295,3 +295,10 @@ GameDifficulty Player::Get_Player_Difficulty() const
     return DIFFICULTY_EASY;
 #endif
 }
+
+void Player::Apply_Battle_Plan_Bonuses_For_Object(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, Object *>(PICK_ADDRESS(0x00456E00, 0x00860B23), this, obj);
+#endif
+}

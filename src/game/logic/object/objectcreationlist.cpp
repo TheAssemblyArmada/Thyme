@@ -98,3 +98,11 @@ void ObjectCreationNugget::Create(Object *primaryObj, const Coord3D *primary, co
 {
     Create(primaryObj, primary, secondary, -100.0f, unk);
 }
+
+void ObjectCreationList::Create_Internal(const Object *primary, const Object *secondary, uint32_t unk) const
+{
+#ifdef GAME_DLL
+    Call_Method<void, ObjectCreationList const, const Object *, const Object *, uint32_t>(
+        PICK_ADDRESS(0x004C1230, 0x00756B17), this, primary, secondary, unk);
+#endif
+}

@@ -26,6 +26,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/object/behavior
     game/logic/object/body
     game/logic/object/contain
+    game/logic/object/die
     game/logic/object/update
     game/logic/scriptengine
     game/logic/system
@@ -256,6 +257,7 @@ set(GAMEENGINE_SRC
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp
     game/logic/object/update/swayclientupdate.cpp
+    game/logic/object/die/specialpowercompletiondie.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptaction.cpp

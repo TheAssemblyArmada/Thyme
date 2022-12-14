@@ -42,8 +42,12 @@ public:
 
     void Clear() { m_nuggets.clear(); }
     void Add_Object_Creation_Nugget(ObjectCreationNugget *nugget);
-    void Create(Object *primary, Object *secondary);
-    void Create(Object *primaryObj, Coord3D *primary, Coord3D *secondary);
+    void Create_Internal(const Object *primary, const Object *secondary, uint32_t unk) const;
+
+    void Create(const Object *primary, const Object *secondary, uint32_t unk) const
+    {
+        return Create_Internal(primary, secondary, unk);
+    }
 
 private:
     std::vector<ObjectCreationNugget *> m_nuggets;

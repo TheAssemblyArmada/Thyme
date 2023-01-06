@@ -1,4 +1,5 @@
 /**
+/**
  * @file
  *
  * @author OmniBlade
@@ -79,6 +80,42 @@ enum WeaponBonusConditionType
     WEAPONBONUSCONDITION_COUNT,
 };
 
+enum WeaponCollideType
+{
+    COLLIDE_ALLIES = 1,
+    COLLIDE_ENEMIES = 2,
+    COLLIDE_STRUCTURES = 4,
+    COLLIDE_SHRUBBERY = 8,
+    COLLIDE_PROJECTILES = 0x10,
+    COLLIDE_WALLS = 0x20,
+    COLLIDE_SMALL_MISSILES = 0x40,
+    COLLIDE_BALLISTIC_MISSILES = 0x80,
+    COLLIDE_CONTROLLED_STRUCTURES = 0x100,
+};
+
+enum WeaponAntiType
+{
+    ANTI_AIRBORNE_VEHICLE = 1,
+    ANTI_GROUND = 2,
+    ANTI_PROJECTILE = 4,
+    ANTI_SMALL_MISSILE = 8,
+    ANTI_MINE = 0x10,
+    ANTI_AIRBORNE_INFANTRY = 0x20,
+    ANTI_BALLISTIC_MISSILE = 0x40,
+    ANTI_PARACHUTE = 0x80,
+};
+
+enum WeaponAffectsType
+{
+    AFFECTS_SELF = 1,
+    AFFECTS_ALLIES = 2,
+    AFFECTS_ENEMIES = 4,
+    AFFECTS_NEUTRALS = 8,
+    AFFECTS_SUICIDE = 0x10,
+    AFFECTS_NOT_SIMILAR = 0x20,
+    AFFECTS_NOT_AIRBORNE = 0x40,
+};
+
 class WeaponBonus
 {
 public:
@@ -145,7 +182,7 @@ struct HistoricWeaponDamageInfo
 {
     unsigned int frame;
     Coord3D location;
-    HistoricWeaponDamageInfo(unsigned int f, Coord3D loc) : frame(f), location(loc) {}
+    HistoricWeaponDamageInfo(unsigned int f, const Coord3D &loc) : frame(f), location(loc) {}
 };
 
 class WeaponTemplate : public MemoryPoolObject
@@ -170,18 +207,18 @@ public:
         const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos, const WeaponBonus &bonus) const;
 
     bool Should_Projectile_Collide_With(
-        const Object *source_obj, const Object *projectile, const Object *collide_with, ObjectID id) const;
+        const Object *source_obj, const Object *projectile_obj, const Object *collide_obj, ObjectID id) const;
 
     unsigned int Fire_Weapon_Template(const Object *source_obj,
         WeaponSlotType wslot,
-        int barrel,
-        const Object *victim_obj,
+        int specific_barrel_to_use,
+        Object *victim_obj,
         const Coord3D *victim_pos,
         const WeaponBonus &bonus,
         bool is_projectile_detonation,
         bool ignore_ranges,
         Weapon *firing_weapon,
-        ObjectID projectile_id,
+        ObjectID *projectile_id,
         bool do_damage) const;
 
     void Deal_Damage_Internal(ObjectID source_id,
@@ -209,7 +246,7 @@ public:
     int Get_Anti_Mask() const { return m_antiMask; }
     DamageType Get_Damage_Type() const { return m_damageType; }
     DeathType Get_Death_Type() const { return m_deathType; }
-    int Get_Collide_Mash() const { return m_collideMask; }
+    int Get_Collide_Mask() const { return m_collideMask; }
     float Get_Weapon_Speed() const { return m_weaponSpeed; }
     float Get_Weapon_Recoil() const { return m_weaponRecoil; }
     const ThingTemplate *Get_Projectile_Template() const { return m_projectileTemplate; }
@@ -502,7 +539,7 @@ class WeaponStore : public SubsystemInterface
 public:
     struct WeaponDelayedDamageInfo
     {
-        int m_delayedWeapon;
+        const WeaponTemplate *m_delayedWeapon;
         Coord3D m_delayDamagePos;
         int m_delayDamageFrame;
         int m_delaySourceID;

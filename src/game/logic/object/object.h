@@ -225,7 +225,7 @@ public:
     ContainModuleInterface *Get_Contain() const { return m_contain; }
     const Object *Get_Contained_By() const { return m_containedBy; }
     Object *Get_Contained_By() { return m_containedBy; }
-    BehaviorModule **Get_All_Modules() { return m_allModules; }
+    BehaviorModule **Get_All_Modules() const { return m_allModules; }
     ObjectID Get_Producer_ID() const { return m_producerID; }
     unsigned int Get_Weapon_Bonus_Condition() const { return m_weaponBonusCondition; }
     const Weapon *Get_Weapon_In_Weapon_Slot(WeaponSlotType type) const

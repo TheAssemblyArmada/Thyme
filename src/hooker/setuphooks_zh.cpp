@@ -581,6 +581,11 @@ void Setup_Hooks()
     Hook_Any(0x004C35A0, WeaponTemplate::Get_Secondary_Damage);
     Hook_Any(0x004C35B0, WeaponTemplate::Get_Secondary_Damage_Radius);
     Hook_Any(0x004C35C0, WeaponTemplate::Is_Contact_Weapon);
+    Hook_Any(0x004C4200, WeaponTemplate::Trim_Old_Historic_Damage);
+    Hook_Any(0x004C37F0, WeaponTemplate::Should_Projectile_Collide_With);
+    Hook_Any(0x004C35E0, WeaponTemplate::Estimate_Weapon_Template_Damage);
+    Hook_Any(0x004C3990, WeaponTemplate::Fire_Weapon_Template);
+    Hook_Any(0x004C4260, WeaponTemplate::Deal_Damage_Internal);
 
     // globaldata.h GlobalData
     Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definition);

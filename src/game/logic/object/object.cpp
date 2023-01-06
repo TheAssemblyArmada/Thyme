@@ -15,6 +15,7 @@
  */
 #include "object.h"
 #include "behaviormodule.h"
+#include "bodymodule.h"
 #include "drawable.h"
 #include "experiencetracker.h"
 #include "gamelogic.h"
@@ -508,4 +509,49 @@ SpawnBehaviorInterface *Object::Get_Spawn_Behavior_Interface() const
     }
 
     return nullptr;
+}
+
+bool Object::Has_Countermeasures() const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Object const>(PICK_ADDRESS(0x0054F460, 0x007D981D), this);
+#else
+    return false;
+#endif
+}
+
+SpecialPowerCompletionDie *Object::Find_Special_Power_Completion_Die() const
+{
+#ifdef GAME_DLL
+    return Call_Method<SpecialPowerCompletionDie *, Object const>(PICK_ADDRESS(0x0054E8E0, 0x007D8D93), this);
+#else
+    return nullptr;
+#endif
+}
+
+void Object::Set_Producer(const Object *obj)
+{
+    if (obj != nullptr) {
+        m_producerID = obj->Get_ID();
+    } else {
+        m_producerID = OBJECT_UNK;
+    }
+}
+
+void Object::Report_Missile_For_Countermeasures(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, Object *>(PICK_ADDRESS(0x0054F4A0, 0x007D9855), this, obj);
+#endif
+}
+
+float Object::Estimate_Damage(DamageInfoInput &info) const
+{
+    const BodyModuleInterface *body = Get_Body_Module();
+
+    if (body == nullptr) {
+        return 0.0f;
+    } else {
+        return body->Estimate_Damage(info);
+    }
 }

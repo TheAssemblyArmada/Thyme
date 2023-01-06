@@ -112,6 +112,11 @@ public:
     PlayerType Get_Player_Type() const { return m_playerType; }
     const PlayerTemplate *Get_Player_Template() const { return m_playerTemplate; }
 
+    int Get_Total_Battle_Plan_Count() const
+    {
+        return m_activeBattlePlans[2] + m_activeBattlePlans[1] + m_activeBattlePlans[0];
+    }
+
     // Player *Get_Current_Enemy();
     GameDifficulty Get_Player_Difficulty() const;
 
@@ -248,7 +253,7 @@ public:
 
     // bool Does_Object_Qualify_For_Battle_Plan(Object *) const;
     // int Get_Battle_Plans_Active_Specific(BattlePlanStatus) const;
-    // void Apply_Battle_Plan_Bonuses_For_Object(Object *);
+    void Apply_Battle_Plan_Bonuses_For_Object(Object *obj);
     // void Apply_Battle_Plan_Bonuses_For_Player_Objects(const BattlePlanBonuses *);
     // void Change_Battle_Plan(BattlePlanStatus, int, BattlePlanBonuses *);
     // void Remove_Battle_Plan_Bonuses_For_Object(Object *);

@@ -34,6 +34,35 @@ public:
     virtual Object *First() override;
     virtual Object *Next() override;
 
+    void Reset() { m_curClump = m_firstClump; }
+
+    Object *First_With_Numeric(float *numeric)
+    {
+        Reset();
+        return Next_With_Numeric(numeric);
+    }
+
+    Object *Next_With_Numeric(float *numeric)
+    {
+        Object *obj = nullptr;
+
+        if (numeric != nullptr) {
+            *numeric = 0.0f;
+        }
+
+        if (m_curClump) {
+            obj = m_curClump->m_obj;
+
+            if (numeric != nullptr) {
+                *numeric = m_curClump->m_numeric;
+            }
+
+            m_curClump = m_curClump->m_nextClump;
+        }
+
+        return obj;
+    }
+
 private:
     struct Clump : public MemoryPoolObject
     {

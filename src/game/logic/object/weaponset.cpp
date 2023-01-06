@@ -526,35 +526,35 @@ l1:
 int Get_Victim_Anti_Mask(const Object *victim)
 {
     if (victim->Is_KindOf(KINDOF_SMALL_MISSILE)) {
-        return 8;
+        return ANTI_SMALL_MISSILE;
     }
 
     if (victim->Is_KindOf(KINDOF_BALLISTIC_MISSILE)) {
-        return 64;
+        return ANTI_BALLISTIC_MISSILE;
     }
 
     if (victim->Is_KindOf(KINDOF_PROJECTILE)) {
-        return 4;
+        return ANTI_PROJECTILE;
     }
 
     if (victim->Is_KindOf(KINDOF_MINE) || victim->Is_KindOf(KINDOF_DEMOTRAP)) {
-        return 18;
+        return ANTI_MINE | ANTI_GROUND;
     }
 
     if (!victim->Is_Airborne_Target()) {
-        return 2;
+        return ANTI_GROUND;
     }
 
     if (victim->Is_KindOf(KINDOF_VEHICLE)) {
-        return 1;
+        return ANTI_AIRBORNE_VEHICLE;
     }
 
     if (victim->Is_KindOf(KINDOF_INFANTRY)) {
-        return 32;
+        return ANTI_AIRBORNE_INFANTRY;
     }
 
     if (victim->Is_KindOf(KINDOF_PARACHUTE)) {
-        return 128;
+        return ANTI_PARACHUTE;
     }
 
     captainslog_dbgassert(victim->Is_KindOf(KINDOF_UNATTACKABLE),
@@ -577,7 +577,7 @@ CanAttackResult WeaponSet::Get_Able_To_Use_Weapon_Against_Target(AbleToAttackTyp
         mask = Get_Victim_Anti_Mask(victim_obj);
         location = victim_obj->Get_Position();
     } else {
-        mask = 2;
+        mask = ANTI_GROUND;
     }
 
     bool is_in_range = false;

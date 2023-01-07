@@ -30,6 +30,8 @@ class SimpleObjectIterator : public ObjectIterator
     IMPLEMENT_POOL(SimpleObjectIterator);
 
 public:
+    SimpleObjectIterator();
+
     virtual ~SimpleObjectIterator() override;
     virtual Object *First() override;
     virtual Object *Next() override;
@@ -66,6 +68,7 @@ public:
 private:
     struct Clump : public MemoryPoolObject
     {
+        Clump();
         IMPLEMENT_NAMED_POOL(Clump, "SimpleObjectIteratorClumpPool");
         Clump *m_nextClump;
         Object *m_obj;

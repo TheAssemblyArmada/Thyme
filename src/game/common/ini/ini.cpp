@@ -42,6 +42,7 @@
 #include "terraintypes.h"
 #include "thingfactory.h"
 #include "water.h"
+#include "weapon.h"
 #include "weather.h"
 #include "xfer.h"
 #include <algorithm>
@@ -123,7 +124,7 @@ const BlockParse TheTypeTable[] = {
     {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},
     {"Weather", (iniblockparse_t)(0x00502DF0) /*&WeatherSetting::Parse_Weather_Definition*/},
-    {"Weapon", (iniblockparse_t)(0x00502B30) /*&INI::parseWeaponTemplateDefinition*/},
+    {"Weapon", WeaponStore::Parse_Weapon_Template_Definition},
     {"WebpageURL", (iniblockparse_t)(0x005028F0) /*&INI::parseWebpageURL*/},
     {"HeaderTemplate", (iniblockparse_t)(0x00501E50) /*&INI::parseHeaderTemplateDefinition*/},
     {"StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definition},

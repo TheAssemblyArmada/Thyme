@@ -258,7 +258,6 @@ public:
     ObjectStatusTypes Get_Damage_Status_Type() const { return m_damageStatusType; }
     int Get_Affects_Mask() const { return m_affectsMask; }
     NameKeyType Get_Name_Key() const { return m_nameKey; }
-    const WeaponTemplate *Get_Next_Template() const { return m_nextTemplate; }
     const AudioEventRTS *Get_Fire_Sound() const { return &m_fireSound; }
     WeaponBonusSet *Get_Extra_Bonus() const { return m_extraBonus; }
     int Get_Clip_Size() const { return m_clipSize; }
@@ -282,9 +281,15 @@ public:
     bool Is_Leech_Range_Weapon() const { return m_leechRangeWeapon; }
     bool Is_Auto_Reloads_Clip() const { return m_autoReloadsClip == AUTO_RELOADS_CLIP_YES; }
     bool Is_Play_FX_When_Stealthed() const { return m_playFXWhenStealthed; }
+    bool Is_Override() const { return m_nextTemplate != nullptr; }
 
     void Friend_Set_Next_Template(WeaponTemplate *tmplate) { m_nextTemplate = tmplate; }
-    void Friend_Clear_Next_Template() { m_nextTemplate = nullptr; }
+    WeaponTemplate *Friend_Clear_Next_Template()
+    {
+        WeaponTemplate *tmplate = m_nextTemplate;
+        m_nextTemplate = nullptr;
+        return tmplate;
+    }
 
     static void Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Scatter_Target(INI *ini, void *formal, void *store, const void *user_data);
@@ -366,6 +371,7 @@ private:
     mutable std::list<HistoricWeaponDamageInfo> m_historicDamage;
 
     static FieldParse s_fieldParseTable[];
+    friend class WeaponStore;
 };
 
 class Weapon : public MemoryPoolObject, public SnapShot
@@ -541,11 +547,17 @@ public:
     {
         const WeaponTemplate *m_delayedWeapon;
         Coord3D m_delayDamagePos;
-        int m_delayDamageFrame;
-        int m_delaySourceID;
-        int m_delayIntendedVictimID;
+        unsigned int m_delayDamageFrame;
+        ObjectID m_delaySourceID;
+        ObjectID m_delayIntendedVictimID;
         WeaponBonus m_bonus;
     };
+
+#ifdef GAME_DLL
+    WeaponStore *Hook_Ctor() { return new (this) WeaponStore(); }
+#endif
+
+    WeaponStore() {}
 
     virtual ~WeaponStore() override;
     virtual void Init() override {}
@@ -554,15 +566,13 @@ public:
     virtual void Update() override;
 
     void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmplate, const Object *source_obj, const Coord3D *victim_pos);
-    void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmplate, const Object *source_obj, const Object *victim_obj);
     const WeaponTemplate *Find_Weapon_Template(Utf8String name) const;
-    const WeaponTemplate *Find_Weapon_Template_Private(NameKeyType key) const;
-    static void Parse_Weapon_Template(INI *ini, void *formal, void *store, const void *user_data);
+    WeaponTemplate *Find_Weapon_Template_Private(NameKeyType key) const;
     Weapon *Allocate_New_Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot) const;
     WeaponTemplate *New_Weapon_Template(Utf8String name);
     WeaponTemplate *New_Override(WeaponTemplate *tmplate);
     void Delete_All_Delayed_Damage();
-    void Reset_All_Weapon_Templates();
+    void Reset_Weapon_Templates();
 
     void Handle_Projectile_Detonation(const WeaponTemplate *tmplate,
         const Object *source_obj,
@@ -577,6 +587,7 @@ public:
         ObjectID victim_id,
         const WeaponBonus &bonus);
 
+    static void Parse_Weapon_Template(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Weapon_Template_Definition(INI *ini);
 
 private:

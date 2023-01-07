@@ -586,6 +586,10 @@ void Setup_Hooks()
     Hook_Any(0x004C35E0, WeaponTemplate::Estimate_Weapon_Template_Damage);
     Hook_Any(0x004C3990, WeaponTemplate::Fire_Weapon_Template);
     Hook_Any(0x004C4260, WeaponTemplate::Deal_Damage_Internal);
+    Hook_Any(0x004C4DD0, WeaponStore::Hook_Ctor);
+    Hook_Any(0x004C4F90, WeaponStore::Handle_Projectile_Detonation);
+    Hook_Any(0x004C50A0, WeaponStore::Create_And_Fire_Temp_Weapon);
+    Hook_Any(0x004C51B0, WeaponStore::Find_Weapon_Template);
 
     // globaldata.h GlobalData
     Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definition);

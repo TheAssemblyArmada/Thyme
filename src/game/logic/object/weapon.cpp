@@ -14,6 +14,7 @@
  */
 #include "weapon.h"
 #include "aiupdate.h"
+#include "audiomanager.h"
 #include "behaviormodule.h"
 #include "damage.h"
 #include "drawable.h"
@@ -108,21 +109,13 @@ void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini)
 
 const WeaponTemplate *WeaponStore::Find_Weapon_Template(Utf8String name) const
 {
-#ifdef GAME_DLL
-    return Call_Method<const WeaponTemplate *, const WeaponStore, Utf8String>(
-        PICK_ADDRESS(0x004C51B0, 0x006D6703), this, name);
-#else
-    return nullptr;
-#endif
-}
-
-void WeaponStore::Create_And_Fire_Temp_Weapon(
-    const WeaponTemplate *tmplate, const Object *source_obj, const Coord3D *victim_pos)
-{
-#ifdef GAME_DLL
-    Call_Method<void, WeaponStore, const WeaponTemplate *, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C50A0, 0x006D6661), this, tmplate, source_obj, victim_pos);
-#endif
+    if (strcasecmp(name.Str(), "None") == 0) {
+        return nullptr;
+    } else {
+        WeaponTemplate *tmplate = Find_Weapon_Template_Private(g_theNameKeyGenerator->Name_To_Key(name.Str()));
+        captainslog_dbgassert(tmplate != nullptr, "Weapon %s not found!", name.Str());
+        return tmplate;
+    }
 }
 
 void WeaponStore::Set_Delayed_Damage(const WeaponTemplate *weapon,
@@ -153,6 +146,169 @@ void WeaponStore::Parse_Weapon_Template(INI *ini, void *formal, void *store, con
 Weapon *WeaponStore::Allocate_New_Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot) const
 {
     return new Weapon(tmpl, wslot);
+}
+
+WeaponStore::~WeaponStore()
+{
+    Delete_All_Delayed_Damage();
+
+    for (unsigned int i = 0; i < m_weaponTemplateVector.size(); i++) {
+        WeaponTemplate *tmplate = m_weaponTemplateVector[i];
+
+        if (tmplate != nullptr) {
+            tmplate->Delete_Instance();
+        }
+    }
+
+    m_weaponTemplateVector.clear();
+}
+
+void WeaponStore::Handle_Projectile_Detonation(const WeaponTemplate *tmplate,
+    const Object *source_obj,
+    const Coord3D *victim_pos,
+    int bonus_condition,
+    bool do_damage) const
+{
+    Weapon *weapon = g_theWeaponStore->Allocate_New_Weapon(tmplate, WEAPONSLOT_PRIMARY);
+    weapon->Load_Ammo_Now(source_obj);
+    weapon->Fire_Projectile_Detonation_Weapon(source_obj, victim_pos, bonus_condition, do_damage);
+    weapon->Delete_Instance();
+}
+
+void WeaponStore::Create_And_Fire_Temp_Weapon(
+    const WeaponTemplate *tmplate, const Object *source_obj, const Coord3D *victim_pos)
+{
+    if (tmplate) {
+        Weapon *weapon = g_theWeaponStore->Allocate_New_Weapon(tmplate, WEAPONSLOT_PRIMARY);
+        weapon->Load_Ammo_Now(source_obj);
+        weapon->Fire_Weapon(source_obj, victim_pos, nullptr);
+        weapon->Delete_Instance();
+    }
+}
+
+WeaponTemplate *WeaponStore::Find_Weapon_Template_Private(NameKeyType key) const
+{
+    for (unsigned int i = 0; i < m_weaponTemplateVector.size(); i++) {
+        WeaponTemplate *tmplate = m_weaponTemplateVector[i];
+
+        if (tmplate->Get_Name_Key() == key) {
+            return tmplate;
+        }
+    }
+
+    return nullptr;
+}
+
+WeaponTemplate *WeaponStore::New_Weapon_Template(Utf8String name)
+{
+    if (name.Is_Empty()) {
+        return nullptr;
+    } else {
+        WeaponTemplate *tmplate = new WeaponTemplate();
+        tmplate->m_name = name;
+        tmplate->m_nameKey = g_theNameKeyGenerator->Name_To_Key(name.Str());
+        m_weaponTemplateVector.push_back(tmplate);
+        return tmplate;
+    }
+}
+
+WeaponTemplate *WeaponStore::New_Override(WeaponTemplate *tmplate)
+{
+    if (tmplate == nullptr) {
+        return nullptr;
+    }
+
+    WeaponTemplate *t = new WeaponTemplate();
+    t = tmplate;
+    t->Friend_Set_Next_Template(tmplate);
+    return t;
+}
+
+void WeaponStore::Update()
+{
+    for (auto i = m_weaponDDI.begin(); i != m_weaponDDI.end();) {
+        if (g_theGameLogic->Get_Frame() >= i->m_delayDamageFrame) {
+            i->m_delayedWeapon->Deal_Damage_Internal(
+                i->m_delaySourceID, i->m_delayIntendedVictimID, &i->m_delayDamagePos, i->m_bonus, false);
+            i = m_weaponDDI.erase(i);
+        } else {
+            i++;
+        }
+    }
+}
+
+void WeaponStore::Delete_All_Delayed_Damage()
+{
+    m_weaponDDI.clear();
+}
+
+void WeaponStore::Reset_Weapon_Templates()
+{
+    for (unsigned int i = 0; i < m_weaponTemplateVector.size(); i++) {
+        m_weaponTemplateVector[i]->Reset();
+    }
+}
+
+void WeaponStore::Reset()
+{
+    for (unsigned int i = 0; i < m_weaponTemplateVector.size(); i++) {
+        WeaponTemplate *tmplate = m_weaponTemplateVector[i];
+
+        if (tmplate->Is_Override()) {
+            tmplate->Friend_Clear_Next_Template();
+            tmplate->Delete_Instance();
+        }
+    }
+
+    Delete_All_Delayed_Damage();
+    Reset_Weapon_Templates();
+}
+
+void WeaponStore::PostProcessLoad()
+{
+    if (g_theThingFactory != nullptr) {
+        for (unsigned int i = 0; i < m_weaponTemplateVector.size(); i++) {
+            WeaponTemplate *tmplate = m_weaponTemplateVector[i];
+
+            if (tmplate != nullptr) {
+                tmplate->Post_Process_Load();
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "you must call this after TheThingFactory is inited");
+    }
+}
+
+void WeaponStore::Parse_Weapon_Template_Definition(INI *ini)
+{
+    Utf8String str;
+    str.Set(ini->Get_Next_Token());
+    WeaponTemplate *tmplate = g_theWeaponStore->Find_Weapon_Template_Private(g_theNameKeyGenerator->Name_To_Key(str.Str()));
+
+    if (tmplate == nullptr) {
+        tmplate = g_theWeaponStore->New_Weapon_Template(str);
+    } else if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+        tmplate = g_theWeaponStore->New_Override(tmplate);
+    } else {
+        captainslog_dbgassert(false, "Weapon '%s' already exists, but OVERRIDE not specified", str.Str());
+    }
+
+    if (tmplate != nullptr) {
+        ini->Init_From_INI(tmplate, WeaponTemplate::Get_Field_Parse());
+
+        if (tmplate->m_projectileObject.Is_None()) {
+            tmplate->m_projectileObject.Clear();
+        }
+
+        if (!tmplate->Get_Fire_Sound()->Get_Event_Name().Is_Empty()) {
+            if (tmplate->Get_Fire_Sound()->Get_Event_Name().Compare_No_Case("NoSound")) {
+                captainslog_dbgassert(g_theAudio->Is_Valid_Audio_Event(tmplate->Get_Fire_Sound()),
+                    "Invalid FireSound %s in Weapon '%s'.",
+                    tmplate->Get_Fire_Sound()->Get_Event_Name().Str(),
+                    tmplate->Get_Name().Str());
+            }
+        }
+    }
 }
 
 Weapon::Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot) :
@@ -391,6 +547,48 @@ void Weapon::Load_Post_Process()
             m_projectileStreamID = OBJECT_UNK;
         }
     }
+}
+
+bool Weapon::Fire_Projectile_Detonation_Weapon(
+    const Object *source_obj, const Coord3D *victim_pos, unsigned int bonus_condition, bool do_damage)
+{
+    return Private_Fire_Weapon(source_obj, nullptr, victim_pos, true, false, bonus_condition, nullptr, do_damage);
+}
+
+bool Weapon::Fire_Weapon(const Object *source_obj, Object *victim_obj, ObjectID *projectile_id)
+{
+    return Private_Fire_Weapon(source_obj, victim_obj, nullptr, false, false, 0, projectile_id, true);
+}
+
+bool Weapon::Fire_Weapon(const Object *source_obj, const Coord3D *victim_pos, ObjectID *projectile_id)
+{
+    return Private_Fire_Weapon(source_obj, nullptr, victim_pos, false, false, 0, projectile_id, true);
+}
+
+bool Weapon::Private_Fire_Weapon(const Object *source_obj,
+    Object *victim_obj,
+    const Coord3D *victim_pos,
+    bool is_projectile_detonation,
+    bool ignore_ranges,
+    unsigned int bonus_condition,
+    ObjectID *projectile_id,
+    bool do_damage)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Weapon, const Object *, Object *, const Coord3D *, bool, bool, unsigned int, ObjectID *, bool>(
+        PICK_ADDRESS(0x004C7E00, 0x006D8941),
+        this,
+        source_obj,
+        victim_obj,
+        victim_pos,
+        is_projectile_detonation,
+        ignore_ranges,
+        bonus_condition,
+        projectile_id,
+        do_damage);
+#else
+    return true;
+#endif
 }
 
 bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Object *victim_obj) const

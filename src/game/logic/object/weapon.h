@@ -385,6 +385,7 @@ public:
         OUT_OF_AMMO,
         BETWEEN_FIRING_SHOTS,
         RELOADING_CLIP,
+        PRE_ATTACK,
     };
 
     Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot);
@@ -430,7 +431,7 @@ public:
     void On_Weapon_Bonus_Change(const Object *source_obj);
     void Load_Ammo_Now(const Object *source_obj);
     void Reload_Ammo(const Object *source_obj);
-    void Compute_Bonus(const Object *source_obj, int flags, WeaponBonus &bonus) const;
+    void Compute_Bonus(const Object *source_obj, unsigned int flags, WeaponBonus &bonus) const;
     void Set_Clip_Percent_Full(float percent, bool b);
     void Rebuild_Scatter_Targets();
     void Reload_With_Bonus(const Object *source_obj, const WeaponBonus &bonus, bool load_instantly);
@@ -507,7 +508,7 @@ public:
     void Set_Leech_Range_Active(bool set) { m_leechWeaponRangeActive = set; }
     void Set_Next_Shot(unsigned int time) { m_whenWeCanFireAgain = time; }
     void Set_Status(WeaponStatus status) { m_status = status; }
-    void Set_Pre_Attack_Finished(bool set) { m_whenPreAttackFinished = set; }
+    void Set_Pre_Attack_Finished(unsigned int set) { m_whenPreAttackFinished = set; }
     void Set_Max_Shot_Count(int count) { m_maxShotCount = count; }
 
     bool Has_Laser() const { return m_template->Get_Laser_Name().Is_Not_Empty(); }
@@ -524,7 +525,7 @@ public:
 private:
     const WeaponTemplate *m_template;
     WeaponSlotType m_wslot;
-    WeaponStatus m_status;
+    mutable WeaponStatus m_status;
     unsigned int m_ammoInClip;
     unsigned int m_whenWeCanFireAgain;
     unsigned int m_whenPreAttackFinished;

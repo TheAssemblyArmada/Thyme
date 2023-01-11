@@ -1554,7 +1554,7 @@ int Team::Get_Targetable_Count() const
     return count;
 }
 
-Relationship Team::Get_Relationship(Team *that) const
+Relationship Team::Get_Relationship(const Team *that) const
 {
     if (!m_teamRelations->m_relationships.empty()) {
         if (that != nullptr) {

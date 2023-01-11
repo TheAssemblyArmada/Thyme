@@ -131,8 +131,13 @@ int Player::Get_Color() const
     return m_playerColor;
 }
 
-// wb: 0x006DA8F0
-Team *Player::Get_Default_Team() const
+const Team *Player::Get_Default_Team() const
+{
+    captainslog_dbgassert(m_defaultTeam != nullptr, "Default team is null.");
+    return m_defaultTeam;
+}
+
+Team *Player::Get_Default_Team()
 {
     captainslog_dbgassert(m_defaultTeam != nullptr, "Default team is null.");
     return m_defaultTeam;

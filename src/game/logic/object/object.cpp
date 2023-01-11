@@ -555,3 +555,12 @@ float Object::Estimate_Damage(DamageInfoInput &info) const
         return body->Estimate_Damage(info);
     }
 }
+
+int Object::Get_Num_Consecutive_Shots_Fired_At_Target(const Object *target) const
+{
+#ifdef GAME_DLL
+    return Call_Method<int, const Object, const Object *>(PICK_ADDRESS(0x0054E950, 0x007D8DDC), this, target);
+#else
+    return 0;
+#endif
+}

@@ -590,6 +590,38 @@ void Setup_Hooks()
     Hook_Any(0x004C4F90, WeaponStore::Handle_Projectile_Detonation);
     Hook_Any(0x004C50A0, WeaponStore::Create_And_Fire_Temp_Weapon);
     Hook_Any(0x004C51B0, WeaponStore::Find_Weapon_Template);
+    Hook_Any(0x004C6060, Weapon::Compute_Bonus);
+    Hook_Any(0x004C6170, Weapon::Load_Ammo_Now);
+    Hook_Any(0x004C62A0, Weapon::Reload_Ammo);
+    Hook_Any(0x004C63D0, Weapon::Get_Clip_Reload_Time);
+    Hook_Any(0x006D74B3, Weapon::Set_Clip_Percent_Full);
+    Hook_Any(0x004C66D0, Weapon::Reload_With_Bonus);
+    Hook_Method(
+        0x004C7170, static_cast<bool (Weapon::*)(const Object *, const Coord3D *) const>(&Weapon::Is_Within_Attack_Range));
+    Hook_Method(
+        0x004C72A0, static_cast<bool (Weapon::*)(const Object *, const Object *) const>(&Weapon::Is_Within_Attack_Range));
+    Hook_Method(0x004C74A0, static_cast<bool (Weapon::*)(const Object *, const Object *) const>(&Weapon::Is_Too_Close));
+    Hook_Any(0x004C7510, Weapon::Is_Goal_Pos_Within_Attack_Range);
+    Hook_Any(0x004C76C0, Weapon::Get_Percent_Ready_To_Fire);
+    Hook_Any(0x004C77A0, Weapon::Get_Attack_Range);
+    Hook_Any(0x004C78E0, Weapon::Get_Attack_Distance);
+    Hook_Method(0x004C7970,
+        static_cast<float (Weapon::*)(const Object *, const Object *, const Coord3D *)>(&Weapon::Estimate_Weapon_Damage));
+    Hook_Any(0x004C8450, Weapon::Pre_Fire_Weapon);
+    Hook_Method(0x004C84F0, static_cast<bool (Weapon::*)(const Object *, Object *, ObjectID *)>(&Weapon::Fire_Weapon));
+    Hook_Method(
+        0x004C8520, static_cast<bool (Weapon::*)(const Object *, const Coord3D *, ObjectID *)>(&Weapon::Fire_Weapon));
+    Hook_Any(0x004C8550, Weapon::Force_Fire_Weapon);
+    Hook_Any(0x004C85B0, Weapon::Get_Status);
+    Hook_Any(0x004C86D0, Weapon::Get_Primary_Damage_Radius);
+    Hook_Any(0x004C87F0, Weapon::Is_Damage_Weapon);
+    Hook_Method(0x004C9280,
+        static_cast<bool (Weapon ::*)(const Object *, const Coord3D &, const Object *) const>(
+            &Weapon::Is_Clear_Goal_Firing_Line_Of_Sight_Terrain));
+    Hook_Method(0x004C92F0,
+        static_cast<bool (Weapon ::*)(const Object *, const Coord3D &, const Coord3D &) const>(
+            &Weapon::Is_Clear_Goal_Firing_Line_Of_Sight_Terrain));
+    Hook_Any(0x004C9350, Weapon::Transfer_Next_Shot_Stats_From);
 
     // globaldata.h GlobalData
     Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definition);

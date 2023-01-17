@@ -22,6 +22,7 @@
 #include "gamelogic.h"
 #include "globaldata.h"
 #include "ini.h"
+#include "laserupdate.h"
 #include "object.h"
 #include "objectcreationlist.h"
 #include "opencontain.h"
@@ -29,6 +30,7 @@
 #include "particlesystemplate.h"
 #include "partitionmanager.h"
 #include "player.h"
+#include "projectilestreamupdate.h"
 #include "simpleobjectiterator.h"
 #include "specialpowercompletiondie.h"
 #include "terrainlogic.h"
@@ -574,6 +576,7 @@ bool Weapon::Private_Fire_Weapon(const Object *source_obj,
     ObjectID *projectile_id,
     bool do_damage)
 {
+// can't be implemented right now, needs AcademyStats
 #ifdef GAME_DLL
     return Call_Method<bool, Weapon, const Object *, Object *, const Coord3D *, bool, bool, unsigned int, ObjectID *, bool>(
         PICK_ADDRESS(0x004C7E00, 0x006D8941),
@@ -591,130 +594,616 @@ bool Weapon::Private_Fire_Weapon(const Object *source_obj,
 #endif
 }
 
-bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Object *victim_obj) const
+bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Object *target_obj) const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Weapon, const Object *, const Object *>(
-        PICK_ADDRESS(0x004C72A0, 0x006D7E7F), this, source_obj, victim_obj);
-#else
+    float range_sqr = GameMath::Square(Get_Attack_Range(source_obj));
+    float distance_sqr;
+
+    if (target_obj->Is_KindOf(KINDOF_BRIDGE)) {
+        TBridgeAttackInfo info;
+        g_theTerrainLogic->Get_Bridge_Attack_Points(target_obj, &info);
+        distance_sqr =
+            g_thePartitionManager->Get_Distance_Squared(source_obj, &info.m_attackPoint1, FROM_BOUNDINGSPHERE_2D, nullptr);
+
+        if (distance_sqr > range_sqr) {
+            distance_sqr = g_thePartitionManager->Get_Distance_Squared(
+                source_obj, &info.m_attackPoint2, FROM_BOUNDINGSPHERE_2D, nullptr);
+        }
+    } else {
+        distance_sqr = g_thePartitionManager->Get_Distance_Squared(source_obj, target_obj, FROM_BOUNDINGSPHERE_2D, nullptr);
+    }
+
+    if (distance_sqr < GameMath::Square(m_template->Get_Minimum_Attack_Range())) {
+        return false;
+    }
+
+    if (distance_sqr > range_sqr) {
+        return false;
+    }
+
+    if (!Is_Contact_Weapon() || !target_obj->Is_KindOf(KINDOF_STRUCTURE)) {
+        return true;
+    }
+
+    SimpleObjectIterator *iter = g_thePartitionManager->Iterate_Potential_Collisions(
+        source_obj->Get_Position(), source_obj->Get_Geometry_Info(), 0.0f, false);
+    MemoryPoolObjectHolder holder(iter);
+
+    for (Object *o = iter->First(); o != nullptr; o = iter->Next()) {
+        if (target_obj == o) {
+            return true;
+        }
+    }
+
     return false;
-#endif
 }
 
-bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Coord3D *victim_obj) const
+bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Coord3D *target_pos) const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Weapon, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C7170, 0x006D7DF0), this, source_obj, victim_obj);
-#else
-    return false;
-#endif
+    float distance_sqr =
+        g_thePartitionManager->Get_Distance_Squared(source_obj, target_pos, FROM_BOUNDINGSPHERE_2D, nullptr);
+    return distance_sqr >= GameMath::Square(m_template->Get_Minimum_Attack_Range())
+        && distance_sqr <= GameMath::Square(Get_Attack_Range(source_obj));
 }
 
 float Weapon::Get_Attack_Range(const Object *source_obj) const
 {
-#ifdef GAME_DLL
-    return Call_Method<float, const Weapon, const Object *>(PICK_ADDRESS(0x004C77A0, 0x006D843A), this, source_obj);
-#else
-    return 0;
-#endif
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    return m_template->Get_Attack_Range(bonus);
+}
+
+void Weapon::Compute_Bonus(const Object *source_obj, unsigned int flags, WeaponBonus &bonus) const
+{
+    bonus.Clear();
+    flags |= source_obj->Get_Weapon_Bonus_Condition();
+
+    if (source_obj->Get_Contained_By() != nullptr) {
+        ContainModuleInterface *contain = source_obj->Get_Contained_By()->Get_Contain();
+
+        if (contain != nullptr) {
+            if (contain->Is_Weapon_Bonus_Passed_To_Passengers()) {
+                flags |= contain->Get_Weapon_Bonus_Passed_To_Passengers();
+            }
+        }
+    }
+
+    if (g_theWriteableGlobalData->m_weaponBonusSet != nullptr) {
+        g_theWriteableGlobalData->m_weaponBonusSet->Append_Bonuses(flags, bonus);
+    }
+
+    if (m_template->Get_Extra_Bonus() != nullptr) {
+        m_template->Get_Extra_Bonus()->Append_Bonuses(flags, bonus);
+    }
 }
 
 void Weapon::On_Weapon_Bonus_Change(const Object *source_obj)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Weapon, const Object *>(PICK_ADDRESS(0x004C68E0, 0x006D76F8), this, source_obj);
-#endif
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    bool time_set = false;
+    int time;
+
+    if (Get_Status() == RELOADING_CLIP) {
+        time = m_template->Get_Clip_Reload_Time(bonus);
+        time_set = true;
+    } else if (Get_Status() == BETWEEN_FIRING_SHOTS) {
+        time = m_template->Get_Delay_Between_Shots(bonus);
+        time_set = true;
+    }
+
+    if (time_set) {
+        m_whenLastReloadStarted = g_theGameLogic->Get_Frame();
+        m_whenWeCanFireAgain = time + m_whenLastReloadStarted;
+
+        if (source_obj->Is_Share_Weapon_Reload_Time()) {
+            for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+                Weapon *weapon = const_cast<Weapon *>(source_obj->Get_Weapon_In_Weapon_Slot(static_cast<WeaponSlotType>(i)));
+
+                if (weapon != nullptr) {
+                    weapon->Set_Next_Shot(m_whenWeCanFireAgain);
+                    weapon->Set_Status(RELOADING_CLIP);
+                }
+            }
+        }
+    }
 }
 
-bool Weapon::Is_Within_Target_Pitch(const Object *source_obj, const Object *victim_obj) const
+bool Weapon::Is_Within_Target_Pitch(const Object *source_obj, const Object *target_obj) const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Weapon, const Object *, const Object *>(
-        PICK_ADDRESS(0x004C85F0, 0x006D91B7), this, source_obj, victim_obj);
-#else
+    if (Is_Contact_Weapon() || !Is_Pitch_Limited()) {
+        return true;
+    }
+
+    const Coord3D *source_pos = source_obj->Get_Position();
+    const Coord3D *target_pos = target_obj->Get_Position();
+
+    if (GameMath::Fabs(target_pos->z - source_pos->z) < 10.0f) {
+        return true;
+    }
+
+    float pitch_above;
+    float pitch_below;
+    source_obj->Get_Geometry_Info().Calc_Pitches(
+        *source_pos, target_obj->Get_Geometry_Info(), *target_pos, pitch_above, pitch_below);
+
+    if (m_template->Get_Min_Target_Pitch() > pitch_above || m_template->Get_Max_Target_Pitch() < pitch_above) {
+        if (m_template->Get_Min_Target_Pitch() > pitch_below || m_template->Get_Max_Target_Pitch() < pitch_below) {
+            if (m_template->Get_Min_Target_Pitch() < pitch_above) {
+                return false;
+            }
+
+            if (m_template->Get_Max_Target_Pitch() > pitch_below) {
+                return false;
+            }
+        }
+    }
+
     return true;
-#endif
 }
 
 void Weapon::Load_Ammo_Now(const Object *source_obj)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Weapon, const Object *>(PICK_ADDRESS(0x004C6170, 0x006D7405), this, source_obj);
-#endif
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    Reload_With_Bonus(source_obj, bonus, true);
+}
+
+void Weapon::Reload_With_Bonus(const Object *source_obj, const WeaponBonus &bonus, bool load_instantly)
+{
+    if (m_template->Get_Clip_Size() <= 0 || m_ammoInClip != m_template->Get_Clip_Size()
+        || source_obj->Is_Share_Weapon_Reload_Time()) {
+        m_ammoInClip = m_template->Get_Clip_Size();
+
+        if (m_ammoInClip == 0) {
+            m_ammoInClip = INT_MAX;
+        }
+
+        m_status = RELOADING_CLIP;
+        int time;
+
+        if (load_instantly) {
+            time = 0;
+        } else {
+            time = m_template->Get_Clip_Reload_Time(bonus);
+        }
+
+        m_whenLastReloadStarted = g_theGameLogic->Get_Frame();
+        m_whenWeCanFireAgain = m_whenLastReloadStarted + time;
+
+        if (source_obj->Is_Share_Weapon_Reload_Time()) {
+            for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+                Weapon *weapon = const_cast<Weapon *>(source_obj->Get_Weapon_In_Weapon_Slot(static_cast<WeaponSlotType>(i)));
+
+                if (weapon != nullptr) {
+                    weapon->Set_Next_Shot(m_whenWeCanFireAgain);
+                    weapon->Set_Status(RELOADING_CLIP);
+                }
+            }
+        }
+
+        Rebuild_Scatter_Targets();
+    }
+}
+
+void Weapon::Rebuild_Scatter_Targets()
+{
+    m_scatterTargetIndexes.clear();
+    const std::vector<Coord2D> &targets = m_template->Get_Scatter_Targets();
+
+    for (size_t i = 0; i < targets.size(); i++) {
+        m_scatterTargetIndexes.push_back(static_cast<int>(i));
+    }
 }
 
 bool Weapon::Is_Damage_Weapon() const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Weapon>(PICK_ADDRESS(0x004C87F0, 0x006D931D), this);
-#else
-    return true;
-#endif
+    DamageType type = m_template->Get_Damage_Type();
+
+    switch (type) {
+        case DAMAGE_DEPLOY:
+            return true;
+        case DAMAGE_HACK:
+            return false;
+        case DAMAGE_DISARM:
+            return true;
+    }
+
+    WeaponBonus bonus;
+    return m_template->Get_Primary_Damage(bonus) > 0.0f || m_template->Get_Secondary_Damage(bonus) > 0.0f;
 }
 
 void Weapon::Reload_Ammo(const Object *source_obj)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Weapon, const Object *>(PICK_ADDRESS(0x004C62A0, 0x006D7440), this, source_obj);
-#endif
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    Reload_With_Bonus(source_obj, bonus, false);
 }
 
 Weapon::WeaponStatus Weapon::Get_Status() const
 {
-#ifdef GAME_DLL
-    return Call_Method<Weapon::WeaponStatus, const Weapon>(PICK_ADDRESS(0x004C85B0, 0x006D915A), this);
-#else
-    return READY_TO_FIRE;
-#endif
+    unsigned int frame = g_theGameLogic->Get_Frame();
+
+    if (frame < m_whenPreAttackFinished) {
+        return PRE_ATTACK;
+    }
+
+    if (frame >= m_whenWeCanFireAgain) {
+        if (m_ammoInClip != 0) {
+            m_status = READY_TO_FIRE;
+        } else {
+            m_status = OUT_OF_AMMO;
+        }
+    }
+
+    return m_status;
 }
 
 float Weapon::Get_Percent_Ready_To_Fire() const
 {
-#ifdef GAME_DLL
-    return Call_Method<float, const Weapon>(PICK_ADDRESS(0x004C76C0, 0x006D8259), this);
-#else
-    return 0.0f;
-#endif
+    switch (Get_Status()) {
+        case READY_TO_FIRE:
+            return 1.0f;
+        case OUT_OF_AMMO:
+        case PRE_ATTACK:
+            return 0.0f;
+        case BETWEEN_FIRING_SHOTS:
+        case RELOADING_CLIP: {
+            unsigned int now = g_theGameLogic->Get_Frame();
+            unsigned int next_shot = Get_Next_Shot();
+            captainslog_dbgassert(now >= m_whenLastReloadStarted, "now >= m_whenLastReloadStarted");
+
+            if (now < next_shot) {
+                captainslog_dbgassert(next_shot >= m_whenLastReloadStarted, "next_shot >= m_whenLastReloadStarted");
+                unsigned int time_left = next_shot - m_whenLastReloadStarted;
+
+                if (time_left != 0) {
+                    unsigned int total_time = next_shot - now;
+                    captainslog_dbgassert(time_left <= total_time, "time_left <= total_time");
+
+                    if (time_left - total_time < time_left) {
+                        return (float)(time_left - total_time) / (float)time_left;
+                    } else {
+                        return 1.0f;
+                    }
+                } else {
+                    return 1.0f;
+                }
+            } else {
+                return 1.0f;
+            }
+        }
+        default:
+            captainslog_dbgassert(false, "should not get here");
+            return 0.0f;
+    }
 }
 
 float Weapon::Estimate_Weapon_Damage(const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos)
 {
-#ifdef GAME_DLL
-    return Call_Method<float, Weapon, const Object *, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C7970, 0x006D84C3), this, source_obj, victim_obj, victim_pos);
-#else
-    return 0.0f;
-#endif
+    if (m_template == nullptr) {
+        return 0.0f;
+    }
+
+    if (Get_Status() == OUT_OF_AMMO && !m_template->Is_Auto_Reloads_Clip()) {
+        return 0.0f;
+    }
+
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    return m_template->Estimate_Weapon_Template_Damage(source_obj, victim_obj, victim_pos, bonus);
 }
 
 bool Weapon::Is_Source_Object_With_Goal_Position_Within_Attack_Range(
     const Object *source_obj, const Coord3D *goal_pos, const Object *target_obj, const Coord3D *target_pos) const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Weapon, const Object *, const Coord3D *, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C7010, 0x006D7D2B), this, source_obj, goal_pos, target_obj, target_pos);
-#else
-    return false;
-#endif
+    float goal_squared;
+
+    if (target_obj != nullptr) {
+        goal_squared = g_thePartitionManager->Get_Goal_Distance_Squared(
+            source_obj, goal_pos, target_obj, FROM_BOUNDINGSPHERE_2D, nullptr);
+    } else {
+        if (target_pos == nullptr) {
+            return false;
+        }
+
+        goal_squared = g_thePartitionManager->Get_Goal_Distance_Squared(
+            source_obj, goal_pos, target_pos, FROM_BOUNDINGSPHERE_2D, nullptr);
+    }
+
+    return goal_squared >= GameMath::Square(m_template->Get_Minimum_Attack_Range())
+        && goal_squared <= GameMath::Square(Get_Attack_Range(source_obj));
 }
 
 void Weapon::New_Projectile_Fired(
     const Object *source_obj, const Object *projectile_obj, const Object *target_obj, const Coord3D *target_pos)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Weapon, const Object *, const Object *, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C7B00, 0x006D8541), this, source_obj, projectile_obj, target_obj, target_pos);
-#endif
+    if (!m_template->Get_Projectile_Stream_Name().Is_Empty()) {
+        Object *obj = g_theGameLogic->Find_Object_By_ID(m_projectileStreamID);
+
+        if (obj == nullptr) {
+            m_projectileStreamID = OBJECT_UNK;
+            ThingTemplate *tmplate = g_theThingFactory->Find_Template(m_template->Get_Projectile_Stream_Name(), true);
+            obj = g_theThingFactory->New_Object(
+                tmplate, source_obj->Get_Controlling_Player()->Get_Default_Team(), OBJECT_STATUS_MASK_NONE);
+
+            if (obj == nullptr) {
+                return;
+            }
+
+            m_projectileStreamID = obj->Get_ID();
+        }
+
+        static NameKeyType key_ProjectileStreamUpdate = Name_To_Key("ProjectileStreamUpdate");
+        ProjectileStreamUpdate *module = static_cast<ProjectileStreamUpdate *>(obj->Find_Module(key_ProjectileStreamUpdate));
+
+        if (module != nullptr) {
+            module->Set_Position(source_obj->Get_Position());
+            ObjectID id;
+
+            if (target_obj != nullptr) {
+                id = target_obj->Get_ID();
+            } else {
+                id = OBJECT_UNK;
+            }
+
+            module->Add_Projectile(source_obj->Get_ID(), projectile_obj->Get_ID(), id, target_pos);
+        }
+    }
 }
 
 void Weapon::Create_Laser(const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Weapon, const Object *, const Object *, const Coord3D *>(
-        PICK_ADDRESS(0x004C7C70, 0x006D8700), this, source_obj, victim_obj, victim_pos);
-#endif
+    ThingTemplate *tmplate = g_theThingFactory->Find_Template(m_template->Get_Laser_Name(), true);
+
+    if (tmplate != nullptr) {
+        Object *laser = g_theThingFactory->New_Object(
+            tmplate, source_obj->Get_Controlling_Player()->Get_Default_Team(), OBJECT_STATUS_MASK_NONE);
+
+        if (laser != nullptr) {
+            laser->Set_Position(source_obj->Get_Position());
+            Drawable *drawable = laser->Get_Drawable();
+
+            if (drawable != nullptr) {
+                static NameKeyType key_LaserUpdate = Name_To_Key("LaserUpdate");
+                LaserUpdate *update = static_cast<LaserUpdate *>(drawable->Find_Client_Update_Module(key_LaserUpdate));
+
+                if (update != nullptr) {
+                    Coord3D pos = *victim_pos;
+
+                    if (victim_obj != nullptr && !victim_obj->Is_KindOf(KINDOF_PROJECTILE)
+                        && !victim_obj->Is_Airborne_Target()) {
+                        pos.z += 10.0f;
+                    }
+
+                    update->Init_Laser(
+                        source_obj, victim_obj, source_obj->Get_Position(), &pos, m_template->Get_Laser_Bone_Name(), 0);
+                }
+            }
+        }
+    } else {
+        captainslog_dbgassert(false,
+            "Weapon::Create_Laser(). %s could not find template for its laser %s.",
+            source_obj->Get_Template()->Get_Name().Str(),
+            m_template->Get_Laser_Name().Str());
+    }
 }
+
+int Weapon::Get_Clip_Reload_Time(const Object *source_obj) const
+{
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    return m_template->Get_Clip_Reload_Time(bonus);
+}
+
+void Weapon::Set_Clip_Percent_Full(float percent, bool b)
+{
+    if (m_template->Get_Clip_Size() != 0) {
+        unsigned int size = GameMath::Fast_To_Int_Floor(m_template->Get_Clip_Size() * percent);
+
+        if (size > m_ammoInClip || (b && size < m_ammoInClip)) {
+            m_ammoInClip = size;
+            m_status = m_ammoInClip != 0 ? READY_TO_FIRE : OUT_OF_AMMO;
+            m_whenLastReloadStarted = g_theGameLogic->Get_Frame();
+            m_whenWeCanFireAgain = m_whenLastReloadStarted;
+            Rebuild_Scatter_Targets();
+        }
+    }
+}
+
+bool Weapon::Is_Too_Close(const Object *source_obj, const Object *target_obj) const
+{
+    float range = m_template->Get_Minimum_Attack_Range();
+
+    if (range == 0.0f) {
+        return false;
+    }
+
+    return GameMath::Square(range)
+        > g_thePartitionManager->Get_Distance_Squared(source_obj, target_obj, FROM_BOUNDINGSPHERE_2D, nullptr);
+}
+
+bool Weapon::Is_Too_Close(const Object *source_obj, const Coord3D *target_pos) const
+{
+    float range = m_template->Get_Minimum_Attack_Range();
+
+    if (range == 0.0f) {
+        return false;
+    }
+
+    return GameMath::Square(range)
+        > g_thePartitionManager->Get_Distance_Squared(source_obj, target_pos, FROM_BOUNDINGSPHERE_2D, nullptr);
+}
+
+bool Weapon::Is_Goal_Pos_Within_Attack_Range(
+    const Object *source_obj, const Coord3D *goal_pos, const Object *target_obj, const Coord3D *target_pos) const
+{
+    float max_attack_range = GameMath::Square(Get_Attack_Range(source_obj) - 2.5f);
+    float distance_sqr;
+
+    if (target_obj != nullptr) {
+        if (target_obj->Is_KindOf(KINDOF_BRIDGE)) {
+            TBridgeAttackInfo info;
+            g_theTerrainLogic->Get_Bridge_Attack_Points(target_obj, &info);
+            distance_sqr = g_thePartitionManager->Get_Goal_Distance_Squared(
+                source_obj, goal_pos, &info.m_attackPoint1, FROM_BOUNDINGSPHERE_2D, nullptr);
+
+            if (distance_sqr > max_attack_range) {
+                distance_sqr = g_thePartitionManager->Get_Goal_Distance_Squared(
+                    source_obj, goal_pos, &info.m_attackPoint2, FROM_BOUNDINGSPHERE_2D, nullptr);
+            }
+        } else {
+            distance_sqr = g_thePartitionManager->Get_Goal_Distance_Squared(
+                source_obj, goal_pos, target_obj, FROM_BOUNDINGSPHERE_2D, nullptr);
+        }
+    } else {
+        distance_sqr = g_thePartitionManager->Get_Goal_Distance_Squared(
+            source_obj, goal_pos, target_pos, FROM_BOUNDINGSPHERE_2D, nullptr);
+    }
+
+    float min_attack_range = GameMath::Square(m_template->Get_Minimum_Attack_Range() + 2.5f);
+    return distance_sqr >= min_attack_range && distance_sqr <= max_attack_range;
+}
+
+float Weapon::Get_Attack_Distance(const Object *source_obj, const Object *victim_obj, const Coord3D *victim_pos) const
+{
+    float range = Get_Attack_Range(source_obj);
+
+    if (victim_obj != nullptr) {
+        return victim_obj->Get_Geometry_Info().Get_Bounding_Circle_Radius()
+            + source_obj->Get_Geometry_Info().Get_Bounding_Circle_Radius() + range;
+    }
+
+    return range;
+}
+
+void Weapon::Pre_Fire_Weapon(const Object *source_obj, const Object *victim_obj)
+{
+    int delay = Get_Pre_Attack_Delay(source_obj, victim_obj);
+
+    if (delay > 0) {
+        Set_Status(PRE_ATTACK);
+        Set_Pre_Attack_Finished(delay + g_theGameLogic->Get_Frame());
+
+        if (m_template->Is_Leech_Range_Weapon()) {
+            Set_Leech_Range_Active(true);
+        }
+    }
+}
+
+int Weapon::Get_Pre_Attack_Delay(const Object *source_obj, const Object *target_obj) const
+{
+    AttackType type = m_template->Get_Pre_Attack_Type();
+
+    if (type == ATTACK_TYPE_PER_CLIP) {
+        if (m_template->Get_Clip_Size() > 0 && m_ammoInClip < (unsigned int)m_template->Get_Clip_Size()) {
+            return 0;
+        }
+    } else if (type == ATTACK_TYPE_PER_ATTACK && source_obj->Get_Num_Consecutive_Shots_Fired_At_Target(target_obj) > 0) {
+        return 0;
+    }
+
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    return m_template->Get_Pre_Attack_Delay(bonus);
+}
+
+bool Weapon::Fire_Projectile_Detonation_Weapon(
+    const Object *source_obj, Object *victim_obj, unsigned int bonus_condition, bool do_damage)
+{
+    return Private_Fire_Weapon(source_obj, victim_obj, nullptr, true, false, bonus_condition, nullptr, do_damage);
+}
+
+Object *Weapon::Force_Fire_Weapon(const Object *source_obj, const Coord3D *victim_pos)
+{
+    ObjectID id = OBJECT_UNK;
+    Private_Fire_Weapon(source_obj, nullptr, victim_pos, false, true, 0, &id, true);
+    return g_theGameLogic->Find_Object_By_ID(id);
+}
+
+float Weapon::Get_Primary_Damage_Radius(const Object *source_obj) const
+{
+    WeaponBonus bonus;
+    Compute_Bonus(source_obj, 0, bonus);
+    return m_template->Get_Primary_Damage_Radius(bonus);
+}
+
+void Weapon::Get_Firing_Line_Of_Sight_Origin(const Object *source_obj, Coord3D &pos) const
+{
+    pos.z += source_obj->Get_Geometry_Info().Get_Max_Height_Above_Position();
+}
+
+bool Weapon::Is_Clear_Firing_Line_Of_Sight_Terrain(const Object *source_obj, const Object *target_obj) const
+{
+    Coord3D source_pos = *source_obj->Get_Position();
+    Get_Firing_Line_Of_Sight_Origin(source_obj, source_pos);
+    const Coord3D *target_pos = target_obj->Get_Position();
+    Coord3D center_pos;
+    target_obj->Get_Geometry_Info().Get_Center_Position(*target_pos, center_pos);
+    return g_thePartitionManager->Is_Clear_Line_Of_Sight_Terrain(nullptr, source_pos, nullptr, center_pos);
+}
+
+bool Weapon::Is_Clear_Firing_Line_Of_Sight_Terrain(const Object *source_obj, const Coord3D &target_pos) const
+{
+    Coord3D source_pos = *source_obj->Get_Position();
+    Get_Firing_Line_Of_Sight_Origin(source_obj, source_pos);
+    return g_thePartitionManager->Is_Clear_Line_Of_Sight_Terrain(nullptr, source_pos, nullptr, target_pos);
+}
+
+bool Weapon::Is_Clear_Goal_Firing_Line_Of_Sight_Terrain(
+    const Object *source_obj, const Coord3D &goal_pos, const Object *target_obj) const
+{
+    Coord3D source_pos = goal_pos;
+    Get_Firing_Line_Of_Sight_Origin(source_obj, source_pos);
+    const Coord3D *target_pos = target_obj->Get_Position();
+    Coord3D center_pos;
+    target_obj->Get_Geometry_Info().Get_Center_Position(*target_pos, center_pos);
+    return g_thePartitionManager->Is_Clear_Line_Of_Sight_Terrain(nullptr, source_pos, nullptr, center_pos);
+}
+
+bool Weapon::Is_Clear_Goal_Firing_Line_Of_Sight_Terrain(
+    const Object *source_obj, const Coord3D &goal_pos, const Coord3D &target_pos) const
+{
+    Coord3D source_pos = goal_pos;
+    Get_Firing_Line_Of_Sight_Origin(source_obj, source_pos);
+    return g_thePartitionManager->Is_Clear_Line_Of_Sight_Terrain(nullptr, source_pos, nullptr, target_pos);
+}
+
+void Weapon::Transfer_Next_Shot_Stats_From(const Weapon &weapon)
+{
+    m_whenWeCanFireAgain = weapon.Get_Next_Shot();
+    m_whenLastReloadStarted = weapon.Get_Last_Reload_Started();
+    m_status = weapon.Get_Status();
+}
+
+#if 0
+void Weapon::Position_Projectile_For_Launch(
+    Object *projectile_obj, const Object *source_obj, WeaponSlotType wslot, int ammo_index)
+{
+    // todo
+}
+
+void Weapon::Calc_Projectile_Launch_Position(
+    const Object *source_obj, WeaponSlotType wslot, int ammo_index, Matrix3D &launch_transform, Coord3D &launch_pos)
+{
+    // todo
+}
+
+bool Weapon::Compute_Approach_Target(const Object *source_obj,
+    const Object *target_obj,
+    const Coord3D *target_pos,
+    float angle_offset,
+    Coord3D &approach_target_pos) const
+{
+    // todo
+    return false;
+}
+
+void Weapon::Process_Request_Assistance(const Object *source_obj, Object *target_obj)
+{
+    // todo
+}
+#endif
 
 const char *s_theDeathTypeNames[] = {
     "NORMAL",
@@ -854,8 +1343,9 @@ FieldParse WeaponTemplate::s_fieldParseTable[] = {
      { "AcceptableAimDelta", &INI::Parse_Angle_Real, nullptr, offsetof(WeaponTemplate, m_aimDelta) },
      { "ScatterRadius", &INI::Parse_Real, nullptr, offsetof(WeaponTemplate, m_scatterRadius) },
      { "ScatterTargetScalar", &INI::Parse_Real, nullptr, offsetof(WeaponTemplate, m_scatterTargetScalar) },
-     { "ScatterTarget", &WeaponTemplate::Parse_Scatter_Target, nullptr, offsetof(WeaponTemplate, m_scatterTarget) },
+     { "ScatterRadiusVsInfantry", &INI::Parse_Real, nullptr, offsetof(WeaponTemplate, m_scatterRadiusVsInfantry) },
      { "DamageType", &BitFlags<DAMAGE_NUM_TYPES>::Parse_Single_Bit_From_INI, nullptr, offsetof(WeaponTemplate, m_damageType) },
+     { "DamageStatusType", &BitFlags<OBJECT_STATUS_COUNT>::Parse_Single_Bit_From_INI, nullptr, offsetof(WeaponTemplate, m_damageStatusType) },
      { "DeathType", &INI::Parse_Index_List, s_theDeathTypeNames, offsetof(WeaponTemplate, m_deathType) },
      { "WeaponSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(WeaponTemplate, m_weaponSpeed) },
      { "MinWeaponSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(WeaponTemplate, m_minWeaponSpeed) },
@@ -865,53 +1355,55 @@ FieldParse WeaponTemplate::s_fieldParseTable[] = {
      { "MaxTargetPitch", &INI::Parse_Angle_Real, nullptr, offsetof(WeaponTemplate, m_maxTargetPitch) },
      { "RadiusDamageAngle", &INI::Parse_Angle_Real, nullptr, offsetof(WeaponTemplate, m_radiusDamageAngle) },
      { "ProjectileObject", &INI::Parse_AsciiString, nullptr, offsetof(WeaponTemplate, m_projectileObject) },
-     { "FireOCL", &Parse_All_Vet_Levels_ASCII_String, nullptr, offsetof(WeaponTemplate, m_fireOCL) },
-     { "VeterancyFireOCL", &Parse_Per_Vet_Level_ASCII_String, nullptr, offsetof(WeaponTemplate, m_fireOCL) },
-     { "ProjectileDetonationOCL", &Parse_All_Vet_Levels_ASCII_String, nullptr, offsetof(WeaponTemplate, m_projectileDetonationOCL) },
-     { "VeterancyProjectileDetonationOCL", &Parse_Per_Vet_Level_ASCII_String, nullptr, offsetof(WeaponTemplate, m_projectileDetonationOCL) },
-     { "ProjectileExhaust", &Parse_All_Vet_Levels_Particle_System, nullptr, offsetof(WeaponTemplate, m_projectileExhaust) },
-     { "VeterancyProjectileExhaust", &Parse_Per_Vet_Level_Particle_System, nullptr, offsetof(WeaponTemplate, m_projectileExhaust) },
-     { "FireFX", &Parse_All_Vet_Levels_FXList, nullptr, offsetof(WeaponTemplate, m_fireFX) },
-     { "VeterancyFireFX", &Parse_Per_Vet_Level_FXList, nullptr, offsetof(WeaponTemplate, m_fireFX) },
-     { "ProjectileDetonationFX", &Parse_All_Vet_Levels_FXList, nullptr, offsetof(WeaponTemplate, m_projectileDetonateFX) },
-     { "VeterancyProjectileDetonationFX", &Parse_Per_Vet_Level_FXList, nullptr, offsetof(WeaponTemplate, m_projectileDetonateFX) },
      { "FireSound", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(WeaponTemplate, m_fireSound) },
      { "FireSoundLoopTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_fireSoundLoopTime) },
-     { "WeaponBonus", &WeaponTemplate::Parse_Weapon_Bonus_Set, nullptr, 0 },
+     { "FireFX", &Parse_All_Vet_Levels_FXList, nullptr, offsetof(WeaponTemplate, m_fireFX) },
+     { "ProjectileDetonationFX", &Parse_All_Vet_Levels_FXList, nullptr, offsetof(WeaponTemplate, m_projectileDetonateFX) },
+     { "FireOCL", &Parse_All_Vet_Levels_ASCII_String, nullptr, offsetof(WeaponTemplate, m_fireOCLName) },
+     { "ProjectileDetonationOCL", &Parse_All_Vet_Levels_ASCII_String, nullptr, offsetof(WeaponTemplate, m_projectileDetonationOCLName) },
+     { "ProjectileExhaust", &Parse_All_Vet_Levels_Particle_System, nullptr, offsetof(WeaponTemplate, m_projectileExhaust) },
+     { "VeterancyFireFX", &Parse_Per_Vet_Level_FXList, nullptr, offsetof(WeaponTemplate, m_fireFX) },
+     { "VeterancyProjectileDetonationFX", &Parse_Per_Vet_Level_FXList, nullptr, offsetof(WeaponTemplate, m_projectileDetonateFX) },
+     { "VeterancyFireOCL", &Parse_Per_Vet_Level_ASCII_String, nullptr, offsetof(WeaponTemplate, m_fireOCLName) },
+     { "VeterancyProjectileDetonationOCL", &Parse_Per_Vet_Level_ASCII_String, nullptr, offsetof(WeaponTemplate, m_projectileDetonationOCLName) },
+     { "VeterancyProjectileExhaust", &Parse_Per_Vet_Level_Particle_System, nullptr, offsetof(WeaponTemplate, m_projectileExhaust) },
      { "ClipSize", &INI::Parse_Int, nullptr, offsetof(WeaponTemplate, m_clipSize) },
-     { "ClipReloadTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_clipReloadTime) },
-     { "DelayBetweenShots", &WeaponTemplate::Parse_Shot_Delay, nullptr, 0 },
      { "ContinuousFireOne", &INI::Parse_Int, nullptr, offsetof(WeaponTemplate, m_continuousFireOneShotsNeeded) },
      { "ContinuousFireTwo", &INI::Parse_Int, nullptr, offsetof(WeaponTemplate, m_continuousFireTwoShotsNeeded) },
      { "ContinuousFireCoast", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_continuousFireCoastFrames) },
      { "AutoReloadWhenIdle", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_autoReloadWhenIdle) },
+     { "ClipReloadTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_clipReloadTime) },
+     { "DelayBetweenShots", &WeaponTemplate::Parse_Shot_Delay, nullptr, 0 },
      { "ShotsPerBarrel", &INI::Parse_Int, nullptr, offsetof(WeaponTemplate, m_shotsPerBarrel) },
+     { "DamageDealtAtSelfPosition", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_damageDealtAtSelfPosition) },
+     { "RadiusDamageAffects", &INI::Parse_Bitstring32, s_theRadiusDamageAffectsNames, offsetof(WeaponTemplate, m_affectsMask) },
+     { "ProjectileCollidesWith", &INI::Parse_Bitstring32, s_theProjectileCollidesWithNames, offsetof(WeaponTemplate, m_collideMask) },
      { "AntiAirborneVehicle", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_AIRBORNE_VEHICLE), offsetof(WeaponTemplate, m_antiMask) },
      { "AntiGround", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_GROUND), offsetof(WeaponTemplate, m_antiMask) },
      { "AntiProjectile", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_PROJECTILE), offsetof(WeaponTemplate, m_antiMask) },
      { "AntiSmallMissile", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_SMALL_MISSILE), offsetof(WeaponTemplate, m_antiMask) },
      { "AntiMine", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_MINE), offsetof(WeaponTemplate, m_antiMask) },
+     { "AntiParachute", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_PARACHUTE), offsetof(WeaponTemplate, m_antiMask) },
      { "AntiAirborneInfantry", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_AIRBORNE_INFANTRY), offsetof(WeaponTemplate, m_antiMask) },
      { "AntiBallisticMissile", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_BALLISTIC_MISSILE), offsetof(WeaponTemplate, m_antiMask) },
-     { "AntiParachute", &INI::Parse_Bit_In_Int32, reinterpret_cast<void*>(ANTI_PARACHUTE), offsetof(WeaponTemplate, m_antiMask) },
-     { "RadiusDamageAffects", &INI::Parse_Bitstring32, s_theRadiusDamageAffectsNames, offsetof(WeaponTemplate, m_affectsMask) },
-     { "ProjectileCollidesWith", &INI::Parse_Bitstring32, s_theProjectileCollidesWithNames, offsetof(WeaponTemplate, m_collideMask) },
-     { "DamageDealtAtSelfPosition", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_damageDealtAtSelfPosition) },
      { "AutoReloadsClip", &INI::Parse_Index_List, s_theAutoReloadsClipNames, offsetof(WeaponTemplate, m_autoReloadsClip) },
-     { "PreAttackType", &INI::Parse_Index_List, s_theAttackTypeNames, offsetof(WeaponTemplate, m_preAttackType) },
+     { "ProjectileStreamName", &INI::Parse_AsciiString, nullptr, offsetof(WeaponTemplate, m_projectileStreamName) },
+     { "LaserName", &INI::Parse_AsciiString, nullptr, offsetof(WeaponTemplate, m_laserName) },
+     { "LaserBoneName", &INI::Parse_AsciiString, nullptr, offsetof(WeaponTemplate, m_laserBoneName) },
+     { "WeaponBonus", &WeaponTemplate::Parse_Weapon_Bonus_Set, nullptr, 0 },
      { "HistoricBonusTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_historicBonusTime) },
      { "HistoricBonusRadius", &INI::Parse_Real, nullptr, offsetof(WeaponTemplate, m_historicBonusRadius) },
      { "HistoricBonusCount", &INI::Parse_Int, nullptr, offsetof(WeaponTemplate, m_historicBonusCount) },
      { "HistoricBonusWeapon", &WeaponStore::Parse_Weapon_Template, nullptr, offsetof(WeaponTemplate, m_historicBonusWeapon) },
      { "LeechRangeWeapon", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_leechRangeWeapon) },
+     { "ScatterTarget", &WeaponTemplate::Parse_Scatter_Target, nullptr, 0 },
      { "CapableOfFollowingWaypoints", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_capableOfFollowingWaypoint) },
      { "ShowsAmmoPips", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_showAmmoPips) },
      { "AllowAttackGarrisonedBldgs", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_allowAttackGarrisonedBldgs) },
      { "PlayFXWhenStealthed", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_playFXWhenStealthed) },
      { "PreAttackDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_preAttackDelay) },
+     { "PreAttackType", &INI::Parse_Index_List, s_theAttackTypeNames, offsetof(WeaponTemplate, m_preAttackType) },
      { "ContinueAttackRange", &INI::Parse_Real, nullptr, offsetof(WeaponTemplate, m_continueAttackRange) },
-     { "ScatterRadiusVsInfantry", &INI::Parse_Real, nullptr, offsetof(WeaponTemplate, m_scatterRadiusVsInfantry) },
-     { "DamageStatusType", &BitFlags<OBJECT_STATUS_COUNT>::Parse_Single_Bit_From_INI, nullptr, offsetof(WeaponTemplate, m_damageStatusType) },
      { "SuspendFXDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(WeaponTemplate, m_suspendFXDelay) },
      { "MissileCallsOnDie", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplate, m_missileCallsOnDie) },
      { nullptr, nullptr, nullptr, 0 },

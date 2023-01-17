@@ -173,7 +173,7 @@ void ProjectileStreamUpdate::Get_All_Points(Vector3 *points, int *count)
     *count = num;
 }
 
-void ProjectileStreamUpdate::Set_Position(Coord3D *new_position)
+void ProjectileStreamUpdate::Set_Position(const Coord3D *new_position)
 {
     Get_Object()->Set_Position(new_position);
 }

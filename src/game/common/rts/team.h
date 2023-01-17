@@ -200,7 +200,7 @@ public:
     Player *Get_Controlling_Player() const;
     void Get_Team_As_AI_Group(AIGroup *aigroup);
     int Get_Targetable_Count() const;
-    Relationship Get_Relationship(Team *that) const;
+    Relationship Get_Relationship(const Team *that) const;
     Object *Get_Team_Target_Object();
     const Coord3D *Get_Estimate_Team_Position() const;
     void Delete_Team(bool ignore_dead);

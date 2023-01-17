@@ -105,7 +105,8 @@ public:
     int Get_Player_Index() const;
     uint16_t Get_Player_Mask() const;
     int Get_Color() const;
-    Team *Get_Default_Team() const;
+    Team *Get_Default_Team();
+    const Team *Get_Default_Team() const;
 
     const Handicap *Get_Handicap() const { return &m_handicap; }
     const Energy *Get_Energy() const { return &m_energy; }

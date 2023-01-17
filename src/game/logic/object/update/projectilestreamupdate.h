@@ -43,7 +43,7 @@ public:
     void Cull_Front_Of_List();
     bool Consider_Dying();
     void Get_All_Points(Vector3 *points, int *count);
-    void Set_Position(Coord3D *new_position);
+    void Set_Position(const Coord3D *new_position);
 
 private:
     ObjectID m_projectileIDs[MAX_SEGMENT_COUNT];

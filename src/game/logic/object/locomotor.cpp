@@ -1991,8 +1991,10 @@ void Locomotor::Maintain_Current_Position_Hover(Object *obj, PhysicsBehavior *ph
     physics->Set_Turning(TURN_NONE);
 
     if (physics->Is_Motive()) {
-        captainslog_dbgassert(
-            m_template->m_minSpeed == 0.0f, "HOVER should always have zero minSpeeds (otherwise, they WING)");
+        // #TODO xezon: Assert commented for the time being because retail game data triggers assert via
+        // Locomotor InchForwardLocomotor, which is used by the Object FireWallSegment of China's Dragon Tank.
+        // captainslog_dbgassert(
+        //    m_template->m_minSpeed == 0.0f, "HOVER should always have zero minSpeeds (otherwise, they WING)");
         float max_accel = Get_Max_Acceleration(obj->Get_Body_Module()->Get_Damage_State());
         float cur_speed = physics->Get_Forward_Speed_2D();
         float min_speed = std::max(0.0000000001f, m_template->m_minSpeed);

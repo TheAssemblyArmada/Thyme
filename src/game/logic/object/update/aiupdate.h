@@ -25,7 +25,6 @@ class DozerAIInterface;
 class SupplyTruckAIInterface;
 class WorkerAIInterface;
 class HackInternetAIInterface;
-class AssaultTransportAIInterface;
 class JetAIUpdate;
 class AIStateMachine;
 class Path;
@@ -74,6 +73,12 @@ enum MoodMatrixAction
     MM_ACTION_MOVE,
     MM_ACTION_ATTACK,
     MM_ACTION_ATTACKMOVE,
+};
+
+class AssaultTransportAIInterface
+{
+public:
+    virtual void Begin_Assault(const Object *object) const = 0;
 };
 
 class AICommandInterface
@@ -253,6 +258,8 @@ public:
     AIStateType Get_AI_State_Type() const;
     const Coord3D *Get_Goal_Path_Position(int i) const;
     const Coord3D *Get_Goal_Position() const;
+    WhichTurretType Get_Which_Turret_For_Weapon_Slot(WeaponSlotType wslot, float *turret_angle, float *turret_pitch) const;
+    bool Is_Aircraft_That_Adjusts_Destination() const;
 
     const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
     Locomotor *Get_Cur_Locomotor() { return m_curLocomotor; }

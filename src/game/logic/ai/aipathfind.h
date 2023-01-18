@@ -21,6 +21,8 @@
 
 class Locomotor;
 class PathNode;
+class Object;
+class Weapon;
 
 struct ClosestPointOnPathInfo
 {
@@ -59,4 +61,9 @@ class Pathfinder
 {
 public:
     bool Valid_Movement_Terrain(PathfindLayerEnum layer, const Locomotor *locomotor, const Coord3D *pos);
+    bool Adjust_Target_Destination(const Object *source_obj,
+        const Object *target_obj,
+        const Coord3D *target_pos,
+        const Weapon *weapon,
+        Coord3D *destination_pos);
 };

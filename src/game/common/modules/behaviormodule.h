@@ -32,7 +32,6 @@ class DieModuleInterface;
 class DockUpdateInterface;
 class ExitInterface;
 class HordeUpdateInterface;
-class LandMineInterface;
 class OverchargeBehaviorInterface;
 class ParkingPlaceBehaviorInterface;
 class PowerPlantUpdateInterface;
@@ -51,6 +50,13 @@ class UpdateModuleInterface;
 class UpgradeModuleInterface;
 class WeaponTemplate;
 class ParticleSystemTemplate;
+
+class LandMineInterface
+{
+public:
+    virtual void Set_Scoot_Params(Coord3D const &, Coord3D const &) = 0;
+    virtual void Disarm() = 0;
+};
 
 class CreateModuleInterface
 {

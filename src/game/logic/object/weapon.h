@@ -374,6 +374,14 @@ private:
     friend class WeaponStore;
 };
 
+struct AssistanceRequestData
+{
+    const Object *source_obj;
+    Object *target_obj;
+    float request_assist_range_sqr;
+    AssistanceRequestData() : source_obj(nullptr), target_obj(nullptr), request_assist_range_sqr(0.0f) {}
+};
+
 class Weapon : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(Weapon);
@@ -444,7 +452,7 @@ public:
     void Process_Request_Assistance(const Object *source_obj, Object *target_obj);
     void Transfer_Next_Shot_Stats_From(const Weapon &weapon);
 
-    void Position_Projectile_For_Launch(
+    static void Position_Projectile_For_Launch(
         Object *projectile_obj, const Object *source_obj, WeaponSlotType wslot, int ammo_index);
 
     bool Compute_Approach_Target(const Object *source_obj,
@@ -471,7 +479,7 @@ public:
     bool Fire_Projectile_Detonation_Weapon(
         const Object *source_obj, const Coord3D *victim_pos, unsigned int bonus_condition, bool do_damage);
 
-    void Calc_Projectile_Launch_Position(
+    static void Calc_Projectile_Launch_Position(
         const Object *source_obj, WeaponSlotType wslot, int ammo_index, Matrix3D &launch_transform, Coord3D &launch_pos);
 
     int Get_Anti_Mask() const { return m_template->Get_Anti_Mask(); }

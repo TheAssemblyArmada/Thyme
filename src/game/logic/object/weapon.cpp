@@ -13,11 +13,14 @@
  *            LICENSE
  */
 #include "weapon.h"
+#include "aipathfind.h"
 #include "aiupdate.h"
+#include "assistedtargetingupdate.h"
 #include "audiomanager.h"
 #include "behaviormodule.h"
 #include "damage.h"
 #include "drawable.h"
+#include "experiencetracker.h"
 #include "fxlist.h"
 #include "gamelogic.h"
 #include "globaldata.h"
@@ -576,22 +579,184 @@ bool Weapon::Private_Fire_Weapon(const Object *source_obj,
     ObjectID *projectile_id,
     bool do_damage)
 {
-// can't be implemented right now, needs AcademyStats
-#ifdef GAME_DLL
-    return Call_Method<bool, Weapon, const Object *, Object *, const Coord3D *, bool, bool, unsigned int, ObjectID *, bool>(
-        PICK_ADDRESS(0x004C7E00, 0x006D8941),
-        this,
-        source_obj,
-        victim_obj,
-        victim_pos,
-        is_projectile_detonation,
-        ignore_ranges,
-        bonus_condition,
-        projectile_id,
-        do_damage);
-#else
-    return true;
-#endif
+    if (projectile_id != nullptr) {
+        *projectile_id = OBJECT_UNK;
+    }
+
+    if (m_template == nullptr) {
+        return false;
+    }
+
+    if (m_template->Get_Request_Assist_Range() != 0.0f && victim_obj != nullptr) {
+        Process_Request_Assistance(source_obj, victim_obj);
+    }
+
+    if (m_template->Is_Leech_Range_Weapon()) {
+        Set_Leech_Range_Active(true);
+    }
+
+    DamageType damage = m_template->Get_Damage_Type();
+
+    if (damage == DAMAGE_DEPLOY) {
+        const AIUpdateInterface *update = source_obj->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            const AssaultTransportAIInterface *assault = update->Get_Assault_Transport_AI_Interface();
+
+            if (assault != nullptr) {
+                assault->Begin_Assault(victim_obj);
+            }
+        }
+
+        goto l1;
+    }
+
+    if (damage == DAMAGE_DISARM) {
+        if (source_obj != nullptr && victim_obj != nullptr) {
+            bool mine_disarmed = false;
+
+            for (BehaviorModule **i = victim_obj->Get_All_Modules(); *i != nullptr; i++) {
+                LandMineInterface *mine = (*i)->Get_Land_Mine_Interface();
+
+                if (mine != nullptr) {
+                    Do_FX_Pos(m_template->Get_Fire_FX(source_obj->Get_Veterancy_Level()),
+                        victim_obj->Get_Position(),
+                        victim_obj->Get_Transform_Matrix(),
+                        0.0f,
+                        victim_obj->Get_Position(),
+                        0.0f);
+                    mine->Disarm();
+                    mine_disarmed = true;
+                }
+
+                if (!mine_disarmed
+                    && (victim_obj->Is_KindOf(KINDOF_MINE) || victim_obj->Is_KindOf(KINDOF_BOOBY_TRAP)
+                        || victim_obj->Is_KindOf(KINDOF_DEMOTRAP))) {
+                    Do_FX_Pos(m_template->Get_Fire_FX(source_obj->Get_Veterancy_Level()),
+                        victim_obj->Get_Position(),
+                        victim_obj->Get_Transform_Matrix(),
+                        0.0f,
+                        victim_obj->Get_Position(),
+                        0.0f);
+                    g_theGameLogic->Destroy_Object(victim_obj);
+                    mine_disarmed = true;
+                }
+
+                if (mine_disarmed) {
+                    source_obj->Get_Controlling_Player()->Get_Academy_Stats()->Increment_Mines_Disarmed();
+                }
+            }
+        }
+
+        m_maxShotCount--;
+        m_ammoInClip--;
+
+        if (m_ammoInClip != 0 || !m_template->Is_Auto_Reloads_Clip()) {
+            return false;
+        }
+
+        Reload_Ammo(source_obj);
+        return true;
+    } else {
+    l1:
+        WeaponBonus bonus;
+        Compute_Bonus(source_obj, bonus_condition, bonus);
+
+        captainslog_dbgassert(Get_Status() != OUT_OF_AMMO, "Hmm, firing weapon that is OUT_OF_AMMO");
+        captainslog_dbgassert(Get_Status() == READY_TO_FIRE, "Hmm, Weapon is firing more often than should be possible");
+        captainslog_dbgassert(m_ammoInClip != 0, "Hmm, firing an empty weapon");
+
+        if (Get_Status() != READY_TO_FIRE) {
+            return false;
+        }
+
+        unsigned int frame = g_theGameLogic->Get_Frame();
+
+        if (m_ammoInClip != 0) {
+            if (m_curBarrel >= source_obj->Get_Drawable()->Get_Barrel_Count(m_wslot)) {
+                m_curBarrel = 0;
+                m_numShotsForCurBarrel = m_template->Get_Shots_Per_Barrel();
+            }
+
+            if (m_scatterTargetIndexes.size() != 0) {
+                if (victim_obj != nullptr) {
+                    victim_pos = victim_obj->Get_Position();
+                    victim_obj = nullptr;
+                }
+
+                Coord3D pos = *victim_pos;
+                int random_target_index = Get_Logic_Random_Value(0, m_scatterTargetIndexes.size() - 1);
+                int scatter_target_index = m_scatterTargetIndexes[random_target_index];
+                float scatter_target_scalar = Get_Scatter_Target_Scalar();
+                const std::vector<Coord2D> &targets = m_template->Get_Scatter_Targets();
+                Coord2D target = targets[scatter_target_index];
+                pos.x += target.x * scatter_target_scalar;
+                pos.y += target.y * scatter_target_scalar;
+                pos.z = g_theTerrainLogic->Get_Ground_Height(pos.x, pos.y, nullptr);
+                m_scatterTargetIndexes[random_target_index] = m_scatterTargetIndexes.back();
+                m_scatterTargetIndexes.pop_back();
+                m_template->Fire_Weapon_Template(source_obj,
+                    m_wslot,
+                    m_curBarrel,
+                    victim_obj,
+                    &pos,
+                    bonus,
+                    is_projectile_detonation,
+                    ignore_ranges,
+                    this,
+                    projectile_id,
+                    do_damage);
+            } else {
+                m_template->Fire_Weapon_Template(source_obj,
+                    m_wslot,
+                    m_curBarrel,
+                    victim_obj,
+                    victim_pos,
+                    bonus,
+                    is_projectile_detonation,
+                    ignore_ranges,
+                    this,
+                    projectile_id,
+                    do_damage);
+            }
+
+            m_lastFireFrame = frame;
+            m_ammoInClip--;
+            m_maxShotCount--;
+            m_numShotsForCurBarrel--;
+
+            if (m_numShotsForCurBarrel <= 0) {
+                m_curBarrel++;
+                m_numShotsForCurBarrel = m_template->Get_Shots_Per_Barrel();
+            }
+
+            if (m_ammoInClip != 0) {
+                m_status = BETWEEN_FIRING_SHOTS;
+                m_whenLastReloadStarted = frame;
+                m_whenWeCanFireAgain = m_template->Get_Delay_Between_Shots(bonus) + frame;
+
+                if (source_obj->Is_Share_Weapon_Reload_Time()) {
+                    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+                        Weapon *weapon =
+                            const_cast<Weapon *>(source_obj->Get_Weapon_In_Weapon_Slot(static_cast<WeaponSlotType>(i)));
+
+                        if (weapon != nullptr) {
+                            weapon->Set_Next_Shot(m_whenWeCanFireAgain);
+                            weapon->Set_Status(BETWEEN_FIRING_SHOTS);
+                        }
+                    }
+                }
+            } else if (m_template->Is_Auto_Reloads_Clip()) {
+                Reload_Ammo(source_obj);
+                return true;
+            } else {
+                m_status = OUT_OF_AMMO;
+                m_whenWeCanFireAgain = 0x7FFFFFFF;
+            }
+        }
+
+        return false;
+    }
 }
 
 bool Weapon::Is_Within_Attack_Range(const Object *source_obj, const Object *target_obj) const
@@ -1176,17 +1341,26 @@ void Weapon::Transfer_Next_Shot_Stats_From(const Weapon &weapon)
     m_status = weapon.Get_Status();
 }
 
-#if 0
-void Weapon::Position_Projectile_For_Launch(
-    Object *projectile_obj, const Object *source_obj, WeaponSlotType wslot, int ammo_index)
+void Clip_To_Terrain_Extent(Coord3D &pos)
 {
-    // todo
-}
+    Region3D extent;
+    g_theTerrainLogic->Get_Extent(&extent);
 
-void Weapon::Calc_Projectile_Launch_Position(
-    const Object *source_obj, WeaponSlotType wslot, int ammo_index, Matrix3D &launch_transform, Coord3D &launch_pos)
-{
-    // todo
+    if (extent.lo.x + 10.0f > pos.x) {
+        pos.x = extent.lo.x + 10.0f;
+    }
+
+    if (extent.lo.y + 10.0f > pos.y) {
+        pos.y = extent.lo.y + 10.0f;
+    }
+
+    if (extent.hi.x - 10.0f < pos.x) {
+        pos.x = extent.hi.x - 10.0f;
+    }
+
+    if (extent.hi.y - 10.0f < pos.y) {
+        pos.y = extent.hi.y - 10.0f;
+    }
 }
 
 bool Weapon::Compute_Approach_Target(const Object *source_obj,
@@ -1195,15 +1369,233 @@ bool Weapon::Compute_Approach_Target(const Object *source_obj,
     float angle_offset,
     Coord3D &approach_target_pos) const
 {
-    // todo
-    return false;
+    const Coord3D *pos;
+    Coord3D vector;
+
+    if (target_obj != nullptr) {
+        pos = target_obj->Get_Position();
+        g_thePartitionManager->Get_Vector_To(target_obj, source_obj, FROM_BOUNDINGSPHERE_2D, vector);
+    } else if (target_pos != nullptr) {
+        pos = target_pos;
+        g_thePartitionManager->Get_Vector_To(source_obj, target_pos, FROM_BOUNDINGSPHERE_2D, vector);
+        vector.x = -vector.x;
+        vector.y = -vector.y;
+        vector.z = -vector.z;
+    } else {
+        captainslog_dbgassert(false, "error");
+        approach_target_pos.Zero();
+        return false;
+    }
+
+    float length = vector.Length();
+    float min_range = m_template->Get_Minimum_Attack_Range();
+
+    if (min_range <= 10.0f || length >= min_range) {
+        if (length >= 0.001f) {
+            if (Is_Contact_Weapon()) {
+                approach_target_pos = *pos;
+                return false;
+            } else {
+                vector.x = vector.x / length;
+                vector.y = vector.y / length;
+                vector.z = vector.z / length;
+
+                if (angle_offset != 0.0f) {
+                    float angle = GameMath::Atan2(vector.y, vector.x);
+                    vector.x = GameMath::Cos(angle + angle_offset);
+                    vector.y = GameMath::Sin(angle + angle_offset);
+                }
+
+                float range = Get_Attack_Range(source_obj) * 0.9f;
+                approach_target_pos.x = range * vector.x + pos->x;
+                approach_target_pos.y = range * vector.y + pos->y;
+                approach_target_pos.z = range * vector.z + pos->z;
+
+                if (source_obj->Get_AI_Update_Interface() != nullptr) {
+                    const AIUpdateInterface *update = source_obj->Get_AI_Update_Interface();
+
+                    if (update->Is_Aircraft_That_Adjusts_Destination()) {
+                        g_theAI->Get_Pathfinder()->Adjust_Target_Destination(
+                            source_obj, target_obj, target_pos, this, &approach_target_pos);
+                    }
+                }
+
+                return false;
+            }
+        } else {
+            approach_target_pos = *source_obj->Get_Position();
+            return true;
+        }
+    } else {
+        captainslog_dbgassert(Get_Attack_Range(source_obj) * 0.9f > min_range, "Min attack range is too near attack range.");
+        const Coord3D *source_pos = source_obj->Get_Position();
+        vector.x = source_pos->x - pos->x;
+        vector.x = source_pos->y - pos->y;
+        vector.z = 0.0f;
+        vector.Normalize();
+
+        if (source_obj->Is_Above_Terrain()) {
+            float angle = source_obj->Get_Orientation() - GameMath::Atan2(-vector.y, -vector.x);
+
+            if (angle > DEG_TO_RADF(360.0f)) {
+                angle -= DEG_TO_RADF(360.0f);
+            }
+
+            if (angle < DEG_TO_RADF(-360.0f)) {
+                angle += DEG_TO_RADF(360.0f);
+            }
+
+            if (GameMath::Fabs(angle) < DEG_TO_RADF(90.0f)) {
+                vector.x = -vector.x;
+                vector.y = -vector.y;
+                vector.z = -vector.z;
+            }
+        }
+
+        if (angle_offset != 0.0f) {
+            float angle = GameMath::Atan2(vector.y, vector.x);
+            vector.x = GameMath::Cos(angle + angle_offset);
+            vector.y = GameMath::Sin(angle + angle_offset);
+        }
+
+        float range2 = (Get_Attack_Range(source_obj) - min_range) / 2.0f;
+
+        if (target_obj != nullptr) {
+            range2 += target_obj->Get_Geometry_Info().Get_Bounding_Circle_Radius();
+        }
+
+        range2 += source_obj->Get_Geometry_Info().Get_Bounding_Circle_Radius();
+        approach_target_pos.x = range2 * vector.x + pos->x;
+        approach_target_pos.y = range2 * vector.y + pos->y;
+        approach_target_pos.z = range2 * vector.z + pos->z;
+        Clip_To_Terrain_Extent(approach_target_pos);
+        return false;
+    }
+}
+
+void Weapon::Calc_Projectile_Launch_Position(
+    const Object *source_obj, WeaponSlotType wslot, int ammo_index, Matrix3D &launch_transform, Coord3D &launch_pos)
+{
+    if (source_obj->Get_Contained_By()
+        && source_obj->Get_Contained_By()->Get_Contain()->Is_Enclosing_Container_For(source_obj)) {
+        const Matrix3D *tm = source_obj->Get_Transform_Matrix();
+        launch_transform = *tm;
+        Vector3 pos;
+        tm->Get_Translation(&pos);
+        launch_pos.x = pos.X;
+        launch_pos.y = pos.Y;
+        launch_pos.z = pos.Z;
+    } else {
+        float turret_yaw = 0.0f;
+        float turret_pitch = 0.0f;
+        WhichTurretType turret;
+        const AIUpdateInterface *update = source_obj->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            turret = update->Get_Which_Turret_For_Weapon_Slot(wslot, &turret_yaw, &turret_pitch);
+        } else {
+            turret = TURRET_INVALID;
+        }
+
+        Matrix3D tm(true);
+        Coord3D turret_yaw_pos;
+        Coord3D turret_pitch_pos;
+        turret_yaw_pos.Zero();
+        turret_pitch_pos.Zero();
+        Drawable *drawable = source_obj->Get_Drawable();
+
+        if (drawable == nullptr
+            || !drawable->Get_Projectile_Launch_Offset(wslot, ammo_index, &tm, turret, &turret_yaw_pos, &turret_pitch_pos)) {
+            captainslog_dbgassert(false, "ProjectileLaunchPos %d %d not found!", wslot, ammo_index);
+            tm.Make_Identity();
+            turret_yaw_pos.Zero();
+            turret_pitch_pos.Zero();
+        }
+
+        if (turret != TURRET_INVALID) {
+            Matrix3D yaw_tm(true);
+            Matrix3D pitch_tm(true);
+
+            pitch_tm.Translate(turret_pitch_pos.x, turret_pitch_pos.y, turret_pitch_pos.z);
+            pitch_tm.In_Place_Pre_Rotate_Y(-turret_pitch);
+            pitch_tm.Translate(-turret_pitch_pos.x, -turret_pitch_pos.y, -turret_pitch_pos.z);
+
+            yaw_tm.Translate(turret_yaw_pos.x, turret_yaw_pos.y, turret_yaw_pos.z);
+            yaw_tm.In_Place_Pre_Rotate_Z(turret_yaw);
+            yaw_tm.Translate(-turret_yaw_pos.x, -turret_yaw_pos.y, -turret_yaw_pos.z);
+
+            Matrix3D tm2(tm);
+            tm.Mul(yaw_tm, pitch_tm);
+            tm.Post_Mul(tm2);
+        }
+
+        source_obj->Convert_Bone_Pos_To_World_Pos(nullptr, &tm, nullptr, &launch_transform);
+        Vector3 pos;
+        launch_transform.Get_Translation(&pos);
+        launch_pos.x = pos.X;
+        launch_pos.y = pos.Y;
+        launch_pos.z = pos.Z;
+    }
+}
+
+void Weapon::Position_Projectile_For_Launch(
+    Object *projectile_obj, const Object *source_obj, WeaponSlotType wslot, int ammo_index)
+{
+    if (source_obj != nullptr) {
+        Matrix3D tm;
+        Coord3D pos;
+        Calc_Projectile_Launch_Position(source_obj, wslot, ammo_index, tm, pos);
+        projectile_obj->Get_Drawable()->Set_Drawable_Hidden(false);
+        projectile_obj->Set_Transform_Matrix(&tm);
+        projectile_obj->Set_Position(&pos);
+        projectile_obj->Get_Experience_Tracker()->Set_Experience_Sink(source_obj->Get_ID());
+        const PhysicsBehavior *source_phys = source_obj->Get_Physics();
+        PhysicsBehavior *projectile_phys = projectile_obj->Get_Physics();
+
+        if (source_phys != nullptr) {
+            if (projectile_phys != nullptr) {
+                source_phys->Transfer_Velocity_To(projectile_phys);
+                projectile_phys->Set_Ignore_Collisions_With(source_obj);
+            }
+        }
+    } else {
+        g_theGameLogic->Destroy_Object(projectile_obj);
+    }
+}
+
+void Make_Assistance_Request(Object *object, void *data)
+{
+    AssistanceRequestData *request = static_cast<AssistanceRequestData *>(data);
+    if (object != request->source_obj) {
+        if (object->Get_Template()->Is_Equivalent_To(request->source_obj->Get_Template())) {
+            if (g_thePartitionManager->Get_Distance_Squared(object, request->source_obj, FROM_CENTER_2D, nullptr)
+                <= request->request_assist_range_sqr) {
+                static NameKeyType key_assistUpdate = Name_To_Key("AssistedTargetingUpdate");
+                AssistedTargetingUpdate *update =
+                    static_cast<AssistedTargetingUpdate *>(object->Find_Module(key_assistUpdate));
+
+                if (update != nullptr) {
+                    if (update->Is_Free_To_Assist()) {
+                        update->Assist_Attack(request->source_obj, request->target_obj);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Weapon::Process_Request_Assistance(const Object *source_obj, Object *target_obj)
 {
-    // todo
+    Player *player = source_obj->Get_Controlling_Player();
+
+    if (player != nullptr) {
+        AssistanceRequestData data;
+        data.source_obj = source_obj;
+        data.target_obj = target_obj;
+        data.request_assist_range_sqr = m_template->Get_Request_Assist_Range() * m_template->Get_Request_Assist_Range();
+        player->Iterate_Objects(Make_Assistance_Request, &data);
+    }
 }
-#endif
 
 const char *s_theDeathTypeNames[] = {
     "NORMAL",

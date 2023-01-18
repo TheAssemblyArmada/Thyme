@@ -622,6 +622,8 @@ void Setup_Hooks()
         static_cast<bool (Weapon ::*)(const Object *, const Coord3D &, const Coord3D &) const>(
             &Weapon::Is_Clear_Goal_Firing_Line_Of_Sight_Terrain));
     Hook_Any(0x004C9350, Weapon::Transfer_Next_Shot_Stats_From);
+    Hook_Any(0x004C9180, Weapon::Position_Projectile_For_Launch);
+    Hook_Any(0x004C6AF0, Weapon::Compute_Approach_Target);
 
     // globaldata.h GlobalData
     Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definition);

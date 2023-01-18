@@ -26,3 +26,17 @@ bool Pathfinder::Valid_Movement_Terrain(PathfindLayerEnum layer, const Locomotor
     return false;
 #endif
 }
+
+bool Pathfinder::Adjust_Target_Destination(const Object *source_obj,
+    const Object *target_obj,
+    const Coord3D *target_pos,
+    const Weapon *weapon,
+    Coord3D *destination_pos)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Pathfinder, const Object *, const Object *, const Coord3D *, const Weapon *, Coord3D *>(
+        PICK_ADDRESS(0x00562EB0, 0x00893CA1), this, source_obj, target_obj, target_pos, weapon, destination_pos);
+#else
+    return false;
+#endif
+}

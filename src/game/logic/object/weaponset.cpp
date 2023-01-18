@@ -510,7 +510,7 @@ l1:
                 contain->Get_Apparent_Controlling_Player(source_obj->Get_Controlling_Player());
 
             if (controlling_player != nullptr) {
-                if (source_obj->Get_Team()->Get_Relationship(controlling_player->Get_Default_Team()) == ENEMIES) {
+                if (source_obj->Get_Team()->Get_Relationship(controlling_player->Get_Default_Team()) != ENEMIES) {
                     if (source == COMMANDSOURCE_PLAYER
                         && (!victim_obj->Get_Script_Status(STATUS_TARGETABLE) || relationship == ALLIES)) {
                         return ATTACK_RESULT_0;

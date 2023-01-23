@@ -52,9 +52,7 @@ GameWindow::GameWindow() :
 
 GameWindow::~GameWindow()
 {
-#ifdef GAME_DEBUG_STRUCTS
     delete m_inputData;
-#endif
     delete m_editData;
 }
 

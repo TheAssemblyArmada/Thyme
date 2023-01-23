@@ -61,13 +61,12 @@ void ScienceInfo::Add_Root_Sciences(std::vector<ScienceType> &rootScience) const
 
 void ScienceStore::Reset()
 {
-    for (auto it = m_infoVec.begin(); it != m_infoVec.end(); ++it) {
-        if (*it != nullptr) {
-            *it = reinterpret_cast<ScienceInfo *>((*it)->Delete_Overrides());
-        }
-
-        if (*it == nullptr) {
-            m_infoVec.erase(it);
+    for (auto it = m_infoVec.begin(); it != m_infoVec.end();) {
+        if ((*it)->Delete_Overrides() == nullptr) {
+            // #BUGFIX invalidated iterator dereference.
+            it = m_infoVec.erase(it);
+        } else {
+            ++it;
         }
     }
 }

@@ -295,15 +295,11 @@ const LocomotorTemplate *LocomotorStore::Find_Locomotor_Template(NameKeyType nam
 
 void LocomotorStore::Reset()
 {
-    auto it = m_locomotorTemplates.begin();
-
-    for (;;) {
-        if (!(it != m_locomotorTemplates.end())) {
-            break;
-        }
-
+    for (auto it = m_locomotorTemplates.begin(); it != m_locomotorTemplates.end();) {
         if (it->second->Delete_Overrides() == nullptr) {
-            m_locomotorTemplates.erase(it);
+            // #BUGFIX invalidated iterator dereference.
+            auto delete_it = it++;
+            m_locomotorTemplates.erase(delete_it);
         } else {
             ++it;
         }

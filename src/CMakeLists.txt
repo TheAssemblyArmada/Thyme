@@ -253,6 +253,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weaponset.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/object/update/aiupdate.cpp
+    game/logic/object/update/assistedtargetingupdate.cpp
     game/logic/object/update/laserupdate.cpp
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp

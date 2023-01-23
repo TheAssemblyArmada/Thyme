@@ -14,6 +14,7 @@
  */
 #include "player.h"
 #include "namekeygenerator.h"
+#include "team.h"
 #include <algorithm>
 
 // zh: 0x0044F7B0, wb: 0x0085960A
@@ -306,4 +307,11 @@ void Player::Apply_Battle_Plan_Bonuses_For_Object(Object *obj)
 #ifdef GAME_DLL
     Call_Method<void, Player, Object *>(PICK_ADDRESS(0x00456E00, 0x00860B23), this, obj);
 #endif
+}
+
+void Player::Iterate_Objects(void (*func)(Object *, void *), void *data) const
+{
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        (*i)->Iterate_Objects(func, data);
+    }
 }

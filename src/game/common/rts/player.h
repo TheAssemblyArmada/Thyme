@@ -57,7 +57,12 @@ struct SpecialPowerReadyTimerType // #TODO Implement and move elsewhere
 
 class AcademyStats // #TODO Implement and move elsewhere
 {
-    int members[45];
+public:
+    char unk[0x9C];
+    unsigned int m_minesClearedCount;
+    char unk3[0x14];
+
+    void Increment_Mines_Disarmed() { m_minesClearedCount++; }
 };
 
 enum KindOfType : int32_t;
@@ -112,6 +117,7 @@ public:
     const Energy *Get_Energy() const { return &m_energy; }
     PlayerType Get_Player_Type() const { return m_playerType; }
     const PlayerTemplate *Get_Player_Template() const { return m_playerTemplate; }
+    AcademyStats *Get_Academy_Stats() { return &m_academy; }
 
     int Get_Total_Battle_Plan_Count() const
     {
@@ -221,7 +227,7 @@ public:
     // int Count_Ready_Shortcut_SpecialPowers_Of_Type(SpecialPowerType) const;
     void Count_Objects_By_ThingTemplate(
         int num_tmplates, ThingTemplate const *const *things, bool b1, int *counts, bool b2) const;
-    // void Iterate_Objects(void (*)(Object *, void *), void *) const;
+    void Iterate_Objects(void (*func)(Object *, void *), void *data) const;
 
     // Object *Find_Any_Existing_Object_With_ThingTemplate(ThingTemplate const *);
     // Object *Find_Most_Ready_Shortcut_SpecialPower_For_Thing(ThingTemplate const *, unsigned int &);

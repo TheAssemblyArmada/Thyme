@@ -121,3 +121,40 @@ bool AIUpdateInterface::Is_Weapon_Slot_On_Turret_And_Aiming_At_Target(WeaponSlot
 
     return false;
 }
+
+WhichTurretType AIUpdateInterface::Get_Which_Turret_For_Weapon_Slot(
+    WeaponSlotType wslot, float *turret_angle, float *turret_pitch) const
+{
+    for (int i = TURRET_MAIN; i < MAX_TURRETS; i++) {
+        if (m_turretAI[i] != nullptr && m_turretAI[i]->Is_Weapon_Slot_On_Turret(wslot)) {
+            if (turret_angle != nullptr) {
+                *turret_angle = m_turretAI[i]->Get_Turret_Angle();
+            }
+
+            if (turret_pitch != nullptr) {
+                *turret_pitch = m_turretAI[i]->Get_Turret_Pitch();
+            }
+
+            return static_cast<WhichTurretType>(i);
+        }
+    }
+
+    return TURRET_INVALID;
+}
+
+bool AIUpdateInterface::Is_Aircraft_That_Adjusts_Destination() const
+{
+    if (m_curLocomotor == nullptr) {
+        return false;
+    }
+
+    if (m_curLocomotor->Get_Appearance() == LOCO_HOVER) {
+        return true;
+    }
+
+    if (m_curLocomotor->Get_Appearance() == LOCO_WINGS) {
+        return true;
+    }
+
+    return false;
+}

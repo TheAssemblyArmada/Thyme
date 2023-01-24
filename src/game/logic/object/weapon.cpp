@@ -1542,7 +1542,7 @@ void Weapon::Position_Projectile_For_Launch(
     Object *projectile_obj, const Object *source_obj, WeaponSlotType wslot, int ammo_index)
 {
     if (source_obj != nullptr) {
-        Matrix3D tm;
+        Matrix3D tm(true);
         Coord3D pos;
         Calc_Projectile_Launch_Position(source_obj, wslot, ammo_index, tm, pos);
         projectile_obj->Get_Drawable()->Set_Drawable_Hidden(false);

@@ -167,6 +167,7 @@ public:
         float m_totalRoll;
         float m_yaw;
         float m_totalZ;
+        PhysicsXformInfo() : m_totalPitch(0.0f), m_totalRoll(0.0f), m_yaw(0.0f), m_totalZ(0.0f) {}
     };
 
     enum DrawBits

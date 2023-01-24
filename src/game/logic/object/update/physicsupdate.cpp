@@ -950,7 +950,7 @@ bool PhysicsBehavior::Check_For_Overlap_Collision(Object *other)
             info.m_in.m_deathType = DEATH_CRUSHED;
             info.m_in.m_sourceID = obj->Get_ID();
             info.m_in.m_amount = 0.0f;
-            obj->Attempt_Damage(&info);
+            other->Attempt_Damage(&info);
         }
 
         const Coord3D *other_pos = other->Get_Position();
@@ -1048,9 +1048,9 @@ bool PhysicsBehavior::Check_For_Overlap_Collision(Object *other)
 
                         if (Perps_Logically_Equal(f5, f9)) {
                             if (f12 < pos8.Length()) {
-                                i1 = 0;
-                            } else {
                                 i1 = 2;
+                            } else {
+                                i1 = 0;
                             }
                         } else if (Perps_Logically_Equal(f5, f7)) {
                             if (f12 < pos5.Length()) {
@@ -1153,8 +1153,8 @@ bool PhysicsBehavior::Check_For_Overlap_Collision(Object *other)
                 info.m_in.m_damageType = DAMAGE_CRUSH;
                 info.m_in.m_deathType = DEATH_CRUSHED;
                 info.m_in.m_sourceID = obj->Get_ID();
-                info.m_in.m_amount = 0.0f;
-                obj->Attempt_Damage(&info);
+                info.m_in.m_amount = 999999.0f;
+                other->Attempt_Damage(&info);
             }
         }
 

@@ -36,6 +36,7 @@
 #include "objectcreationlist.h"
 #include "particlesysmanager.h"
 #include "playertemplate.h"
+#include "profiler.h"
 #include "rankinfo.h"
 #include "science.h"
 #include "terrainroads.h"
@@ -205,6 +206,10 @@ INI::~INI() {}
 
 void INI::Load(Utf8String filename, INILoadType type, Xfer *xfer)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(filename.Str(), filename.Get_Length())
+#endif
     Set_FP_Mode(); // Ensure floating point mode is a consistent mode for loading.
     g_sXfer = xfer;
     Prep_File(filename, type);

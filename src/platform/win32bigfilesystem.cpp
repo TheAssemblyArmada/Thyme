@@ -18,6 +18,7 @@
 #include "endiantype.h"
 #include "file.h"
 #include "localfilesystem.h"
+#include "profiler.h"
 #include "registry.h"
 #include "rtsutils.h"
 #include "win32bigfile.h"
@@ -45,6 +46,11 @@ void Win32BIGFileSystem::Init()
 
 ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(filename, strlen(filename))
+#endif
+
     File *file = g_theLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
     Utf8String fullname = filename;
     fullname.To_Lower();
@@ -148,6 +154,10 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 
 void Win32BIGFileSystem::Close_Archive_File(const char *filename)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(filename, strlen(filename))
+#endif
     auto it = m_archiveFiles.find(filename);
 
     if (!(it == m_archiveFiles.end())) {
@@ -171,6 +181,10 @@ void Win32BIGFileSystem::Close_Archive_File(const char *filename)
 
 bool Win32BIGFileSystem::Load_Big_Files_From_Directory(Utf8String dir, Utf8String filter, bool overwrite)
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(dir.Str(), dir.Get_Length())
+#endif
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> file_list;
 
     g_theLocalFileSystem->Get_File_List_In_Directory(dir, "", filter, file_list, true);

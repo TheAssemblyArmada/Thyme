@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "stdlocalfilesystem.h"
+#include "profiler.h"
 #include "standardfile.h"
 #include "win32localfile.h"
 
@@ -77,6 +78,10 @@ void StdLocalFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
     bool search_subdirs) const
 {
+#ifdef USE_PROFILER
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(subdir.Str(), subdir.Get_Length())
+#endif
     Utf8String search_path = dirpath;
     search_path += subdir;
 

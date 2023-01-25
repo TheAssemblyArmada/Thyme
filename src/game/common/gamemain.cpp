@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "gamemain.h"
+#include "profiler.h"
 #include "win32gameengine.h"
 
 GameEngine *Create_Game_Engine()
@@ -29,6 +30,9 @@ GameEngine *Create_Game_Engine()
 
 void Game_Main(int argc, char *argv[])
 {
+#ifdef USE_PROFILER
+    PROFILER_MSG("Starting the game engine!")
+#endif
     g_theGameEngine = Create_Game_Engine();
     g_theGameEngine->Init(argc, argv);
     g_theGameEngine->Execute();

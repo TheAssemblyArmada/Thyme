@@ -42,6 +42,8 @@ set(GAMEENGINE_INCLUDES
     w3d/math
     w3d/renderer
     w3d/saveload
+    # our own code
+    dbg/
 )
 
 set(HOOKER_SRC
@@ -476,6 +478,11 @@ if(USE_FFMPEG)
     list(APPEND GAMEENGINE_INCLUDES ${FFMPEG_INCLUDE_DIRS})
     list(APPEND GAME_LINK_LIBRARIES ${FFMPEG_LIBRARIES})
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_FFMPEG ${FFMPEG_DEFINITIONS})
+endif()
+
+if(USE_TRACY)
+    list(APPEND GAME_LINK_LIBRARIES Tracy::TracyClient)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_TRACY)
 endif()
 
 if(DINPUT8_FOUND)

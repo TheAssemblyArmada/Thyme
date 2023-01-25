@@ -17,6 +17,7 @@
 #include "errorcodes.h"
 #include "mempool.h"
 #include "mempoolfact.h"
+#include "profiler.h"
 #include <captainslog.h>
 #include <new>
 
@@ -39,6 +40,46 @@ protected:
     // Class implementing Get_Object_Pool needs to provide these
     // use macros below to generated them.
 };
+
+#ifdef USE_PROFILER
+#define OPERATOR_IMPL(classname) \
+    void *operator new(size_t size) { return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); } \
+    void *operator new(size_t size, classname##MagicEnum) \
+    { \
+        captainslog_dbgassert(size == sizeof(classname), \
+            "The wrong operator new is being called; ensure all objects in the hierarchy have MemoryPoolGlue set up " \
+            "correctly"); \
+        void *ptr = Get_Class_Pool()->Allocate_Block(); \
+        PROFILER_ALLOC_NAMED(ptr, size, #classname) \
+        return ptr; \
+    } \
+    void operator delete(void *ptr) { operator delete(ptr, classname##_GLUE_NOT_IMPLEMENTED); } \
+    void operator delete(void *ptr, classname##MagicEnum) \
+    { \
+        Get_Class_Pool()->Free_Block(ptr); \
+        PROFILER_FREE_NAMED(ptr, #classname) \
+    } \
+    void *operator new(size_t size, void *where) { return where; } \
+    void operator delete(void *ptr, void *where) {}
+#else
+#define OPERATOR_IMPL(classname) \
+    void *operator new(size_t size) { return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); } \
+    void *operator new(size_t size, classname##MagicEnum) \
+    { \
+        captainslog_dbgassert(size == sizeof(classname), \
+            "The wrong operator new is being called; ensure all objects in the hierarchy have MemoryPoolGlue set up " \
+            "correctly"); \
+        return Get_Class_Pool()->Allocate_Block(); \
+    } \
+    void operator delete(void *ptr) { operator delete(ptr, classname##_GLUE_NOT_IMPLEMENTED); } \
+    void operator delete(void *ptr, classname##MagicEnum) \
+    { \
+        captainslog_dbgassert(0, "Please call Delete_Instance instead of delete."); \
+        Get_Class_Pool()->Free_Block(ptr); \
+    } \
+    void *operator new(size_t size, void *where) { return where; } \
+    void operator delete(void *ptr, void *where) {}
+#endif
 
 // Use within a class declaration on a none virtual MemoryPoolObject
 // based class to implement required functions. "classname" must match
@@ -84,22 +125,7 @@ private: \
 public: \
     enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED = 0 }; \
 \
-    void *operator new(size_t size) { return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); } \
-    void *operator new(size_t size, classname##MagicEnum) \
-    { \
-        captainslog_dbgassert(size == sizeof(classname), \
-            "The wrong operator new is being called; ensure all objects in the hierarchy have MemoryPoolGlue set up " \
-            "correctly"); \
-        return Get_Class_Pool()->Allocate_Block(); \
-    } \
-    void operator delete(void *ptr) { operator delete(ptr, classname##_GLUE_NOT_IMPLEMENTED); } \
-    void operator delete(void *ptr, classname##MagicEnum) \
-    { \
-        captainslog_dbgassert(0, "Please call Delete_Instance instead of delete."); \
-        Get_Class_Pool()->Free_Block(ptr); \
-    } \
-    void *operator new(size_t size, void *where) { return where; } \
-    void operator delete(void *ptr, void *where) {}
+    OPERATOR_IMPL(classname)
 
 /* NOTE: Operator delete above must exist because of the pairing operator new. However, it should never be called directly.
  * Reason being, a pointer to a derived class of this class, must use the correct memory pool for deletion. This is possible
@@ -128,7 +154,7 @@ private:
 inline void MemoryPoolObject::Delete_Instance()
 {
     if (this != nullptr) {
-#ifdef __SANITIZE_ADDRESS__
+#if defined __SANITIZE_ADDRESS__ || defined USE_PROFILER
         delete this;
 #else
         MemoryPool *pool = Get_Object_Pool();

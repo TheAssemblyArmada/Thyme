@@ -19,6 +19,7 @@
 #include "memblock.h"
 #include "mempool.h"
 #include "mempoolfact.h"
+#include "profiler.h"
 #include <cstring>
 
 using std::memset;
@@ -147,6 +148,10 @@ void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
 
     ++m_usedBlocksInDma;
 
+#ifdef USE_PROFILER
+    PROFILER_ALLOC(block, bytes)
+#endif
+
     return block;
 #endif
 }
@@ -167,6 +172,10 @@ void DynamicMemoryAllocator::Free_Bytes(void *block)
 #ifdef __SANITIZE_ADDRESS__
     free(block);
 #else
+
+#ifdef USE_PROFILER
+    PROFILER_FREE(block)
+#endif
     ScopedCriticalSectionClass cs(g_dmaCriticalSection);
 
     MemoryPoolSingleBlock *sblock = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);

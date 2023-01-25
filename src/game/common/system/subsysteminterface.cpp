@@ -14,6 +14,7 @@
  */
 #include "subsysteminterface.h"
 #include "ini.h"
+#include "profiler.h"
 #include "xfer.h"
 
 #ifndef GAME_DLL
@@ -47,6 +48,13 @@ void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys,
     Xfer *xfer,
     Utf8String sys_name)
 {
+#ifdef USE_PROFILER
+    Utf8String msg = "Initializing subsystem: ";
+    msg.Concat(sys_name);
+    PROFILER_MSG(msg.Str())
+    PROFILER_BLOCK_SCOPED
+    PROFILER_BLOCK_TEXT(sys_name.Str(), sys_name.Get_Length())
+#endif
     INI ini;
 
     sys->Set_Name(sys_name);

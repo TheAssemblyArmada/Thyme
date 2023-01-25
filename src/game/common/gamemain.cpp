@@ -14,6 +14,8 @@
  */
 #include "gamemain.h"
 #include "win32gameengine.h"
+#include "bitflags.h"
+#include "disabledtypes.h"
 
 GameEngine *Create_Game_Engine()
 {
@@ -31,6 +33,8 @@ void Game_Main(int argc, char *argv[])
 {
     g_theGameEngine = Create_Game_Engine();
     g_theGameEngine->Init(argc, argv);
+    // this should happen in GameEngine::Init but we don't have that yet
+    DISABLEDMASK_ALL.Set_All();
     g_theGameEngine->Execute();
 
     if (g_theGameEngine != nullptr) {

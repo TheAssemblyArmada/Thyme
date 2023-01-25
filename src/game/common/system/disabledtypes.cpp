@@ -34,5 +34,5 @@ const char *DisabledBitFlags::s_bitNamesList[DISABLED_TYPE_COUNT + 1] = {
     nullptr,
 };
 
-DisabledBitFlags DISABLEDMASK_ALL; // ???
+DisabledBitFlags DISABLEDMASK_ALL;
 DisabledBitFlags DISABLEDMASK_NONE;

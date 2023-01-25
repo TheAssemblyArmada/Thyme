@@ -39,3 +39,4 @@ using DisabledBitFlags = BitFlags<DISABLED_TYPE_COUNT>;
 
 extern DisabledBitFlags DISABLEDMASK_ALL;
 extern DisabledBitFlags DISABLEDMASK_NONE;
+void Init_Disabled_Masks();

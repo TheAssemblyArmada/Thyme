@@ -36,3 +36,8 @@ const char *DisabledBitFlags::s_bitNamesList[DISABLED_TYPE_COUNT + 1] = {
 
 DisabledBitFlags DISABLEDMASK_ALL;
 DisabledBitFlags DISABLEDMASK_NONE;
+
+void Init_Disabled_Masks()
+{
+    DISABLEDMASK_ALL.Set_All();
+}

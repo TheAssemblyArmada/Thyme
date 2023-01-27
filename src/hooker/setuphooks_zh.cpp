@@ -96,6 +96,7 @@
 #include "modulefactory.h"
 #include "mouse.h"
 #include "multilist.h"
+#include "multiplayersettings.h"
 #include "namekeygenerator.h"
 #include "object.h"
 #include "objectcreationlist.h"
@@ -594,7 +595,7 @@ void Setup_Hooks()
     Hook_Any(0x004C6170, Weapon::Load_Ammo_Now);
     Hook_Any(0x004C62A0, Weapon::Reload_Ammo);
     Hook_Any(0x004C63D0, Weapon::Get_Clip_Reload_Time);
-    Hook_Any(0x006D74B3, Weapon::Set_Clip_Percent_Full);
+    Hook_Any(0x004C6530, Weapon::Set_Clip_Percent_Full);
     Hook_Any(0x004C66D0, Weapon::Reload_With_Bonus);
     Hook_Method(
         0x004C7170, static_cast<bool (Weapon::*)(const Object *, const Coord3D *) const>(&Weapon::Is_Within_Attack_Range));
@@ -2520,5 +2521,11 @@ void Setup_Hooks()
     Hook_Any(0x00606A30, WeaponSet::Get_Able_To_Attack_Specific_Object);
 
     // weapontemplateset.h
-    Hook_Any(0x00606190, WeaponTemplateSet::Test_Weapon_Set_Flag)
+    Hook_Any(0x00606190, WeaponTemplateSet::Test_Weapon_Set_Flag);
+
+    // multiplayersettings.h
+    Hook_Any(0x004A5C90, MultiplayerSettings::Get_Num_Colors);
+    Hook_Any(0x004F6540, MultiplayerSettings::Hook_Ctor);
+    Hook_Any(0x004F68B0, MultiplayerSettings::Get_Color);
+    Hook_Any(0x004F6A90, MultiplayerColorDefinition::Get_Tooltip_Name);
 }

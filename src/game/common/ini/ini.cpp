@@ -33,6 +33,7 @@
 #include "image.h"
 #include "locomotor.h"
 #include "mouse.h"
+#include "multiplayersettings.h"
 #include "objectcreationlist.h"
 #include "particlesysmanager.h"
 #include "playertemplate.h"
@@ -100,11 +101,11 @@ const BlockParse TheTypeTable[] = {
     {"Mouse", &Mouse::Parse_Mouse_Definition},
     //{ "MouseCursor", (iniblockparse_t)(0x00404060)/*&INI::parseMouseCursorDefinition*/ },
     {"MouseCursor", &Mouse::Parse_Cursor_Definition},
-    {"MultiplayerColor", (iniblockparse_t)(0x00504B10) /*&INI::parseMultiplayerColorDefinition*/},
+    {"MultiplayerColor", &MultiplayerColorDefinition::Parse_Multiplayer_Color_Definition},
     {"MultiplayerStartingMoneyChoice",
-        (iniblockparse_t)(0x00504C80) /*&INI::parseMultiplayerStartingMoneyChoiceDefinition*/},
+        &MultiplayerSettings::Parse_Multiplayer_Starting_Money_Choice_Definition},
     {"OnlineChatColors", (iniblockparse_t)(0x00504D10) /*&INI::parseOnlineChatColorDefinition*/},
-    {"MultiplayerSettings", (iniblockparse_t)(0x00504A90) /*&INI::parseMultiplayerSettingsDefinition*/},
+    {"MultiplayerSettings", &MultiplayerSettings::Parse_Multiplayer_Settings_Definition},
     {"MusicTrack", (iniblockparse_t)(0x0044EAF0) /*&INI::parseMusicTrackDefinition*/},
     {"Object", &INI::Parse_Object_Definition},
     {"ObjectCreationList", &ObjectCreationListStore::Parse_Object_Creation_List_Definition },

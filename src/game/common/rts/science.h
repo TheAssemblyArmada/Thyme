@@ -32,6 +32,7 @@ class ScienceInfo;
 class ScienceStore : public SubsystemInterface
 {
 public:
+    ScienceStore() {}
     virtual ~ScienceStore() {}
 
     virtual void Init() override { m_infoVec.clear(); }

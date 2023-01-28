@@ -27,6 +27,7 @@ class RankInfo;
 class RankInfoStore : public SubsystemInterface
 {
 public:
+    RankInfoStore() {}
     virtual ~RankInfoStore() {}
 
     virtual void Init() override;

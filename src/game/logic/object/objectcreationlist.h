@@ -56,7 +56,7 @@ private:
 class ObjectCreationListStore : public SubsystemInterface
 {
 public:
-    ObjectCreationListStore(){};
+    ObjectCreationListStore() {}
 
     virtual ~ObjectCreationListStore() override;
     virtual void Init() override {}

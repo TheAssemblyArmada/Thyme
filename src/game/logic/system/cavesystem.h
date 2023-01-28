@@ -50,6 +50,7 @@ public:
 class CaveSystem : public SubsystemInterface, public SnapShot
 {
 public:
+    CaveSystem() {}
     virtual ~CaveSystem() { Reset(); };
 
     // Subsystem interface methods.

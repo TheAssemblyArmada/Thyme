@@ -155,6 +155,7 @@ set(GAMEENGINE_SRC
     game/common/commandline.cpp
     game/common/commandlist.cpp
     game/common/crc.cpp
+    game/common/damagefx.cpp
     game/common/dict.cpp
     game/common/gameengine.cpp
     game/common/gamelod.cpp
@@ -201,12 +202,14 @@ set(GAMEENGINE_SRC
     game/common/rts/scorekeeper.cpp
     game/common/rts/sidesinfo.cpp
     game/common/rts/sideslist.cpp
+    game/common/rts/specialpower.cpp
     game/common/rts/team.cpp
     game/common/rts/teamsinfo.cpp
     game/common/system/archivefile.cpp
     game/common/system/archivefilesystem.cpp
     game/common/system/asciistring.cpp
     game/common/system/cachedfileinputstream.cpp
+    game/common/system/cdmanager.cpp
     game/common/system/datachunk.cpp
     game/common/system/datachunktoc.cpp
     game/common/system/disabledtypes.cpp
@@ -243,6 +246,7 @@ set(GAMEENGINE_SRC
     game/logic/ai/turretai.cpp
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp
+    game/logic/object/armor.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/experiencetracker.cpp
     game/logic/object/locomotor.cpp

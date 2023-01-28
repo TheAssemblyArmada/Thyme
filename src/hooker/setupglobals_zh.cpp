@@ -661,3 +661,18 @@ TeamFactory *&g_theTeamFactory = Make_Global<TeamFactory *>(PICK_ADDRESS(0x00A2B
 class ChallengeGenerals;
 ChallengeGenerals *&g_theChallengeGenerals = Make_Global<ChallengeGenerals *>(PICK_ADDRESS(0x00A2C09C, 0x04CA9C78));
 
+// cdmanager.cpp
+class CDManagerInterface;
+CDManagerInterface *&g_theCDManager = Make_Global<CDManagerInterface *>(PICK_ADDRESS(0x00A2BE48, 0x00E255AC));
+
+// specialpower.cpp
+class SpecialPowerStore;
+SpecialPowerStore *&g_theSpecialPowerStore = Make_Global<SpecialPowerStore *>(PICK_ADDRESS(0x00A2BC20, 0x00E2384C));
+
+// damagefx.cpp
+class DamageFXStore;
+DamageFXStore *&g_theDamageFXStore = Make_Global<DamageFXStore *>(PICK_ADDRESS(0x00A2BC1C, 0x00E23DD8));
+
+// armor.cpp
+class ArmorStore;
+ArmorStore *&g_theArmorStore = Make_Global<ArmorStore *>(PICK_ADDRESS(0x00A2BC14, 0x00E23DD0));

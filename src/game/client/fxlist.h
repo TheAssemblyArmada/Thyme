@@ -76,6 +76,7 @@ using fxlistmap_t = std::unordered_map<NameKeyType, FXList, rts::hash<NameKeyTyp
 class FXListStore : public SubsystemInterface
 {
 public:
+    FXListStore() {}
     virtual ~FXListStore() override {}
 
     virtual void Init() override {}

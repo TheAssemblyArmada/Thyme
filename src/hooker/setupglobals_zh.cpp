@@ -676,3 +676,16 @@ DamageFXStore *&g_theDamageFXStore = Make_Global<DamageFXStore *>(PICK_ADDRESS(0
 // armor.cpp
 class ArmorStore;
 ArmorStore *&g_theArmorStore = Make_Global<ArmorStore *>(PICK_ADDRESS(0x00A2BC14, 0x00E23DD0));
+
+// buildassistant.cpp
+class BuildAssistant;
+BuildAssistant *&g_theBuildAssistant = Make_Global<BuildAssistant *>(PICK_ADDRESS(0x00A2BC10, 0x04CAA500));
+
+// upgrade.cpp
+class UpgradeCenter;
+UpgradeCenter *&g_theUpgradeCenter = Make_Global<UpgradeCenter *>(PICK_ADDRESS(0x00A2BC00, 0x00E23888));
+
+// aipathfind.cpp
+#include "aipathfind.h"
+PathfindCellInfo *&PathfindCellInfo::m_infoArray = Make_Global<PathfindCellInfo *>(PICK_ADDRESS(0x00A2C270, 0x00E28154));
+PathfindCellInfo *&PathfindCellInfo::m_firstFree = Make_Global<PathfindCellInfo *>(PICK_ADDRESS(0x00A2C274, 0x00E28158));

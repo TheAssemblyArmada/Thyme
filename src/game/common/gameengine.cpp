@@ -13,9 +13,11 @@
  *            LICENSE
  */
 #include "gameengine.h"
+#include "ai.h"
 #include "archivefilesystem.h"
 #include "armor.h"
 #include "audiomanager.h"
+#include "buildassistant.h"
 #include "cavesystem.h"
 #include "cdmanager.h"
 #include "commandline.h"
@@ -24,7 +26,9 @@
 #include "filesystem.h"
 #include "functionlexicon.h"
 #include "fxlist.h"
+#include "gameclient.h"
 #include "gamelod.h"
+#include "gamelogic.h"
 #include "gametext.h"
 #include "globaldata.h"
 #include "globallanguage.h"
@@ -44,8 +48,11 @@
 #include "sideslist.h"
 #include "specialpower.h"
 #include "subsysteminterface.h"
+#include "team.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
+#include "thingfactory.h"
+#include "upgrade.h"
 #include "version.h"
 #include "weapon.h"
 #include "xfercrc.h"
@@ -275,6 +282,39 @@ void GameEngine::Init(int argc, char *argv[])
         "Data/INI/SpecialPower.ini");
     Init_Subsystem(g_theDamageFXStore, "TheDamageFXStore", new DamageFXStore, &xfer, nullptr, "Data/INI/DamageFX.ini");
     Init_Subsystem(g_theArmorStore, "TheArmorStore", new ArmorStore, &xfer, nullptr, "Data/INI/Armor.ini");
+
+    Init_Subsystem(g_theBuildAssistant, "TheBuildAssistant", new BuildAssistant);
+#ifdef GAME_DEBUG_STRUCTS
+    captainslog_debug(
+        "----------------------------------------------------------------------------After TheBuildAssistant = %f seconds ",
+        0.0f); // TODO processor frequency stuff
+#endif
+
+    Init_Subsystem(
+        g_theThingFactory, "TheThingFactory", new ThingFactory, &xfer, "Data/INI/Default/Object.ini", "Data/INI/Object");
+#ifdef GAME_DEBUG_STRUCTS
+    captainslog_debug(
+        "----------------------------------------------------------------------------After TheThingFactory = %f seconds ",
+        0.0f); // TODO processor frequency stuff
+#endif
+
+    Init_Subsystem(g_theUpgradeCenter,
+        "TheUpgradeCenter",
+        new UpgradeCenter,
+        &xfer,
+        "Data/INI/Default/Upgrade.ini",
+        "Data/INI/Upgrade.ini");
+
+    Init_Subsystem(g_theGameClient, "TheGameClient", Create_Game_Client());
+#ifdef GAME_DEBUG_STRUCTS
+    captainslog_debug(
+        "----------------------------------------------------------------------------After TheGameClient = %f seconds ",
+        0.0f); // TODO processor frequency stuff
+#endif
+
+    Init_Subsystem(g_theAI, "TheAI", new AI, &xfer, "Data/INI/Default/AIData.ini", "Data/INI/AIData.ini");
+    Init_Subsystem(g_theGameLogic, "TheGameLogic", Create_Game_Logic());
+    Init_Subsystem(g_theTeamFactory, "TheTeamFactory", new TeamFactory);
 
     // TODO this is a WIP
 }

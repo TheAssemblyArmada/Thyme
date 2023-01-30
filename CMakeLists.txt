@@ -96,6 +96,7 @@ option(BUILD_TESTS "Builds the unit tests." OFF)
 option(USE_SANITIZER "Builds with address sanitizer" OFF)
 option(BUILD_COVERAGE "Instruments the code with coverage." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
+option(USE_LEGACY_GAMETEXT "Enable the legacy (original) GameTextManager implementation." ON)
 
 include(CMakeDependentOption)
 cmake_dependent_option(USE_STDFS "Use C++ 17 filesystem for crossplatform file handling." ${DEFAULT_STDFS} "STANDALONE" OFF)

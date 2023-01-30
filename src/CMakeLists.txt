@@ -20,6 +20,7 @@ set(GAMEENGINE_INCLUDES
     game/common/rts
     game/common/system
     game/common/thing
+    #game/common/utility # contains non standard header files
     game/logic/ai
     game/logic/map
     game/logic/object
@@ -75,6 +76,10 @@ set(GAMEENGINE_SRC
     game/client/fxlist.cpp
     game/client/gameclient.cpp
     game/client/gametext.cpp
+    game/client/gametextcommon.cpp
+    game/client/gametextfile.cpp
+    game/client/gametextinterface.cpp
+    game/client/gametextmanager.cpp
     game/client/globallanguage.cpp
     game/client/ingameui.cpp
     game/client/languagefilter.cpp
@@ -559,6 +564,10 @@ endif()
 if(DINPUT8_FOUND)
     list(APPEND GAME_LINK_LIBRARIES dxguid dinput8)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_DINPUT)
+endif()
+
+if(USE_LEGACY_GAMETEXT)
+    list(APPEND GAME_COMPILE_OPTIONS -DUSE_LEGACY_GAMETEXT)
 endif()
 
 # Static library for standalone builds and linking tools.

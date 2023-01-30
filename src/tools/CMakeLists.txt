@@ -10,3 +10,5 @@ if(WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_subdirectory(wdump)
     add_subdirectory(wndedit)
 endif()
+
+add_subdirectory(gametextcompiler)

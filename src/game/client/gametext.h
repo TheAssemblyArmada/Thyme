@@ -15,71 +15,21 @@
 #pragma once
 
 #include "always.h"
-#include "asciistring.h"
-#include "file.h"
-#include "subsysteminterface.h"
-#include "unicodestring.h"
+#include "gametextcommon.h"
+#include "gametextinterface.h"
 
-// This enum applies to RA2/YR and Generals/ZH, BFME ID's are slightly different.
-enum class LanguageID : int32_t
+class File;
+
+namespace Legacy
 {
-    US = 0,
-    UK,
-    GERMAN,
-    FRENCH,
-    SPANISH,
-    ITALIAN,
-    JAPANESE,
-    JABBER,
-    KOREAN,
-    CHINESE,
-    UNK1,
-    BRAZILIAN,
-    POLISH,
-    UNKNOWN,
-};
-
-struct CSFHeader
-{
-    uint32_t id;
-    int32_t version;
-    int32_t num_labels;
-    int32_t num_strings;
-    int32_t skip;
-    LanguageID langid;
-};
-
-struct NoString
-{
-    NoString *next;
-    Utf16String text;
-};
-
-struct StringInfo
-{
-    Utf8String label;
-    Utf16String text;
-    Utf8String speech;
-};
-
 struct StringLookUp
 {
-    Utf8String *label;
-    StringInfo *info;
+    const Utf8String *label;
+    const StringInfo *info;
 };
 
-class GameTextInterface : public SubsystemInterface
-{
-public:
-    virtual ~GameTextInterface() {}
-
-    virtual Utf16String Fetch(const char *args, bool *success = nullptr) = 0;
-    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr) = 0;
-    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label) = 0;
-    virtual void Init_Map_String_File(Utf8String const &filename) = 0;
-    virtual void Deinit() = 0;
-};
-
+// GameTextManager is self contained and will automatically load and read generals.csf,
+// generals.str and map.str files.
 class GameTextManager : public GameTextInterface
 {
 public:
@@ -134,9 +84,4 @@ private:
     int m_mapTextCount;
     std::vector<Utf8String> m_stringVector;
 };
-
-#ifdef GAME_DLL
-extern GameTextInterface *&g_theGameText;
-#else
-extern GameTextInterface *g_theGameText;
-#endif
+} // namespace Legacy

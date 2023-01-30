@@ -89,6 +89,12 @@ template<int a, int b, int c, int d> struct FourCC
 #endif
 };
 
+// FourCC with big endian input (standard)
+template<int a, int b, int c, int d> using FourCC_BE = struct FourCC<a, b, c, d>;
+
+// FourCC with little endian input (reversed)
+template<int a, int b, int c, int d> using FourCC_LE = struct FourCC<d, c, b, a>;
+
 inline unsigned Get_Time()
 {
 #ifdef PLATFORM_WINDOWS

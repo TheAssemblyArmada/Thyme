@@ -38,6 +38,9 @@ template<> struct UnsignedIntegerForSize<8>{ typedef uint64_t type; };
 template<class T> struct SignedInteger{ typedef typename SignedIntegerForSize<sizeof(T)>::type type; };
 template<class T> struct UnsignedInteger{ typedef typename UnsignedIntegerForSize<sizeof(T)>::type type; };
 
+template<class T> using SignedIntegerT = typename SignedInteger<T>::type;
+template<class T> using UnsignedIntegerT = typename UnsignedInteger<T>::type;
+
 // clang-format on
 }
 #endif // __cplusplus

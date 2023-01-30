@@ -25,7 +25,7 @@
 #include "functionlexicon.h"
 #include "fxlist.h"
 #include "gamelod.h"
-#include "gametext.h"
+#include "gametext_impl.h"
 #include "globaldata.h"
 #include "globallanguage.h"
 #include "ini.h"

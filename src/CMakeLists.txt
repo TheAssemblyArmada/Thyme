@@ -208,6 +208,7 @@ set(GAMEENGINE_SRC
     game/common/system/archivefile.cpp
     game/common/system/archivefilesystem.cpp
     game/common/system/asciistring.cpp
+    game/common/system/buildassistant.cpp
     game/common/system/cachedfileinputstream.cpp
     game/common/system/cdmanager.cpp
     game/common/system/datachunk.cpp
@@ -234,6 +235,7 @@ set(GAMEENGINE_SRC
     game/common/system/streamingarchivefile.cpp
     game/common/system/subsysteminterface.cpp
     game/common/system/unicodestring.cpp
+    game/common/system/upgrade.cpp
     game/common/system/xfer.cpp
     game/common/system/xfercrc.cpp
     game/common/thing/moduleinfo.cpp

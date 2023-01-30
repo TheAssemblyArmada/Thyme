@@ -17,6 +17,7 @@
 #endif
 
 #include "aabtree.h"
+#include "aipathfind.h"
 #include "aiupdate.h"
 #include "anim2d.h"
 #include "archivefile.h"
@@ -31,6 +32,7 @@
 #include "binkvideoplayer.h"
 #include "binkvideostream.h"
 #include "bitmaphandler.h"
+#include "buildassistant.h"
 #include "camera.h"
 #include "cavesystem.h"
 #include "chunkio.h"
@@ -2528,4 +2530,14 @@ void Setup_Hooks()
     Hook_Any(0x004F6540, MultiplayerSettings::Hook_Ctor);
     Hook_Any(0x004F68B0, MultiplayerSettings::Get_Color);
     Hook_Any(0x004F6A90, MultiplayerColorDefinition::Get_Tooltip_Name);
+
+    // buildassistant.h
+    Hook_Any(0x004B2FC0, BuildAssistant::Hook_Ctor);
+
+    // aipathfind.h
+    Hook_Any(0x0055EFF0, Pathfinder::Hook_Ctor);
+    Hook_Any(0x0055F140, Pathfinder::Hook_Dtor);
+
+    // ai.h
+    Hook_Any(0x004AA850, AI::Hook_Ctor);
 }

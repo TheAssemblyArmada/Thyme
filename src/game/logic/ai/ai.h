@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #pragma once
+#include "gametype.h"
 #include "mempoolobj.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
@@ -41,7 +42,31 @@ enum GroupID : int32_t
     GROUP_UNK,
 };
 
-class AISideInfo; // can't be done yet, needs SkillSet figured out
+class SkillSet
+{
+private:
+    int m_scienceCount;
+    ScienceType m_sciences[20];
+};
+
+class AISideInfo : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(AISideInfo)
+
+public:
+    AISideInfo();
+    virtual ~AISideInfo() override {}
+
+private:
+    Utf8String m_unkString;
+    int m_resourceGatherersEasy;
+    int m_resourceGatherersNormal;
+    int m_resourceGatherersHard;
+    SkillSet m_skillSets[5];
+    Utf8String m_baseDefenseStructure1;
+    AISideInfo *m_next;
+    friend class TAiData;
+};
 
 class AISideBuildList : public MemoryPoolObject
 {
@@ -58,6 +83,7 @@ private:
     Utf8String m_name;
     BuildListInfo *m_buildListInfo;
     AISideBuildList *m_next;
+    friend class TAiData;
 };
 
 class TAiData : public SnapShot
@@ -68,7 +94,7 @@ public:
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    virtual void Load_Post_Process() override {}
 
     void Add_Faction_Build_List(AISideBuildList *list);
     void Add_Side_Info(AISideInfo *info);
@@ -89,7 +115,7 @@ public:
     float m_guardOuterModifierHuman;
     unsigned int m_guardChaseUnitsDuration;
     unsigned int m_guardEnemyScanRate;
-    float m_guardEnemyReturnScanRate;
+    unsigned int m_guardEnemyReturnScanRate;
     float m_wallHeight;
     float m_alertRangeModifier;
     float m_aggressiveRangeModifier;
@@ -116,7 +142,7 @@ public:
     bool m_aiCrushesInfantry;
     float m_maxRetaliationDistance;
     float m_retaliationFriendsRadius;
-    AISideInfo *m_SideInfo;
+    AISideInfo *m_sideInfo;
     AISideBuildList *m_AISideBuildList;
     TAiData *m_next;
 };
@@ -124,6 +150,10 @@ public:
 class AI : public SubsystemInterface, public SnapShot
 {
 public:
+#ifdef GAME_DLL
+    AI *Hook_Ctor() { return new (this) AI(); }
+#endif
+
     AI();
     virtual ~AI() override;
 
@@ -133,7 +163,7 @@ public:
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    virtual void Load_Post_Process() override {}
 
     static void Parse_Side_Info(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Skill_Set(INI *ini, void *formal, void *store, const void *user_data);

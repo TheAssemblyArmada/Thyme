@@ -17,6 +17,25 @@
 #include <zlib.h>
 
 /**
+ * Utility function for to get zlib error message
+ */
+const char *Zlib_ErrorMsg(int err)
+{
+    switch (err) {
+        case Z_BUF_ERROR:
+            return "zlib: The buffer dest was not large enough to hold the compressed data.";
+        case Z_MEM_ERROR:
+            return "zlib: Insufficient memory.";
+        case Z_DATA_ERROR:
+            return "zlib: The compressed data (referenced by source) was corrupted.";
+        case Z_STREAM_ERROR:
+            return "zlib: The level was not Z_DEFAULT_LEVEL, or was not between 0 and 9.";
+        default:
+            return "zlib: Unhandled error";
+    }
+}
+
+/**
  * Decompresses zlib format.
  */
 int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size)
@@ -31,7 +50,7 @@ int Zlib_Uncompress(void *dst, int dst_size, const void *src, int src_size)
 
     int result = uncompress(static_cast<Bytef *>(dst), &zlib_dst_size, static_cast<const Bytef *>(src), zlib_src_size);
     if (result != Z_OK) {
-        captainslog_error("Failed to compress Zlib data. Error=%i", result);
+        captainslog_error(Zlib_ErrorMsg(result));
         return 0;
     }
 
@@ -46,7 +65,7 @@ int Zlib_Compress(void *dst, int dst_size, const void *src, int src_size, int le
     uLongf zlib_dst_size = dst_size;
     int result = compress2(static_cast<Bytef *>(dst), &zlib_dst_size, static_cast<const Bytef *>(src), src_size, level);
     if (result != Z_OK) {
-        captainslog_error("Failed to compress Zlib data. Error=%i", result);
+        captainslog_error(Zlib_ErrorMsg(result));
         return 0;
     }
 

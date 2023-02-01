@@ -6,6 +6,7 @@ set(GAMEENGINE_INCLUDES
     game/client/draw
     game/client/gui
     game/client/input
+    game/client/messagestream
     game/client/shadow
     game/client/shader
     game/client/system
@@ -121,6 +122,7 @@ set(GAMEENGINE_SRC
     game/client/anim2d.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
+    game/client/messagestream/metaevent.cpp
     game/client/shadow/w3dbuffermanager.cpp
     game/client/shadow/w3dprojectedshadow.cpp
     game/client/shadow/w3dvolumetricshadow.cpp
@@ -169,6 +171,7 @@ set(GAMEENGINE_SRC
     game/common/messagestream.cpp
     game/common/multiplayersettings.cpp
     game/common/randomvalue.cpp
+    game/common/recorder.cpp
     game/common/registry.cpp
     game/common/staticnamekey.cpp
     game/common/statemachine.cpp
@@ -190,6 +193,7 @@ set(GAMEENGINE_SRC
     game/common/modules/module.cpp
     game/common/modules/modulefactory.cpp
     game/common/modules/updatemodule.cpp
+    game/common/rts/actionmanager.cpp
     game/common/rts/buildinfo.cpp
     game/common/rts/energy.cpp
     game/common/rts/handicap.cpp
@@ -230,6 +234,7 @@ set(GAMEENGINE_SRC
     game/common/system/memdynalloc.cpp
     game/common/system/mempool.cpp
     game/common/system/mempoolfact.cpp
+    game/common/system/radar.cpp
     game/common/system/ramfile.cpp
     game/common/system/snapshot.cpp
     game/common/system/stackdump.cpp
@@ -274,12 +279,15 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/scriptlist.cpp
     game/logic/scriptengine/scriptparam.cpp
     game/logic/scriptengine/sequentialscript.cpp
+    game/logic/scriptengine/victoryconditions.cpp
     game/logic/system/damage.cpp
     game/logic/system/gamelogic.cpp
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
+    game/logic/system/cratesystem.cpp
     game/logic/system/partitionmanager.cpp
     game/network/framemetrics.cpp
+    game/network/gameinfo.cpp
     game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp
     game/network/lanapi.cpp

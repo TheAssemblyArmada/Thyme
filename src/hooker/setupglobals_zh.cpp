@@ -695,3 +695,28 @@ PathfindCellInfo *&PathfindCellInfo::m_firstFree = Make_Global<PathfindCellInfo 
 CameraShakeSystemClass &g_theCameraShakerSystem = Make_Global<CameraShakeSystemClass>(PICK_ADDRESS(0x00A3B138, 0x00E1B2F0));
 HOOK_AUTOPOOL(CameraShakeSystemClass::CameraShakerClass, 256, PICK_ADDRESS(0x00A3B150, 0x00E1B308));
 
+
+// cratesystem.cpp
+class CrateSystem;
+CrateSystem *&g_theCrateSystem = Make_Global<CrateSystem *>(PICK_ADDRESS(0x00A2BBE4, 0x00E23DAC));
+
+// recorder.cpp
+class RecorderClass;
+RecorderClass *&g_theRecorder = Make_Global<RecorderClass *>(PICK_ADDRESS(0x00A2B9F4, 0x04CA8B24));
+
+// radar.cpp
+class Radar;
+Radar *&g_theRadar = Make_Global<Radar *>(PICK_ADDRESS(0x00A2BBE0, 0x04CA8CB0));
+
+// victoryconditions.cpp
+class VictoryConditionsInterface;
+VictoryConditionsInterface *&g_theVictoryConditions =
+    Make_Global<VictoryConditionsInterface *>(PICK_ADDRESS(0x00A2BAA0, 0x04CA9DF8));
+
+// metaevent.cpp
+class MetaMap;
+MetaMap *&g_theMetaMap = Make_Global<MetaMap *>(PICK_ADDRESS(0x00A2BA2C, 0x04CA9C54));
+
+// actionmanager.cpp
+class ActionManager;
+ActionManager *&g_theActionManager = Make_Global<ActionManager *>(PICK_ADDRESS(0x00A2BA28, 0x04CA87FC));

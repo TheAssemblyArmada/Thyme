@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "gameengine.h"
+#include "actionmanager.h"
 #include "ai.h"
 #include "archivefilesystem.h"
 #include "armor.h"
@@ -22,6 +23,7 @@
 #include "cdmanager.h"
 #include "commandline.h"
 #include "commandlist.h"
+#include "cratesystem.h"
 #include "damagefx.h"
 #include "filesystem.h"
 #include "functionlexicon.h"
@@ -36,14 +38,19 @@
 #include "localfilesystem.h"
 #include "locomotor.h"
 #include "messagestream.h"
+#include "metaevent.h"
 #include "modulefactory.h"
 #include "multiplayersettings.h"
 #include "namekeygenerator.h"
 #include "objectcreationlist.h"
 #include "particlesysmanager.h"
+#include "playerlist.h"
 #include "playertemplate.h"
+#include "radar.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
+#include "recorder.h"
+#include "registry.h"
 #include "science.h"
 #include "sideslist.h"
 #include "specialpower.h"
@@ -54,6 +61,7 @@
 #include "thingfactory.h"
 #include "upgrade.h"
 #include "version.h"
+#include "victoryconditions.h"
 #include "weapon.h"
 #include "xfercrc.h"
 
@@ -315,6 +323,27 @@ void GameEngine::Init(int argc, char *argv[])
     Init_Subsystem(g_theAI, "TheAI", new AI, &xfer, "Data/INI/Default/AIData.ini", "Data/INI/AIData.ini");
     Init_Subsystem(g_theGameLogic, "TheGameLogic", Create_Game_Logic());
     Init_Subsystem(g_theTeamFactory, "TheTeamFactory", new TeamFactory);
+    Init_Subsystem(
+        g_theCrateSystem, "TheCrateSystem", new CrateSystem, &xfer, "Data/INI/Default/Crate.ini", "Data/INI/Crate.ini");
+    Init_Subsystem(g_thePlayerList, "ThePlayerList", new PlayerList);
+    Init_Subsystem(g_theRecorder, "TheRecorder", Create_Recorder());
+    Init_Subsystem(g_theRadar, "TheRadar", Create_Radar());
+
+    Init_Subsystem(g_theVictoryConditions, "TheVictoryConditions", Create_Victory_Conditions());
+#ifdef GAME_DEBUG_STRUCTS
+    captainslog_debug("----------------------------------------------------------------------------After "
+                      "TheVictoryConditions = %f seconds ",
+        0.0f); // TODO processor frequency stuff
+#endif
+
+    Utf8String name;
+    name.Format("Data\\%s\\CommandMap.ini", Get_Registry_Language().Str());
+    Init_Subsystem(g_theMetaMap, "TheMetaMap", new MetaMap(), nullptr, name.Str(), "Data\\INI\\CommandMap.ini");
+#ifdef GAME_DEBUG_STRUCTS
+    ini.Load("Data\\INI\\CommandMapDebug.ini", INI_LOAD_UNK, nullptr);
+#endif
+
+    Init_Subsystem(g_theActionManager, "TheActionManager", new ActionManager);
 
     // TODO this is a WIP
 }

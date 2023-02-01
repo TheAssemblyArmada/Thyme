@@ -24,15 +24,15 @@ PathfindZoneManager::PathfindZoneManager() :
     m_maxZone(0),
     m_updateFrequency(0),
     m_zoneTableSize(0),
-    m_zoneTable1(nullptr),
-    m_zoneTable2(nullptr),
-    m_zoneTable3(nullptr),
-    m_zoneTable4(nullptr),
-    m_zoneTable5(nullptr),
-    m_zoneTable6(nullptr)
+    m_zoneTableCliff(nullptr),
+    m_zoneTableWater(nullptr),
+    m_zoneTableRubble(nullptr),
+    m_zoneTableObstacle(nullptr),
+    m_zoneTableUnk(nullptr),
+    m_zoneTableUnk2(nullptr)
 {
-    m_blockSize.x = 0;
-    m_blockSize.y = 0;
+    m_zoneBlockExtent.x = 0;
+    m_zoneBlockExtent.y = 0;
 }
 
 PathfindZoneManager::~PathfindZoneManager()
@@ -43,16 +43,20 @@ PathfindZoneManager::~PathfindZoneManager()
 }
 
 PathfindLayer::PathfindLayer() :
-    m_map(nullptr), m_mapPointers(nullptr), m_layerNum(LAYER_INVALID), m_unk(0), m_bridge(nullptr), m_destroyed(false)
+    m_cells(nullptr),
+    m_layerCells(nullptr),
+    m_width(0),
+    m_height(0),
+    m_xOrigin(0),
+    m_yOrigin(0),
+    m_zone(0),
+    m_bridge(nullptr),
+    m_destroyed(false)
 {
-    m_extent.lo.x = 0;
-    m_extent.lo.y = 0;
-    m_extent.hi.x = 0;
-    m_extent.hi.y = 0;
-    m_unkRegion.lo.x = -1;
-    m_unkRegion.lo.y = -1;
-    m_unkRegion.hi.x = -1;
-    m_unkRegion.hi.y = -1;
+    m_unk1.x = -1;
+    m_unk1.y = -1;
+    m_unk2.x = -1;
+    m_unk2.y = -1;
 }
 
 PathfindLayer::~PathfindLayer()
@@ -104,7 +108,7 @@ void PathfindCellInfo::Release_Cell_Infos()
     }
 }
 
-Pathfinder::Pathfinder() : m_mapPointers(nullptr), m_debugPath(nullptr)
+Pathfinder::Pathfinder() : m_map(nullptr), m_debugPath(nullptr)
 {
     PathfindCellInfo::Allocate_Cell_Infos();
     Reset();

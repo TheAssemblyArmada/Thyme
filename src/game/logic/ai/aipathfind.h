@@ -19,14 +19,27 @@
 #include "mempoolobj.h"
 #include "snapshot.h"
 
-class Locomotor;
-class PathNode;
-class Object;
-class Weapon;
-class ZoneBlock;
-class LocomotorSet;
-class PathfindCell;
 class Bridge;
+class Locomotor;
+class LocomotorSet;
+class Object;
+class PathfindCell;
+class Weapon;
+
+class ZoneBlock
+{
+private:
+    ICoord2D m_pos; // not 100% confirmed
+    unsigned short m_firstZone; // confirmed
+    unsigned short m_maxZone; // confirmed
+    unsigned short m_zoneInfoSize; // confirmed
+    unsigned short *m_pathfindZoneInfoCliff; // not 100% confirmed
+    unsigned short *m_pathfindZoneInfoWater; // not 100% confirmed
+    unsigned short *m_pathfindZoneInfoRubble; // not 100% confirmed
+    unsigned short *m_pathfindZoneInfoUnk; // not 100% confirmed
+    bool m_bridge; // not 100% confirmed
+    bool m_passable; // not 100% confirmed
+};
 
 class PathfindZoneManager
 {
@@ -37,23 +50,43 @@ public:
 private:
     ZoneBlock *m_zoneBlocks; // not 100% confirmed
     ZoneBlock **m_zoneBlockPointers; // not 100% confirmed
-    ICoord2D m_blockSize; // not 100% confirmed
-    unsigned short m_maxZone; // not 100% confirmed
+    ICoord2D m_zoneBlockExtent; // confirmed
+    unsigned short m_maxZone; // confirmed
     unsigned int m_updateFrequency; // not 100% confirmed
     unsigned short m_zoneTableSize; // not 100% confirmed
-    unsigned short *m_zoneTable1; // not 100% confirmed
-    unsigned short *m_zoneTable2; // not 100% confirmed
-    unsigned short *m_zoneTable3; // not 100% confirmed
-    unsigned short *m_zoneTable4; // not 100% confirmed
-    unsigned short *m_zoneTable5; // not 100% confirmed
-    unsigned short *m_zoneTable6; // not 100% confirmed
+    unsigned short *m_zoneTableCliff; // confirmed
+    unsigned short *m_zoneTableWater; // confirmed
+    unsigned short *m_zoneTableRubble; // confirmed
+    unsigned short *m_zoneTableObstacle; // confirmed
+    unsigned short *m_zoneTableUnk; // not 100% confirmed
+    unsigned short *m_zoneTableUnk2; // not 100% confirmed
 };
 
+// confirmed
 struct ClosestPointOnPathInfo
 {
     float m_distance;
     Coord3D m_pos;
     PathfindLayerEnum m_layer;
+};
+
+class PathNode : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(PathNode)
+
+public:
+    virtual ~PathNode() override;
+
+private:
+    int m_optimizedLink; // not 100% confirmed
+    PathNode *m_nextOpti; // confirmed
+    PathNode *m_next; // confirmed
+    PathNode *m_prev; // confirmed
+    Coord3D m_pos; // confirmed
+    PathfindLayerEnum m_layer; // not 100% confirmed
+    bool m_unkBool; // not 100% confirmed
+    float m_optimizedLength; // not 100% confirmed
+    Coord2D m_optimizedPos; // not 100% confirmed
 };
 
 class Path : public MemoryPoolObject, public SnapShot
@@ -71,33 +104,15 @@ public:
     void Get_Point_Pos(Coord3D *pos) const { *pos = m_closestPoint.m_pos; }
 
 private:
-    PathNode *m_path;
-    PathNode *m_pathTail;
-    bool m_isOptimized;
-    bool m_unk1;
-    bool m_unk2;
-    int m_unk3;
-    Coord3D m_unk4;
-    ClosestPointOnPathInfo m_closestPoint;
-    PathNode *m_unkNode;
-};
-
-class PathfindLayer
-{
-public:
-    PathfindLayer();
-    ~PathfindLayer();
-    void Reset();
-
-private:
-    PathfindCell *m_map; // not 100% confirmed
-    PathfindCell **m_mapPointers; // not 100% confirmed
-    IRegion2D m_extent; // not 100% confirmed
-    IRegion2D m_unkRegion; // not 100% confirmed
-    PathfindLayerEnum m_layerNum; // not 100% confirmed
-    int m_unk; // not 100% confirmed
-    Bridge *m_bridge; // not 100% confirmed
-    bool m_destroyed; // not 100% confirmed
+    PathNode *m_pathHead; // confirmed
+    PathNode *m_pathTail; // confirmed
+    bool m_isOptimized; // confirmed
+    bool m_blockedByAlly; // confirmed
+    bool m_unk2; // not 100% confirmed
+    int m_unk3; // not 100% confirmed
+    Coord3D m_unk4; // not 100% confirmed
+    ClosestPointOnPathInfo m_closestPoint; // not 100% confirmed
+    PathNode *m_unkNode; // not 100% confirmed
 };
 
 class PathfindServicesInterface
@@ -135,26 +150,26 @@ public:
 private:
     enum
     {
-        MAX_CELL_INFOS
+        MAX_CELL_INFOS = 30000,
     };
 
-    PathfindCellInfo *m_nextOpen; // not 100% confirmed
-    PathfindCellInfo *m_nextClosed; // not 100% confirmed
-    PathfindCellInfo *m_pathParent; // not 100% confirmed
-    PathfindCell *m_cell; // not 100% confirmed
-    unsigned short m_costRemaining; // not 100% confirmed
-    unsigned short m_costSoFar; // not 100% confirmed
-    ICoord2D m_pos; // not 100% confirmed
-    ObjectID m_goalUnitID; // not 100% confirmed
-    ObjectID m_posUnitID; // not 100% confirmed
-    ObjectID m_goalAircraftID; // not 100% confirmed
-    ObjectID m_obstacleID; // not 100% confirmed
-    bool m_isFree : 1; // not 100% confirmed
-    bool m_unk1 : 1; // not 100% confirmed
+    PathfindCellInfo *m_next; // confirmed
+    PathfindCellInfo *m_prev; // confirmed
+    PathfindCellInfo *m_pathParent; // confirmed
+    PathfindCell *m_cell; // confirmed
+    unsigned short m_totalCost; // confirmed
+    unsigned short m_costSoFar; // confirmed
+    ICoord2D m_pos; // confirmed
+    ObjectID m_goalUnitID; // confirmed
+    ObjectID m_posUnitID; // confirmed
+    ObjectID m_goalAircraftID; // confirmed
+    ObjectID m_obstacleID; // confirmed
+    bool m_isFree : 1; // confirmed
+    bool m_blockedByAlly : 1; // confirmed
     bool m_unk2 : 1; // not 100% confirmed
     bool m_unk3 : 1; // not 100% confirmed
-    bool m_unk4 : 1; // not 100% confirmed
-    bool m_unk5 : 1; // not 100% confirmed
+    bool m_open : 1; // confirmed
+    bool m_closed : 1; // confirmed
 
 #ifdef GAME_DLL
     static PathfindCellInfo *&m_infoArray;
@@ -163,6 +178,61 @@ private:
     static PathfindCellInfo *m_infoArray;
     static PathfindCellInfo *m_firstFree;
 #endif
+};
+
+class PathfindCell
+{
+    enum CellType
+    {
+        CELL_CLEAR, // confirmed
+        CELL_WATER, // confirmed
+        CELL_CLIFF, // confirmed
+        CELL_RUBBLE, // confirmed
+        CELL_OBSTACLE, // confirmed
+        CELL_TYPE_5,
+        CELL_TYPE_6,
+    };
+
+    enum CellFlags
+    {
+        NO_UNITS = 0,
+        UNIT_GOAL = 1,
+        UNIT_PRESENT_MOVING = 2,
+        UNIT_PRESENT_FIXED = 3,
+        UNIT_GOAL_OTHER_MOVING = 5,
+    };
+
+private:
+    PathfindCellInfo *m_info; // confirmed
+    unsigned short m_zone : 14; // confirmed
+    unsigned char m_aircraftGoal : 1; // confirmed
+    unsigned char m_unk2 : 1; // not 100% confirmed
+    unsigned char m_type : 4; // confirmed
+    unsigned char m_flags : 4; // not 100% confirmed
+    unsigned char m_connectLayer : 4; // not 100% confirmed
+    unsigned char m_layer2 : 4; // not 100% confirmed
+};
+
+class PathfindLayer
+{
+public:
+    PathfindLayer();
+    ~PathfindLayer();
+    void Reset();
+
+private:
+    PathfindCell *m_cells; // confirmed
+    PathfindCell **m_layerCells; // confirmed
+    int m_width; // confirmed
+    int m_height; // confirmed
+    int m_xOrigin; // confirmed
+    int m_yOrigin; // confirmed
+    ICoord2D m_unk1; // not 100% confirmed, BFME2 shows its two ICoord2D
+    ICoord2D m_unk2; // not 100% confirmed
+    PathfindLayerEnum m_layer; // confirmed
+    int m_zone; // confirmed
+    Bridge *m_bridge; // confirmed
+    bool m_destroyed; // confirmed
 };
 
 class Pathfinder : public PathfindServicesInterface, public SnapShot
@@ -215,26 +285,26 @@ public:
         Coord3D *destination_pos);
 
 private:
-    PathfindCell *m_map; // not 100% confirmed
-    PathfindCell **m_mapPointers; // not 100% confirmed
-    IRegion2D m_extent; // not 100% confirmed
-    IRegion2D m_unkRegion; // not 100% confirmed
-    PathfindCell *m_openList; // not 100% confirmed
-    PathfindCell *m_closedList; // not 100% confirmed
-    bool m_isMapReady; // not 100% confirmed
-    bool m_isTunneling; // not 100% confirmed
-    int m_frameToShowObstacles; // not 100% confirmed
-    Coord3D m_debugPathPos; // not 100% confirmed
-    Path *m_debugPath; // not 100% confirmed
-    ObjectID m_ignoreObstacleID; // not 100% confirmed
-    PathfindZoneManager m_zoneManager; // not 100% confirmed
-    PathfindLayer m_layers[LAYER_COUNT]; // not 100% confirmed
-    ObjectID m_wallPieces[128]; // not 100% confirmed
-    int m_wallPieceCount; // not 100% confirmed
-    float m_wallHeight; // not 100% confirmed
+    PathfindCell *m_mapPointer; // not 100% confirmed
+    PathfindCell **m_map; // confirmed
+    IRegion2D m_extent; // confirmed
+    IRegion2D m_logicalExtent; // confirmed
+    PathfindCell *m_openList; // confirmed
+    PathfindCell *m_closedList; // confirmed
+    bool m_isMapReady; // confirmed
+    bool m_isTunneling; // confirmed
+    int m_frameToShowObstacles; // confirmed
+    Coord3D m_debugPathPos; // confirmed
+    Path *m_debugPath; // confirmed
+    ObjectID m_ignoreObstacleID; // confirmed
+    PathfindZoneManager m_zoneManager; // confirmed
+    PathfindLayer m_layers[LAYER_COUNT]; // confirmed
+    ObjectID m_wallPieces[128]; // confirmed
+    int m_numWallPieces; // confirmed
+    float m_wallHeight; // confirmed
     int m_unk; // not 100% confirmed
-    ObjectID m_queuedPathfindRequests[512]; // not 100% confirmed
-    int m_queuePRHead; // not 100% confirmed
-    int m_queuePRTail; // not 100% confirmed
-    int m_cumulativeCellsAllocated; // not 100% confirmed
+    ObjectID m_queuedPathfindRequests[512]; //  confirmed
+    int m_queuePRHead; // confirmed
+    int m_queuePRTail; // confirmed
+    int m_cumulativeCellsAllocated; // confirmed
 };

@@ -69,6 +69,9 @@ public:
     virtual AudioManager *Create_Audio_Manager() = 0;
     virtual Network *Create_Network() = 0;
 
+    void Real_Init(int argc, char *argv[]); // temporary thing to make hooking work since Hook_Any wont work because there
+                                            // are 2 functions named Init and Hook_Method wont work because Init is virtual
+
 protected:
     int m_maxFPS;
     bool m_isQuitting;

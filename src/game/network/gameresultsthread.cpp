@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Recorder
+ * @brief Game Results Thread
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,28 +12,19 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "recorder.h"
+#include "gameresultsthread.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
 #ifndef GAME_DLL
-RecorderClass *g_theRecorder;
+GameResultsInterface *g_theGameResultsQueue;
 #endif
 
-bool RecorderClass::Playback_File(Utf8String name)
+GameResultsInterface *GameResultsInterface::Create_New_Game_Results_Interface()
 {
 #ifdef GAME_DLL
-    return Call_Method<bool, RecorderClass, Utf8String>(PICK_ADDRESS(0x0048CDB0, 0x00902519), this, name);
-#else
-    return false;
-#endif
-}
-
-RecorderClass *Create_Recorder()
-{
-#ifdef GAME_DLL
-    return Call_Function<RecorderClass *>(PICK_ADDRESS(0x0048DAC0, 0x00903EDE));
+    return Call_Function<GameResultsInterface *>(PICK_ADDRESS(0x0047C8C0, 0x00A2E270));
 #else
     return nullptr;
 #endif

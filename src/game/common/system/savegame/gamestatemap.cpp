@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Recorder
+ * @brief Game State Map
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,29 +12,30 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "recorder.h"
+#include "gamestatemap.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
 #ifndef GAME_DLL
-RecorderClass *g_theRecorder;
+GameStateMap *g_theGameStateMap;
 #endif
 
-bool RecorderClass::Playback_File(Utf8String name)
+GameStateMap::~GameStateMap()
+{
+    Clear_Scratch_Pad_Maps();
+}
+
+void GameStateMap::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    return Call_Method<bool, RecorderClass, Utf8String>(PICK_ADDRESS(0x0048CDB0, 0x00902519), this, name);
-#else
-    return false;
+    Call_Method<void, SnapShot>(PICK_ADDRESS(0x00495310, 0x00A01D92), this);
 #endif
 }
 
-RecorderClass *Create_Recorder()
+void GameStateMap::Clear_Scratch_Pad_Maps()
 {
 #ifdef GAME_DLL
-    return Call_Function<RecorderClass *>(PICK_ADDRESS(0x0048DAC0, 0x00903EDE));
-#else
-    return nullptr;
+    Call_Method<void, GameStateMap>(PICK_ADDRESS(0x00495BB0, 0x00A028D9), this);
 #endif
 }

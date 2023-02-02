@@ -34,7 +34,10 @@ const char *DisabledBitFlags::s_bitNamesList[DISABLED_TYPE_COUNT + 1] = {
     nullptr,
 };
 
+#ifndef GAME_DLL
 DisabledBitFlags DISABLEDMASK_ALL;
+#endif
+
 DisabledBitFlags DISABLEDMASK_NONE;
 
 void Init_Disabled_Masks()

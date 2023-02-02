@@ -141,3 +141,11 @@ enum KindOfType : int32_t
 };
 
 extern BitFlags<KINDOF_COUNT> KINDOFMASK_NONE;
+
+#ifdef GAME_DLL
+extern BitFlags<KINDOF_COUNT> &KINDOFMASK_FS;
+#else
+extern BitFlags<KINDOF_COUNT> KINDOFMASK_FS;
+#endif
+
+void Init_KindOf_Masks();

@@ -22,6 +22,50 @@
 GameState *g_theGameState = nullptr;
 #endif
 
+SaveGameInfo::SaveGameInfo() : m_missionNumber(0), m_saveFileType(SAVE_TYPE_UNK) {}
+
+GameState::GameState() : m_availableGames(nullptr), m_isLoading(false) {}
+
+GameState::~GameState()
+{
+    for (int i = 0; i < SNAPSHOT_TYPE_COUNT; i++) {
+        m_snapShotBlocks[i].clear();
+    }
+
+    m_snapShots.clear();
+    Clear_Available_Games();
+}
+
+void GameState::Init()
+{
+#ifdef GAME_DLL
+    Call_Method<void, GameState>(PICK_ADDRESS(0x00492650, 0x007DF007), this);
+#endif
+}
+
+void GameState::Reset()
+{
+    m_snapShots.clear();
+    Clear_Available_Games();
+}
+
+void GameState::Xfer_Snapshot(Xfer *xfer)
+{
+#ifdef GAME_DLL
+    Call_Method<void, SnapShot>(PICK_ADDRESS(0x00494D10, 0x007E1D91), this);
+#endif
+}
+
+void GameState::Clear_Available_Games()
+{
+    while (m_availableGames != nullptr) {
+        AvailableGameInfo *next = m_availableGames->m_next;
+
+        delete m_availableGames;
+        m_availableGames = next;
+    }
+}
+
 Utf8String GameState::Get_Save_Dir()
 {
     Utf8String ret = g_theWriteableGlobalData->m_userDataDirectory;

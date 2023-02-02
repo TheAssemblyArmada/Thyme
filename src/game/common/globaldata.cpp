@@ -24,6 +24,7 @@
 #include <captainslog.h>
 
 #ifdef PLATFORM_WINDOWS
+#include <ShlObj.h>
 #include <winuser.h>
 #endif
 
@@ -1043,8 +1044,11 @@ GlobalData::GlobalData()
 #endif
     m_keyboardCameraRotateSpeed = 0.1f;
 #ifdef PLATFORM_WINDOWS
-    m_userDataDirectory = getenv("CSIDL_MYDOCUMENTS");
-    m_userDataDirectory += "\\Command and Conquer Generals Zero Hour Data\\";
+    char path[MAX_PATH];
+    if (SHGetSpecialFolderPath(nullptr, path, CSIDL_MYDOCUMENTS, true)) {
+        m_userDataDirectory = path;
+        m_userDataDirectory += "\\Command and Conquer Generals Zero Hour Data\\";
+    }
 #elif PLATFORM_LINUX
 // TODO
 #elif PLATFORM_OSX

@@ -80,3 +80,13 @@ public:
     DamageInfoInput m_in;
     DamageInfoOutput m_out;
 };
+
+#ifdef GAME_DLL
+extern BitFlags<DAMAGE_NUM_TYPES> &DAMAGE_TYPE_FLAGS_ALL;
+#else
+extern BitFlags<DAMAGE_NUM_TYPES> DAMAGE_TYPE_FLAGS_ALL;
+#endif
+
+extern BitFlags<DAMAGE_NUM_TYPES> DAMAGE_TYPE_FLAGS_NONE;
+
+void Init_Damage_Type_Masks();

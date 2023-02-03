@@ -15,18 +15,14 @@
 #include "gamemain.h"
 #include "bitflags.h"
 #include "disabledtypes.h"
+#include "main.h"
 #include "win32gameengine.h"
 
 GameEngine *Create_Game_Engine()
 {
-#ifdef GAME_DLL
-    return Call_Function<GameEngine *>(PICK_ADDRESS(0x00401CD0, 0));
-#else
-    GameEngine *tmp = new Win32GameEngine;
-    tmp->Set_Is_Active(true);
-
-    return tmp;
-#endif
+    GameEngine *engine = new Win32GameEngine;
+    engine->Set_Is_Active(g_gameActive);
+    return engine;
 }
 
 void Game_Main(int argc, char *argv[])

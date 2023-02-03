@@ -100,11 +100,60 @@ enum GameWindowStyle
     GWS_COMBO_BOX = 1 << 15,
 };
 
+enum GameWindowMessage
+{
+    GWM_NONE,
+
+    GWM_CREATE, // Freshly created window
+    GWM_DESTROY, // Window is being destroyed
+    GWM_3, // ?
+    GWM_4, // ?
+
+    // Left mouse
+    GWM_LEFT_DOWN,
+    GWM_LEFT_UP,
+    GWM_7,
+    GWM_LEFT_DRAG,
+
+    // Middle mouse
+    GWM_MIDDLE_DOWN,
+    GWM_MIDDLE_UP,
+    GWM_11,
+    GWM_MIDDLE_DRAG,
+
+    // Right mouse
+    GWM_RIGHT_DOWN,
+    GWM_RIGHT_UP,
+    GWM_15,
+    GWM_RIGHT_DRAG,
+
+    GWM_MOUSE_ENTERING,
+    GWM_MOUSE_LEAVING,
+
+    GWM_WHEEL_UP,
+    GWM_WHEEL_DOWN,
+
+    GWM_CHAR, // Keyboard input
+
+    GWM_SCRIPT_CREATE, // Freshly created window from a WND script
+
+    GWM_INPUT_FOCUS, // Window gained input focus
+
+    GWM_MOUSE_POS, // Mouse position
+
+    GWM_IME_CHAR, // IME input
+
+    GWM_26,
+
+};
+
 typedef WindowMsgHandledType(__cdecl *WindowCallbackFunc)(
     GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
 
 typedef void(__cdecl *WindowDrawFunc)(GameWindow *window, WinInstanceData *instance);
 typedef void(__cdecl *WindowTooltipFunc)(GameWindow *window, WinInstanceData *instance, unsigned int mouse);
+
+typedef void(__cdecl *WindowMsgBoxCallbackFunc)();
 
 struct GameWindowEditData
 {

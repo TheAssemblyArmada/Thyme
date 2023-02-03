@@ -101,3 +101,24 @@ GameWindow *WindowLayout::Find_Window(GameWindow *window)
 
     return nullptr;
 }
+
+void WindowLayout::Hide(bool hide)
+{
+#ifdef GAME_DLL
+    Call_Method<void, WindowLayout, bool>(PICK_ADDRESS(0x004F83F0, 0x008E4EF4), this, hide);
+#endif
+}
+
+void WindowLayout::Destroy_Windows()
+{
+#ifdef GAME_DLL
+    Call_Method<void, WindowLayout>(PICK_ADDRESS(0x004F8530, 0x008E50FD), this);
+#endif
+}
+
+void WindowLayout::Bring_Forward()
+{
+#ifdef GAME_DLL
+    Call_Method<void, WindowLayout>(PICK_ADDRESS(0x004F8900, 0x008E531E), this);
+#endif
+}

@@ -38,3 +38,12 @@ RecorderClass *Create_Recorder()
     return nullptr;
 #endif
 }
+
+bool RecorderClass::Is_Multiplayer()
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, RecorderClass>(PICK_ADDRESS(0x0048DA50, 0x00903E42), this);
+#else
+    return false;
+#endif
+}

@@ -23,7 +23,7 @@ public:
     CommandList() {}
 
     // SubsystemInterface implementations
-    virtual ~CommandList();
+    virtual ~CommandList() override;
     virtual void Init() override;
     virtual void Reset() override;
     virtual void Update() override;

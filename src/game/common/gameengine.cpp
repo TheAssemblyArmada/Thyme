@@ -27,6 +27,7 @@
 #include "damage.h"
 #include "damagefx.h"
 #include "disabledtypes.h"
+#include "drawable.h"
 #include "filesystem.h"
 #include "functionlexicon.h"
 #include "fxlist.h"
@@ -37,6 +38,7 @@
 #include "gamestate.h"
 #include "gamestatemap.h"
 #include "gametext.h"
+#include "gamewindowmanager.h"
 #include "globaldata.h"
 #include "globallanguage.h"
 #ifdef GAME_DLL
@@ -63,6 +65,7 @@
 #include "recorder.h"
 #include "registry.h"
 #include "science.h"
+#include "scriptengine.h"
 #include "sideslist.h"
 #include "specialpower.h"
 #include "subsysteminterface.h"
@@ -73,7 +76,9 @@
 #include "upgrade.h"
 #include "version.h"
 #include "victoryconditions.h"
+#include "view.h"
 #include "weapon.h"
+#include "windowlayout.h"
 #include "xfercrc.h"
 
 #ifdef PLATFORM_WINDOWS
@@ -96,20 +101,91 @@ GameEngine::GameEngine() : m_maxFPS(0), m_isQuitting(false), m_isActive(false)
 #ifdef PLATFORM_WINDOWS
     timeBeginPeriod(1);
 #endif
+
+    // un-necessary CComModule::Init call omitted
 }
 
 GameEngine::~GameEngine()
 {
-    // TODO
+    delete g_theMapCache;
+    g_theMapCache = nullptr;
+
+    delete g_theGameResultsQueue;
+    g_theGameResultsQueue = nullptr;
+
+    g_theSubsystemList->Shutdown_All();
+    delete g_theSubsystemList;
+    g_theSubsystemList = nullptr;
+
+    delete g_theNetwork;
+    g_theNetwork = nullptr;
+
+    delete g_theCommandList;
+    g_theCommandList = nullptr;
+
+    delete g_theNameKeyGenerator;
+    g_theNameKeyGenerator = nullptr;
+
+    delete g_theFileSystem;
+    g_theFileSystem = nullptr;
+
+    delete g_theGameLODManager;
+    g_theGameLODManager = nullptr;
+    Drawable::Kill_Static_Images();
+
+    // un-necessary CComModule::~CComModule call omitted
 
 #ifdef PLATFORM_WINDOWS
     timeEndPeriod(1);
 #endif
 }
 
-void GameEngine::Reset() {}
+void GameEngine::Reset()
+{
+    WindowLayout *layout = g_theWindowManager->Win_Create_Layout("Menus/BlankWindow.wnd");
+    captainslog_dbgassert(layout != nullptr, "We Couldn't Load Menus/BlankWindow.wnd");
+    layout->Hide(false);
+    layout->Bring_Forward();
+    GameWindow *window = layout->Get_Window_List();
+    window->Win_Clear_Status(WIN_STATUS_IMAGE);
+    bool multiplayer = g_theGameLogic->Is_In_Multiplayer_Game();
+    g_theSubsystemList->Reset_All();
 
-void GameEngine::Update() {}
+    if (multiplayer) {
+        captainslog_dbgassert(g_theNetwork != nullptr, "Deleting NULL TheNetwork!");
+        delete g_theNetwork;
+        g_theNetwork = nullptr;
+    }
+
+    if (layout != nullptr) {
+        layout->Destroy_Windows();
+        layout->Delete_Instance();
+    }
+}
+
+void GameEngine::Update()
+{
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO CRCVerification
+#endif
+
+    // TODO WB has extra subsystem debug stuff here, not implemented yet
+    g_theRadar->Update();
+    g_theAudio->Update();
+    g_theGameClient->Update();
+    g_theMessageStream->Propagate_Messages();
+
+    if (g_theNetwork != nullptr) {
+        g_theNetwork->Update();
+    }
+
+    g_theCDManager->Update();
+
+    if ((g_theNetwork == nullptr && !g_theGameLogic->Is_Game_Paused())
+        || (g_theNetwork != nullptr && g_theNetwork->Is_Frame_Data_Ready())) {
+        g_theGameLogic->Update();
+    }
+}
 
 void GameEngine::Init(int argc, char *argv[])
 {
@@ -455,11 +531,49 @@ void GameEngine::Real_Init(int argc, char *argv[])
     Hide_Control_Bar(true);
 }
 
-void GameEngine::Execute() {}
+void GameEngine::Execute()
+{
+    unsigned int time = 0;
+    unsigned int time2 = 0;
+#ifdef PLATFORM_WINDOWS
+    time = timeGetTime();
+    time2 = timeGetTime() / 1000;
+#endif
+
+    while (!m_isQuitting) {
+#ifdef GAME_DEBUG_STRUCTS
+        // TODO benchmark stuff
+#endif
+        Update();
+        if (g_theTacticalView->Get_Time_Multiplier() <= 1 || !g_theScriptEngine->Is_Time_Fast()) {
+#ifdef GAME_DEBUG_STRUCTS
+            rts::Sleep_Ms(1);
+
+            if (!g_theWriteableGlobalData->m_TiVOFastMode || !g_theGameLogic->Is_In_Replay_Game()) {
+#else
+            if (!g_theWriteableGlobalData->m_demoToggleSpecialPowerDelays || !g_theGameLogic->Is_In_Replay_Game()) {
+#endif
+                unsigned int time3 = 0;
+#ifdef PLATFORM_WINDOWS
+                time3 = timeGetTime();
+#endif
+
+                while (g_theWriteableGlobalData->m_useFPSLimit && time3 - time < 1000.0f / m_maxFPS - 1.0f) {
+                    rts::Sleep_Ms(0);
+#ifdef PLATFORM_WINDOWS
+                    time3 = timeGetTime();
+#endif
+                }
+
+                time = time3;
+            }
+        }
+    }
+}
 
 bool GameEngine::Is_Multiplayer_Session()
 {
-    return false;
+    return g_theRecorder->Is_Multiplayer();
 }
 
 FileSystem *GameEngine::Create_File_System()

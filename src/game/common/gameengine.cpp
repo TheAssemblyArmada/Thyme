@@ -24,24 +24,35 @@
 #include "commandline.h"
 #include "commandlist.h"
 #include "cratesystem.h"
+#include "damage.h"
 #include "damagefx.h"
+#include "disabledtypes.h"
 #include "filesystem.h"
 #include "functionlexicon.h"
 #include "fxlist.h"
 #include "gameclient.h"
 #include "gamelod.h"
 #include "gamelogic.h"
+#include "gameresultsthread.h"
+#include "gamestate.h"
+#include "gamestatemap.h"
 #include "gametext.h"
 #include "globaldata.h"
 #include "globallanguage.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 #include "ini.h"
+#include "kindof.h"
 #include "localfilesystem.h"
 #include "locomotor.h"
+#include "maputil.h"
 #include "messagestream.h"
 #include "metaevent.h"
 #include "modulefactory.h"
 #include "multiplayersettings.h"
 #include "namekeygenerator.h"
+#include "network.h"
 #include "objectcreationlist.h"
 #include "particlesysmanager.h"
 #include "playerlist.h"
@@ -73,6 +84,13 @@
 GameEngine *g_theGameEngine = nullptr;
 #endif
 
+void Hide_Control_Bar(bool hide)
+{
+#ifdef GAME_DLL
+    Call_Function<void, bool>(PICK_ADDRESS(0x0048A3E0, 0x009DF7F2), hide);
+#endif
+}
+
 GameEngine::GameEngine() : m_maxFPS(0), m_isQuitting(false), m_isActive(false)
 {
 #ifdef PLATFORM_WINDOWS
@@ -94,6 +112,11 @@ void GameEngine::Reset() {}
 void GameEngine::Update() {}
 
 void GameEngine::Init(int argc, char *argv[])
+{
+    Real_Init(argc, argv);
+}
+
+void GameEngine::Real_Init(int argc, char *argv[])
 {
     INI ini;
 
@@ -298,8 +321,13 @@ void GameEngine::Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
-    Init_Subsystem(
-        g_theThingFactory, "TheThingFactory", new ThingFactory, &xfer, "Data/INI/Default/Object.ini", "Data/INI/Object");
+    Init_Subsystem(g_theThingFactory,
+        "TheThingFactory",
+        new ThingFactory,
+        &xfer,
+        "Data/INI/Default/Object.ini",
+        nullptr,
+        "Data/INI/Object");
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug(
         "----------------------------------------------------------------------------After TheThingFactory = %f seconds ",
@@ -344,8 +372,87 @@ void GameEngine::Init(int argc, char *argv[])
 #endif
 
     Init_Subsystem(g_theActionManager, "TheActionManager", new ActionManager);
+    Init_Subsystem(g_theGameStateMap, "TheGameStateMap", new GameStateMap);
+    Init_Subsystem(g_theGameState, "TheGameState", new GameState);
 
-    // TODO this is a WIP
+    Init_Subsystem(g_theGameResultsQueue, "TheGameResultsQueue", GameResultsInterface::Create_New_Game_Results_Interface());
+#ifdef GAME_DEBUG_STRUCTS
+    captainslog_debug("----------------------------------------------------------------------------After "
+                      "TheGameResultsQueue = %f seconds ",
+        0.0f); // TODO processor frequency stuff
+#endif
+
+    xfer.Close();
+    g_theWriteableGlobalData->m_iniCRC = xfer.Get_CRC();
+    captainslog_debug("INI CRC is 0x%8.8X", g_theWriteableGlobalData->m_iniCRC);
+    g_theSubsystemList->Post_Process_Load_All();
+    Set_FPS_Limit(g_theWriteableGlobalData->m_framesPerSecondLimit);
+    g_theAudio->Set_On(g_theWriteableGlobalData->m_audioOn && g_theWriteableGlobalData->m_musicOn, AUDIOAFFECT_MUSIC);
+    g_theAudio->Set_On(g_theWriteableGlobalData->m_audioOn && g_theWriteableGlobalData->m_soundsOn, AUDIOAFFECT_SOUND);
+    g_theAudio->Set_On(g_theWriteableGlobalData->m_audioOn && g_theWriteableGlobalData->m_sounds3DOn, AUDIOAFFECT_3DSOUND);
+    g_theAudio->Set_On(g_theWriteableGlobalData->m_audioOn && g_theWriteableGlobalData->m_speechOn, AUDIOAFFECT_SPEECH);
+    g_theNetwork = nullptr;
+
+#ifndef GAME_DEBUG_STRUCTS
+    if (strcasecmp(g_theArchiveFileSystem->Get_Archive_Filename_For_File("generalsbzh.sec").Str(), "genseczh.big") != 0) {
+        m_isQuitting = true;
+    }
+
+    if (strcasecmp(g_theArchiveFileSystem->Get_Archive_Filename_For_File("generalsazh.sec").Str(), "musiczh.big") != 0) {
+        m_isQuitting = true;
+    }
+#endif
+
+    g_theMapCache = new MapCache;
+    g_theMapCache->Update_Cache();
+#ifdef GAME_DEBUG_STRUCTS
+    captainslog_debug("----------------------------------------------------------------------------After "
+                      "TheMapCache->Update_Cache = %f seconds ",
+        0.0f); // TODO processor frequency stuff
+#endif
+
+    if (g_theWriteableGlobalData->m_buildMapCache) {
+        m_isQuitting = true;
+    }
+
+    if (!g_theWriteableGlobalData->m_initialFile.Is_Empty()) {
+        Utf8String initial_file(g_theWriteableGlobalData->m_initialFile);
+
+        if (initial_file.Ends_With_No_Case(".map")) {
+            g_theWriteableGlobalData->m_shellMapOn = false;
+            g_theWriteableGlobalData->m_playIntro = false;
+            g_theWriteableGlobalData->m_pendingFile = g_theWriteableGlobalData->m_initialFile;
+            GameMessage *message = g_theMessageStream->Append_Message(GameMessage::MSG_NEW_GAME);
+            message->Append_Int_Arg(0);
+            message->Append_Int_Arg(1);
+            message->Append_Int_Arg(0);
+            Init_Random();
+        } else {
+            if (initial_file.Ends_With_No_Case(".rep")) {
+                g_theRecorder->Playback_File(initial_file);
+            }
+        }
+    }
+
+    if (g_theMapCache != nullptr && g_theWriteableGlobalData->m_shellMapOn) {
+        Utf8String shell_map(g_theWriteableGlobalData->m_shellMapName);
+        shell_map.To_Lower();
+        auto it = g_theMapCache->find(shell_map);
+
+        if (it == g_theMapCache->end()) {
+            g_theWriteableGlobalData->m_shellMapOn = false;
+        }
+    }
+
+    if (!g_theWriteableGlobalData->m_playIntro) {
+        g_theWriteableGlobalData->m_afterIntro = true;
+    }
+
+    Init_KindOf_Masks();
+    Init_Disabled_Masks();
+    Init_Damage_Type_Masks();
+    g_theSubsystemList->Reset_All();
+    Hide_Control_Bar(true);
 }
 
 void GameEngine::Execute() {}

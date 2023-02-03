@@ -2552,4 +2552,7 @@ void Setup_Hooks()
     Hook_Any(0x007A9060, CameraShakeSystemClass::Is_Camera_Shaking);
     Hook_Any(0x007A90D0, CameraShakeSystemClass::Timestep);
     Hook_Any(0x007A91E0, CameraShakeSystemClass::Update_Camera_Shaker);
+
+    // gameengine.h
+    Hook_Any(0x0040E2F0, GameEngine::Real_Init);
 }

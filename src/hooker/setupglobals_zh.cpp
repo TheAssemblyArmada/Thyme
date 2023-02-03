@@ -695,7 +695,6 @@ PathfindCellInfo *&PathfindCellInfo::m_firstFree = Make_Global<PathfindCellInfo 
 CameraShakeSystemClass &g_theCameraShakerSystem = Make_Global<CameraShakeSystemClass>(PICK_ADDRESS(0x00A3B138, 0x00E1B2F0));
 HOOK_AUTOPOOL(CameraShakeSystemClass::CameraShakerClass, 256, PICK_ADDRESS(0x00A3B150, 0x00E1B308));
 
-
 // cratesystem.cpp
 class CrateSystem;
 CrateSystem *&g_theCrateSystem = Make_Global<CrateSystem *>(PICK_ADDRESS(0x00A2BBE4, 0x00E23DAC));
@@ -720,3 +719,21 @@ MetaMap *&g_theMetaMap = Make_Global<MetaMap *>(PICK_ADDRESS(0x00A2BA2C, 0x04CA9
 // actionmanager.cpp
 class ActionManager;
 ActionManager *&g_theActionManager = Make_Global<ActionManager *>(PICK_ADDRESS(0x00A2BA28, 0x04CA87FC));
+
+// gamestatemap.cpp
+class GameStateMap;
+GameStateMap *&g_theGameStateMap = Make_Global<GameStateMap *>(PICK_ADDRESS(0x00A2BA08, 0x04CAA5A4));
+
+// gameresultsthread.cpp
+class GameResultsInterface;
+GameResultsInterface *&g_theGameResultsQueue = Make_Global<GameResultsInterface *>(PICK_ADDRESS(0x00A2B930, 0x04CAB9A0));
+
+// kindof.cpp
+BitFlags<KINDOF_COUNT> &KINDOFMASK_FS = Make_Global<BitFlags<KINDOF_COUNT>>(PICK_ADDRESS(0x00A2B9D0, 0x00E239F8));
+
+// disabledtypes.cpp
+DisabledBitFlags &DISABLEDMASK_ALL = Make_Global<DisabledBitFlags>(PICK_ADDRESS(0x00A2B9C8, 0x04CAA554));
+
+// damage.cpp
+BitFlags<DAMAGE_NUM_TYPES> &DAMAGE_TYPE_FLAGS_ALL =
+    Make_Global<BitFlags<DAMAGE_NUM_TYPES>>(PICK_ADDRESS(0x00A2B9B8, 0x00E280F8));

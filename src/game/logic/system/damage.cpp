@@ -15,6 +15,12 @@
 #include "damage.h"
 #include "thingfactory.h"
 
+#ifndef GAME_DLL
+BitFlags<DAMAGE_NUM_TYPES> DAMAGE_TYPE_FLAGS_ALL;
+#endif
+
+BitFlags<DAMAGE_NUM_TYPES> DAMAGE_TYPE_FLAGS_NONE;
+
 void DamageInfoInput::Xfer_Snapshot(Xfer *xfer)
 {
     unsigned char current_version = 3;
@@ -71,4 +77,9 @@ void DamageInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
     xfer->xferSnapshot(&m_in);
     xfer->xferSnapshot(&m_out);
+}
+
+void Init_Damage_Type_Masks()
+{
+    DAMAGE_TYPE_FLAGS_ALL.Set_All();
 }

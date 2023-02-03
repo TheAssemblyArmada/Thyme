@@ -39,6 +39,8 @@ public:
     virtual void Reset() override;
     virtual void Update() override;
 
+    bool Playback_File(Utf8String name);
+
 private:
     CRCInfo *m_crcInfo;
     FILE *m_file;

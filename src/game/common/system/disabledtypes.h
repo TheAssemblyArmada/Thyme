@@ -37,6 +37,10 @@ enum DisabledType
 
 using DisabledBitFlags = BitFlags<DISABLED_TYPE_COUNT>;
 
+#ifdef GAME_DLL
+extern DisabledBitFlags &DISABLEDMASK_ALL;
+#else
 extern DisabledBitFlags DISABLEDMASK_ALL;
+#endif
 extern DisabledBitFlags DISABLEDMASK_NONE;
 void Init_Disabled_Masks();

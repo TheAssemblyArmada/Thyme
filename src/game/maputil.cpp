@@ -66,3 +66,10 @@ Utf8String MapCache::Get_User_Map_Dir()
 
     return dir;
 }
+
+void MapCache::Update_Cache()
+{
+#ifdef GAME_DLL
+    Call_Method<void, MapCache>(PICK_ADDRESS(0x0047F3B0, 0x009EE29A), this);
+#endif
+}

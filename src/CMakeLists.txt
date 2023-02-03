@@ -20,6 +20,7 @@ set(GAMEENGINE_INCLUDES
     game/common/modules
     game/common/rts
     game/common/system
+    game/common/system/savegame
     game/common/thing
     game/logic/ai
     game/logic/map
@@ -224,7 +225,6 @@ set(GAMEENGINE_SRC
     game/common/system/functionlexicon.cpp
     game/common/system/gamememory.cpp
     game/common/system/gamememoryinit.cpp
-    game/common/system/gamestate.cpp
     game/common/system/gametype.cpp
     game/common/system/geometry.cpp
     game/common/system/kindof.cpp
@@ -244,6 +244,8 @@ set(GAMEENGINE_SRC
     game/common/system/upgrade.cpp
     game/common/system/xfer.cpp
     game/common/system/xfercrc.cpp
+    game/common/system/savegame/gamestate.cpp
+    game/common/system/savegame/gamestatemap.cpp
     game/common/thing/moduleinfo.cpp
     game/common/thing/thing.cpp
     game/common/thing/thingfactory.cpp
@@ -288,6 +290,7 @@ set(GAMEENGINE_SRC
     game/logic/system/partitionmanager.cpp
     game/network/framemetrics.cpp
     game/network/gameinfo.cpp
+    game/network/gameresultsthread.cpp
     game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp
     game/network/lanapi.cpp

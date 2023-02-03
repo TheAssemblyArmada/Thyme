@@ -33,8 +33,6 @@ void Game_Main(int argc, char *argv[])
 {
     g_theGameEngine = Create_Game_Engine();
     g_theGameEngine->Init(argc, argv);
-    // TODO this should happen in GameEngine::Init but we don't have that yet
-    Init_Disabled_Masks();
     g_theGameEngine->Execute();
 
     if (g_theGameEngine != nullptr) {

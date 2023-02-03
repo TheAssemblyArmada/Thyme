@@ -18,6 +18,7 @@
 #include "coord.h"
 #include "list"
 #include <map>
+#include <set>
 
 class WaypointMap : public std::map<Utf8String, Coord3D>
 {
@@ -50,9 +51,12 @@ struct MapMetaData
     std::list<Coord3D> m_techPositions;
 };
 
-class MapCache : std::map<Utf8String, MapMetaData>
+class MapCache : public std::map<Utf8String, MapMetaData>
 {
 public:
+    MapCache() {}
+    ~MapCache() {}
+
     Utf8String Get_Map_Dir() { return s_mapDirName; }
     Utf8String Get_Map_Extension() { return s_mapExtension; }
     Utf8String Get_Cache_Name() { return s_mapCacheName; }
@@ -69,7 +73,8 @@ private:
     static const char *const s_mapExtension;
     static const char *const s_mapCacheName;
 
-    std::map<Utf8String, int> m_seen;
+    std::map<Utf8String, bool> m_seen;
+    std::set<Utf8String> m_unk;
 };
 
 #ifdef GAME_DLL

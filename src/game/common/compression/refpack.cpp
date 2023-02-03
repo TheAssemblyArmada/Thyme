@@ -47,7 +47,7 @@ static uint32_t RefPack_Matchlen(const uint8_t *s, const uint8_t *d, uint32_t ma
 /**
  * Compresses data using refpack LZ method
  */
-static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, int *opts)
+static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, bool quick)
 {
     int32_t len;
     uint32_t tlen;
@@ -159,7 +159,7 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
                 run = 0;
             }
 
-            if (opts) {
+            if (quick) {
                 hoffset = (getp - static_cast<const uint8_t *>(src));
                 link[hoffset & 131071] = hashtbl[hash];
                 hashtbl[hash] = hoffset;
@@ -369,5 +369,5 @@ int RefPack_Compress(void *dst, const void *src, int size, int *opts)
         header_len = 6;
     }
 
-    return header_len + RefPack_Encode(src, size, &putp[header_len], 0x20000, opts);
+    return header_len + RefPack_Encode(src, size, &putp[header_len], 0x20000, false);
 }

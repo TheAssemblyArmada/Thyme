@@ -54,6 +54,8 @@ private:
 class SubsystemInterfaceList
 {
 public:
+    SubsystemInterfaceList() {}
+    ~SubsystemInterfaceList();
     void Init_Subsystem(SubsystemInterface *sys,
         const char *default_ini_path,
         const char *ini_path,

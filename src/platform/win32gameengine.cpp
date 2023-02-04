@@ -13,7 +13,11 @@
  *            LICENSE
  */
 #include "win32gameengine.h"
+#include "audiomanager.h"
+#include "gamelogic.h"
+#include "lanapiinterface.h"
 #include "main.h"
+#include "thingfactory.h"
 #include "w3dfunctionlexicon.h"
 #include "w3dmodulefactory.h"
 #include "win32bigfilesystem.h"
@@ -43,6 +47,41 @@ Win32GameEngine::~Win32GameEngine()
 #ifdef PLATFORM_WINDOWS
     SetErrorMode(m_previousErrorMode);
 #endif
+}
+
+void Win32GameEngine::Update()
+{
+    GameEngine::Update();
+
+    // this code exists in windows but not in mac
+#ifdef PLATFORM_WINDOWS
+    if (g_applicationHWnd != nullptr && IsIconic(g_applicationHWnd)) {
+        for (HWND h = g_applicationHWnd; g_applicationHWnd != nullptr; h = g_applicationHWnd) {
+            if (!IsIconic(h)) {
+                break;
+            }
+
+            rts::Sleep_Ms(5);
+            Service_Windows_OS();
+
+            if (g_theLAN != nullptr) {
+                g_theLAN->Set_Is_Active(Get_Is_Active());
+                g_theLAN->Update();
+            }
+
+            if (Get_Quitting()) {
+                break;
+            }
+
+            if (g_theGameLogic->Get_Game_Mode() == GAME_INTERNET || g_theGameLogic->Get_Game_Mode() == GAME_LAN) {
+                break;
+            }
+        }
+
+        g_theAudio->Set_Volume(g_theAudio->Get_Volume(AUDIOAFFECT_BASEVOL), AUDIOAFFECT_BASEVOL);
+    }
+#endif
+    Service_Windows_OS();
 }
 
 void Win32GameEngine::Service_Windows_OS()
@@ -78,12 +117,22 @@ ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System()
 
 GameLogic *Win32GameEngine::Create_Game_Logic()
 {
+#ifdef GAME_DLL
+    // only exists in game exe, not wb exe
+    return Call_Method<GameLogic *, Win32GameEngine>(0x00741DF0, this);
+#else
     return nullptr;
+#endif
 }
 
 GameClient *Win32GameEngine::Create_Game_Client()
 {
+#ifdef GAME_DLL
+    // only exists in game exe, not wb exe
+    return Call_Method<GameClient *, Win32GameEngine>(0x00741F40, this);
+#else
     return nullptr;
+#endif
 }
 
 ModuleFactory *Win32GameEngine::Create_Module_Factory()
@@ -93,7 +142,7 @@ ModuleFactory *Win32GameEngine::Create_Module_Factory()
 
 ThingFactory *Win32GameEngine::Create_Thing_Factory()
 {
-    return nullptr;
+    return new W3DThingFactory;
 }
 
 FunctionLexicon *Win32GameEngine::Create_Function_Lexicon()
@@ -103,17 +152,32 @@ FunctionLexicon *Win32GameEngine::Create_Function_Lexicon()
 
 Radar *Win32GameEngine::Create_Radar()
 {
+#ifdef GAME_DLL
+    // only exists in game exe, not wb exe
+    return Call_Method<Radar *, Win32GameEngine>(0x00742220, this);
+#else
     return nullptr;
+#endif
 }
 
 WebBrowser *Win32GameEngine::Create_Web_Browser()
 {
+#ifdef GAME_DLL
+    // only exists in game exe, not wb exe
+    return Call_Method<WebBrowser *, Win32GameEngine>(0x00742280, this);
+#else
     return nullptr;
+#endif
 }
 
 ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()
 {
+#ifdef GAME_DLL
+    // only exists in game exe, not wb exe
+    return Call_Method<ParticleSystemManager *, Win32GameEngine>(0x007421B0, this);
+#else
     return nullptr;
+#endif
 }
 
 AudioManager *Win32GameEngine::Create_Audio_Manager()
@@ -125,7 +189,12 @@ AudioManager *Win32GameEngine::Create_Audio_Manager()
 #endif
 }
 
-Network *Win32GameEngine::Create_Network()
+NetworkInterface *Win32GameEngine::Create_Network()
 {
+#ifdef GAME_DLL
+    // only exists in game exe, not wb exe
+    return Call_Method<NetworkInterface *, Win32GameEngine>(0x00742210, this);
+#else
     return nullptr;
+#endif
 }

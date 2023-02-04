@@ -40,6 +40,7 @@ public:
     virtual void Update() override;
 
     bool Playback_File(Utf8String name);
+    bool Is_Multiplayer();
 
 private:
     CRCInfo *m_crcInfo;

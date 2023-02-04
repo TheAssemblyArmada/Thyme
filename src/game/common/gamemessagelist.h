@@ -23,7 +23,7 @@ public:
     GameMessageList() : m_firstMessage(nullptr), m_lastMessage(nullptr) {}
 
     // SubsystemInterface implementations
-    virtual ~GameMessageList();
+    virtual ~GameMessageList() override;
     virtual void Init() override {}
     virtual void Reset() override {}
     virtual void Update() override {}

@@ -737,3 +737,7 @@ DisabledBitFlags &DISABLEDMASK_ALL = Make_Global<DisabledBitFlags>(PICK_ADDRESS(
 // damage.cpp
 BitFlags<DAMAGE_NUM_TYPES> &DAMAGE_TYPE_FLAGS_ALL =
     Make_Global<BitFlags<DAMAGE_NUM_TYPES>>(PICK_ADDRESS(0x00A2B9B8, 0x00E280F8));
+
+// gamewindowmanager.cpp
+class GameWindowManager;
+GameWindowManager *&g_theWindowManager = Make_Global<GameWindowManager *>(PICK_ADDRESS(0x00A2BEF0, 0x00E27F14));

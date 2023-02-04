@@ -26,7 +26,7 @@ class GameLogic;
 class LocalFileSystem;
 class MessageStream;
 class ModuleFactory;
-class Network;
+class NetworkInterface;
 class ParticleSystemManager;
 class Radar;
 class ThingFactory;
@@ -67,7 +67,7 @@ public:
     virtual WebBrowser *Create_Web_Browser() = 0;
     virtual ParticleSystemManager *Create_Particle_System_Manager() = 0;
     virtual AudioManager *Create_Audio_Manager() = 0;
-    virtual Network *Create_Network() = 0;
+    virtual NetworkInterface *Create_Network() = 0;
 
     void Real_Init(int argc, char *argv[]); // temporary thing to make hooking work since Hook_Any wont work because there
                                             // are 2 functions named Init and Hook_Method wont work because Init is virtual

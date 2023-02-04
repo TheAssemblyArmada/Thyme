@@ -40,6 +40,12 @@ void SubsystemInterface::Set_Name(Utf8String name)
     m_subsystemName = name;
 }
 
+SubsystemInterfaceList::~SubsystemInterfaceList()
+{
+    captainslog_dbgassert(m_subsystems.empty(), "not empty");
+    Shutdown_All();
+}
+
 void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys,
     const char *default_ini_path,
     const char *ini_path,

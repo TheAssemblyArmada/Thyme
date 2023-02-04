@@ -25,7 +25,7 @@ public:
     // SubsystemInterface implementations, the original appears to do this to no benefit?
     virtual void Init() override { GameEngine::Init(); }
     virtual void Reset() override { GameEngine::Reset(); }
-    virtual void Update() override { GameEngine::Update(); }
+    virtual void Update() override;
 
     // GameEngine interface
     virtual void Service_Windows_OS() override;
@@ -40,7 +40,7 @@ public:
     virtual WebBrowser *Create_Web_Browser() override;
     virtual ParticleSystemManager *Create_Particle_System_Manager() override;
     virtual AudioManager *Create_Audio_Manager() override;
-    virtual Network *Create_Network() override;
+    virtual NetworkInterface *Create_Network() override;
 
 private:
     unsigned int m_previousErrorMode;

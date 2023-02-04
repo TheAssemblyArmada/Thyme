@@ -113,6 +113,7 @@ set(GAMEENGINE_SRC
     game/client/draw/tintenvelope.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/gamewindow.cpp
+    game/client/gui/gamewindowmanager.cpp
     game/client/gui/gamewindowtransitions.cpp
     game/client/gui/imemanagerinterface.cpp
     game/client/gui/imemanager.cpp

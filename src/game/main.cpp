@@ -82,13 +82,13 @@ extern HINSTANCE &g_applicationHInstance;
 #ifdef PLATFORM_WINDOWS
 HWND g_applicationHWnd;
 unsigned g_theMessageTime = 0;
+HGDIOBJ g_splashImage;
+HINSTANCE g_applicationHInstance;
+#endif
 bool g_gameIsWindowed;
 bool g_gameNotFullscreen;
 bool g_gameActive;
 bool g_creatingWindow;
-HGDIOBJ g_splashImage;
-HINSTANCE g_applicationHInstance;
-#endif
 #endif
 
 // Some Critical Sections to dole out to the functions that can use them.

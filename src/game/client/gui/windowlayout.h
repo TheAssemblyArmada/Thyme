@@ -48,6 +48,7 @@ public:
     GameWindow *Find_Window(GameWindow *window);
 
     Utf8String Get_Filename() const { return m_filenameString; }
+    GameWindow *Get_Window_List() const { return m_windowList; }
 
     void Set_Init(WindowLayoutCallbackFunc func) { m_initFunc = func; }
     void Set_Update(WindowLayoutCallbackFunc func) { m_updateFunc = func; }

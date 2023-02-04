@@ -183,6 +183,7 @@ public:
     bool Is_Time_Fast();
     void Notify_Of_Team_Destruction(Team *team_destroyed);
     void Append_Debug_Message(const Utf8String &message, bool b);
+    GameDifficulty Get_Difficulty() { return m_gameDifficulty; }
 
 private:
     void Init_Action_Templates();

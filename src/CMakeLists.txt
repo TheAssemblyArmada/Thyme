@@ -294,6 +294,7 @@ set(GAMEENGINE_SRC
     game/network/gameresultsthread.cpp
     game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp
+    game/network/ipenumeration.cpp
     game/network/lanapi.cpp
     game/network/lanapiinterface.cpp
     game/network/network.cpp

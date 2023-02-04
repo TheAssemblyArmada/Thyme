@@ -260,7 +260,7 @@ public:
     Utf8String m_autoAFlameParticleSystem;
     int32_t m_autoAFlameParticleMax;
     int32_t m_netMinPlayers; // not 100% sure, needs confirming
-    int32_t m_lanIPAddress;
+    int32_t m_defaultIP;
     int32_t m_firewallBehaviour;
     bool m_sendDelay;
     // char pad[3]

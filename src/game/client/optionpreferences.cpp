@@ -15,6 +15,8 @@
 #include "optionpreferences.h"
 #include "audiomanager.h"
 #include "globaldata.h"
+#include "ipenumeration.h"
+#include "scriptengine.h"
 #include <algorithm>
 #include <cstdio>
 
@@ -25,20 +27,20 @@ OptionPreferences::OptionPreferences()
 
 int OptionPreferences::Get_Campaign_Difficulty()
 {
-#ifdef GAME_DLL
-    // TODO, needs script engine member.
-    return Call_Method<int, OptionPreferences>(PICK_ADDRESS(0x00462BA0, 0x0087E225), this);
-#else
-    return 0;
-#endif
+    auto it = find("CampaignDifficulty");
+
+    if (it == end()) {
+        return g_theScriptEngine->Get_Difficulty();
+    }
+
+    return std::clamp<GameDifficulty>(static_cast<GameDifficulty>(atoi(it->second.Str())), DIFFICULTY_EASY, DIFFICULTY_HARD);
 }
 
 void OptionPreferences::Set_Campaign_Difficulty(int difficulty)
 {
-#ifdef GAME_DLL
-    // TODO, needs script engine member.
-    return Call_Method<void, OptionPreferences, int>(PICK_ADDRESS(0x00462CB0, 0x0087E2FA), this, difficulty);
-#endif
+    Utf8String str;
+    str.Format("%d", difficulty);
+    (*this)["CampaignDifficulty"] = str;
 }
 
 bool OptionPreferences::Get_Alternate_Mouse_Mode_Enabled()
@@ -485,52 +487,54 @@ bool OptionPreferences::Get_Firewall_Need_Refresh()
 
 uint32_t OptionPreferences::Get_LAN_IPAddress()
 {
-#ifdef GAME_DLL
-    // TODO needs IPEnumeration
-    return Call_Method<uint32_t, OptionPreferences>(PICK_ADDRESS(0x00462EA0, 0x0087E392), this);
-#else
-    return 0;
-#endif
+    Utf8String address = (*this)["IPAddress"];
+    IPEnumeration enumeration;
+
+    for (EnumeratedIP *i = enumeration.Get_Addresses(); i != nullptr; i = i->Get_Next()) {
+        if (address.Compare_No_Case(i->Get_IP_String()) == 0) {
+            return i->Get_IP();
+        }
+    }
+
+    return g_theWriteableGlobalData->m_defaultIP;
 }
 
 void OptionPreferences::Set_LAN_IPAddress(Utf8String address)
 {
-#ifdef GAME_DLL
-    // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, Utf8String>(PICK_ADDRESS(0x004630E0, 0x0087E4C5), this, address);
-#endif
+    (*this)["IPAddress"] = address;
 }
 
 void OptionPreferences::Set_LAN_IPAddress(uint32_t address)
 {
-#ifdef GAME_DLL
-    // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, uint32_t>(PICK_ADDRESS(0x004632B0, 0x0087E540), this, address);
-#endif
+    Utf8String str;
+    str.Format(
+        "%d.%d.%d.%d", (address & 0xFF000000) >> 24, (address & 0xFF0000u) >> 16, (address & 0xFF00) >> 8, (address & 0xFF));
+    (*this)["IPAddress"] = str;
 }
 
 uint32_t OptionPreferences::Get_Online_IPAddress()
 {
-#ifdef GAME_DLL
-    // TODO needs IPEnumeration
-    return Call_Method<uint32_t, OptionPreferences>(PICK_ADDRESS(0x004634B0, 0x0087E603), this);
-#else
-    return 0;
-#endif
+    Utf8String address = (*this)["GameSpyIPAddress"];
+    IPEnumeration enumeration;
+
+    for (EnumeratedIP *i = enumeration.Get_Addresses(); i != nullptr; i = i->Get_Next()) {
+        if (address.Compare_No_Case(i->Get_IP_String()) == 0) {
+            return i->Get_IP();
+        }
+    }
+
+    return g_theWriteableGlobalData->m_defaultIP;
 }
 
 void OptionPreferences::Set_Online_IPAddress(Utf8String address)
 {
-#ifdef GAME_DLL
-    // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, Utf8String>(PICK_ADDRESS(0x004636F0, 0x0087E736), this, address);
-#endif
+    (*this)["GameSpyIPAddress"] = address;
 }
 
 void OptionPreferences::Set_Online_IPAddress(uint32_t address)
 {
-#ifdef GAME_DLL
-    // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, uint32_t>(PICK_ADDRESS(0x004638C0, 0x0087E7B1), this, address);
-#endif
+    Utf8String str;
+    str.Format(
+        "%d.%d.%d.%d", (address & 0xFF000000) >> 24, (address & 0xFF0000u) >> 16, (address & 0xFF00) >> 8, (address & 0xFF));
+    (*this)["GameSpyIPAddress"] = str;
 }

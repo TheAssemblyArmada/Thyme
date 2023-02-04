@@ -888,7 +888,7 @@ GlobalData::GlobalData()
     m_preloadEverything = false;
     m_logAssets = false;
     m_netMinPlayers = 1;
-    m_lanIPAddress = 0;
+    m_defaultIP = 0;
     m_buildSpeed = 0.0f;
     m_minDistanceFromMapEdgeForBuild = 0.0f;
     m_supplyBuildOrder = 0;
@@ -1113,7 +1113,7 @@ void GlobalData::Parse_Game_Data_Definition(INI *ini)
     g_theWriteableGlobalData->m_retaliationModeEnabled = opts.Get_Retaliation_Mode_Enabled();
     g_theWriteableGlobalData->m_doubleClickAttackMovesEnabled = opts.Get_Double_Click_Attack_Move_Enabled();
     g_theWriteableGlobalData->m_keyboardScrollFactor = opts.Get_Scroll_Factor();
-    g_theWriteableGlobalData->m_lanIPAddress = opts.Get_LAN_IPAddress();
+    g_theWriteableGlobalData->m_defaultIP = opts.Get_LAN_IPAddress();
     g_theWriteableGlobalData->m_sendDelay = opts.Get_Send_Delay();
     g_theWriteableGlobalData->m_firewallBehaviour = opts.Get_Firewall_Behavior();
     g_theWriteableGlobalData->m_firewallPortAllocationDelta = opts.Get_Firewall_Port_Allocation_Delta();

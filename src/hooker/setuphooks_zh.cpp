@@ -181,6 +181,7 @@
 #include "w3dscene.h"
 #include "w3dshroud.h"
 #include "w3dsmudge.h"
+#include "w3dterrainbackground.h"
 #include "w3dterraintracks.h"
 #include "w3dtreebuffer.h"
 #include "w3dview.h"
@@ -2579,4 +2580,17 @@ void Setup_Hooks()
     Hook_Any(0x00788F90, W3DTreeBuffer::Apply_Toppling_Force);
     Hook_Any(0x00789100, W3DTreeBuffer::Update_Toppling_Tree);
     Hook_Any(0x00789580, W3DTreeBuffer::Xfer_Snapshot);
+
+    // w3dterrainbackground.h
+    Hook_Any(0x007D4010, W3DTerrainBackground::Set_Flip);
+    Hook_Any(0x007D4060, W3DTerrainBackground::Do_Partial_Update);
+    Hook_Any(0x007D40B0, W3DTerrainBackground::Fill_VB_Recursive);
+    Hook_Any(0x007D45F0, W3DTerrainBackground::Set_Flip_Recursive);
+    Hook_Any(0x007D4790, W3DTerrainBackground::Do_Tesselated_Update);
+    Hook_Any(0x007D4EB0, W3DTerrainBackground::Hook_Dtor);
+    Hook_Any(0x007D4F40, W3DTerrainBackground::Hook_Ctor);
+    Hook_Any(0x007D4F70, W3DTerrainBackground::Allocate_Terrain_Buffers);
+    Hook_Any(0x007D5010, W3DTerrainBackground::Update_Center);
+    Hook_Any(0x007D51E0, W3DTerrainBackground::Update_Texture);
+    Hook_Any(0x007D52F0, W3DTerrainBackground::Draw_Visible_Polys);
 }

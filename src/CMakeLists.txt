@@ -330,6 +330,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3dtreebuffer.cpp
     platform/w3dengine/client/w3dview.cpp
     platform/w3dengine/client/w3dmouse.cpp
+    platform/w3dengine/client/w3dterrainbackground.cpp
     platform/w3dengine/client/w3dterrainlogic.cpp
     platform/w3dengine/client/w3dterraintracks.cpp
     platform/w3dengine/client/w3dwaypointbuffer.cpp

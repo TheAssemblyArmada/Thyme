@@ -14,7 +14,11 @@
  */
 #include "audioeventrts.h"
 #include "audiomanager.h"
+#include "drawable.h"
 #include "filesystem.h"
+#include "gameclient.h"
+#include "gamelogic.h"
+#include "object.h"
 #include "randomvalue.h"
 #include "registry.h"
 
@@ -484,13 +488,36 @@ void AudioEventRTS::Set_Event_Name(Utf8String name)
     m_eventName = name;
 }
 
-Coord3D *AudioEventRTS::Get_Current_Pos()
+Coord3D *AudioEventRTS::Get_Current_Pos() 
 {
-#ifdef GAME_DLL
-    return Call_Method<Coord3D *, AudioEventRTS>(PICK_ADDRESS(0x00445980, 0x006E2B4D), this);
-#else
-    return nullptr;
-#endif
+    switch (m_eventType) {
+        case EVENT_MUSIC:
+            return &m_positionOfAudio;
+        case EVENT_SOUND: {
+            Object *obj = g_theGameLogic->Find_Object_By_ID(m_objectID);
+
+            if (obj != nullptr) {
+                m_positionOfAudio.Set(obj->Get_Position());
+            } else {
+                m_eventType = EVENT_UNKVAL3;
+            }
+            return &m_positionOfAudio;
+        }
+        case EVENT_SPEECH: {
+            Drawable *draw = g_theGameClient->Find_Drawable_By_ID(m_drawableID);
+
+            if (draw != nullptr) {
+                m_positionOfAudio.Set(draw->Get_Position());
+            } else {
+                m_eventType = EVENT_UNKVAL3;
+            }
+            return &m_positionOfAudio;
+        }
+        case EVENT_UNKVAL3:
+            return &m_positionOfAudio;
+        default:
+            return nullptr;
+    }
 }
 
 /**

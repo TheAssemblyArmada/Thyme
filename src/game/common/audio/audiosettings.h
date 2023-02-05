@@ -66,6 +66,15 @@ public:
     int Get_3D_Sample_Count() const { return m_sampleCount3D; }
     int Get_Stream_Count() const { return m_streamCount; }
     int Get_Time_To_Fade() const { return m_timeToFadeAudio; }
+    float Get_Microphone_Desired_Height_Above_Terrain() const { return m_microphoneDesiredHeightAboveTerrain; }
+    float Get_Zoom_Sound_Volume_Percent_Amount() const { return m_zoomSoundVolumePercentAmount; }
+    float Get_Zoom_Min_Distance() const { return m_zoomMinDistance; }
+    float Get_Zoom_Max_Distance() const { return m_zoomMaxDistance; }
+    
+    float Get_Microphone_Max_Percent_Between_Ground_And_Camera() const
+    {
+        return m_microphoneMaxPercentBetweenGroundAndCamera;
+    }
 
     static void Parse_Audio_Settings_Definition(INI *ini);
 

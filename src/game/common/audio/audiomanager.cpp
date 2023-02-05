@@ -16,6 +16,8 @@
 #include "filesystem.h"
 #include "musicmanager.h"
 #include "soundmanager.h"
+#include "terrainlogic.h"
+#include "w3dview.h"
 #include <algorithm>
 #include <captainslog.h>
 
@@ -139,10 +141,66 @@ void AudioManager::Reset()
  */
 void AudioManager::Update()
 {
-    // TODO Requires g_theTacticalView.
-#ifdef GAME_DLL
-    Call_Method<void, AudioManager>(PICK_ADDRESS(0x00404FB0, 0x006E3ADF), this);
-#endif
+    Coord3D pos = g_theTacticalView->Get_Position();
+    float angle = g_theTacticalView->Get_Angle();
+    Matrix3D tm(Matrix3D::Identity);
+    tm.Rotate_Z(angle);
+    Vector3 v(0.0f, 1.0f, 0.0f);
+    v = tm * v;
+    float height = m_audioSettings->Get_Microphone_Desired_Height_Above_Terrain();
+    float max = m_audioSettings->Get_Microphone_Max_Percent_Between_Ground_And_Camera();
+    
+    Coord3D listener_dir;
+    listener_dir.Set(v.X, v.Y, v.Z);
+    
+    Coord3D camera_pos = g_theTacticalView->Get_3D_Camera_Position();
+    
+    Coord3D c1;
+    c1.Set(&camera_pos);
+    c1.Sub(&pos);
+    
+    float scale;
+
+    if (camera_pos.z > height && c1.z > 0.0f) {
+        float f1 = height / c1.z;
+
+        if (max < f1) {
+            scale = max;
+        } else {
+            scale = f1;
+        }
+    } else {
+        scale = max;
+    }
+
+    c1.Scale(scale);
+    pos.z = g_theTerrainLogic->Get_Ground_Height(pos.x, pos.y, nullptr);
+    
+    Coord3D listener_pos;
+    listener_pos.Set(&pos);
+    listener_pos.Add(&c1);
+    Set_Listener_Position(&listener_pos, &listener_dir);
+    
+    float percentage = m_audioSettings->Get_Zoom_Sound_Volume_Percent_Amount();
+    float min_dist = m_audioSettings->Get_Zoom_Min_Distance();
+    float max_dist = m_audioSettings->Get_Zoom_Max_Distance();
+    m_zoomVolume = 1.0f - percentage;
+
+    if (percentage > 0.0f) {
+        Coord3D c2 = camera_pos;
+        c2.Sub(&listener_pos);
+        float length = c2.Length();
+
+        if (length >= min_dist) {
+            if (length < max_dist) {
+                m_zoomVolume = 1.0f - (length - min_dist) / (max_dist - min_dist) * percentage;
+            }
+        } else {
+            m_zoomVolume = 1.0f;
+        }
+    }
+
+    Set_3D_Volume_Adjustment(m_zoomVolume);
 }
 
 /**
@@ -373,7 +431,7 @@ bool AudioManager::Is_Current_Speaker_Type_Surround_Sound()
  */
 bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 {
-    // TODO Requires classes for g_theControlBar, g_thePlayerList
+    // TODO Requires ControlBar
 #ifdef GAME_DLL
     return Call_Method<bool, AudioManager, const AudioEventRTS *>(PICK_ADDRESS(0x00406E00, 0x006E5597), this, event);
 #else

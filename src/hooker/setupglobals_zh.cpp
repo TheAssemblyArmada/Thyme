@@ -741,3 +741,7 @@ BitFlags<DAMAGE_NUM_TYPES> &DAMAGE_TYPE_FLAGS_ALL =
 // gamewindowmanager.cpp
 class GameWindowManager;
 GameWindowManager *&g_theWindowManager = Make_Global<GameWindowManager *>(PICK_ADDRESS(0x00A2BEF0, 0x00E27F14));
+
+// terrainvisual.cpp
+class TerrainVisual;
+TerrainVisual *&g_theTerrainVisual = Make_Global<TerrainVisual *>(PICK_ADDRESS(0x00A2C27C, 0x00E25D10));

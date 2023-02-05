@@ -19,6 +19,8 @@
 #include "subsysteminterface.h"
 #include <list>
 
+class W3DFontLibrary;
+
 class FontDesc
 {
     friend class GlobalLanguage;
@@ -43,6 +45,8 @@ private:
 class GlobalLanguage : public SubsystemInterface
 {
 public:
+    friend W3DFontLibrary;
+
     GlobalLanguage();
     virtual ~GlobalLanguage() {}
 

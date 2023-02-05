@@ -602,7 +602,7 @@ Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePrio
 
     // If skip priority is lower than LOD minimum, workout if we skip this particular particle.
     if (priority < g_theGameLODManager->Min_Particle_Skip_Priority()) {
-        if (g_theGameLODManager->Skip_Particle()) {
+        if (g_theGameLODManager->Is_Particle_Skipped()) {
             return nullptr;
         }
     }

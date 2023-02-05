@@ -43,6 +43,9 @@ public:
     UpgradeTemplate *Friend_Get_Next() { return m_next; }
     UpgradeTemplate *Friend_Get_Prev() { return m_prev; }
     const UpgradeTemplate *Friend_Get_Next() const { return m_next; }
+    BitFlags<128> Get_Upgrade_Mask() const { return m_upgradeMask; }
+    Utf8String Get_Name() const { return m_name; }
+    NameKeyType Get_Name_Key() const { return m_nameKey; }
 
 private:
     UpgradeType m_type;
@@ -69,6 +72,10 @@ public:
     virtual void Init() override;
     virtual void Reset() override;
     virtual void Update() override {}
+
+    UpgradeTemplate *Get_Upgrade_List() { return m_upgradeList; }
+    UpgradeTemplate *Find_Upgrade(const Utf8String &name);
+    UpgradeTemplate *Find_Upgrade_By_Key(NameKeyType key);
 
 private:
     UpgradeTemplate *m_upgradeList;

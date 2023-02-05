@@ -86,6 +86,7 @@ set(GAMEENGINE_SRC
     game/client/shadermanager.cpp
     game/client/terrainroads.cpp
     game/client/terraintex.cpp
+    game/client/terrainvisual.cpp
     game/client/tiledata.cpp
     game/client/view.cpp
     game/client/water.cpp

@@ -105,7 +105,7 @@ public:
     virtual void Set_Audio_Event_Volume_Override(Utf8String event, float vol_override);
     virtual void Remove_Disabled_Events();
     virtual void Get_Info_For_Audio_Event(const AudioEventRTS *event) const;
-    virtual bool Is_Currently_Playing(uintptr_t event) = 0;
+    virtual bool Is_Currently_Playing(uintptr_t event) { return true; }
     virtual void Open_Device() = 0;
     virtual void Close_Device() = 0;
     virtual AudioDevice Get_Device() = 0;
@@ -144,7 +144,7 @@ public:
     virtual AudioRequest *Allocate_Audio_Request(bool is_add_request);
     virtual void Release_Audio_Request(AudioRequest *request);
     virtual void Append_Audio_Request(AudioRequest *request);
-    virtual void Process_Request_List() = 0;
+    virtual void Process_Request_List() {}
     virtual AudioEventInfo *New_Audio_Event_Info(Utf8String name);
     virtual void Add_Audio_Event_Info(AudioEventInfo *info);
     virtual AudioEventInfo *Find_Audio_Event_Info(Utf8String name) const;

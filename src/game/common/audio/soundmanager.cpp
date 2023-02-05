@@ -14,6 +14,8 @@
  */
 #include "soundmanager.h"
 #include "audiomanager.h"
+#include "partitionmanager.h"
+#include "playerlist.h"
 
 /**
  * Reset the subsystem.
@@ -38,15 +40,14 @@ void SoundManager::Add_Audio_Event(AudioEventRTS *event)
         m_3dSampleSlotCount = g_theAudio->Get_Num_3D_Samples();
     }
 
-    if (!Can_Play_Now(event)) {
-        g_theAudio->Release_Audio_Event_RTS(event);
-
+    if (Can_Play_Now(event)) {
+        AudioRequest *request = g_theAudio->Allocate_Audio_Request(true);
+        request->Request_Play(event);
+        g_theAudio->Append_Audio_Request(request);
         return;
     }
 
-    AudioRequest *request = g_theAudio->Allocate_Audio_Request(true);
-    request->Request_Play(event);
-    g_theAudio->Append_Audio_Request(request);
+    g_theAudio->Release_Audio_Event_RTS(event);
 }
 
 /**
@@ -56,12 +57,57 @@ void SoundManager::Add_Audio_Event(AudioEventRTS *event)
  */
 bool SoundManager::Can_Play_Now(AudioEventRTS *event)
 {
-    // Requires PlayerList and PartitionManager classes.
-#ifdef GAME_DLL
-    return Call_Method<bool, SoundManager, AudioEventRTS *>(PICK_ADDRESS(0x00446120, 0x008AF28A), this, event);
-#else
+    if (event->Is_Positional_Audio() && (event->Get_Event_Info()->Get_Visibility() & VISIBILITY_GLOBAL) == 0
+        && event->Get_Event_Info()->Get_Priority() != 4) {
+        Coord3D listener_pos = *g_theAudio->Get_Listener_Position();
+        Coord3D *event_pos = event->Get_Current_Pos();
+
+        if (event_pos != nullptr) {
+            listener_pos.Sub(event_pos);
+
+            if (listener_pos.Length() >= event->Get_Event_Info()->Max_Range()) {
+                return false;
+            }
+
+            int player_index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
+
+            if ((event->Get_Event_Info()->Get_Visibility() & VISIBILITY_SHROUDED) != 0) {
+                if (g_thePartitionManager->Get_Shroud_Status_For_Player(player_index, event_pos)) {
+                    return false;
+                }
+            }
+        }
+    }
+
+    if (Violates_Voice(event)) {
+        return Is_Interrupting(event);
+    }
+
+    if (g_theAudio->Does_Violate_Limit(event)) {
+        return false;
+    }
+
+    if (Is_Interrupting(event)) {
+        return true;
+    }
+
+    if (event->Is_Positional_Audio()) {
+        if (m_3dSamplesPlaying < m_3dSampleSlotCount) {
+            return true;
+        }
+    } else if (m_2dSamplesPlaying < m_2dSampleSlotCount) {
+        return true;
+    }
+
+    if (g_theAudio->Is_Playing_Lower_Priority(event)) {
+        return true;
+    }
+
+    if (Is_Interrupting(event)) {
+        return g_theAudio->Is_Playing_Already(event);
+    }
+
     return false;
-#endif
 }
 
 /**

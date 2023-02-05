@@ -327,6 +327,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3dsmudge.cpp
     platform/w3dengine/client/w3dstatuscircle.cpp
     platform/w3dengine/client/w3dscene.cpp
+    platform/w3dengine/client/w3dtreebuffer.cpp
     platform/w3dengine/client/w3dview.cpp
     platform/w3dengine/client/w3dmouse.cpp
     platform/w3dengine/client/w3dterrainlogic.cpp

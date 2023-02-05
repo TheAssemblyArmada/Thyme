@@ -1302,21 +1302,21 @@ void W3DModelDraw::Release_Shadows()
 void W3DModelDraw::Allocate_Shadows()
 {
     Shadow::ShadowTypeInfo info;
-    info.m_thing = Get_Drawable()->Get_Template();
+    const ThingTemplate *thing = Get_Drawable()->Get_Template();
 
     if (m_shadow == nullptr && m_renderObject != nullptr && g_theW3DShadowManager != nullptr
-        && info.m_thing->Get_Shadow_Type() != SHADOW_NONE) {
+        && thing->Get_Shadow_Type() != SHADOW_NONE) {
 
-        strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name().Str());
+        strcpy(info.m_shadowName, thing->Get_Shadow_Texture_Name().Str());
         captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
 
         info.m_allowUpdates = false;
         info.m_allowWorldAlign = true;
-        info.m_type = (ShadowType)info.m_thing->Get_Shadow_Type();
-        info.m_sizeX = info.m_thing->Get_Shadow_Size_X();
-        info.m_sizeY = info.m_thing->Get_Shadow_Size_Y();
-        info.m_offsetX = info.m_thing->Get_Shadow_Offset_X();
-        info.m_offsetY = info.m_thing->Get_Shadow_Offset_Y();
+        info.m_type = (ShadowType)thing->Get_Shadow_Type();
+        info.m_sizeX = thing->Get_Shadow_Size_X();
+        info.m_sizeY = thing->Get_Shadow_Size_Y();
+        info.m_offsetX = thing->Get_Shadow_Offset_X();
+        info.m_offsetY = thing->Get_Shadow_Offset_Y();
 
         m_shadow = g_theW3DShadowManager->Add_Shadow(m_renderObject, &info, nullptr);
 
@@ -2166,7 +2166,7 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
 #endif
 
         Shadow::ShadowTypeInfo info;
-        info.m_thing = Get_Drawable()->Get_Template();
+        const ThingTemplate *thing = Get_Drawable()->Get_Template();
 
         if (m_renderObject != nullptr) {
             if (g_theWriteableGlobalData->m_makeTrackMarks && m_trackRenderObject == nullptr) {
@@ -2185,16 +2185,16 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
             }
         }
 
-        if (m_renderObject != nullptr && g_theW3DShadowManager != nullptr && info.m_thing->Get_Shadow_Type()) {
-            strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name().Str());
+        if (m_renderObject != nullptr && g_theW3DShadowManager != nullptr && thing->Get_Shadow_Type()) {
+            strcpy(info.m_shadowName, thing->Get_Shadow_Texture_Name().Str());
             captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
             info.m_allowUpdates = false;
             info.m_allowWorldAlign = true;
-            info.m_type = (ShadowType)info.m_thing->Get_Shadow_Type();
-            info.m_sizeX = info.m_thing->Get_Shadow_Size_X();
-            info.m_sizeY = info.m_thing->Get_Shadow_Size_Y();
-            info.m_offsetX = info.m_thing->Get_Shadow_Offset_X();
-            info.m_offsetY = info.m_thing->Get_Shadow_Offset_Y();
+            info.m_type = (ShadowType)thing->Get_Shadow_Type();
+            info.m_sizeX = thing->Get_Shadow_Size_X();
+            info.m_sizeY = thing->Get_Shadow_Size_Y();
+            info.m_offsetX = thing->Get_Shadow_Offset_X();
+            info.m_offsetY = thing->Get_Shadow_Offset_Y();
             m_shadow = g_theW3DShadowManager->Add_Shadow(m_renderObject, &info, nullptr);
 
             if (m_shadow != nullptr) {
@@ -2204,23 +2204,23 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
         }
 
         if (m_renderObject != nullptr) {
-            if (info.m_thing->Is_KindOf(KINDOF_SELECTABLE)) {
+            if (thing->Is_KindOf(KINDOF_SELECTABLE)) {
                 m_renderObject->Set_Collision_Type(COLLISION_TYPE_1);
             }
 
-            if (info.m_thing->Is_KindOf(KINDOF_SHRUBBERY)) {
+            if (thing->Is_KindOf(KINDOF_SHRUBBERY)) {
                 m_renderObject->Set_Collision_Type(COLLISION_TYPE_2);
             }
 
-            if (info.m_thing->Is_KindOf(KINDOF_MINE)) {
+            if (thing->Is_KindOf(KINDOF_MINE)) {
                 m_renderObject->Set_Collision_Type(COLLISION_TYPE_3);
             }
 
-            if (info.m_thing->Is_KindOf(KINDOF_FORCEATTACKABLE)) {
+            if (thing->Is_KindOf(KINDOF_FORCEATTACKABLE)) {
                 m_renderObject->Set_Collision_Type(COLLISION_TYPE_4);
             }
 
-            if (info.m_thing->Is_KindOf(KINDOF_CLICK_THROUGH)) {
+            if (thing->Is_KindOf(KINDOF_CLICK_THROUGH)) {
                 m_renderObject->Set_Collision_Type(0);
             }
 

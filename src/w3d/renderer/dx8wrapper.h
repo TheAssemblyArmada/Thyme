@@ -210,6 +210,8 @@ public:
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const D3DMATRIX &m);
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
     static void Set_DX8_Material(const D3DMATERIAL8 *mat);
+    static void Set_Vertex_Shader(unsigned long shader);
+    static void Set_Pixel_Shader(unsigned long shader);
     static void Set_Ambient_Color(const Vector3 &color);
     static bool Get_Fog_Enable() { return s_fogEnable; }
     static D3DCOLOR Get_Fog_Color() { return s_fogColor; }
@@ -879,6 +881,21 @@ inline void DX8Wrapper::Copy_DX8_Rects(IDirect3DSurface8 *pSourceSurface,
 {
     DX8CALL(CopyRects(pSourceSurface, pSourceRectsArray, cRects, pDestinationSurface, pDestPointsArray));
 }
+
+inline void DX8Wrapper::Set_Vertex_Shader(unsigned long shader)
+{
+    s_vertexShader = shader;
+    Get_D3D_Device8()->SetVertexShader(shader);
+}
+
+inline void DX8Wrapper::Set_Pixel_Shader(unsigned long shader)
+{
+    if (s_pixelShader != shader) {
+        s_pixelShader = shader;
+        Get_D3D_Device8()->SetPixelShader(shader);
+    }
+}
+
 #endif
 
 inline void DX8Wrapper::Set_Index_Buffer_Index_Offset(unsigned offset)

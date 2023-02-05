@@ -27,7 +27,7 @@ public:
 private:
     Utf8String m_modelName;
     Utf8String m_textureName;
-    int m_moveOutwardTime;
+    unsigned int m_moveOutwardTime;
     unsigned int m_moveInwardTime;
     float m_moveOutwardDistanceFactor;
     float m_darkeningFactor;
@@ -43,6 +43,7 @@ private:
     unsigned int m_sinkTime;
     float m_sinkDistance;
     bool m_doShadow;
+    friend class W3DTreeBuffer;
 };
 
 class W3DTreeDraw : public DrawModule

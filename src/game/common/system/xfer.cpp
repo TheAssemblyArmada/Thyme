@@ -18,6 +18,8 @@
 #include "gamestate.h"
 #include "matrix3d.h"
 #include "randomvalue.h"
+#include "science.h"
+#include "upgrade.h"
 #include <captainslog.h>
 
 void Xfer::Open(Utf8String filename)
@@ -29,7 +31,7 @@ void Xfer::xferVersion(uint8_t *thing, uint8_t check)
 {
     xferImplementation(thing, sizeof(*thing));
 
-    captainslog_relassert(*thing > check, 0xD, "Xfer version %d greater than expected, %d.", *thing, check);
+    captainslog_relassert(*thing > check, XFER_STATUS_UNKNOWN_VERSION, "Xfer version %d greater than expected, %d.", *thing, check);
 }
 
 void Xfer::xferByte(int8_t *thing)
@@ -215,8 +217,8 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        captainslog_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
-        captainslog_relassert(thing->size(), 0xF, "Trying to xfer load to none empty vector.");
+        captainslog_relassert(Get_Mode() == XFER_LOAD, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
+        captainslog_relassert(thing->size(), XFER_STATUS_NOT_EMPTY, "Trying to xfer load to none empty vector.");
 
         ObjectID val;
 
@@ -240,8 +242,8 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        captainslog_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
-        captainslog_relassert(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.");
+        captainslog_relassert(Get_Mode() == XFER_LOAD, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
+        captainslog_relassert(thing->size() == 0, XFER_STATUS_NOT_EMPTY, "Trying to xfer load to none empty vector.");
 
         ObjectID val;
 
@@ -269,8 +271,8 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
             xferInt(&(*it));
         }
     } else {
-        captainslog_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
-        captainslog_relassert(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.");
+        captainslog_relassert(Get_Mode() == XFER_LOAD, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
+        captainslog_relassert(thing->size() == 0, XFER_STATUS_NOT_EMPTY, "Trying to xfer load to none empty vector.");
 
         int32_t val;
 
@@ -283,18 +285,67 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
 
 void Xfer::xferScienceType(ScienceType *thing)
 {
-    // TODO, needs parts of ScienceStore
-#ifdef GAME_DLL
-    Call_Method<void, Xfer, ScienceType *>(PICK_ADDRESS(0x005F0120, 0x00A01176), this, thing);
-#endif
+    captainslog_dbgassert(thing != nullptr, "xferScienceType - Invalid parameters");
+
+    Utf8String str;
+
+    switch (Get_Mode()) {
+        case XFER_SAVE:
+            str = g_theScienceStore->Get_Internal_Name_From_Science(*thing);
+            xferAsciiString(&str);
+            break;
+        case XFER_LOAD:
+            xferAsciiString(&str);
+
+            *thing = g_theScienceStore->Get_Science_From_Internal_Name(str);
+
+            captainslog_relassert(
+                *thing != SCIENCE_INVALID, XFER_STATUS_NOT_FOUND, "xferScienceType - Unknown science '%s'", str.Str());
+            break;
+        case XFER_CRC:
+            xferImplementation(thing, sizeof(*thing));
+            break;
+        default:
+            captainslog_relassert(false, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
+    }
 }
 
 void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
 {
-    // TODO, needs parts of ScienceStore
-#ifdef GAME_DLL
-    Call_Method<void, Xfer, std::vector<ScienceType> *>(PICK_ADDRESS(0x005F02A0, 0x00A01364), this, thing);
-#endif
+    captainslog_dbgassert(thing != nullptr, "xferScienceVec - Invalid parameters");
+
+    uint8_t ver = 1;
+    xferVersion(&ver, 1);
+    unsigned short size = static_cast<unsigned short>(thing->size());
+    xferUnsignedShort(&size);
+
+    switch (Get_Mode()) {
+        case XFER_SAVE:
+            for (auto i = thing->begin(); i != thing->end(); i++) {
+                ScienceType t = *i;
+                xferScienceType(&t);
+                break;
+            }
+        case XFER_LOAD:
+            if (!thing->empty()) {
+                thing->clear();
+            }
+
+            for (unsigned short j = 0; j < size; j++) {
+                ScienceType t;
+                xferScienceType(&t);
+                thing->push_back(t);
+            }
+            break;
+        case XFER_CRC:
+            for (auto i = thing->begin(); i != thing->end(); i++) {
+                ScienceType t = *i;
+                xferImplementation(&t, sizeof(t));
+            }
+            break;
+        default:
+            captainslog_relassert(false, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
+    }
 }
 
 void Xfer::xferKindOf(KindOfType *thing)
@@ -330,17 +381,64 @@ void Xfer::xferKindOf(KindOfType *thing)
             xferImplementation(thing, sizeof(*thing));
             break;
         default:
-            captainslog_relassert(false, 0x8, "Xfer mode unknown.");
+            captainslog_relassert(false, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
             break;
     }
 }
 
 void Xfer::xferUpgradeMask(BitFlags<128> *thing)
 {
-    // TODO, needs part of UpgradeCenter
-#ifdef GAME_DLL
-    Call_Method<void, Xfer, BitFlags<128> *>(PICK_ADDRESS(0x005F05C0, 0x00A016CF), this, thing);
-#endif
+    uint8_t ver = 1;
+    xferVersion(&ver, 1);
+
+    switch (Get_Mode()) {
+        case XFER_SAVE: {
+            Utf8String str;
+            unsigned short size = 0;
+
+            for (UpgradeTemplate *tmplate = g_theUpgradeCenter->Get_Upgrade_List(); tmplate != nullptr;
+                 tmplate = tmplate->Friend_Get_Next()) {
+                BitFlags<128> flags = tmplate->Get_Upgrade_Mask();
+                if (thing->Test_For_All(flags)) {
+                    size++;
+                }
+            }
+
+            xferUnsignedShort(&size);
+
+            for (UpgradeTemplate *tmplate = g_theUpgradeCenter->Get_Upgrade_List(); tmplate != nullptr;
+                 tmplate = tmplate->Friend_Get_Next()) {
+                BitFlags<128> flags = tmplate->Get_Upgrade_Mask();
+                if (thing->Test_For_All(flags)) {
+                    str = tmplate->Get_Name();
+                    xferAsciiString(&str);
+                }
+            }
+
+            break;
+        }
+        case XFER_LOAD: {
+            Utf8String str;
+            unsigned short size;
+            xferUnsignedShort(&size);
+            thing->Clear();
+
+            for (int i = 0; i < size; i++) {
+                xferAsciiString(&str);
+                UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(str);
+                captainslog_relassert(
+                    tmplate != nullptr, XFER_STATUS_NOT_FOUND, "Xfer::xferUpgradeMask - Unknown upgrade '%s'", str.Str());
+                thing->Set(tmplate->Get_Upgrade_Mask());
+            }
+
+            break;
+        }
+        case XFER_CRC:
+            xferImplementation(thing, sizeof(*thing));
+            break;
+        default:
+            captainslog_relassert(false, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
+    }
 }
 
 void Xfer::xferUser(void *thing, int size)

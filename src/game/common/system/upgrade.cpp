@@ -42,3 +42,20 @@ void UpgradeCenter::Reset()
     Call_Method<void, UpgradeCenter>(PICK_ADDRESS(0x004AF190, 0x00728DBD), this);
 #endif
 }
+
+UpgradeTemplate *UpgradeCenter::Find_Upgrade(const Utf8String &name)
+{
+    return Find_Upgrade_By_Key(g_theNameKeyGenerator->Name_To_Key(name.Str()));
+}
+
+UpgradeTemplate *UpgradeCenter::Find_Upgrade_By_Key(NameKeyType key)
+{
+    for (UpgradeTemplate *tmplate = m_upgradeList; tmplate != nullptr;
+         tmplate = tmplate->Friend_Get_Next()) {
+        if (tmplate->Get_Name_Key() == key) {
+            return tmplate;
+        }
+    }
+
+    return nullptr;
+}

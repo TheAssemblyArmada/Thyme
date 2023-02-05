@@ -488,7 +488,7 @@ void AudioEventRTS::Set_Event_Name(Utf8String name)
     m_eventName = name;
 }
 
-Coord3D *AudioEventRTS::Get_Current_Pos() 
+Coord3D *AudioEventRTS::Get_Current_Pos()
 {
     switch (m_eventType) {
         case EVENT_MUSIC:

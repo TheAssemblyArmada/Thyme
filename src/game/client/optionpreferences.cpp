@@ -292,7 +292,7 @@ bool OptionPreferences::Get_Extra_Animations_Disabled()
         return g_theWriteableGlobalData->m_extraAnimationsDisabled;
     }
 
-    return strcasecmp(it->second.Str(), "yes") == 0;
+    return strcasecmp(it->second.Str(), "yes") != 0;
 }
 
 bool OptionPreferences::Get_Use_Heat_Effects()
@@ -371,7 +371,7 @@ int OptionPreferences::Get_Particle_Cap()
 
     int ret = atoi(it->second.Str());
 
-    return std::min(ret, 100);
+    return std::max(ret, 100);
 }
 
 int OptionPreferences::Get_Texture_Reduction()
@@ -384,7 +384,7 @@ int OptionPreferences::Get_Texture_Reduction()
 
     int ret = atoi(it->second.Str());
 
-    return std::max(ret, 2);
+    return std::min(ret, 2);
 }
 
 float OptionPreferences::Get_Gamma_Value()
@@ -463,7 +463,13 @@ uint16_t OptionPreferences::Get_Firewall_Port_Override()
         return g_theWriteableGlobalData->m_firewallPortOverrides;
     }
 
-    return atoi(it->second.Str());
+    int ret = atoi(it->second.Str());
+
+    if (ret < 0 || ret >= 65536) {
+        return 0;
+    }
+
+    return ret;
 }
 
 bool OptionPreferences::Get_Firewall_Need_Refresh()
@@ -472,13 +478,11 @@ bool OptionPreferences::Get_Firewall_Need_Refresh()
     // to query for this string, not sure what purpose that serves.
     auto it = find("FirewallNeedToRefresh");
 
-    if (it != end()) {
-        if (strcasecmp(it->second.Str(), "true") == 0) {
-            g_theWriteableGlobalData->m_firewallBehaviour = 0;
-        }
+    if (it == end()) {
+        return false;
     }
 
-    if (g_theWriteableGlobalData->m_firewallBehaviour != 0) {
+    if (it->second.Compare_No_Case("true") == 0) {
         return true;
     }
 

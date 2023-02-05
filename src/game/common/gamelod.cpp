@@ -67,7 +67,7 @@ GameLODManager::GameLODManager() :
     m_dynamicLODLevel(DYNLOD_HIGH),
     m_particleSkipCount(0),
     m_particleSkipMask(0),
-    m_unkInt2(0),
+    m_debrisSkipCount(0),
     m_debrisSkipMask(0),
     m_slowDeathScale(1.0f),
     m_minParticlePriority(PARTICLE_PRIORITY_NONE),
@@ -88,58 +88,6 @@ GameLODManager::GameLODManager() :
     m_textureReductionFactor(0),
     m_reallyLowMHz(400)
 {
-    for (int i = 0; i < STATLOD_COUNT; ++i) {
-        m_staticLOD[i].minimum_fps = 0;
-        m_staticLOD[i].minimum_cpu_fps = 0;
-        m_staticLOD[i].sample_count_2D = 6;
-        m_staticLOD[i].sample_count_3D = 24;
-        m_staticLOD[i].stream_count = 2;
-        m_staticLOD[i].max_particle_count = 2500;
-        m_staticLOD[i].use_shadow_volumes = true;
-        m_staticLOD[i].use_shadow_decals = true;
-        m_staticLOD[i].use_cloud_map = true;
-        m_staticLOD[i].use_light_map = true;
-        m_staticLOD[i].show_soft_water_edges = true;
-        m_staticLOD[i].max_tank_track_edges = 100;
-        m_staticLOD[i].max_tank_track_opaque_edges = 25;
-        m_staticLOD[i].max_tank_track_fade_delay = 300000;
-        m_staticLOD[i].use_buildup_scaffolds = true;
-        m_staticLOD[i].use_tree_sway = true;
-        m_staticLOD[i].use_emissive_night_materials = true;
-        m_staticLOD[i].use_heat_effects = true;
-        m_staticLOD[i].texture_reduction_factor = 0;
-        m_staticLOD[i].use_fps_limit = true;
-        m_staticLOD[i].use_dynamic_lod = true;
-        m_staticLOD[i].use_trees = true;
-    }
-
-    for (int i = 0; i < DYNLOD_COUNT; ++i) {
-        m_dynamicLOD[i].minimum_fps = 0;
-        m_dynamicLOD[i].particle_skip_mask = 0;
-        m_dynamicLOD[i].debris_skip_mask = 0;
-        m_dynamicLOD[i].slow_death_scale = 1.0f;
-        m_dynamicLOD[i].min_particle_priority = PARTICLE_PRIORITY_WEAPON_EXPLOSION;
-        m_dynamicLOD[i].min_particle_skip_priority = PARTICLE_PRIORITY_WEAPON_EXPLOSION;
-    }
-
-    for (int i = 0; i < STATLOD_COUNT - 1; ++i) {
-        for (int j = 0; j < 32; ++j) {
-            m_LODPresets[i][j].cpu_type = CPU_UNKNOWN;
-            m_LODPresets[i][j].mhz = 1;
-            m_LODPresets[i][j].score = 1.0f;
-            m_LODPresets[i][j].video_type = GPU_UNKNOWN;
-            m_LODPresets[i][j].video_mem = 1;
-        }
-    }
-
-    for (int i = 0; i < 16; ++i) {
-        m_benchProfiles[i].cpu_type = CPU_UNKNOWN;
-        m_benchProfiles[i].mhz = 1;
-        m_benchProfiles[i].integer_score = 1.0f;
-        m_benchProfiles[i].floating_point_score = 1.0f;
-        m_benchProfiles[i].memory_score = 1.0f;
-    }
-
     for (int i = 0; i < STATLOD_COUNT - 1; ++i) {
         m_staticLODPresetCount[i] = 0;
     }
@@ -240,14 +188,7 @@ void GameLODManager::Init()
         g_theWriteableGlobalData->m_useTrees = opts.Get_Trees_Enabled();
     }
 
-    if (g_theWriteableGlobalData->m_useStaticLODLevels) {
-        if (static_detail != STATLOD_INVALID && (static_detail == STATLOD_CUSTOM || m_staticLODLevel != static_detail)) {
-            Apply_Static_LOD_Level(static_detail);
-            m_staticLODLevel = static_detail;
-        }
-    } else {
-        m_staticLODLevel = STATLOD_CUSTOM;
-    }
+    Set_Static_LOD_Level(static_detail);
 }
 
 void GameLODManager::Refresh_Custom_Static_LOD()
@@ -272,19 +213,14 @@ void GameLODManager::Refresh_Custom_Static_LOD()
 
 int GameLODManager::Get_Static_LOD_Index(Utf8String name)
 {
-    int index = STATLOD_LOW;
-
-    for (; index < STATLOD_COUNT; ++index) {
-        if (strcasecmp(name.Str(), g_staticGameLODNames[index]) == 0) {
-            break;
+    for (int index = STATLOD_LOW; index < STATLOD_COUNT; index++) {
+        if (name.Compare_No_Case(g_staticGameLODNames[index]) == 0) {
+            return index;
         }
     }
 
-    if (index >= STATLOD_COUNT) {
-        return STATLOD_INVALID;
-    }
-
-    return index;
+    captainslog_dbgassert(false, "GameLODManager::Get_Static_LOD_Index - Invalid LOD name '%s'", name.Str());
+    return STATLOD_INVALID;
 }
 
 const char *GameLODManager::Get_Static_LOD_Name(StaticGameLODLevel level)
@@ -294,36 +230,37 @@ const char *GameLODManager::Get_Static_LOD_Name(StaticGameLODLevel level)
 
 StaticGameLODLevel GameLODManager::Find_Static_LOD_Level()
 {
-    if (m_idealStaticGameDetail != STATLOD_INVALID) {
-        return m_idealStaticGameDetail;
-    }
+    if (m_idealStaticGameDetail == STATLOD_INVALID) {
 
-    Test_Minimum_Requirements(&m_gpuType, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+        m_idealStaticGameDetail = STATLOD_LOW;
+        Test_Minimum_Requirements(&m_gpuType, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
 
-    if (m_gpuType == GPU_UNKNOWN) {
-        m_gpuType = GPU_TNT2;
-    }
+        if (m_gpuType == GPU_UNKNOWN) {
+            m_gpuType = GPU_TNT2;
+        }
 
-    for (int i = STATLOD_HIGH; i >= STATLOD_LOW; --i) {
-        for (int j = 0; j < m_staticLODPresetCount[j]; ++j) {
-            if (m_cpuType == m_LODPresets[i][j].cpu_type) {
-                if ((double)m_cpuMHz / (double)m_LODPresets[i][j].mhz >= 0.94 && m_gpuType >= m_LODPresets[i][j].video_type
-                    && (double)(m_physicalMem / 0x100000) / (double)m_LODPresets[i][j].video_mem >= 0.94) {
-                    m_idealStaticGameDetail = (StaticGameLODLevel)i;
-                    break;
+        for (int i = STATLOD_HIGH; i >= STATLOD_LOW; --i) {
+            for (int j = 0; j < m_staticLODPresetCount[j]; ++j) {
+                if (m_cpuType == m_LODPresets[i][j].cpu_type) {
+                    if ((double)m_cpuMHz / (double)m_LODPresets[i][j].mhz >= 0.94
+                        && m_gpuType >= m_LODPresets[i][j].video_type
+                        && (double)(m_physicalMem / 0x100000) / (double)m_LODPresets[i][j].video_mem >= 0.94) {
+                        m_idealStaticGameDetail = (StaticGameLODLevel)i;
+                        break;
+                    }
                 }
+            }
+
+            if (m_idealStaticGameDetail >= i) {
+                break;
             }
         }
 
-        if (m_idealStaticGameDetail >= i) {
-            break;
-        }
+        OptionPreferences opts;
+        opts.Set_Ideal_Static_Game_Detail(m_idealStaticGameDetail);
+        opts.Set_Static_Game_Detail(m_idealStaticGameDetail);
+        opts.Write();
     }
-
-    OptionPreferences opts;
-    opts.Set_Ideal_Static_Game_Detail(m_idealStaticGameDetail);
-    opts.Set_Static_Game_Detail(m_idealStaticGameDetail);
-    opts.Write();
 
     return m_idealStaticGameDetail;
 }
@@ -347,17 +284,17 @@ bool GameLODManager::Set_Static_LOD_Level(StaticGameLODLevel level)
 
 void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
 {
-    StaticGameLOD lod;
+    StaticGameLODInfo current_lod;
 
-    if (m_staticLODLevel != -1) {
-        lod = m_staticLOD[m_staticLODLevel];
+    if (m_staticLODLevel != STATLOD_INVALID) {
+        current_lod = m_staticLOD[m_staticLODLevel];
     }
 
     if (level == STATLOD_CUSTOM) {
         Refresh_Custom_Static_LOD();
     }
 
-    StaticGameLOD *new_lod = &m_staticLOD[level];
+    StaticGameLODInfo *new_lod = &m_staticLOD[level];
     int texture_reduction_factor = 0;
     bool use_trees = m_didMemPass;
 
@@ -381,8 +318,8 @@ void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
             }
         }
 
-        if ((m_staticLODLevel == -1 || new_lod->use_shadow_volumes != lod.use_shadow_volumes
-                || new_lod->use_shadow_decals != lod.use_shadow_decals)
+        if ((m_staticLODLevel == STATLOD_INVALID || new_lod->use_shadow_volumes != current_lod.use_shadow_volumes
+                || new_lod->use_shadow_decals != current_lod.use_shadow_decals)
             && g_theGameClient != nullptr) {
             g_theGameClient->Release_Shadows();
             g_theGameClient->Allocate_Shadows();
@@ -392,7 +329,7 @@ void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
         g_theWriteableGlobalData->m_useLightMap = new_lod->use_light_map;
         g_theWriteableGlobalData->m_showSoftWaterEdge = new_lod->show_soft_water_edges;
 
-        if (m_staticLODLevel == -1 && new_lod->show_soft_water_edges != lod.show_soft_water_edges
+        if (m_staticLODLevel == STATLOD_INVALID && new_lod->show_soft_water_edges != current_lod.show_soft_water_edges
             && g_theTerrainVisual != nullptr) {
             g_theTerrainVisual->Set_Shore_Line_Detail();
         }
@@ -408,7 +345,7 @@ void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
         g_theWriteableGlobalData->m_useTrees = use_trees;
     }
 
-    if (!m_didMemPass || Is_Low_CPU()) {
+    if (!m_didMemPass || Is_Slow_CPU()) {
         g_theWriteableGlobalData->m_shellMapOn = false;
     }
 
@@ -419,19 +356,15 @@ void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
 
 int GameLODManager::Get_Dynamic_LOD_Index(Utf8String name)
 {
-    int index = DYNLOD_LOW;
-
-    for (; index < DYNLOD_COUNT; ++index) {
-        if (strcasecmp(name.Str(), g_dynamicGameLODNames[index]) == 0) {
-            break;
+    for (int index = DYNLOD_LOW; index < DYNLOD_COUNT; index++) {
+        if (name.Compare_No_Case(g_dynamicGameLODNames[index]) == 0) {
+            return index;
         }
     }
 
-    if (index >= DYNLOD_COUNT) {
-        return DYNLOD_INVALID;
-    }
+    captainslog_dbgassert(false, "GameLODManager::Get_Dynamic_LOD_Index - Invalid LOD name '%s'", name.Str());
 
-    return index;
+    return DYNLOD_INVALID;
 }
 
 const char *GameLODManager::Get_Dynamic_LOD_Name(DynamicGameLODLevel level)
@@ -441,17 +374,13 @@ const char *GameLODManager::Get_Dynamic_LOD_Name(DynamicGameLODLevel level)
 
 DynamicGameLODLevel GameLODManager::Find_Dynamic_LOD_Level(float fps)
 {
-    int level = DYNLOD_VERYHIGH;
-
-    while (m_dynamicLOD[level].minimum_fps >= (int64_t)fps) {
-        --level;
-
-        if (level < 0) {
-            return DYNLOD_LOW;
+    for (int level = DYNLOD_VERYHIGH; level >= DYNLOD_LOW; level--) {
+        if (m_dynamicLOD[level].minimum_fps < fps) {
+            return static_cast<DynamicGameLODLevel>(level);
         }
     }
 
-    return (DynamicGameLODLevel)level;
+    return DYNLOD_LOW;
 }
 
 bool GameLODManager::Set_Dynamic_LOD_Level(DynamicGameLODLevel level)
@@ -470,7 +399,7 @@ void GameLODManager::Apply_Dynamic_LOD_Level(DynamicGameLODLevel level)
 {
     m_particleSkipCount = 0;
     m_particleSkipMask = m_dynamicLOD[level].particle_skip_mask;
-    m_unkInt2 = 0;
+    m_debrisSkipCount = 0;
     m_debrisSkipMask = m_dynamicLOD[level].debris_skip_mask;
     m_slowDeathScale = m_dynamicLOD[level].slow_death_scale;
     m_minParticlePriority = m_dynamicLOD[level].min_particle_priority;
@@ -497,25 +426,28 @@ int GameLODManager::Get_Recommended_Texture_Reduction()
 void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
 {
     static const FieldParse _static_lod_parsers[] = {
-        { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_fps) },
-        { "MinimumProcessorFps", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_cpu_fps) },
-        { "SampleCount2D", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, sample_count_2D) },
-        { "SampleCount3D", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, sample_count_3D) },
-        { "StreamCount", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, stream_count) },
-        { "MaxParticleCount", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_particle_count) },
-        { "UseShadowVolumes", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_shadow_volumes) },
-        { "UseShadowDecals", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_shadow_decals) },
-        { "UseCloudMap", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_cloud_map) },
-        { "UseLightMap", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_light_map) },
-        { "ShowSoftWaterEdge", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, show_soft_water_edges) },
-        { "MaxTankTrackEdges", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_tank_track_edges) },
-        { "MaxTankTrackOpaqueEdges", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_tank_track_opaque_edges) },
-        { "MaxTankTrackFadeDelay", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, max_tank_track_fade_delay) },
-        { "UseBuildupScaffolds", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_buildup_scaffolds) },
-        { "UseTreeSway", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_tree_sway) },
-        { "UseEmissiveNightMaterials", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_emissive_night_materials) },
-        { "UseHeatEffects", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_heat_effects) },
-        { "TextureReductionFactor", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, texture_reduction_factor) },
+        { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, minimum_fps) },
+        { "MinimumProcessorFps", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, minimum_cpu_fps) },
+        { "SampleCount2D", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, sample_count_2D) },
+        { "SampleCount3D", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, sample_count_3D) },
+        { "StreamCount", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, stream_count) },
+        { "MaxParticleCount", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, max_particle_count) },
+        { "UseShadowVolumes", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, use_shadow_volumes) },
+        { "UseShadowDecals", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, use_shadow_decals) },
+        { "UseCloudMap", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, use_cloud_map) },
+        { "UseLightMap", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, use_light_map) },
+        { "ShowSoftWaterEdge", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, show_soft_water_edges) },
+        { "MaxTankTrackEdges", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, max_tank_track_edges) },
+        { "MaxTankTrackOpaqueEdges", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, max_tank_track_opaque_edges) },
+        { "MaxTankTrackFadeDelay", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, max_tank_track_fade_delay) },
+        { "UseBuildupScaffolds", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, use_buildup_scaffolds) },
+        { "UseTreeSway", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, use_tree_sway) },
+        { "UseEmissiveNightMaterials",
+            &INI::Parse_Bool,
+            nullptr,
+            offsetof(StaticGameLODInfo, use_emissive_night_materials) },
+        { "UseHeatEffects", &INI::Parse_Bool, nullptr, offsetof(StaticGameLODInfo, use_heat_effects) },
+        { "TextureReductionFactor", &INI::Parse_Int, nullptr, offsetof(StaticGameLODInfo, texture_reduction_factor) },
         { nullptr, nullptr, nullptr, 0 }
     };
 
@@ -550,18 +482,18 @@ void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
         nullptr };
 
     static const FieldParse _dynamic_lod_parsers[] = {
-        { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, minimum_fps) },
-        { "ParticleSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, particle_skip_mask) },
-        { "DebrisSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, debris_skip_mask) },
-        { "SlowDeathScale", &INI::Parse_Real, nullptr, offsetof(DynamicGameLOD, slow_death_scale) },
+        { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(DynamicGameLODInfo, minimum_fps) },
+        { "ParticleSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLODInfo, particle_skip_mask) },
+        { "DebrisSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLODInfo, debris_skip_mask) },
+        { "SlowDeathScale", &INI::Parse_Real, nullptr, offsetof(DynamicGameLODInfo, slow_death_scale) },
         { "MinParticlePriority",
             &INI::Parse_Index_List,
             _particle_prioritiy_names,
-            offsetof(DynamicGameLOD, min_particle_priority) },
+            offsetof(DynamicGameLODInfo, min_particle_priority) },
         { "MinParticleSkipPriority",
             &INI::Parse_Index_List,
             _particle_prioritiy_names,
-            offsetof(DynamicGameLOD, min_particle_skip_priority) },
+            offsetof(DynamicGameLODInfo, min_particle_skip_priority) },
         { nullptr, nullptr, nullptr, 0 }
     };
 

@@ -141,59 +141,59 @@ void AudioManager::Reset()
  */
 void AudioManager::Update()
 {
-    Coord3D pos = g_theTacticalView->Get_Position();
-    float angle = g_theTacticalView->Get_Angle();
+    Coord3D view_pos = g_theTacticalView->Get_Position();
+    float view_angle = g_theTacticalView->Get_Angle();
     Matrix3D tm(Matrix3D::Identity);
-    tm.Rotate_Z(angle);
+    tm.Rotate_Z(view_angle);
     Vector3 v(0.0f, 1.0f, 0.0f);
     v = tm * v;
     float height = m_audioSettings->Get_Microphone_Desired_Height_Above_Terrain();
     float max = m_audioSettings->Get_Microphone_Max_Percent_Between_Ground_And_Camera();
-    
+
     Coord3D listener_dir;
     listener_dir.Set(v.X, v.Y, v.Z);
-    
+
     Coord3D camera_pos = g_theTacticalView->Get_3D_Camera_Position();
-    
-    Coord3D c1;
-    c1.Set(&camera_pos);
-    c1.Sub(&pos);
-    
+
+    Coord3D view_to_camera;
+    view_to_camera.Set(&camera_pos);
+    view_to_camera.Sub(&view_pos);
+
     float scale;
 
-    if (camera_pos.z > height && c1.z > 0.0f) {
-        float f1 = height / c1.z;
+    if (camera_pos.z <= height && view_to_camera.z > 0.0f) {
+        scale = max;
+    } else {
+        float height_factor = height / view_to_camera.z;
 
-        if (max < f1) {
+        if (max < height_factor) {
             scale = max;
         } else {
-            scale = f1;
+            scale = height_factor;
         }
-    } else {
-        scale = max;
     }
 
-    c1.Scale(scale);
-    pos.z = g_theTerrainLogic->Get_Ground_Height(pos.x, pos.y, nullptr);
-    
+    view_to_camera.Scale(scale);
+    view_pos.z = g_theTerrainLogic->Get_Ground_Height(view_pos.x, view_pos.y, nullptr);
+
     Coord3D listener_pos;
-    listener_pos.Set(&pos);
-    listener_pos.Add(&c1);
+    listener_pos.Set(&view_pos);
+    listener_pos.Add(&view_to_camera);
     Set_Listener_Position(&listener_pos, &listener_dir);
-    
-    float percentage = m_audioSettings->Get_Zoom_Sound_Volume_Percent_Amount();
-    float min_dist = m_audioSettings->Get_Zoom_Min_Distance();
-    float max_dist = m_audioSettings->Get_Zoom_Max_Distance();
-    m_zoomVolume = 1.0f - percentage;
 
-    if (percentage > 0.0f) {
-        Coord3D c2 = camera_pos;
-        c2.Sub(&listener_pos);
-        float length = c2.Length();
+    float zoom_percent = m_audioSettings->Get_Zoom_Sound_Volume_Percent_Amount();
+    float zoom_min = m_audioSettings->Get_Zoom_Min_Distance();
+    float zoom_max = m_audioSettings->Get_Zoom_Max_Distance();
+    m_zoomVolume = 1.0f - zoom_percent;
 
-        if (length >= min_dist) {
-            if (length < max_dist) {
-                m_zoomVolume = 1.0f - (length - min_dist) / (max_dist - min_dist) * percentage;
+    if (zoom_percent > 0.0f) {
+        Coord3D zoom_pos = camera_pos;
+        zoom_pos.Sub(&listener_pos);
+        float zoom_len = zoom_pos.Length();
+
+        if (zoom_len >= zoom_min) {
+            if (zoom_len < zoom_max) {
+                m_zoomVolume = 1.0f - (zoom_len - zoom_min) / (zoom_max - zoom_min) * zoom_percent;
             }
         } else {
             m_zoomVolume = 1.0f;
@@ -406,7 +406,7 @@ bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
 {
     // Search preferred providers list against current provider.
     for (int i = 0; i < DRIVER_SOFTWARE; ++i) {
-        if (strcmp(m_audioSettings->Get_Preferred_Driver(i).Str(), Get_Provider_Name(Get_Selected_Provider()).Str()) == 0) {
+        if (m_audioSettings->Get_Preferred_Driver(i).Str() == Get_Provider_Name(Get_Selected_Provider())) {
             return true;
         }
     }

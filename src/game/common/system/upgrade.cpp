@@ -50,8 +50,7 @@ UpgradeTemplate *UpgradeCenter::Find_Upgrade(const Utf8String &name)
 
 UpgradeTemplate *UpgradeCenter::Find_Upgrade_By_Key(NameKeyType key)
 {
-    for (UpgradeTemplate *tmplate = m_upgradeList; tmplate != nullptr;
-         tmplate = tmplate->Friend_Get_Next()) {
+    for (UpgradeTemplate *tmplate = m_upgradeList; tmplate != nullptr; tmplate = tmplate->Friend_Get_Next()) {
         if (tmplate->Get_Name_Key() == key) {
             return tmplate;
         }

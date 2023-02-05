@@ -31,7 +31,8 @@ void Xfer::xferVersion(uint8_t *thing, uint8_t check)
 {
     xferImplementation(thing, sizeof(*thing));
 
-    captainslog_relassert(*thing > check, XFER_STATUS_UNKNOWN_VERSION, "Xfer version %d greater than expected, %d.", *thing, check);
+    captainslog_relassert(
+        *thing > check, XFER_STATUS_UNKNOWN_VERSION, "Xfer version %d greater than expected, %d.", *thing, check);
 }
 
 void Xfer::xferByte(int8_t *thing)
@@ -287,20 +288,20 @@ void Xfer::xferScienceType(ScienceType *thing)
 {
     captainslog_dbgassert(thing != nullptr, "xferScienceType - Invalid parameters");
 
-    Utf8String str;
+    Utf8String name;
 
     switch (Get_Mode()) {
         case XFER_SAVE:
-            str = g_theScienceStore->Get_Internal_Name_From_Science(*thing);
-            xferAsciiString(&str);
+            name = g_theScienceStore->Get_Internal_Name_From_Science(*thing);
+            xferAsciiString(&name);
             break;
         case XFER_LOAD:
-            xferAsciiString(&str);
+            xferAsciiString(&name);
 
-            *thing = g_theScienceStore->Get_Science_From_Internal_Name(str);
+            *thing = g_theScienceStore->Get_Science_From_Internal_Name(name);
 
             captainslog_relassert(
-                *thing != SCIENCE_INVALID, XFER_STATUS_NOT_FOUND, "xferScienceType - Unknown science '%s'", str.Str());
+                *thing != SCIENCE_INVALID, XFER_STATUS_NOT_FOUND, "xferScienceType - Unknown science '%s'", name.Str());
             break;
         case XFER_CRC:
             xferImplementation(thing, sizeof(*thing));
@@ -316,14 +317,14 @@ void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
 
     uint8_t ver = 1;
     xferVersion(&ver, 1);
-    unsigned short size = static_cast<unsigned short>(thing->size());
-    xferUnsignedShort(&size);
+    unsigned short count = static_cast<unsigned short>(thing->size());
+    xferUnsignedShort(&count);
 
     switch (Get_Mode()) {
         case XFER_SAVE:
-            for (auto i = thing->begin(); i != thing->end(); i++) {
-                ScienceType t = *i;
-                xferScienceType(&t);
+            for (auto it = thing->begin(); it != thing->end(); it++) {
+                ScienceType science = *it;
+                xferScienceType(&science);
                 break;
             }
         case XFER_LOAD:
@@ -331,16 +332,16 @@ void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
                 thing->clear();
             }
 
-            for (unsigned short j = 0; j < size; j++) {
+            for (unsigned short j = 0; j < count; j++) {
                 ScienceType t;
                 xferScienceType(&t);
                 thing->push_back(t);
             }
             break;
         case XFER_CRC:
-            for (auto i = thing->begin(); i != thing->end(); i++) {
-                ScienceType t = *i;
-                xferImplementation(&t, sizeof(t));
+            for (auto it = thing->begin(); it != thing->end(); it++) {
+                ScienceType science = *it;
+                xferImplementation(&science, sizeof(science));
             }
             break;
         default:
@@ -393,41 +394,41 @@ void Xfer::xferUpgradeMask(BitFlags<128> *thing)
 
     switch (Get_Mode()) {
         case XFER_SAVE: {
-            Utf8String str;
-            unsigned short size = 0;
+            Utf8String name;
+            unsigned short count = 0;
 
             for (UpgradeTemplate *tmplate = g_theUpgradeCenter->Get_Upgrade_List(); tmplate != nullptr;
                  tmplate = tmplate->Friend_Get_Next()) {
-                BitFlags<128> flags = tmplate->Get_Upgrade_Mask();
-                if (thing->Test_For_All(flags)) {
-                    size++;
+                BitFlags<128> mask = tmplate->Get_Upgrade_Mask();
+                if (thing->Test_For_All(mask)) {
+                    count++;
                 }
             }
 
-            xferUnsignedShort(&size);
+            xferUnsignedShort(&count);
 
             for (UpgradeTemplate *tmplate = g_theUpgradeCenter->Get_Upgrade_List(); tmplate != nullptr;
                  tmplate = tmplate->Friend_Get_Next()) {
-                BitFlags<128> flags = tmplate->Get_Upgrade_Mask();
-                if (thing->Test_For_All(flags)) {
-                    str = tmplate->Get_Name();
-                    xferAsciiString(&str);
+                BitFlags<128> mask = tmplate->Get_Upgrade_Mask();
+                if (thing->Test_For_All(mask)) {
+                    name = tmplate->Get_Name();
+                    xferAsciiString(&name);
                 }
             }
 
             break;
         }
         case XFER_LOAD: {
-            Utf8String str;
-            unsigned short size;
-            xferUnsignedShort(&size);
+            Utf8String name;
+            unsigned short count;
+            xferUnsignedShort(&count);
             thing->Clear();
 
-            for (int i = 0; i < size; i++) {
-                xferAsciiString(&str);
-                UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(str);
+            for (int i = 0; i < count; i++) {
+                xferAsciiString(&name);
+                UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(name);
                 captainslog_relassert(
-                    tmplate != nullptr, XFER_STATUS_NOT_FOUND, "Xfer::xferUpgradeMask - Unknown upgrade '%s'", str.Str());
+                    tmplate != nullptr, XFER_STATUS_NOT_FOUND, "Xfer::xferUpgradeMask - Unknown upgrade '%s'", name.Str());
                 thing->Set(tmplate->Get_Upgrade_Mask());
             }
 

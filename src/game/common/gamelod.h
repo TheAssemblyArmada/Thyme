@@ -69,8 +69,34 @@ enum GPUType : int32_t
     GPU_COUNT,
 };
 
-struct StaticGameLOD
+struct StaticGameLODInfo
 {
+    StaticGameLODInfo() :
+        minimum_fps(0),
+        minimum_cpu_fps(0),
+        sample_count_2D(6),
+        sample_count_3D(24),
+        stream_count(2),
+        max_particle_count(2500),
+        use_shadow_volumes(true),
+        use_shadow_decals(true),
+        use_cloud_map(true),
+        use_light_map(true),
+        show_soft_water_edges(true),
+        max_tank_track_edges(100),
+        max_tank_track_opaque_edges(25),
+        max_tank_track_fade_delay(300000),
+        use_buildup_scaffolds(true),
+        use_tree_sway(true),
+        use_emissive_night_materials(true),
+        use_heat_effects(true),
+        texture_reduction_factor(false),
+        use_fps_limit(true),
+        use_dynamic_lod(true),
+        use_trees(true)
+    {
+    }
+
     int minimum_fps;
     int minimum_cpu_fps;
     int sample_count_2D;
@@ -95,8 +121,18 @@ struct StaticGameLOD
     bool use_trees;
 };
 
-struct DynamicGameLOD
+struct DynamicGameLODInfo
 {
+    DynamicGameLODInfo() :
+        minimum_fps(0),
+        particle_skip_mask(0),
+        debris_skip_mask(0),
+        slow_death_scale(1.0f),
+        min_particle_priority(PARTICLE_PRIORITY_LOWEST),
+        min_particle_skip_priority(PARTICLE_PRIORITY_LOWEST)
+    {
+    }
+
     int minimum_fps;
     int particle_skip_mask;
     int debris_skip_mask;
@@ -107,6 +143,8 @@ struct DynamicGameLOD
 
 struct LODPreset
 {
+    LODPreset() : cpu_type(CPU_UNKNOWN), mhz(1), score(1.0f), video_type(GPU_UNKNOWN), video_mem(1) {}
+
     CPUType cpu_type;
     int mhz;
     float score; // Not actually sure what this is, some kind of benchmark score?
@@ -116,6 +154,7 @@ struct LODPreset
 
 struct BenchProfile
 {
+    BenchProfile() : cpu_type(CPU_UNKNOWN), mhz(1), integer_score(1.0f), floating_point_score(1.0f), memory_score(1.0f) {}
     CPUType cpu_type;
     int mhz;
     float integer_score;
@@ -151,10 +190,11 @@ public:
     void Increment_Particle_Skip_Count() { ++m_particleSkipCount; }
     int Particle_Count() const { return m_particleSkipCount; }
     int Particle_Skip_Mask() const { return m_particleSkipMask; }
-    bool Skip_Particle() { return m_particleSkipMask != (m_particleSkipMask & (++m_particleSkipCount)); }
+    bool Is_Particle_Skipped() { return m_particleSkipMask != (m_particleSkipMask & (++m_particleSkipCount)); }
+    bool Is_Debris_Skipped() { return m_debrisSkipMask != (m_debrisSkipMask & (++m_debrisSkipCount)); }
     ParticlePriorityType Min_Particle_Priority() const { return m_minParticlePriority; }
     ParticlePriorityType Min_Particle_Skip_Priority() const { return m_minParticleSkipPriority; }
-    bool Is_Low_CPU() { return m_cpuMHz < m_reallyLowMHz; }
+    bool Is_Slow_CPU() const { return m_cpuMHz < m_reallyLowMHz; }
 
     static void Parse_Static_LOD_Definition(INI *ini);
     static void Parse_Dynamic_LOD_Definition(INI *ini);
@@ -170,15 +210,15 @@ private:
         MAX_PROFILES = 16,
     };
 
-    StaticGameLOD m_staticLOD[STATLOD_COUNT];
-    DynamicGameLOD m_dynamicLOD[DYNLOD_COUNT];
+    StaticGameLODInfo m_staticLOD[STATLOD_COUNT];
+    DynamicGameLODInfo m_dynamicLOD[DYNLOD_COUNT];
     LODPreset m_LODPresets[STATLOD_COUNT - 1][MAX_PRESETS];
     BenchProfile m_benchProfiles[MAX_PROFILES];
     StaticGameLODLevel m_staticLODLevel;
     DynamicGameLODLevel m_dynamicLODLevel;
     int m_particleSkipCount;
     int m_particleSkipMask;
-    int m_unkInt2;
+    int m_debrisSkipCount;
     int m_debrisSkipMask;
     float m_slowDeathScale;
     ParticlePriorityType m_minParticlePriority;

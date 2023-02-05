@@ -70,7 +70,7 @@ public:
     float Get_Zoom_Sound_Volume_Percent_Amount() const { return m_zoomSoundVolumePercentAmount; }
     float Get_Zoom_Min_Distance() const { return m_zoomMinDistance; }
     float Get_Zoom_Max_Distance() const { return m_zoomMaxDistance; }
-    
+
     float Get_Microphone_Max_Percent_Between_Ground_And_Camera() const
     {
         return m_microphoneMaxPercentBetweenGroundAndCamera;

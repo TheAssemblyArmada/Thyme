@@ -14,9 +14,11 @@
  */
 #include "gamelod.h"
 #include "cpudetect.h"
+#include "gameclient.h"
 #include "globaldata.h"
 #include "optionpreferences.h"
 #include "shadermanager.h"
+#include "terrainvisual.h"
 #include <cstddef>
 #include <cstdio>
 
@@ -345,10 +347,74 @@ bool GameLODManager::Set_Static_LOD_Level(StaticGameLODLevel level)
 
 void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
 {
-#ifdef GAME_DLL
-    // TODO requires parts of TerrainVisual and GameClient classes.
-    Call_Method<void, GameLODManager, StaticGameLODLevel>(PICK_ADDRESS(0x0047AC60, 0x007E40D9), this, level);
-#endif
+    StaticGameLOD lod;
+
+    if (m_staticLODLevel != -1) {
+        lod = m_staticLOD[m_staticLODLevel];
+    }
+
+    if (level == STATLOD_CUSTOM) {
+        Refresh_Custom_Static_LOD();
+    }
+
+    StaticGameLOD *new_lod = &m_staticLOD[level];
+    int texture_reduction_factor = 0;
+    bool use_trees = m_didMemPass;
+
+    if (level == STATLOD_CUSTOM) {
+        texture_reduction_factor = new_lod->texture_reduction_factor;
+        use_trees = new_lod->use_trees;
+    } else if (level >= STATLOD_LOW) {
+        texture_reduction_factor = Get_Recommended_Texture_Reduction();
+    }
+
+    if (g_theWriteableGlobalData != nullptr) {
+        g_theWriteableGlobalData->m_maxParticleCount = new_lod->max_particle_count;
+        g_theWriteableGlobalData->m_shadowVolumes = new_lod->use_shadow_volumes;
+        g_theWriteableGlobalData->m_shadowDecals = new_lod->use_shadow_decals;
+
+        if (texture_reduction_factor != m_textureReductionFactor) {
+            g_theWriteableGlobalData->m_textureReductionFactor = texture_reduction_factor;
+
+            if (g_theGameClient != nullptr) {
+                g_theGameClient->Adjust_LOD(0);
+            }
+        }
+
+        if ((m_staticLODLevel == -1 || new_lod->use_shadow_volumes != lod.use_shadow_volumes
+                || new_lod->use_shadow_decals != lod.use_shadow_decals)
+            && g_theGameClient != nullptr) {
+            g_theGameClient->Release_Shadows();
+            g_theGameClient->Allocate_Shadows();
+        }
+
+        g_theWriteableGlobalData->m_useCloudMap = new_lod->use_cloud_map;
+        g_theWriteableGlobalData->m_useLightMap = new_lod->use_light_map;
+        g_theWriteableGlobalData->m_showSoftWaterEdge = new_lod->show_soft_water_edges;
+
+        if (m_staticLODLevel == -1 && new_lod->show_soft_water_edges != lod.show_soft_water_edges
+            && g_theTerrainVisual != nullptr) {
+            g_theTerrainVisual->Set_Shore_Line_Detail();
+        }
+
+        g_theWriteableGlobalData->m_maxTankTrackEdges = new_lod->max_tank_track_edges;
+        g_theWriteableGlobalData->m_maxTankTrackOpaqueEdges = new_lod->max_tank_track_opaque_edges;
+        g_theWriteableGlobalData->m_maxTankTrackFadeDelay = new_lod->max_tank_track_fade_delay;
+        g_theWriteableGlobalData->m_useTreeSway = new_lod->use_tree_sway;
+        g_theWriteableGlobalData->m_extraAnimationsDisabled = !new_lod->use_buildup_scaffolds;
+        g_theWriteableGlobalData->m_useHeatEffects = new_lod->use_heat_effects;
+        g_theWriteableGlobalData->m_dynamicLOD = new_lod->use_dynamic_lod;
+        g_theWriteableGlobalData->m_useFPSLimit = new_lod->use_fps_limit;
+        g_theWriteableGlobalData->m_useTrees = use_trees;
+    }
+
+    if (!m_didMemPass || Is_Low_CPU()) {
+        g_theWriteableGlobalData->m_shellMapOn = false;
+    }
+
+    if (g_theTerrainVisual != nullptr) {
+        g_theTerrainVisual->Set_Terrain_Tracks_Detail();
+    }
 }
 
 int GameLODManager::Get_Dynamic_LOD_Index(Utf8String name)

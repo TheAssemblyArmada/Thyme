@@ -154,6 +154,7 @@ public:
     bool Skip_Particle() { return m_particleSkipMask != (m_particleSkipMask & (++m_particleSkipCount)); }
     ParticlePriorityType Min_Particle_Priority() const { return m_minParticlePriority; }
     ParticlePriorityType Min_Particle_Skip_Priority() const { return m_minParticleSkipPriority; }
+    bool Is_Low_CPU() { return m_cpuMHz < m_reallyLowMHz; }
 
     static void Parse_Static_LOD_Definition(INI *ini);
     static void Parse_Dynamic_LOD_Definition(INI *ini);

@@ -289,4 +289,5 @@ protected:
     int m_drawOriginY;
     int m_drawWidthX;
     int m_drawHeightY;
+    friend class W3DTreeBuffer;
 };

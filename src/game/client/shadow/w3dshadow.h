@@ -72,7 +72,6 @@ public:
         float m_sizeY;
         float m_offsetX;
         float m_offsetY;
-        const ThingTemplate *m_thing;
     };
 
     void Enable_Shadow_Render(bool enable) { m_isEnabled = enable; }
@@ -94,6 +93,13 @@ public:
         } else {
             m_sizeY = 1.0f / y;
         }
+    }
+
+    void Set_Position(float x, float y, float z)
+    {
+        m_position.x = x;
+        m_position.y = y;
+        m_position.z = z;
     }
 
     void Set_Opacity(int opacity)

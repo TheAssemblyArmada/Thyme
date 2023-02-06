@@ -182,6 +182,7 @@
 #include "w3dshroud.h"
 #include "w3dsmudge.h"
 #include "w3dterraintracks.h"
+#include "w3dtreebuffer.h"
 #include "w3dview.h"
 #include "w3dvolumetricshadow.h"
 #include "w3dwater.h"
@@ -2555,4 +2556,27 @@ void Setup_Hooks()
 
     // gameengine.h
     Hook_Any(0x0040E2F0, GameEngine::Real_Init);
+
+    // w3dtreebuffer.h
+    Hook_Any(0x00785880, W3DTreeBuffer::Cull);
+    Hook_Any(0x00785980, W3DTreeBuffer::Get_Partition_Bucket);
+    Hook_Any(0x00785AB0, W3DTreeBuffer::Update_Texture);
+    Hook_Any(0x00786390, W3DTreeBuffer::Set_Texture_LOD);
+    Hook_Any(0x007863D0, W3DTreeBuffer::Do_Lighting);
+    Hook_Any(0x00786680, W3DTreeBuffer::Load_Trees_In_Index_And_Vertex_Buffers);
+    Hook_Any(0x00786ED0, W3DTreeBuffer::Update_Vertex_Buffer);
+    Hook_Any(0x007871E0, W3DTreeBuffer::Hook_Dtor);
+    Hook_Any(0x007872A0, W3DTreeBuffer::Hook_Ctor);
+    Hook_Any(0x00787360, W3DTreeBuffer::Free_Tree_Buffers);
+    Hook_Any(0x007873D0, W3DTreeBuffer::Unit_Moved);
+    Hook_Any(0x007877E0, W3DTreeBuffer::Allocate_Tree_Buffers);
+    Hook_Any(0x00787960, W3DTreeBuffer::Clear_All_Trees);
+    Hook_Any(0x007879F0, W3DTreeBuffer::Remove_Trees_For_Construction);
+    Hook_Any(0x00787B20, W3DTreeBuffer::Add_Tree_Type);
+    Hook_Any(0x00788160, W3DTreeBuffer::Add_Tree);
+    Hook_Any(0x007885B0, W3DTreeBuffer::Push_Aside_Tree);
+    Hook_Any(0x007886C0, W3DTreeBuffer::Draw_Trees);
+    Hook_Any(0x00788F90, W3DTreeBuffer::Apply_Toppling_Force);
+    Hook_Any(0x00789100, W3DTreeBuffer::Update_Toppling_Tree);
+    Hook_Any(0x00789580, W3DTreeBuffer::Xfer_Snapshot);
 }

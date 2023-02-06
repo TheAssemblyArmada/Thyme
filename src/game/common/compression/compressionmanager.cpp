@@ -221,7 +221,7 @@ int CompressionManager::Compress_Data(CompressionType type, void *src, int src_s
 
     switch (type) {
         case COMPRESSION_EAR:
-            compr_size = RefPack_Compress(dst_data, src, src_size, false);
+            compr_size = RefPack_Compress(dst_data, src, src_size, nullptr);
             if (compr_size > 0) {
                 header->uncomp_size = src_size;
                 return compr_size + sizeof(ComprHeader);

@@ -31,25 +31,6 @@ size_t get_filesize(std::ifstream &fin)
     return size;
 }
 
-// Some special refpack mode that doesn't seem to be used by the game. Test it anyways :)
-TEST(compression, refpack_encode_quick)
-{
-    auto filepath = std::string(TESTDATA_PATH) + "/compr/uncompr.txt";
-    std::ifstream src_file(filepath, std::ios::binary);
-    ASSERT_TRUE(src_file.good()) << "Failed to open: " << filepath;
-    size_t src_size = get_filesize(src_file);
-    uint8_t *src_data = new uint8_t[src_size];
-    src_file.read(reinterpret_cast<char *>(src_data), src_size);
-
-    uint8_t *dst_data = new uint8_t[src_size + 8];
-    uint32_t dst_size = RefPack_Compress(dst_data, src_data, src_size, true);
-    EXPECT_GT(dst_size, 0);
-    EXPECT_LT(dst_size, src_size);
-
-    delete[] src_data;
-    delete[] dst_data;
-}
-
 class CompressionTest : public ::testing::TestWithParam<CompressionType>
 {
 public:

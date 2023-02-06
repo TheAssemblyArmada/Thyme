@@ -24,6 +24,14 @@ using std::memset;
 using std::min;
 
 /**
+ * Utility function to quickly calculate a pseudo-hash.
+ */
+static int32_t RefPack_Hash(const uint8_t *s)
+{
+    return ((s[0] << 8 | s[2]) ^ s[1] << 4);
+}
+
+/**
  * Utility function for compression for checking length of matching data.
  */
 static uint32_t RefPack_Matchlen(const uint8_t *s, const uint8_t *d, uint32_t maxmatch)
@@ -54,35 +62,29 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
     const uint8_t *getp;
     const uint8_t *runp;
     uint8_t *putp;
-
-    int countliterals = 0;
-    int countshort = 0;
-    int countlong = 0;
-    int countvlong = 0;
     int32_t hash;
     int32_t hoffset;
     int32_t minhoffset;
     int i;
     int32_t *link;
     int32_t *hashtbl;
-    int32_t *hashptr;
 
     len = src_len;
     putp = static_cast<uint8_t *>(dst);
     run = 0;
     getp = runp = static_cast<const uint8_t *>(src);
 
-    hashtbl = static_cast<int32_t *>(malloc(sizeof(int32_t) * 65536));
-    link = static_cast<int32_t *>(malloc(sizeof(int32_t) * 131072));
-    hashptr = hashtbl;
-    memset(hashtbl, 0xFF, sizeof(int32_t) * 65536);
+    hashtbl = static_cast<int32_t *>(malloc(sizeof(int32_t) * 0x10000));
+    link = static_cast<int32_t *>(malloc(sizeof(int32_t) * 0x20000));
+    memset(hashtbl, 0xFF, sizeof(int32_t) * 0x10000);
 
-    while (len > 0) {
+    len -= 4;
+    while (len >= 0) {
         boffset = 0;
         blen = bcost = 2;
         mlen = min(len, 1028);
         tptr = getp - 1;
-        hash = 0x10 * getp[1] ^ (uint16_t)(getp[2] | ((uint16_t)getp[0] << 8));
+        hash = RefPack_Hash(getp);
         hoffset = hashtbl[hash];
         minhoffset = max(intptr_t(getp - static_cast<const uint8_t *>(src) - 131071), intptr_t(0));
 
@@ -118,7 +120,7 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
             } while ((hoffset = link[hoffset & 131071]) >= minhoffset);
         }
 
-        if (bcost >= blen) {
+        if (bcost >= blen || len < 4) {
             hoffset = (getp - static_cast<const uint8_t *>(src));
             link[hoffset & 131071] = hashtbl[hash];
             hashtbl[hash] = hoffset;
@@ -134,25 +136,21 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
                 memcpy(putp, runp, tlen);
                 runp += tlen;
                 putp += tlen;
-                ++countliterals;
             }
 
             if (bcost == 2) // two byte long form
             {
                 *putp++ = (unsigned char)(((boffset >> 8) << 5) + ((blen - 3) << 2) + run);
                 *putp++ = (unsigned char)boffset;
-                ++countshort;
             } else if (bcost == 3) { // three byte long form
                 *putp++ = (unsigned char)(0x80 + (blen - 4));
                 *putp++ = (unsigned char)((run << 6) + (boffset >> 8));
                 *putp++ = (unsigned char)boffset;
-                ++countlong;
             } else { // four byte very long form
                 *putp++ = (unsigned char)(0xc0 + ((boffset >> 16) << 4) + (((blen - 5) >> 8) << 2) + run);
                 *putp++ = (unsigned char)(boffset >> 8);
                 *putp++ = (unsigned char)(boffset);
                 *putp++ = (unsigned char)(blen - 5);
-                ++countvlong;
             }
 
             if (run) {
@@ -168,7 +166,7 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
                 getp += blen;
             } else {
                 for (i = 0; i < (int)blen; ++i) {
-                    hash = 0x10 * getp[1] ^ (uint16_t)(getp[2] | ((uint16_t)getp[0] << 8));
+                    hash = RefPack_Hash(getp);
                     hoffset = (getp - static_cast<const uint8_t *>(src));
                     link[hoffset & 131071] = hashtbl[hash];
                     hashtbl[hash] = hoffset;
@@ -180,6 +178,8 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
             len -= blen;
         }
     }
+    len += 4;
+    run += len;
 
     while (run > 3) // no match at end, use literal
     {
@@ -235,14 +235,14 @@ int RefPack_Uncompress(void *dst, const void *src, int *size)
 
     if (flags & 0x8000) {
         if (flags & 0x0100) {
-            getp += 6;
+            getp += 4;
         }
 
         out_length = (getp[0] << 24) | (getp[1] << 16) | (getp[2] << 8) | getp[3];
         getp += 4;
     } else {
         if (flags & 0x0100) {
-            getp += 5;
+            getp += 3;
         }
 
         out_length = (getp[0] << 16) | (getp[1] << 8) | getp[2];
@@ -347,7 +347,7 @@ int RefPack_Uncompress(void *dst, const void *src, int *size)
 /**
  * Compresses EA's proprietary "RefPack" format.
  */
-int RefPack_Compress(void *dst, const void *src, int size, bool quick)
+int RefPack_Compress(void *dst, const void *src, int size, int *opts)
 {
     uint8_t *putp = static_cast<uint8_t *>(dst);
     int header_len = 0;
@@ -369,5 +369,5 @@ int RefPack_Compress(void *dst, const void *src, int size, bool quick)
         header_len = 6;
     }
 
-    return header_len + RefPack_Encode(src, size, &putp[header_len], 0x20000, quick);
+    return header_len + RefPack_Encode(src, size, &putp[header_len], 0x20000, false);
 }

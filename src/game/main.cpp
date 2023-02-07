@@ -503,6 +503,8 @@ bool Create_Window_SDL2()
         return false;
     }
 
+    SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "0");
+
     g_creatingWindow = true;
 
     bool is_windowed = g_gameIsWindowed;
@@ -511,48 +513,40 @@ bool Create_Window_SDL2()
         SDL_WINDOWPOS_CENTERED,
         WIN_WIDTH,
         WIN_HEIGHT,
-        is_windowed ? 0 : SDL_WINDOW_FULLSCREEN);
+        is_windowed ? SDL_WINDOW_HIDDEN : SDL_WINDOW_HIDDEN | SDL_WINDOW_FULLSCREEN);
 
     if (g_applicationWindow == nullptr) {
-        captainslog_error("SDL could not create window!");
+        captainslog_error("SDL could not create window: %s", SDL_GetError());
         return false;
     }
 
     // Load the splashscreen
     SDL_Surface *splashSurface = SDL_LoadBMP(WIN_SPLASH);
     if (splashSurface == nullptr) {
-        captainslog_error("SDL could not load splashscreen image!");
+        captainslog_error("SDL could not load splashscreen image: %s", SDL_GetError());
         return false;
     }
 
-    SDL_Renderer *renderer = SDL_CreateRenderer(g_applicationWindow, -1, 0);
-    if (renderer == nullptr) {
-        SDL_FreeSurface(splashSurface);
-        captainslog_error("SDL could not create splashscreen renderer!");
+    // Get the window surface
+    SDL_Surface *winSurface = SDL_GetWindowSurface(g_applicationWindow);
+    if (winSurface == nullptr) {
+        captainslog_error("SDL could not get window surface: %s", SDL_GetError());
         return false;
     }
 
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, splashSurface);
-    if (texture == nullptr) {
-        SDL_FreeSurface(splashSurface);
-        SDL_DestroyRenderer(renderer);
-        captainslog_error("SDL could not load splashscreen texture!");
-        return false;
-    }
-
-    // Draw the splashscreen
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
-
-    // Free resources
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
-    SDL_FreeSurface(splashSurface);
-
+    // Focus & show the window
     SDL_RaiseWindow(g_applicationWindow);
     SDL_ShowWindow(g_applicationWindow);
+
+    // Blit the splashscreen to the window
+    if (SDL_BlitSurface(splashSurface, NULL, winSurface, NULL) < 0) {
+        captainslog_error("SDL could not blit splashscreen image: %s", SDL_GetError());
+        return false;
+    }
+    if (SDL_UpdateWindowSurface(g_applicationWindow) < 0) {
+        captainslog_error("SDL could not update window surface: %s", SDL_GetError());
+        return false;
+    }
 
     g_creatingWindow = false;
 #ifdef PLATFORM_WINDOWS

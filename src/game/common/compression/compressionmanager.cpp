@@ -57,7 +57,7 @@ CompressionType CompressionManager::Get_Prefered_Compression()
 }
 
 /**
- * @brief Get the FourCC for the corresponding compression type
+ * @brief Thyme specific: Get the FourCC for the corresponding compression type
  */
 uint32_t CompressionManager::Get_Compression_FourCC(CompressionType type)
 {

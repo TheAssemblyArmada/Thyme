@@ -48,6 +48,7 @@ public:
     static CompressionType Get_Prefered_Compression();
     static CompressionType Get_Compression_Type(const void *data, int size);
     static int Get_Max_Compressed_Size(int size, CompressionType type);
+    // Thyme specific: This is a utility function
     static uint32_t Get_Compression_FourCC(CompressionType type);
     static int Get_Uncompressed_Size(const void *data, int size);
     static int Compress_Data(CompressionType type, void *src, int src_size, void *dst, int dst_size);

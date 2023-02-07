@@ -472,6 +472,14 @@ if(USE_STDFS)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_STDFS)
 endif()
 
+if(USE_ZLIB)
+    list(APPEND GAMEENGINE_SRC
+        game/common/compression/zlibcompr.cpp
+    )
+    list(APPEND GAME_LINK_LIBRARIES ZLIB::ZLIB)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_ZLIB)
+endif()
+
 # Game binary only source
 set(GAMEENGINE_GAME_SRC
     game/main.cpp

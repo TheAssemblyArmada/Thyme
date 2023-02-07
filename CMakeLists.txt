@@ -89,6 +89,7 @@ endif()
 option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 option(USE_FFMPEG "Use FFMPEG for codec handling." ${DEFAULT_FFMPEG})
+option(USE_ZLIB "Use zlib to support deflate compression." ON)
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
@@ -256,6 +257,41 @@ endif()
 
 if(USE_FFMPEG)
     find_package(FFmpeg COMPONENTS AVFORMAT AVCODEC AVUTIL REQUIRED)
+endif()
+
+if(USE_ZLIB)
+    find_package(ZLIB)
+
+    if(NOT ZLIB_FOUND AND NOT TARGET ZLIB::ZLIB)
+        include(FetchContent)
+
+        # We define an empty test macro here, so zlib doesn't add it's tests to our global scope
+        set(EMPTY_ADD_TEST TRUE)
+        function(add_test)
+            if(EMPTY_ADD_TEST)
+                message(STATUS "Skipping test: ${ARGV0}")
+                return()
+            endif()
+            _add_test(${ARGV})
+        endfunction(add_test)
+
+        FetchContent_Declare(
+            zlib 
+            GIT_REPOSITORY https://github.com/madler/zlib.git
+            GIT_TAG        v1.2.13
+        )
+        
+        # We don't use FetchContent_MakeAvailable here because we don't want all zlib targets including, just our dependency.
+        FetchContent_GetProperties(zlib)
+        if(NOT zlib_POPULATED)
+            FetchContent_Populate(zlib)
+            add_subdirectory(${zlib_SOURCE_DIR} ${zlib_BINARY_DIR} EXCLUDE_FROM_ALL)
+        endif()
+
+        # Make sure headers are available for the static target and make an alias to match the Find module output.
+        target_include_directories(zlibstatic INTERFACE ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
+        add_library(ZLIB::ZLIB ALIAS zlibstatic)
+    endif()
 endif()
 
 if(USE_CRASHPAD)

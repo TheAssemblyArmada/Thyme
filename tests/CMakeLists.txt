@@ -10,6 +10,7 @@ set(TEST_SRCS
   main.cpp
   globals.cpp
   test_audiofilecache.cpp
+  test_compr.cpp
   test_crc.cpp
   test_filesystem.cpp
   test_w3d_load.cpp

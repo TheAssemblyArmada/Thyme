@@ -268,7 +268,7 @@ void GameEngine::Real_Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
-#ifdef GAME_DEBUG_STRUCTS
+#if defined GAME_DEBUG_STRUCTS && defined GAME_DLL
     ini.Load("Data/INI/GameDataDebug.ini", INI_LOAD_OVERWRITE, nullptr);
 #endif
 
@@ -284,6 +284,12 @@ void GameEngine::Real_Init(int argc, char *argv[])
     // There seems little point in keeping this as 1. its not cross platform and 2. most
     // textures are DDS in the release build anyhow.
     //}
+
+    // We don't support most after this
+#ifndef GAME_DLL
+    captainslog_info("Skipping not yet supported subsystems");
+    return;
+#endif
 
     ini.Load("Data/INI/Default/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Water.ini", INI_LOAD_OVERWRITE, &xfer);
@@ -340,8 +346,6 @@ void GameEngine::Real_Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
-    // We have no audio backend for standalone yet
-#ifdef GAME_DLL
     Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
 
     if (!g_theAudio->Is_Music_Already_Loaded()) {
@@ -352,7 +356,6 @@ void GameEngine::Real_Init(int argc, char *argv[])
     captainslog_debug(
         "----------------------------------------------------------------------------After TheAudio = %f seconds ",
         0.0f); // TODO processor frequency stuff
-#endif
 #endif
 
     Init_Subsystem(g_theFunctionLexicon, "TheFunctionLexicon", Create_Function_Lexicon());

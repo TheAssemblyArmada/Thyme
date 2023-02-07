@@ -340,6 +340,34 @@ bool ALAudioManager::Is_Currently_Playing(uintptr_t event)
 }
 
 /**
+ * Fill list of all supported devices
+ */
+void ALAudioManager::Enumerate_Devices()
+{
+    const ALCchar *devices = NULL;
+    if (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") == AL_TRUE) {
+        devices = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+        if ((!devices || *devices == '\0') && alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT") == AL_TRUE) {
+            devices = alcGetString(NULL, ALC_DEVICE_SPECIFIER);
+        }
+    }
+
+    if (!devices) {
+        captainslog_warn("Enumerating OpenAL devices is not supported");
+        return;
+    }
+
+    const ALCchar *device = devices, *next = devices + 1;
+    size_t len = 0, idx = 0;
+    while (device && *device != '\0' && next && *next != '\0' && idx < AL_MAX_PLAYBACK_DEVICES) {
+        m_alDevicesList[idx++] = device;
+        len = strlen(device);
+        device += (len + 1);
+        next += (len + 2);
+    }
+}
+
+/**
  * Opens an audio device for playing audio.
  */
 void ALAudioManager::Open_Device()
@@ -351,6 +379,7 @@ void ALAudioManager::Open_Device()
     m_speakerType = Translate_From_Speaker_Type(m_preferredSpeaker);
 
     // TODO: build devices list & set settings
+    Enumerate_Devices();
 
     m_alcDevice = alcOpenDevice(NULL);
     if (!m_alcDevice) {

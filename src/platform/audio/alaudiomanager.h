@@ -122,6 +122,7 @@ private:
     void Adjust_Request(AudioRequest *request);
     bool Check_For_Sample(AudioRequest *request);
     ALenum Get_AL_Format(uint8_t channels, uint8_t bits_per_sample);
+    void Enumerate_Devices();
 
     static void Init_Playing_Audio(PlayingAudio *audio);
 

@@ -287,6 +287,7 @@ void GameEngine::Real_Init(int argc, char *argv[])
 
     // We don't support most after this
 #ifndef GAME_DLL
+#pragma message("SKIPPING NOT YET SUPPORTED SUBSYSTEMS !!!")
     captainslog_info("Skipping not yet supported subsystems");
     return;
 #endif

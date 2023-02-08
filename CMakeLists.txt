@@ -318,6 +318,7 @@ if(USE_ZLIB)
         # Make sure headers are available for the static target and make an alias to match the Find module output.
         target_include_directories(zlibstatic INTERFACE ${zlib_SOURCE_DIR} ${zlib_BINARY_DIR})
         add_library(ZLIB::ZLIB ALIAS zlibstatic)
+        set(EMPTY_ADD_TEST FALSE)
     endif()
 endif()
 

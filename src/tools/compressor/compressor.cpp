@@ -28,13 +28,13 @@ int main(int argc, char **argv)
 
     if (result.count("input") != 1) {
         std::cerr << "Please specify exactly one input" << std::endl;
-        std::cout << options.help() << std::endl;;
+        std::cout << options.help() << std::endl;
         return EXIT_FAILURE;
     }
 
     if (result.count("output") != 1) {
         std::cerr << "Please specify exactly one output" << std::endl;
-        std::cout << options.help() << std::endl;;
+        std::cout << options.help() << std::endl;
         return EXIT_FAILURE;
     }
 

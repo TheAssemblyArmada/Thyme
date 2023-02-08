@@ -29,7 +29,8 @@ ALAudioManager::ALAudioManager() :
 #ifdef BUILD_WITH_FFMPEG
     m_audioFileCache(new Thyme::FFmpegAudioFileCache),
 #endif
-    m_binkPlayingAudio(nullptr)
+    m_binkPlayingAudio(nullptr),
+    m_speakerType(0)
 {
 }
 

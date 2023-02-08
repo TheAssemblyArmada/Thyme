@@ -182,10 +182,10 @@ bool RawFileClass::Open(int rights)
 
     switch (rights) {
         case FM_READ:
-            m_handle = open(m_filename, O_RDONLY, S_IREAD);
+            m_handle = open(m_filename, O_RDONLY, S_IREAD | S_IWRITE);
             break;
         case FM_WRITE:
-            m_handle = open(m_filename, O_WRONLY | O_CREAT | O_TRUNC, S_IWRITE);
+            m_handle = open(m_filename, O_WRONLY | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE);
             break;
         case FM_READ_WRITE:
             m_handle = open(m_filename, O_RDWR | O_CREAT | O_TRUNC, S_IREAD | S_IWRITE);

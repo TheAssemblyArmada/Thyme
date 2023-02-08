@@ -1321,7 +1321,7 @@ void W3DTreeBuffer::Unit_Moved(Object *unit)
 
                 while (index != -1) {
                     if (index < 0 || index >= m_numTrees) {
-                        captainslog_debug(false, "Invalid index.");
+                        captainslog_dbgassert(false, "Invalid index.");
                         break;
                     }
 

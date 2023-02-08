@@ -340,31 +340,41 @@ if(USE_CRASHPAD)
     set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
 endif()
 
-if(NOT wxWidgets_FOUND AND BUILD_TOOLS)
+if(BUILD_TOOLS)
     include(FetchContent)
-    set(wxBUILD_SHARED OFF CACHE BOOL "Build wx libraries as shared libs")
-    set(wxBUILD_PRECOMP OFF CACHE BOOL "Use precompiled headers")
-    set(wxBUILD_MONOLITHIC OFF CACHE BOOL "Build a single library")
-    set(wxUSE_WINSOCK2 ON CACHE BOOL "include <winsock2.h> rather than <winsock.h>")
-
     FetchContent_Declare(
-        wxWidgets 
-        GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets.git
-        GIT_TAG        v3.2.0
-        GIT_SHALLOW     TRUE
-    )
-    
-    FetchContent_MakeAvailable(wxWidgets)
-    if(IS_DIRECTORY "${wxWidgets_SOURCE_DIR}")
-        set_property(DIRECTORY ${wxWidgets_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
-    endif()
+            cxxopts 
+            GIT_REPOSITORY https://github.com/jarro2783/cxxopts.git
+            GIT_TAG        v3.0.0
+            GIT_SHALLOW    TRUE
+        )
+    FetchContent_MakeAvailable(cxxopts)
 
-    set(wxWidgets_FOUND TRUE)
-    set(wxWidgets_LIBRARIES wxcore wxbase wxxrc wxxml wxhtml wxadv)
+    if(NOT wxWidgets_FOUND)
+        set(wxBUILD_SHARED OFF CACHE BOOL "Build wx libraries as shared libs")
+        set(wxBUILD_PRECOMP OFF CACHE BOOL "Use precompiled headers")
+        set(wxBUILD_MONOLITHIC OFF CACHE BOOL "Build a single library")
+        set(wxUSE_WINSOCK2 ON CACHE BOOL "include <winsock2.h> rather than <winsock.h>")
 
-    # Will need manually setting for cross compiles for windows or macos from another OS.
-    if(NOT wxWidgets_wxrc_EXECUTABLE)
-        set(wxWidgets_wxrc_EXECUTABLE wxrc)
+        FetchContent_Declare(
+            wxWidgets 
+            GIT_REPOSITORY https://github.com/wxWidgets/wxWidgets.git
+            GIT_TAG        v3.2.1
+            GIT_SHALLOW    TRUE
+        )
+        
+        FetchContent_MakeAvailable(wxWidgets)
+        if(IS_DIRECTORY "${wxWidgets_SOURCE_DIR}")
+            set_property(DIRECTORY ${wxWidgets_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
+        endif()
+
+        set(wxWidgets_FOUND TRUE)
+        set(wxWidgets_LIBRARIES wxcore wxbase wxxrc wxxml wxhtml wxadv)
+
+        # Will need manually setting for cross compiles for windows or macos from another OS.
+        if(NOT wxWidgets_wxrc_EXECUTABLE)
+            set(wxWidgets_wxrc_EXECUTABLE wxrc)
+        endif()
     endif()
 endif()
 

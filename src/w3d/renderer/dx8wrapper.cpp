@@ -434,7 +434,7 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
     Set_Index_Buffer(nullptr, 0);
 
     if (s_cleanupHook) {
-        s_cleanupHook->ReleaseResources();
+        s_cleanupHook->Release_Resources();
     }
 
     DynamicVBAccessClass::Deinit();
@@ -458,7 +458,7 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
     if (reacquire) {
         DX8TextureManagerClass::Recreate_Textures();
         if (s_cleanupHook) {
-            s_cleanupHook->ReAcquireResources();
+            s_cleanupHook->Re_Acquire_Resources();
         }
     }
 

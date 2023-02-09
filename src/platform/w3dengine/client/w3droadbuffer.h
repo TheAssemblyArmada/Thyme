@@ -264,6 +264,7 @@ protected:
     W3DRoadBuffer *Hook_Ctor() { return new (this) W3DRoadBuffer(); }
     void Hook_Dtor() { W3DRoadBuffer::~W3DRoadBuffer(); }
 #endif
+    friend class BaseHeightMapRenderObjClass;
 };
 
 #ifdef GAME_DLL

@@ -39,7 +39,7 @@ struct TTreeType
 
     MeshClass *mesh; // confirmed
     SphereClass bounds; // confirmed
-    W3DTreeDrawModuleData *module; // confirmed
+    const W3DTreeDrawModuleData *module; // confirmed
     int texture_width;
     int texture_height;
     int num_tiles;
@@ -151,13 +151,13 @@ public:
     void Clear_All_Trees(); // WB 0x006522AE
     void Remove_Tree(DrawableID drawable); // WB 0x006523CA
     void Remove_Trees_For_Construction(const Coord3D *pos, const GeometryInfo &geom, float angle); // WB 0x006524A4
-    int Add_Tree_Type(W3DTreeDrawModuleData *module); // WB 0x006525D3
+    int Add_Tree_Type(const W3DTreeDrawModuleData *module); // WB 0x006525D3
     void Add_Tree(DrawableID drawable,
         Coord3D loc,
         float scale,
         float angle,
         float random,
-        W3DTreeDrawModuleData *module); // WB 0x006529CA
+        const W3DTreeDrawModuleData *module); // WB 0x006529CA
     bool Update_Tree_Position(DrawableID drawable, Coord3D pos, float angle); // WB 0x00652EA1
     void Push_Aside_Tree(DrawableID drawable, const Coord3D *pos, const Coord3D *dir, ObjectID object); // WB 0x0065303C
     void Draw_Trees(

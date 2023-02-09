@@ -44,8 +44,8 @@ class ZTextureClass;
 class DX8_CleanupHook
 {
 public:
-    virtual void ReleaseResources() = 0;
-    virtual void ReAcquireResources() = 0;
+    virtual void Release_Resources() = 0;
+    virtual void Re_Acquire_Resources() = 0;
 };
 
 // Some constants to control numbers of things.
@@ -259,6 +259,8 @@ public:
         captainslog_assert(depth == 16 || depth == 32);
         s_textureBitDepth = depth;
     }
+
+    static void Set_Cleanup_Hook(DX8_CleanupHook *hook) { s_cleanupHook = hook; }
 
 private:
     static void Draw_Sorting_IB_VB(unsigned int primitive_type,

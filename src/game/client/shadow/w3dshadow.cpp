@@ -44,6 +44,20 @@ Shadow *W3DShadowManager::Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInf
 #endif
 }
 
+void W3DShadowManager::Release_Resources()
+{
+#ifdef GAME_DLL
+    Call_Method<void, W3DShadowManager>(PICK_ADDRESS(0x00782210, 0x00605967), this);
+#endif
+}
+
+void W3DShadowManager::Re_Acquire_Resources()
+{
+#ifdef GAME_DLL
+    Call_Method<void, W3DShadowManager>(PICK_ADDRESS(0x007821D0, 0x00605911), this);
+#endif
+}
+
 void W3DShadowManager::Remove_Shadow(Shadow *shadow)
 {
     shadow->Release();

@@ -75,6 +75,7 @@ private:
     friend class W3DShaderManager;
     friend class WaterRenderObjClass;
     friend class WaterTracksRenderSystem;
+    friend class BaseHeightMapRenderObjClass;
     friend class W3DDisplay;
 };
 

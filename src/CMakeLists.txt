@@ -75,10 +75,12 @@ set(GAMEENGINE_SRC
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
     game/client/drawgroupinfo.cpp
+    game/client/flatheightmap.cpp
     game/client/fxlist.cpp
     game/client/gameclient.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
+    game/client/heightmap.cpp
     game/client/ingameui.cpp
     game/client/languagefilter.cpp
     game/client/optionpreferences.cpp
@@ -325,6 +327,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3droadbuffer.cpp
     platform/w3dengine/client/w3dshroud.cpp
     platform/w3dengine/client/w3dsmudge.cpp
+    platform/w3dengine/client/w3dsnow.cpp
     platform/w3dengine/client/w3dstatuscircle.cpp
     platform/w3dengine/client/w3dscene.cpp
     platform/w3dengine/client/w3dtreebuffer.cpp

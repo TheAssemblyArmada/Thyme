@@ -42,6 +42,7 @@ enum TerrainLOD
     TERRAIN_LOD_DISABLE,
     TERRAIN_LOD_NUM_TYPES,
 };
+DEFINE_ENUMERATION_OPERATORS(TerrainLOD);
 
 class GlobalData : public SubsystemInterface
 {

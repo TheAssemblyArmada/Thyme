@@ -210,7 +210,7 @@ void W3DTreeBuffer::Xfer_Snapshot(Xfer *xfer)
 }
 
 void W3DTreeBuffer::Add_Tree(
-    DrawableID drawable, Coord3D loc, float scale, float angle, float random, W3DTreeDrawModuleData *module)
+    DrawableID drawable, Coord3D loc, float scale, float angle, float random, const W3DTreeDrawModuleData *module)
 {
     if (m_numTrees < MAX_TREES && m_initialized) {
         int tree_type = -2;
@@ -304,7 +304,7 @@ int W3DTreeBuffer::Get_Partition_Bucket(const Coord3D *loc) const
     return x_index + PARTITION_WIDTH_HEIGHT * y_index;
 }
 
-int W3DTreeBuffer::Add_Tree_Type(W3DTreeDrawModuleData *module)
+int W3DTreeBuffer::Add_Tree_Type(const W3DTreeDrawModuleData *module)
 {
     if (m_numTreeTypes >= MAX_TREE_TYPES) {
         captainslog_dbgassert(false, "Too many kinds of trees in map.  Reduce kinds of trees, or raise tree limit.");
@@ -867,7 +867,7 @@ void W3DTreeBuffer::Cull(const CameraClass *camera)
 void W3DTreeBuffer::Apply_Toppling_Force(TTree *tree, const Coord3D *pos, float speed, int options)
 {
     if (tree->topple_state == TTree::TOPPLE_UPRIGHT) {
-        W3DTreeDrawModuleData *module = m_treeTypes[tree->tree_type].module;
+        const W3DTreeDrawModuleData *module = m_treeTypes[tree->tree_type].module;
 
         if (speed < module->m_minimumToppleSpeed) {
             speed = module->m_minimumToppleSpeed;
@@ -893,7 +893,7 @@ void W3DTreeBuffer::Update_Toppling_Tree(TTree *tree)
 {
     captainslog_dbgassert(tree->topple_state != TTree::TOPPLE_UPRIGHT, "bad topple state");
     if (tree->topple_state != TTree::TOPPLE_UPRIGHT && tree->topple_state != TTree::TOPPLE_DOWN) {
-        W3DTreeDrawModuleData *module = m_treeTypes[tree->tree_type].module;
+        const W3DTreeDrawModuleData *module = m_treeTypes[tree->tree_type].module;
         int id;
 
         if (g_thePlayerList != nullptr) {

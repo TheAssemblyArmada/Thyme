@@ -148,6 +148,9 @@ public:
 
     Vector3 &Get_Light_Pos_World(int light_index);
 
+    void Release_Resources();
+    void Re_Acquire_Resources();
+
 protected:
     bool m_isShadowScene;
     unsigned int m_shadowColor;

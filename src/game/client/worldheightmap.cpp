@@ -28,7 +28,7 @@
 #include "w3dshadow.h"
 #include <stdio.h>
 
-static const float HEIGHTMAP_SCALE = 0.625f;
+const float HEIGHTMAP_SCALE = 0.625f;
 
 #ifndef GAME_DLL
 TileData *WorldHeightMap::s_alphaTiles[12];
@@ -1837,7 +1837,7 @@ TextureClass *WorldHeightMap::Get_Edge_Terrain_Texture()
     return m_alphaEdgeTex;
 }
 
-TextureClass *WorldHeightMap::Get_Flat_Texture(int x, int y, int pixels_per_cell, int cell_width)
+TerrainTextureClass *WorldHeightMap::Get_Flat_Texture(int x, int y, int pixels_per_cell, int cell_width)
 {
     if (g_theWriteableGlobalData->m_textureReductionFactor) {
         if (g_theWriteableGlobalData->m_textureReductionFactor > 1) {

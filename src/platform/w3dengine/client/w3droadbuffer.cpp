@@ -1120,8 +1120,8 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
             column3.deleted = false;
             column3.light_gradient = false;
             column3.u_index = (float)i;
-            float f7 = (float)WorldHeightMap::Get_Max_Height_Value() * 0.625f;
-            float f8 = (float)WorldHeightMap::Get_Min_Height_Value() * 0.625f;
+            float f7 = (float)WorldHeightMap::Get_Max_Height_Value() * HEIGHTMAP_SCALE;
+            float f8 = (float)WorldHeightMap::Get_Min_Height_Value() * HEIGHTMAP_SCALE;
 
             for (int j = 0; j < i2; j++) {
                 float f9 = (float)j / (float)(i2 - 1);

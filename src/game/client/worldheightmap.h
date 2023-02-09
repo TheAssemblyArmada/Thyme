@@ -114,7 +114,7 @@ public:
 
     TextureClass *Get_Alpha_Terrain_Texture();
     TextureClass *Get_Edge_Terrain_Texture();
-    TextureClass *Get_Flat_Texture(int x, int y, int pixels_per_cell, int cell_width);
+    TerrainTextureClass *Get_Flat_Texture(int x, int y, int pixels_per_cell, int cell_width);
     TextureClass *Get_Terrain_Texture();
     int Get_Texture_Class(int x_index, int y_index, bool base_class);
     TXTextureClass Get_Texture_From_Index(int index);
@@ -291,3 +291,5 @@ protected:
     int m_drawHeightY;
     friend class W3DTreeBuffer;
 };
+
+extern const float HEIGHTMAP_SCALE;

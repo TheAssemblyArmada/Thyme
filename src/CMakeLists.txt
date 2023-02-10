@@ -40,6 +40,7 @@ set(GAMEENGINE_INCLUDES
     game/network
     platform
     platform/audio/
+    platform/common/
     platform/directx/
     platform/input/
     platform/video/
@@ -560,7 +561,8 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
 endif()
 
 if(USE_FFMPEG)
-    list(APPEND GAMEENGINE_SRC 
+    list(APPEND GAMEENGINE_SRC
+        platform/common/ffmpegfile.cpp 
         platform/audio/ffmpegaudiofilecache.cpp)
     list(APPEND GAMEENGINE_INCLUDES ${FFMPEG_INCLUDE_DIRS})
     list(APPEND GAME_LINK_LIBRARIES ${FFMPEG_LIBRARIES})

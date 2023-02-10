@@ -17,6 +17,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "audiomanager.h"
+#include "ffmpegfile.h"
 #include "mutex.h"
 #include "rtsutils.h"
 
@@ -38,9 +39,7 @@ namespace Thyme
 struct FFmpegOpenAudioFile
 {
     // FFmpeg handles
-    AVFormatContext *fmt_ctx = nullptr;
-    AVIOContext *avio_ctx = nullptr;
-    AVCodecContext *codec_ctx = nullptr;
+    FFmpegFile *ffmpeg_file = nullptr;
     uint8_t *wave_data = nullptr;
     float duration = 0.0f;
     int ref_count = 0;

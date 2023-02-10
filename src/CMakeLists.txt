@@ -565,7 +565,8 @@ if(USE_FFMPEG)
         platform/common/ffmpegfile.cpp 
         platform/audio/ffmpegaudiofilecache.cpp
         platform/video/ffmpegvideoplayer.cpp
-        platform/video/ffmpegvideostream.cpp)
+        platform/video/ffmpegvideostream.cpp
+        platform/video/swvideobuffer.cpp)
     list(APPEND GAMEENGINE_INCLUDES ${FFMPEG_INCLUDE_DIRS})
     list(APPEND GAME_LINK_LIBRARIES ${FFMPEG_LIBRARIES})
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_FFMPEG ${FFMPEG_DEFINITIONS})

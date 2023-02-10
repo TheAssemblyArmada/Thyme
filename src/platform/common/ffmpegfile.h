@@ -19,12 +19,15 @@
 
 struct AVFormatContext;
 struct AVIOContext;
+struct AVCodec;
 struct AVCodecContext;
 struct AVFrame;
 struct AVPacket;
 
 namespace Thyme
 {
+typedef void (*FFmpegFrameCallback)(AVFrame *frame, int stream_idx, int stream_type, void *user_data);
+
 class FFmpegFile
 {
 public:
@@ -34,7 +37,10 @@ public:
 
     bool Open(File *file);
     void Close();
-    bool Decode_Frame(AVFrame *&out);
+    void Set_Frame_Callback(FFmpegFrameCallback callback) { m_frame_callback = callback; }
+    void Set_User_Data(void *user_data) { m_user_data = user_data; }
+    // Read & decode a packet from the container. Note that we could/should split this step
+    bool Decode_Packet();
 
     // Audio specific
     int Get_Size_For_Samples(int numSamples);
@@ -50,14 +56,24 @@ public:
     int Get_Pixel_Format();
 
 private:
-    static int Read_Packet(void *opaque, uint8_t *buf, int buf_size);
-    bool Read_Packet();
+    struct FFmpegStream
+    {
+        AVCodecContext *codec_ctx = nullptr;
+        const AVCodec *codec = nullptr;
+        int stream_idx = -1;
+        int stream_type = -1;
+        AVFrame *frame = nullptr;
+    };
 
+    static int Read_Packet(void *opaque, uint8_t *buf, int buf_size);
+    FFmpegStream *Find_Match(int type);
+
+    FFmpegFrameCallback m_frame_callback = nullptr;
     AVFormatContext *m_fmt_ctx = nullptr;
     AVIOContext *m_avio_ctx = nullptr;
-    AVCodecContext *m_codec_ctx = nullptr;
     AVPacket *m_packet = nullptr;
-    AVFrame *m_frame = nullptr;
+    std::vector<FFmpegStream> m_streams;
     File *m_file = nullptr;
+    void *m_user_data = nullptr;
 };
 } // namespace Thyme

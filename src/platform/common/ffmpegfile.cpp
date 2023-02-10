@@ -92,46 +92,49 @@ bool FFmpegFile::Open(File *file)
         return false;
     }
 
-    if (m_fmt_ctx->nb_streams != 1) {
-        captainslog_error("Expected exactly one stream per file");
-        Close();
-        return false;
-    }
+    m_streams.resize(m_fmt_ctx->nb_streams);
+    for (unsigned int stream_idx = 0; stream_idx < m_fmt_ctx->nb_streams; stream_idx++) {
+        const AVCodec *input_codec = avcodec_find_decoder(m_fmt_ctx->streams[stream_idx]->codecpar->codec_id);
+        if (!input_codec) {
+            captainslog_error(
+                "Codec not supported: '%s'", avcodec_get_name(m_fmt_ctx->streams[stream_idx]->codecpar->codec_id));
+            Close();
+            return false;
+        }
 
-    const AVCodec *input_codec = avcodec_find_decoder(m_fmt_ctx->streams[0]->codecpar->codec_id);
-    if (!input_codec) {
-        captainslog_error("Codec not supported: '%u'", m_fmt_ctx->streams[0]->codecpar->codec_tag);
-        Close();
-        return false;
-    }
+        AVCodecContext *codec_ctx = avcodec_alloc_context3(input_codec);
+        if (!codec_ctx) {
+            captainslog_error("Could not allocate codec context");
+            Close();
+            return false;
+        }
 
-    m_codec_ctx = avcodec_alloc_context3(input_codec);
-    if (!m_codec_ctx) {
-        captainslog_error("Could not allocate codec context");
-        Close();
-        return false;
-    }
+        result = avcodec_parameters_to_context(codec_ctx, m_fmt_ctx->streams[stream_idx]->codecpar);
+        if (result < 0) {
+            char error_buffer[1024];
+            av_strerror(result, error_buffer, sizeof(error_buffer));
+            captainslog_error("Failed 'avcodec_parameters_to_context': %s", error_buffer);
+            Close();
+            return false;
+        }
 
-    result = avcodec_parameters_to_context(m_codec_ctx, m_fmt_ctx->streams[0]->codecpar);
-    if (result < 0) {
-        char error_buffer[1024];
-        av_strerror(result, error_buffer, sizeof(error_buffer));
-        captainslog_error("Failed 'avcodec_parameters_to_context': %s", error_buffer);
-        Close();
-        return false;
-    }
+        result = avcodec_open2(codec_ctx, input_codec, NULL);
+        if (result < 0) {
+            char error_buffer[1024];
+            av_strerror(result, error_buffer, sizeof(error_buffer));
+            captainslog_error("Failed 'avcodec_open2': %s", error_buffer);
+            Close();
+            return false;
+        }
 
-    result = avcodec_open2(m_codec_ctx, input_codec, NULL);
-    if (result < 0) {
-        char error_buffer[1024];
-        av_strerror(result, error_buffer, sizeof(error_buffer));
-        captainslog_error("Failed 'avcodec_open2': %s", error_buffer);
-        Close();
-        return false;
+        m_streams[stream_idx].codec_ctx = codec_ctx;
+        m_streams[stream_idx].codec = input_codec;
+        m_streams[stream_idx].stream_type = input_codec->type;
+        m_streams[stream_idx].stream_idx = stream_idx;
+        m_streams[stream_idx].frame = av_frame_alloc();
     }
 
     m_packet = av_packet_alloc();
-    m_frame = av_frame_alloc();
 
     return true;
 }
@@ -160,8 +163,11 @@ void FFmpegFile::Close()
         avformat_close_input(&m_fmt_ctx);
     }
 
-    if (m_codec_ctx) {
-        avcodec_free_context(&m_codec_ctx);
+    for (auto &stream : m_streams) {
+        if (stream.codec_ctx) {
+            avcodec_free_context(&stream.codec_ctx);
+            av_frame_free(&stream.frame);
+        }
     }
 
     if (m_avio_ctx && m_avio_ctx->buffer) {
@@ -176,23 +182,27 @@ void FFmpegFile::Close()
         av_packet_free(&m_packet);
     }
 
-    if (m_frame) {
-        av_frame_free(&m_frame);
-    }
-
     if (m_file) {
         m_file->Close();
         m_file = nullptr;
     }
 }
 
-bool FFmpegFile::Read_Packet()
+bool FFmpegFile::Decode_Packet()
 {
     int result = av_read_frame(m_fmt_ctx, m_packet);
-    if (result < 0) // EOF
+    if (result == AVERROR_EOF) // EOF
         return false;
 
-    result = avcodec_send_packet(m_codec_ctx, m_packet);
+    int stream_idx = m_packet->stream_index;
+    auto &stream = m_streams[stream_idx];
+    AVCodecContext *codec_ctx = stream.codec_ctx;
+    result = avcodec_send_packet(codec_ctx, m_packet);
+    // Check if we need more data
+    if (result == AVERROR(EAGAIN))
+        return true;
+
+    // Handle any other errors
     if (result < 0) {
         char error_buffer[1024];
         av_strerror(result, error_buffer, sizeof(error_buffer));
@@ -200,18 +210,11 @@ bool FFmpegFile::Read_Packet()
         return false;
     }
     av_packet_unref(m_packet);
-    return true;
-}
 
-bool FFmpegFile::Decode_Frame(AVFrame *&out)
-{
-    int result = 0;
+    result = avcodec_receive_frame(codec_ctx, stream.frame);
     // Check if we need more data
-    while ((result = avcodec_receive_frame(m_codec_ctx, m_frame)) == AVERROR(EAGAIN)) {
-        // This is EOF
-        if (!Read_Packet())
-            return false;
-    }
+    if (result == AVERROR(EAGAIN))
+        return true;
 
     // Handle any other errors
     if (result < 0) {
@@ -221,80 +224,101 @@ bool FFmpegFile::Decode_Frame(AVFrame *&out)
         return false;
     }
 
-    out = m_frame;
+    if (m_frame_callback) {
+        m_frame_callback(stream.frame, stream_idx, stream.stream_type, m_user_data);
+    }
+
     return true;
+}
+
+FFmpegFile::FFmpegStream *FFmpegFile::Find_Match(int type)
+{
+    for (auto &candidate : m_streams) {
+        if (candidate.stream_type == type)
+            return &candidate;
+    }
+
+    return nullptr;
 }
 
 int FFmpegFile::Get_Num_Channels()
 {
-    if (!m_codec_ctx)
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (!stream)
         return 0;
 
-    return m_codec_ctx->channels;
+    return stream->codec_ctx->channels;
 }
 
 int FFmpegFile::Get_Sample_Rate()
 {
-    if (!m_codec_ctx)
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (!stream)
         return 0;
 
-    return m_codec_ctx->sample_rate;
+    return stream->codec_ctx->sample_rate;
 }
 
 int FFmpegFile::Get_Bytes_Per_Sample()
 {
-    if (!m_codec_ctx)
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (!stream)
         return 0;
 
-    return av_get_bytes_per_sample(m_codec_ctx->sample_fmt);
+    return av_get_bytes_per_sample(stream->codec_ctx->sample_fmt);
 }
 
 int FFmpegFile::Get_Size_For_Samples(int numSamples)
 {
-    if (!m_codec_ctx)
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (!stream)
         return 0;
 
-    return av_samples_get_buffer_size(NULL, m_codec_ctx->channels, numSamples, m_codec_ctx->sample_fmt, 1);
+    return av_samples_get_buffer_size(NULL, stream->codec_ctx->channels, numSamples, stream->codec_ctx->sample_fmt, 1);
 }
 
 int FFmpegFile::Get_Height()
 {
-    if (!m_codec_ctx)
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (!stream)
         return 0;
 
-    return m_codec_ctx->height;
+    return stream->codec_ctx->height;
 }
 
 int FFmpegFile::Get_Width()
 {
-    if (!m_codec_ctx)
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (!stream)
         return 0;
 
-    return m_codec_ctx->width;
+    return stream->codec_ctx->width;
 }
 
 int FFmpegFile::Get_Num_Frames()
 {
-    if (!m_fmt_ctx || !m_fmt_ctx->streams[0])
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (!m_fmt_ctx || !stream || !m_fmt_ctx->streams[stream->stream_idx])
         return 0;
 
-    return (m_fmt_ctx->duration / (double)AV_TIME_BASE) * av_q2d(m_fmt_ctx->streams[0]->avg_frame_rate);
+    return (m_fmt_ctx->duration / (double)AV_TIME_BASE) * av_q2d(m_fmt_ctx->streams[stream->stream_idx]->avg_frame_rate);
 }
 
 int FFmpegFile::Get_Current_Frame()
 {
-    if (!m_fmt_ctx || !m_fmt_ctx->streams[0] || !m_frame || (m_frame->format == -1))
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (!m_fmt_ctx || !stream || !stream->frame || (stream->frame->format == -1))
         return 0;
-    double timeBase = av_q2d(m_fmt_ctx->streams[0]->time_base);
-    return (m_frame->best_effort_timestamp / timeBase) * av_q2d(m_fmt_ctx->streams[0]->avg_frame_rate);
+    return stream->codec_ctx->frame_number;
 }
 
 int FFmpegFile::Get_Pixel_Format()
 {
-    if (!m_codec_ctx)
+    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (!stream)
         return AV_PIX_FMT_NONE;
 
-    return m_codec_ctx->pix_fmt;
+    return stream->codec_ctx->pix_fmt;
 }
 
 } // namespace Thyme

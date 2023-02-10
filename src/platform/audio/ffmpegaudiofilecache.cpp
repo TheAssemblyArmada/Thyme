@@ -59,42 +59,25 @@ FFmpegAudioFileCache::~FFmpegAudioFileCache()
  */
 bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
 {
-    AVPacket *packet = av_packet_alloc();
-    AVFrame *frame = av_frame_alloc();
+    auto on_frame = [](AVFrame *frame, int stream_idx, int stream_type, void *user_data) {
+        FFmpegOpenAudioFile *file = static_cast<FFmpegOpenAudioFile *>(user_data);
+        if (stream_type != AVMEDIA_TYPE_AUDIO) {
+            captainslog_warn(
+                "Skipping non-audio data inside audioevent: %s", file->audio_event_info->Get_Event_Name().Str());
+            return;
+        }
 
-    int result = 0;
-    int64_t total_samples = 0;
+        int frame_data_size = file->ffmpeg_file->Get_Size_For_Samples(frame->nb_samples);
+        file->wave_data = static_cast<uint8_t *>(av_realloc(file->wave_data, file->data_size + frame_data_size));
+        memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
+        file->data_size += frame_data_size;
+    };
+
+    file->ffmpeg_file->Set_Frame_Callback(on_frame);
+    file->ffmpeg_file->Set_User_Data(file);
 
     // Read all packets inside the file
-    while (av_read_frame(file->fmt_ctx, packet) >= 0) {
-        result = avcodec_send_packet(file->codec_ctx, packet);
-        if (result < 0) {
-            char error_buffer[1024];
-            av_strerror(result, error_buffer, sizeof(error_buffer));
-            captainslog_error("Failed 'avcodec_send_packet': %s", error_buffer);
-            return false;
-        }
-        // Decode all frames contained inside the packet
-        while (result >= 0) {
-            result = avcodec_receive_frame(file->codec_ctx, frame);
-            // Check if we need more data
-            if (result == AVERROR(EAGAIN) || result == AVERROR_EOF)
-                break;
-            else if (result < 0) {
-                char error_buffer[1024];
-                av_strerror(result, error_buffer, sizeof(error_buffer));
-                captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
-                return false;
-            }
-            total_samples += frame->nb_samples;
-            int frame_data_size = av_samples_get_buffer_size(
-                NULL, file->codec_ctx->channels, frame->nb_samples, file->codec_ctx->sample_fmt, 1);
-            file->wave_data = static_cast<uint8_t *>(av_realloc(file->wave_data, file->data_size + frame_data_size));
-            memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
-            file->data_size += frame_data_size;
-        }
-
-        av_packet_unref(packet);
+    while (file->ffmpeg_file->Decode_Packet()) {
     }
 
     av_packet_free(&packet);

@@ -12,11 +12,33 @@ extern "C" {
 namespace Thyme
 {
 
+FFmpegVideoStream::FFmpegVideoStream(FFmpegFile *file) : m_ffmpegFile(file)
+{
+    file->Set_Frame_Callback(On_Frame);
+    file->Set_User_Data(this);
+    // Decode until we have our first video frame
+    while (m_good && m_frame == nullptr)
+        m_good = m_ffmpegFile->Decode_Packet();
+}
+
 FFmpegVideoStream::~FFmpegVideoStream()
 {
+    if (m_swsContext != nullptr) {
+        sws_freeContext(m_swsContext);
+        m_swsContext = nullptr;
+    }
+
     if (m_ffmpegFile != nullptr) {
         delete m_ffmpegFile;
         m_ffmpegFile = nullptr;
+    }
+}
+
+void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type, void *user_data)
+{
+    FFmpegVideoStream *stream = static_cast<FFmpegVideoStream *>(user_data);
+    if (stream_type == AVMEDIA_TYPE_VIDEO) {
+        stream->m_frame = frame;
     }
 }
 
@@ -33,7 +55,7 @@ void FFmpegVideoStream::Update()
  */
 bool FFmpegVideoStream::Is_Frame_Ready()
 {
-    return m_ready;
+    return m_good && m_frame != nullptr;
 }
 
 /**
@@ -41,7 +63,7 @@ bool FFmpegVideoStream::Is_Frame_Ready()
  */
 void FFmpegVideoStream::Decompress_Frame()
 {
-    m_ready = m_ffmpegFile->Decode_Frame(m_frame);
+    // Our frames are always decoded / decompressed. We might want to change at some point
 }
 
 /**
@@ -53,7 +75,11 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
         return;
     }
 
-    if (m_frame = nullptr) {
+    if (m_frame == nullptr) {
+        return;
+    }
+
+    if (m_frame->data == nullptr) {
         return;
     }
 
@@ -64,39 +90,42 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
             dst_pix_fmt = AV_PIX_FMT_RGB24;
             break;
         case VideoBuffer::TYPE_X8R8G8B8:
-            dst_pix_fmt = AV_PIX_FMT_ARGB;
+            dst_pix_fmt = AV_PIX_FMT_BGR0;
             break;
         case VideoBuffer::TYPE_R5G6B5:
             dst_pix_fmt = AV_PIX_FMT_RGB565;
             break;
         case VideoBuffer::TYPE_X1R5G5B5:
-            captainslog_error("X1R5G5B5 is not supported by FFMPEG");
+            dst_pix_fmt = AV_PIX_FMT_RGB555;
             return;
         default:
             return;
     }
 
-    if (m_swsContext == nullptr) {
-        m_swsContext = sws_getContext(Width(),
-            Height(),
-            static_cast<AVPixelFormat>(m_ffmpegFile->Get_Pixel_Format()),
-            buffer->Get_Width(),
-            buffer->Get_Height(),
-            dst_pix_fmt,
-            SWS_BICUBIC,
-            NULL,
-            NULL,
-            NULL);
-    }
+    m_swsContext = sws_getCachedContext(m_swsContext,
+        Width(),
+        Height(),
+        (enum AVPixelFormat)m_frame->format,
+        buffer->Get_Width(),
+        buffer->Get_Height(),
+        dst_pix_fmt,
+        SWS_BICUBIC,
+        NULL,
+        NULL,
+        NULL);
 
-    uint8_t *dst_data = static_cast<uint8_t *>(buffer->Lock());
-    if (dst_data == nullptr) {
+    uint8_t *buffer_data = static_cast<uint8_t *>(buffer->Lock());
+    if (buffer_data == nullptr) {
+        captainslog_error("Failed to lock videobuffer");
         return;
     }
 
     int dst_strides[] = { (int)buffer->Get_Pitch() };
-    sws_scale(m_swsContext, m_frame->data, m_frame->linesize, 0, Height(), &dst_data, dst_strides);
-
+    uint8_t *dst_data[] = { buffer_data };
+    int result = sws_scale(m_swsContext, m_frame->data, m_frame->linesize, 0, Height(), dst_data, dst_strides);
+    if (result < 0) {
+        captainslog_error("Failed to write into videobuffer");
+    }
     buffer->Unlock();
 }
 
@@ -105,7 +134,10 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
  */
 void FFmpegVideoStream::Next_Frame()
 {
-    // TODO: ?
+    m_frame = nullptr;
+    // Decode until we have our next video frame
+    while (m_good && m_frame == nullptr)
+        m_good = m_ffmpegFile->Decode_Packet();
 }
 
 /*
@@ -120,7 +152,8 @@ bool FFmpegVideoStream::Is_Done()
  */
 int FFmpegVideoStream::Frame_Index()
 {
-    return m_ffmpegFile->Get_Current_Frame();
+    // The index starts at 0, while the number starts at 1
+    return m_ffmpegFile->Get_Current_Frame() - 1;
 }
 
 /**

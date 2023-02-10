@@ -19,6 +19,9 @@
 #include "w3dgamefont.h"
 #include "w3dmouse.h"
 #include "w3dstatuscircle.h"
+#ifdef BUILD_WITH_FFMPEG
+#include "ffmpegvideoplayer.h"
+#endif
 
 Mouse *W3DGameClient::Create_Mouse()
 {
@@ -54,5 +57,9 @@ Drawable *W3DGameClient::Create_Drawable(const ThingTemplate *temp, DrawableStat
 
 VideoPlayer *W3DGameClient::Create_VideoPlayer()
 {
-    return new BinkVideoPlayer;
+#ifdef BUILD_WITH_FFMPEG
+    return new Thyme::FFmpegVideoPlayer();
+#else
+    return new BinkVideoPlayer();
+#endif
 }

@@ -46,6 +46,8 @@ bool FFmpegFile::Open(File *file)
     av_register_all();
 #endif
 
+    m_file = file;
+
     // FFmpeg setup
     m_fmt_ctx = avformat_alloc_context();
     if (!m_fmt_ctx) {
@@ -177,6 +179,11 @@ void FFmpegFile::Close()
     if (m_frame) {
         av_frame_free(&m_frame);
     }
+
+    if (m_file) {
+        m_file->Close();
+        m_file = nullptr;
+    }
 }
 
 bool FFmpegFile::Read_Packet()
@@ -193,6 +200,28 @@ bool FFmpegFile::Read_Packet()
         return false;
     }
     av_packet_unref(m_packet);
+    return true;
+}
+
+bool FFmpegFile::Decode_Frame(AVFrame *&out)
+{
+    int result = 0;
+    // Check if we need more data
+    while ((result = avcodec_receive_frame(m_codec_ctx, m_frame)) == AVERROR(EAGAIN)) {
+        // This is EOF
+        if (!Read_Packet())
+            return false;
+    }
+
+    // Handle any other errors
+    if (result < 0) {
+        char error_buffer[1024];
+        av_strerror(result, error_buffer, sizeof(error_buffer));
+        captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
+        return false;
+    }
+
+    out = m_frame;
     return true;
 }
 
@@ -228,25 +257,44 @@ int FFmpegFile::Get_Size_For_Samples(int numSamples)
     return av_samples_get_buffer_size(NULL, m_codec_ctx->channels, numSamples, m_codec_ctx->sample_fmt, 1);
 }
 
-bool FFmpegFile::Decode_Frame(AVFrame *&out)
+int FFmpegFile::Get_Height()
 {
-    int result = 0;
-    // Check if we need more data
-    while ((result = avcodec_receive_frame(m_codec_ctx, m_frame)) == AVERROR(EAGAIN)) {
-        // This is EOF
-        if (!Read_Packet())
-            return false;
-    }
+    if (!m_codec_ctx)
+        return 0;
 
-    // Handle any other errors
-    if (result < 0) {
-        char error_buffer[1024];
-        av_strerror(result, error_buffer, sizeof(error_buffer));
-        captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
-        return false;
-    }
-
-    out = m_frame;
-    return true;
+    return m_codec_ctx->height;
 }
+
+int FFmpegFile::Get_Width()
+{
+    if (!m_codec_ctx)
+        return 0;
+
+    return m_codec_ctx->width;
+}
+
+int FFmpegFile::Get_Num_Frames()
+{
+    if (!m_fmt_ctx || !m_fmt_ctx->streams[0])
+        return 0;
+
+    return (m_fmt_ctx->duration / (double)AV_TIME_BASE) * av_q2d(m_fmt_ctx->streams[0]->avg_frame_rate);
+}
+
+int FFmpegFile::Get_Current_Frame()
+{
+    if (!m_fmt_ctx || !m_fmt_ctx->streams[0] || !m_frame || (m_frame->format == -1))
+        return 0;
+    double timeBase = av_q2d(m_fmt_ctx->streams[0]->time_base);
+    return (m_frame->best_effort_timestamp / timeBase) * av_q2d(m_fmt_ctx->streams[0]->avg_frame_rate);
+}
+
+int FFmpegFile::Get_Pixel_Format()
+{
+    if (!m_codec_ctx)
+        return AV_PIX_FMT_NONE;
+
+    return m_codec_ctx->pix_fmt;
+}
+
 } // namespace Thyme

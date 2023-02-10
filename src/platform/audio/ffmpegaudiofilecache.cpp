@@ -194,23 +194,21 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(const Utf8String &filename)
     open_audio.data_size = sizeof(WavHeader);
     open_audio.ffmpeg_file = new FFmpegFile();
 
+    // This transfer ownership of file
     if (!open_audio.ffmpeg_file->Open(file)) {
         captainslog_warn("Failed to load audio file '%s', could not cache.", filename.Str());
         Release_Open_Audio(&open_audio);
-        file->Close();
         return nullptr;
     }
 
     if (!Decode_FFmpeg(&open_audio)) {
         captainslog_warn("Failed to decode audio file '%s', could not cache.", filename.Str());
         Release_Open_Audio(&open_audio);
-        file->Close();
         return nullptr;
     }
 
     Fill_Wave_Data(&open_audio);
     open_audio.ffmpeg_file->Close();
-    file->Close();
 
     open_audio.ref_count = 1;
     m_currentSize += open_audio.data_size;

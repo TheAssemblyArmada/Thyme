@@ -42,6 +42,13 @@ public:
     int Get_Sample_Rate();
     int Get_Bytes_Per_Sample();
 
+    // Video specific
+    int Get_Width();
+    int Get_Height();
+    int Get_Num_Frames();
+    int Get_Current_Frame();
+    int Get_Pixel_Format();
+
 private:
     static int Read_Packet(void *opaque, uint8_t *buf, int buf_size);
     bool Read_Packet();
@@ -51,5 +58,6 @@ private:
     AVCodecContext *m_codec_ctx = nullptr;
     AVPacket *m_packet = nullptr;
     AVFrame *m_frame = nullptr;
+    File *m_file = nullptr;
 };
 } // namespace Thyme

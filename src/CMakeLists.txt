@@ -563,7 +563,9 @@ endif()
 if(USE_FFMPEG)
     list(APPEND GAMEENGINE_SRC
         platform/common/ffmpegfile.cpp 
-        platform/audio/ffmpegaudiofilecache.cpp)
+        platform/audio/ffmpegaudiofilecache.cpp
+        platform/video/ffmpegvideoplayer.cpp
+        platform/video/ffmpegvideostream.cpp)
     list(APPEND GAMEENGINE_INCLUDES ${FFMPEG_INCLUDE_DIRS})
     list(APPEND GAME_LINK_LIBRARIES ${FFMPEG_LIBRARIES})
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_FFMPEG ${FFMPEG_DEFINITIONS})

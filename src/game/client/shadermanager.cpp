@@ -412,7 +412,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     File *file = g_theFileSystem->Open_File(path, File::BINARY | File::READ);
 
     if (file == nullptr) {
-        captainslog_debug("Could not find file \n");
+        captainslog_debug("Could not find file \"%s\"", path);
         return E_FAIL;
     }
 
@@ -421,7 +421,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     DWORD *buf = (DWORD *)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, info.file_size_low);
 
     if (!buf) {
-        captainslog_debug("Failed to allocate memory to load shader\n ");
+        captainslog_debug("Failed to allocate memory to load shader \"%s\"", path);
         file->Close();
         return E_FAIL;
     }
@@ -441,7 +441,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     HeapFree(GetProcessHeap(), 0, buf);
 
     if (FAILED(res)) {
-        captainslog_debug("Failed to create shader\n ");
+        captainslog_debug("Failed to create shader \"%s\"", path);
         return E_FAIL;
     }
 

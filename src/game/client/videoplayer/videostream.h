@@ -34,10 +34,10 @@ public:
     virtual void Decompress_Frame() {}
     virtual void Render_Frame(VideoBuffer *buffer) {}
     virtual void Next_Frame() {}
-    bool Is_Done() { return true; } // Virtual in Mac build, optimised out perhaps?
+    // virtual bool Is_Done() { return true; } // New virtual in Mac build
     virtual int Frame_Index() { return 0; }
     virtual int Frame_Count() { return 0; }
-    virtual void Goto_Frame(int frame) {}
+    virtual void Goto_Frame(int frame) {} // Removed in Mac build
     virtual int Height() { return 0; }
     virtual int Width() { return 0; }
 

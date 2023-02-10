@@ -53,11 +53,10 @@ FontCharsClass::FontCharsClass() :
 
 FontCharsClass::~FontCharsClass()
 {
-    for (int i = 0; i < m_bufferList.Count(); ++i) {
-        delete m_bufferList[i];
+    while (m_bufferList.Count() != 0) {
+        delete m_bufferList[0];
+        m_bufferList.Delete(0);
     }
-
-    m_bufferList.Reset_Active();
 
     Free_GDI_Font();
     Free_Character_Arrays();
@@ -66,21 +65,21 @@ FontCharsClass::~FontCharsClass()
 const FontCharsClass::CharDataStruct *FontCharsClass::Get_Char_Data(unichar_t ch)
 {
     const CharDataStruct *retval = nullptr;
-    FontCharsClass *unicode_alt = this;
+    FontCharsClass *font = this;
 
     if (ch < 256) {
         retval = m_asciiCharArray[ch];
     } else {
-        while (unicode_alt->m_alternateUnicodeFont != nullptr && unicode_alt->m_alternateUnicodeFont != this) {
-            unicode_alt = unicode_alt->m_alternateUnicodeFont;
+        while (font->m_alternateUnicodeFont != nullptr && font->m_alternateUnicodeFont != font) {
+            font = font->m_alternateUnicodeFont;
         }
 
-        unicode_alt->Grow_Unicode_Array(ch);
-        retval = unicode_alt->m_unicodeCharArray[ch - unicode_alt->m_firstUnicodeChar];
+        font->Grow_Unicode_Array(ch);
+        retval = font->m_unicodeCharArray[ch - font->m_firstUnicodeChar];
     }
 
     if (retval == nullptr) {
-        retval = unicode_alt->Store_GDI_Char(ch);
+        retval = font->Store_GDI_Char(ch);
     }
 
     captainslog_assert(retval->value == ch);
@@ -116,17 +115,18 @@ void FontCharsClass::Blit_Char(unichar_t ch, uint16_t *dest_ptr, int dest_stride
     if (data != nullptr && data->width != 0) {
         int dest_inc = (dest_stride >> 1);
         uint16_t *src_ptr = data->buffer;
-        dest_ptr += (dest_inc * y) + x;
+        dest_ptr += x + y * dest_inc;
 
         for (int row = 0; row < m_charHeight; ++row) {
             for (int col = 0; col < data->width; ++col) {
-                uint16_t tmp = *src_ptr++;
+                uint16_t tmp = *src_ptr;
 
                 if (col < m_widthReduction) {
                     tmp |= dest_ptr[col];
                 }
 
                 dest_ptr[col] = tmp;
+                ++src_ptr;
             }
 
             dest_ptr += dest_inc;
@@ -217,7 +217,7 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
     constexpr DWORD italic = 0;
     constexpr DWORD underline = 0;
     constexpr DWORD strikeout = 0;
-    constexpr DWORD charset = 1;
+    constexpr DWORD charset = DEFAULT_CHARSET;
     bool is_generals = false;
 
     if (std::strcmp(font_name, "Generals") == 0) {

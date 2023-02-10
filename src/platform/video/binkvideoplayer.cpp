@@ -29,7 +29,7 @@ BinkVideoPlayer::BinkVideoPlayer() {}
  */
 BinkVideoPlayer::~BinkVideoPlayer()
 {
-    Deinit();
+    BinkVideoPlayer::Deinit();
 }
 
 /**
@@ -51,6 +51,7 @@ void BinkVideoPlayer::Init()
 void BinkVideoPlayer::Deinit()
 {
     g_theAudio->Release_Bink_Handle();
+    VideoPlayer::Deinit();
 }
 
 /**

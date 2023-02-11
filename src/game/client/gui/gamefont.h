@@ -20,6 +20,8 @@
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
 
+class FontCharsClass;
+
 class GameFont : public MemoryPoolObject
 {
     IMPLEMENT_POOL(GameFont);
@@ -35,7 +37,7 @@ public:
     Utf8String m_nameString;
     int m_pointSize;
     int m_height;
-    void *m_fontData;
+    FontCharsClass *m_fontData;
     bool m_bold;
 };
 
@@ -43,7 +45,7 @@ class FontLibrary : public SubsystemInterface
 {
 public:
     FontLibrary();
-    virtual ~FontLibrary();
+    virtual ~FontLibrary() override;
 
     virtual void Init() {}
     virtual void Reset();

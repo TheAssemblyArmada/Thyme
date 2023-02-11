@@ -173,6 +173,7 @@
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
 #include "w3dgameclient.h"
+#include "w3dgamefont.h"
 #include "w3dmodeldraw.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
@@ -2622,4 +2623,9 @@ void Setup_Hooks()
     Hook_Any(0x00755330, BaseHeightMapRenderObjClass::Remove_All_Terrain_Bibs);
     Hook_Any(0x00755340, BaseHeightMapRenderObjClass::Remove_Terrain_Bib);
     Hook_Any(0x00755360, BaseHeightMapRenderObjClass::Remove_Terrain_Bib_Drawable);
+
+    // w3dgamefont.h
+    Hook_Any(0x007752C0, W3DGameClient::Create_FontLibrary);
+    Hook_Any(0x007A9E70, W3DFontLibrary::Load_Font_Data);
+    Hook_Any(0x007A9F30, W3DFontLibrary::Release_Font_Data);
 }

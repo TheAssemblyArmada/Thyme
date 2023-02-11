@@ -40,6 +40,7 @@ struct FontCharsBuffer : public W3DMPO
 
 class FontCharsClass : public W3DMPO, public RefCountClass
 {
+    friend class W3DFontLibrary;
     friend class Render2DSentenceClass;
     ALLOW_HOOKING
     IMPLEMENT_W3D_POOL(FontCharsClass)

@@ -15,6 +15,7 @@
 #include "w3dgameclient.h"
 #include "drawable.h"
 #include "w3ddisplay.h"
+#include "w3dgamefont.h"
 #include "w3dmouse.h"
 #include "w3dstatuscircle.h"
 
@@ -28,6 +29,11 @@ Mouse *W3DGameClient::Create_Mouse()
 Display *W3DGameClient::Create_GameDisplay()
 {
     return new W3DDisplay;
+}
+
+FontLibrary *W3DGameClient::Create_FontLibrary()
+{
+    return new W3DFontLibrary;
 }
 
 void W3DGameClient::Set_Team_Color(int red, int green, int blue)

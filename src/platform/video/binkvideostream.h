@@ -32,10 +32,10 @@ public:
     virtual void Decompress_Frame() override;
     virtual void Render_Frame(VideoBuffer *buffer) override;
     virtual void Next_Frame() override;
-    // bool Is_Done();
+    // virtual bool Is_Done() override; // New virtual in Mac build
     virtual int Frame_Index() override;
     virtual int Frame_Count() override;
-    virtual void Goto_Frame(int frame) override;
+    virtual void Goto_Frame(int frame) override; // Removed in Mac build
     virtual int Height() override;
     virtual int Width() override;
 

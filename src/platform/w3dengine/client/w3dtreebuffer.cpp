@@ -88,7 +88,7 @@ int W3DTreeBuffer::W3DTreeTextureClass::Update(W3DTreeBuffer *buffer)
                 int32_t x = tile->m_tileLocationInTexture.x;
                 int32_t y = tile->m_tileLocationInTexture.y;
 
-                if (x > 0) {
+                if (x >= 0) {
                     for (int j = 0; j < width; j++) {
                         unsigned char *data = tile->Get_RGB_Data_For_Width(width);
                         unsigned char *data2 = &data[width * 4 * (width - 1 - j)];
@@ -453,13 +453,13 @@ void W3DTreeBuffer::Allocate_Tree_Buffers()
         D3DVSD_REG(7, D3DVSDT_FLOAT2),
         D3DVSD_END() };
 
-    int res = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\wave.pso", decl, 0, true, &m_dwTreeVertexShader);
+    int res = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\trees.vso", decl, 0, true, &m_dwTreeVertexShader);
 
     if (FAILED(res)) {
         return;
     }
 
-    W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\wave.vso", decl, 0, false, &m_dwTreePixelShader);
+    W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\trees.pso", decl, 0, false, &m_dwTreePixelShader);
 #endif
 }
 
@@ -719,15 +719,15 @@ void W3DTreeBuffer::Load_Trees_In_Index_And_Vertex_Buffers(
                                     diffuse = Do_Lighting(&pos, lighting, &emissive, 0xFFFFFFFF, 1.0f);
                                 }
 
-                                float u1 = m_treeTypes[tree_type].width * 64.0f / m_textureWidth;
-                                float v1 = m_treeTypes[tree_type].width * 64.0f / m_textureHeight;
-                                float u2 = m_treeTypes[tree_type].texture_width / m_textureWidth;
-                                float v2 = m_treeTypes[tree_type].texture_height / m_textureHeight;
+                                float u1 = (float)m_treeTypes[tree_type].width * 64.0f / (float)m_textureWidth;
+                                float v1 = (float)m_treeTypes[tree_type].width * 64.0f / (float)m_textureHeight;
+                                float u2 = (float)m_treeTypes[tree_type].texture_width / (float)m_textureWidth;
+                                float v2 = (float)m_treeTypes[tree_type].texture_height / (float)m_textureHeight;
 
                                 if (m_treeTypes[tree_type].valid_tile) {
                                     u1 = u1 * 0.5f;
                                     v1 = v1 * 0.5f;
-                                    v2 = 32.0f / m_textureHeight + v2;
+                                    v2 = 32.0f / (float)m_textureHeight + v2;
                                 }
 
                                 for (int j = 0; j < vert_count && m_curNumTreeVertices[i] < MAX_TREE_VERTEX; j++) {
@@ -786,7 +786,7 @@ void W3DTreeBuffer::Load_Trees_In_Index_And_Vertex_Buffers(
                                     vertexes->y = vertex.Y;
                                     vertexes->z = vertex.Z;
 
-                                    vertexes->nx = m_trees[count].sway_rand;
+                                    vertexes->nx = (float)m_trees[count].sway_rand;
                                     vertexes->ny = 1.0f
                                         - m_treeTypes[tree_type].module->m_darkeningFactor
                                             * m_trees[count].push_aside_speed; // BUG m_darkeningFactor should probably be
@@ -804,7 +804,7 @@ void W3DTreeBuffer::Load_Trees_In_Index_And_Vertex_Buffers(
 
                                         unsigned int color;
 
-                                        if (color_array) {
+                                        if (color_array != nullptr) {
                                             color = color_array[j];
                                         } else {
                                             color = 0xFFFFFFFF;
@@ -813,9 +813,10 @@ void W3DTreeBuffer::Load_Trees_In_Index_And_Vertex_Buffers(
                                         vertexes->diffuse = Do_Lighting(&loc, lighting, &emissive, color, 1.0f);
                                     } else {
                                         vertexes->diffuse = diffuse;
-                                        vertexes++;
-                                        m_curNumTreeVertices[i]++;
                                     }
+
+                                    vertexes++;
+                                    m_curNumTreeVertices[i]++;
                                 }
 
                                 for (int j = 0; j < poly_count && m_curNumTreeIndices[i] + 4 <= MAX_TREE_INDEX; j++) {
@@ -1033,7 +1034,7 @@ void W3DTreeBuffer::Update_Texture()
             bool texture_found = false;
 
             for (int k = 0; k < m; k++) {
-                if (m_treeTypes[k].module->m_textureName.Compare_No_Case(m_treeTypes[m].module->m_textureName)) {
+                if (m_treeTypes[k].module->m_textureName.Compare_No_Case(m_treeTypes[m].module->m_textureName) == 0) {
                     m_treeTypes[m].first_tile = 0;
                     m_treeTypes[m].width = j;
                     m_treeTypes[m].num_tiles = 0;
@@ -1099,7 +1100,8 @@ void W3DTreeBuffer::Update_Texture()
                 if (width == jj) {
                     bool texture_found = false;
                     for (int m = 0; m < kk; m++) {
-                        if (m_treeTypes[m].module->m_textureName.Compare_No_Case(m_treeTypes[kk].module->m_textureName)) {
+                        if (m_treeTypes[m].module->m_textureName.Compare_No_Case(m_treeTypes[kk].module->m_textureName)
+                            == 0) {
                             m_treeTypes[kk].texture_width = m_treeTypes[m].texture_width;
                             m_treeTypes[kk].texture_height = m_treeTypes[m].texture_height;
                             texture_found = true;
@@ -1119,7 +1121,7 @@ void W3DTreeBuffer::Update_Texture()
 
                                     for (int m = 0; m < width && b2; m++) {
                                         for (int n = 0; n < width && b2; n++) {
-                                            if (!unk1[i][32 * n + m + k]) {
+                                            if (!unk1[i + n][m + k]) {
                                                 b2 = false;
                                             }
                                         }
@@ -1153,7 +1155,7 @@ void W3DTreeBuffer::Update_Texture()
 
                             for (int m = 0; m < width; m++) {
                                 for (int n = 0; n < width; n++) {
-                                    unk1[i][32 * n + m + k] = 0;
+                                    unk1[i + n][m + k] = false;
                                     int index = width * n + m + m_treeTypes[kk].first_tile;
                                     m_tileData[index]->m_tileLocationInTexture.x = (m << 6) + x;
                                     m_tileData[index]->m_tileLocationInTexture.y = ((width - n - 1) << 6) + y;

@@ -352,7 +352,7 @@ void FlatTerrainShaderPixelShader::Reset()
 int FlatTerrainShaderPixelShader::Init()
 {
 #ifdef BUILD_WITH_D3D8
-    if (W3DShaderManager::Get_Chipset() < GPU_PS11) {
+    if (W3DShaderManager::Get_Chipset() <= GPU_PS11) {
         return 0;
     }
 

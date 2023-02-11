@@ -2562,7 +2562,8 @@ void Setup_Hooks()
     // w3dtreebuffer.h
     Hook_Any(0x00785880, W3DTreeBuffer::Cull);
     Hook_Any(0x00785980, W3DTreeBuffer::Get_Partition_Bucket);
-    Hook_Any(0x00785AB0, W3DTreeBuffer::Update_Texture);
+    Hook_Any(0x00785AB0, W3DTreeBuffer::Update_Sway);
+    Hook_Any(0x00785C30, W3DTreeBuffer::Update_Texture);
     Hook_Any(0x00786390, W3DTreeBuffer::Set_Texture_LOD);
     Hook_Any(0x007863D0, W3DTreeBuffer::Do_Lighting);
     Hook_Any(0x00786680, W3DTreeBuffer::Load_Trees_In_Index_And_Vertex_Buffers);

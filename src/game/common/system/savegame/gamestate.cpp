@@ -52,7 +52,7 @@ void GameState::Reset()
 void GameState::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, SnapShot>(PICK_ADDRESS(0x00494D10, 0x007E1D91), this);
+    Call_Method<void, GameState, Xfer *>(PICK_ADDRESS(0x00494D10, 0x007E1D91), this, xfer);
 #endif
 }
 

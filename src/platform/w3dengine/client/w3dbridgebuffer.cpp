@@ -809,3 +809,12 @@ void W3DBridgeBuffer::Draw_Bridges(CameraClass *camera, bool wireframe, TextureC
         }
     }
 }
+
+void W3DBridgeBuffer::World_Builder_Update_Bridge_Towers(GameAssetManager *assetmgr, SimpleSceneClass *scene)
+{
+    // heightmap TODO
+#ifdef GAME_DLL
+    Call_Method<void, W3DBridgeBuffer, GameAssetManager *, SimpleSceneClass *>(
+        PICK_ADDRESS(0x0, 0x005FF8C8), this, assetmgr, scene); // does not exist in game exe
+#endif
+}

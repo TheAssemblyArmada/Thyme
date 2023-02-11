@@ -163,6 +163,8 @@ public:
         }
     }
 
+    bool Is_Cell_Flipped(int x, int y) { return ((1 << (x & 7)) & m_cellFlipState[(x >> 3) + m_flipStateWidth * y]) != 0; }
+
     const std::vector<ICoord2D> &Get_All_Boundaries() const { return m_boundaries; }
 
     unsigned char Get_Display_Height(int x, int y) const

@@ -145,6 +145,9 @@ public:
     void Load_Bridges(W3DTerrainLogic *terrain_logic, bool unk);
     void Load_Bridges_In_Vertex_And_Index_Buffers(RefMultiListIterator<class RenderObjClass> *lights);
     void Update_Center(CameraClass *camera, RefMultiListIterator<RenderObjClass> *lights);
+    void World_Builder_Update_Bridge_Towers(GameAssetManager *assetmgr, SimpleSceneClass *scene);
+
+    void Do_Full_Update() { m_updateVis = true; }
 
 #ifdef GAME_DLL
     W3DBridgeBuffer *Hook_Ctor() { return new (this) W3DBridgeBuffer(); }

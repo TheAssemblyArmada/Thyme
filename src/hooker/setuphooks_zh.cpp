@@ -75,6 +75,7 @@
 #include "geometry.h"
 #include "globaldata.h"
 #include "hanimmgr.h"
+#include "heightmap.h"
 #include "hlod.h"
 #include "hooker.h"
 #include "htree.h"
@@ -2593,4 +2594,31 @@ void Setup_Hooks()
     Hook_Any(0x007D5010, W3DTerrainBackground::Update_Center);
     Hook_Any(0x007D51E0, W3DTerrainBackground::Update_Texture);
     Hook_Any(0x007D52F0, W3DTerrainBackground::Draw_Visible_Polys);
+
+    // heightmap.h
+    Hook_Any(0x00799060, HeightMapRenderObjClass::Free_Index_Vertex_Buffers);
+    Hook_Any(0x00799590, HeightMapRenderObjClass::Get_X_With_Origin);
+    Hook_Any(0x007995D0, HeightMapRenderObjClass::Get_Y_With_Origin);
+    Hook_Any(0x0079BF00, HeightMapRenderObjClass::Hook_Ctor);
+    Hook_Any(0x0079E100, HeightMapRenderObjClass::Render_Terrain_Pass);
+
+    // baseheightmap.h
+    Hook_Any(0x00750880, BaseHeightMapRenderObjClass::Draw_Scorches);
+    Hook_Any(0x00752E30, BaseHeightMapRenderObjClass::Is_Cliff_Cell);
+    Hook_Any(0x00753260, BaseHeightMapRenderObjClass::Get_Maximum_Visible_Box);
+    Hook_Any(0x00753510, BaseHeightMapRenderObjClass::Load_Roads_And_Bridges);
+    Hook_Any(0x00753560, BaseHeightMapRenderObjClass::Set_Shore_Line_Detail);
+    Hook_Any(0x00753EA0, BaseHeightMapRenderObjClass::Update_View_Impassable_Areas);
+    Hook_Any(0x00754080, BaseHeightMapRenderObjClass::Init_Dest_Alpha_LUT);
+    Hook_Any(0x00754550, BaseHeightMapRenderObjClass::Allocate_Scorch_Buffers);
+    Hook_Any(0x00754D20, BaseHeightMapRenderObjClass::Add_Scorch);
+    Hook_Any(0x007551E0, BaseHeightMapRenderObjClass::Unit_Moved);
+    Hook_Any(0x00755200, BaseHeightMapRenderObjClass::Remove_Trees_And_Props_For_Construction);
+    Hook_Any(0x00755290, BaseHeightMapRenderObjClass::Add_Prop);
+    Hook_Any(0x007552E0, BaseHeightMapRenderObjClass::Add_Terrain_Bib);
+    Hook_Any(0x00755300, BaseHeightMapRenderObjClass::Add_Terrain_Bib_Drawable);
+    Hook_Any(0x00755320, BaseHeightMapRenderObjClass::Remove_Terrain_Bib_Highlighting);
+    Hook_Any(0x00755330, BaseHeightMapRenderObjClass::Remove_All_Terrain_Bibs);
+    Hook_Any(0x00755340, BaseHeightMapRenderObjClass::Remove_Terrain_Bib);
+    Hook_Any(0x00755360, BaseHeightMapRenderObjClass::Remove_Terrain_Bib_Drawable);
 }

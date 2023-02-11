@@ -745,3 +745,16 @@ GameWindowManager *&g_theWindowManager = Make_Global<GameWindowManager *>(PICK_A
 // terrainvisual.cpp
 class TerrainVisual;
 TerrainVisual *&g_theTerrainVisual = Make_Global<TerrainVisual *>(PICK_ADDRESS(0x00A2C27C, 0x00E25D10));
+
+// w3dsnow.cpp
+class W3DSnowManager;
+W3DSnowManager *&g_theSnowManager = Make_Global<W3DSnowManager *>(PICK_ADDRESS(0x00A2BF04, 0x00E25CF4));
+
+// flatheightmap.cpp
+class FlatHeightMapRenderObjClass;
+FlatHeightMapRenderObjClass *&g_theFlatHeightMap =
+    Make_Global<FlatHeightMapRenderObjClass *>(PICK_ADDRESS(0x00A3AEA0, 0x00E1AC98));
+
+// heightmap.cpp
+class HeightMapRenderObjClass;
+HeightMapRenderObjClass *&g_theHeightMap = Make_Global<HeightMapRenderObjClass *>(PICK_ADDRESS(0x00A3AEC8, 0x00E1A634));

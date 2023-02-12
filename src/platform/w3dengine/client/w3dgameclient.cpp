@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "w3dgameclient.h"
+#include "binkvideoplayer.h"
 #include "drawable.h"
 #include "w3ddisplay.h"
 #include "w3dgamefont.h"
@@ -49,4 +50,9 @@ Drawable *W3DGameClient::Create_Drawable(const ThingTemplate *temp, DrawableStat
     }
 
     return new Drawable(temp, status);
+}
+
+VideoPlayer *W3DGameClient::Create_VideoPlayer()
+{
+    return new BinkVideoPlayer;
 }

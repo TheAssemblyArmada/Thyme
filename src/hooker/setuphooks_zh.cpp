@@ -1914,6 +1914,7 @@ void Setup_Hooks()
     Hook_Any(0x007751A0, W3DGameClient::Create_GameDisplay);
     Hook_Any(0x00775050, W3DGameClient::Set_Team_Color);
     Hook_Any(0x00774EA0, W3DGameClient::Create_Drawable);
+    Hook_Any(0x007753A0, W3DGameClient::Create_VideoPlayer);
 
     // w3dprojectedshadow.cpp
     Hook_Any(0x0075ECC0, W3DProjectedShadowManager::Hook_Ctor);

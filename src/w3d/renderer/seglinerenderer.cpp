@@ -843,7 +843,7 @@ void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
             stack[0].start_color = base_color_v[input_index];
             stack[0].end_color = base_color_v[input_index + 1];
         } else {
-            stack[0].start_color = Vector4(m_color.X, m_color.Y, m_color.Z, m_opacity);
+            stack[0].start_color.Set(m_color.X, m_color.Y, m_color.Z, m_opacity);
             stack[0].end_color = stack[0].start_color;
         }
 
@@ -869,7 +869,7 @@ void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
                 stack[i + 1].start_texv = stack[i].start_texv;
                 stack[i + 1].end_texv = (stack[i].start_texv + stack[i].end_texv) * .5f;
                 stack[i + 1].start_color = stack[i].start_color;
-                stack[i + 1].end_color = (stack[i].end_color + stack[i].end_color) * .5f;
+                stack[i + 1].end_color = (stack[i].start_color + stack[i].end_color) * .5f;
                 stack[i + 1].rand = stack[i].rand * .5f;
                 stack[i + 1].level = stack[i].level + 1;
                 stack[i].start_pos = stack[i + 1].end_pos;

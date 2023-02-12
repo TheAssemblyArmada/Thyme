@@ -89,6 +89,17 @@ template<int a, int b, int c, int d> struct FourCC
 #endif
 };
 
+inline uint32_t FourCC_From_String(const char *str)
+{
+    char buf[5] = {};
+    strlcpy_tpl(buf, str);
+#ifdef SYSTEM_LITTLE_ENDIAN
+    return (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
+#else
+    return (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+#endif
+}
+
 inline unsigned Get_Time()
 {
 #ifdef PLATFORM_WINDOWS

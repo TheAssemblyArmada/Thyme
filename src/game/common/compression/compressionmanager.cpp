@@ -90,6 +90,39 @@ uint32_t CompressionManager::Get_Compression_FourCC(CompressionType type)
 }
 
 /**
+ * @brief Thyme specific: Get the FourCC for the corresponding compression type
+ */
+CompressionType CompressionManager::Get_Compression_Type_By_FourCC(uint32_t fourcc)
+{
+    switch (fourcc) {
+        case FourCC<'E', 'A', 'R', '\0'>::value:
+            return COMPRESSION_EAR;
+        case FourCC<'Z', 'L', '1', '\0'>::value:
+            return COMPRESSION_ZL1;
+        case FourCC<'Z', 'L', '2', '\0'>::value:
+            return COMPRESSION_ZL2;
+        case FourCC<'Z', 'L', '3', '\0'>::value:
+            return COMPRESSION_ZL3;
+        case FourCC<'Z', 'L', '4', '\0'>::value:
+            return COMPRESSION_ZL4;
+        case FourCC<'Z', 'L', '5', '\0'>::value:
+            return COMPRESSION_ZL5;
+        case FourCC<'Z', 'L', '6', '\0'>::value:
+            return COMPRESSION_ZL6;
+        case FourCC<'Z', 'L', '7', '\0'>::value:
+            return COMPRESSION_ZL7;
+        case FourCC<'Z', 'L', '8', '\0'>::value:
+            return COMPRESSION_ZL8;
+        case FourCC<'Z', 'L', '9', '\0'>::value:
+            return COMPRESSION_ZL9;
+        default:
+            captainslog_error("Compression fourcc '%u' unhandled", fourcc);
+            return COMPRESSION_NONE;
+    }
+}
+
+#ifdef GAME_DLL
+/**
  * @brief Get type of compression used based on a small header.
  */
 CompressionType CompressionManager::Get_Compression_Type(const void *data, int size)
@@ -154,6 +187,20 @@ CompressionType CompressionManager::Get_Compression_Type(const void *data, int s
 
     return type;
 }
+#else
+/**
+ * @brief Get type of compression used based on a small header.
+ */
+CompressionType CompressionManager::Get_Compression_Type(const void *data, int size)
+{
+    if (size < sizeof(ComprHeader)) {
+        return COMPRESSION_NONE;
+    }
+
+    const uint32_t fourCC = rts::FourCC_From_String(static_cast<const char *>(data));
+    return Get_Compression_Type_By_FourCC(fourCC);
+}
+#endif
 
 /**
  * @brief Get the maximum size this uncompressed data will use up after compression

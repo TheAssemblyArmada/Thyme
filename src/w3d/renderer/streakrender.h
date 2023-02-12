@@ -2,6 +2,7 @@
  * @file
  *
  * @author Jonathan Wilson
+ * @author tomsons26
  *
  * @brief Streak Renderer
  *
@@ -40,8 +41,10 @@ public:
     };
 
     void Init(const W3dEmitterLinePropertiesStruct &props);
+
     void Set_Texture(TextureClass *texture);
-    const TextureClass *Get_Texture() const;
+    TextureClass *Get_Texture() const;
+
     void Render(RenderInfoClass &rinfo,
         const Matrix3D &transform,
         unsigned int point_count,
@@ -72,6 +75,7 @@ public:
     int Is_Freeze_Random() const { return m_bits & FREEZE_RANDOM; }
     int Is_Merge_Intersections() const { return m_bits & MERGE_INTERSECTIONS; }
     int Is_Sorting_Disabled() const { return m_bits & DISABLE_SORTING; }
+
     void Set_Color(const Vector3 &color) { m_color = color; }
     void Set_Merge_Abort_Factor(float factor) { m_mergeAbortFactor = factor; }
     void Set_Noise_Amplitude(float amplitude) { m_noiseAmplitude = amplitude; }
@@ -149,3 +153,14 @@ private:
     int m_vertexCount;
     VertexFormatXYZUV1 *m_vertexBuffer;
 };
+
+inline StreakRendererClass::TextureMapMode StreakRendererClass::Get_Texture_Mapping_Mode() const
+{
+    return (TextureMapMode)((m_bits & TEXTURE_MAP_MODE_MASK) >> TEXTURE_MAP_MODE_OFFSET);
+}
+
+inline void StreakRendererClass::Set_Texture_Mapping_Mode(StreakRendererClass::TextureMapMode mode)
+{
+    m_bits &= ~TEXTURE_MAP_MODE_MASK;
+    m_bits |= ((mode << TEXTURE_MAP_MODE_OFFSET) & TEXTURE_MAP_MODE_MASK);
+}

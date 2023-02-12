@@ -53,7 +53,7 @@ void SegmentedLineClass::Set_Points(unsigned int num_points, Vector3 *locs)
     Invalidate_Cached_Bounding_Volumes();
     if (num_points != 0 && locs != nullptr) {
         for (unsigned int i = 0; i < num_points; ++i) {
-            m_pointLocations.Add(locs[i]);
+            m_pointLocations.Add(locs[i], num_points);
         }
     }
 }
@@ -88,7 +88,9 @@ void SegmentedLineClass::Add_Point(const Vector3 &location)
 
 void SegmentedLineClass::Delete_Point(unsigned int point_idx)
 {
-    m_pointLocations.Delete(point_idx);
+    if (point_idx < static_cast<unsigned int>(m_pointLocations.Count())) {
+        m_pointLocations.Delete(point_idx);
+    }
 }
 
 TextureClass *SegmentedLineClass::Get_Texture()

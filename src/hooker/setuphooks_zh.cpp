@@ -2624,6 +2624,10 @@ void Setup_Hooks()
     Hook_Any(0x00755330, BaseHeightMapRenderObjClass::Remove_All_Terrain_Bibs);
     Hook_Any(0x00755340, BaseHeightMapRenderObjClass::Remove_Terrain_Bib);
     Hook_Any(0x00755360, BaseHeightMapRenderObjClass::Remove_Terrain_Bib_Drawable);
+    Hook_Any(0x007512A0, BaseHeightMapRenderObjClass::Do_The_Light);
+    Hook_Any(0x00752960, BaseHeightMapRenderObjClass::Is_Clear_Line_Of_Sight);
+    Hook_Any(0x00752580, BaseHeightMapRenderObjClass::Get_Height_Map_Height);
+    Hook_Any(0x00753C90, BaseHeightMapRenderObjClass::Update_Shoreline_Tiles);
 
     // w3dgamefont.h
     Hook_Any(0x007752C0, W3DGameClient::Create_FontLibrary);

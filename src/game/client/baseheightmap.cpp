@@ -13,14 +13,20 @@
  *            LICENSE
  */
 #include "baseheightmap.h"
+#include "castres.h"
+#include "colmath.h"
+#include "colorspace.h"
+#include "coltest.h"
 #include "flatheightmap.h"
 #include "frustum.h"
 #include "heightmap.h"
+#include "light.h"
 #include "rinfo.h"
 #include "scene.h"
 #include "shadermanager.h"
 #include "terraintex.h"
 #include "terrainvisual.h"
+#include "tri.h"
 #include "w3dbibbuffer.h"
 #include "w3dbridgebuffer.h"
 #include "w3dpropbuffer.h"
@@ -40,18 +46,20 @@
 BaseHeightMapRenderObjClass *g_theTerrainRenderObject;
 #endif
 
+static ShaderClass s_detailOpaqueShader(0x29441B);
+
 BaseHeightMapRenderObjClass::BaseHeightMapRenderObjClass() :
     m_x(0),
     m_y(0),
     m_needFullUpdate(false),
     m_showImpassableAreas(false),
     m_updating(false),
-    m_maxHeight((GameMath::Pow(256.0f, 1.0f) - 1.0f) * 0.625f),
+    m_maxHeight((GameMath::Pow(256.0f, 1.0f) - 1.0f) * HEIGHTMAP_SCALE),
     m_minHeight(0.0f),
     m_shorelineTiles(nullptr),
     m_numShorelineBlendTiles(0),
-    m_shorlineSortInfos(nullptr),
-    m_shorlineSortInfoCount(0),
+    m_shorelineSortInfos(nullptr),
+    m_shorelineSortInfoCount(0),
     m_sortAxis(1),
     m_endCell(0),
     m_startCell(0),
@@ -112,7 +120,7 @@ BaseHeightMapRenderObjClass::~BaseHeightMapRenderObjClass()
     delete m_waypointBuffer;
     delete m_shroud;
     delete[] m_shorelineTiles;
-    delete[] m_shorlineSortInfos;
+    delete[] m_shorelineSortInfos;
 }
 
 int BaseHeightMapRenderObjClass::Free_Map_Resources()
@@ -383,13 +391,154 @@ void BaseHeightMapRenderObjClass::Clear_All_Scorches()
 
 bool BaseHeightMapRenderObjClass::Cast_Ray(RayCollisionTestClass &raytest)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    return Call_Method<bool, BaseHeightMapRenderObjClass, RayCollisionTestClass &>(
-        PICK_ADDRESS(0x007518C0, 0x005FDA9E), this, raytest);
-#else
-    return false;
-#endif
+    bool hit = false;
+    Vector3 normal;
+    Vector3 p0;
+    Vector3 p1;
+    Vector3 p2;
+    Vector3 p3;
+
+    if (m_map == nullptr) {
+        return false;
+    }
+
+    AABoxClass hbox;
+    LineSegClass lineseg;
+    LineSegClass lineseg2;
+    CastResultStruct result;
+    int start_cell_x = 0;
+    int end_cell_x = 0;
+    int start_cell_y = 0;
+    int end_cell_y = 0;
+
+    int size = m_map->Border_Size() + 64;
+    Vector3 min_pt(-size * 10.0f, -size * 10.0f, -10.0f);
+    Vector3 max_pt((size + m_map->Get_X_Extent()) * 10.0f,
+        (size + m_map->Get_Y_Extent()) * 10.0f,
+        m_map->Get_Max_Height_Value() * HEIGHTMAP_SCALE + 10.0f);
+
+    MinMaxAABoxClass mmbox(min_pt, max_pt);
+    hbox.Init(mmbox);
+    lineseg = raytest.m_ray;
+    p0 = raytest.m_ray.Get_P0();
+    p1 = raytest.m_ray.Get_P1();
+    result.compute_contact_point = true;
+
+    for (int i = 0; i < 3; i++) {
+        result.Reset();
+        result.compute_contact_point = true;
+
+        if (!CollisionMath::Collide(lineseg, hbox, &result)) {
+            if (i == 0) {
+                return false;
+            }
+
+            break;
+        }
+
+        if (!result.start_bad) {
+            p0 = result.contact_point;
+        }
+
+        result.fraction = 1.0f;
+        result.start_bad = false;
+        lineseg2.Set(lineseg.Get_P1(), lineseg.Get_P0());
+
+        if (CollisionMath::Collide(lineseg2, hbox, &result) && !result.start_bad) {
+            p1 = result.contact_point;
+        }
+
+        if (p0.X > p1.X) {
+            start_cell_x = GameMath::Fast_To_Int_Floor(p1.X / 10.0f);
+            end_cell_x = GameMath::Fast_To_Int_Ceil(p0.X / 10.0f);
+        } else {
+            start_cell_x = GameMath::Fast_To_Int_Floor(p0.X / 10.0f);
+            end_cell_x = GameMath::Fast_To_Int_Ceil(p1.X / 10.0f);
+        }
+
+        if (p0.Y > p1.Y) {
+            start_cell_y = GameMath::Fast_To_Int_Floor(p1.Y / 10.0f);
+            end_cell_y = GameMath::Fast_To_Int_Ceil(p0.Y / 10.0f);
+        } else {
+            start_cell_y = GameMath::Fast_To_Int_Floor(p0.Y / 10.0f);
+            end_cell_y = GameMath::Fast_To_Int_Ceil(p1.Y / 10.0f);
+        }
+
+        int max_ht = m_map->Get_Max_Height_Value();
+        int min_ht = 0;
+
+        for (int cell_y = start_cell_y; cell_y <= end_cell_y; cell_y++) {
+            for (int cell_x = start_cell_x; cell_x <= end_cell_x; cell_x++) {
+                unsigned char clip = Get_Clip_Height(m_map->Border_Size() + cell_x, m_map->Border_Size() + cell_y);
+
+                if (clip < max_ht) {
+                    max_ht = clip;
+                }
+
+                if (min_ht < clip) {
+                    min_ht = clip;
+                }
+            }
+        }
+
+        Vector3 min_pt2((start_cell_x - 1) * 10.0f, (start_cell_y - 1) * 10.0f, (max_ht - 1) * HEIGHTMAP_SCALE);
+        Vector3 max_pt2((end_cell_x + 1) * 10.0f, (end_cell_y + 1) * 10.0f, (min_ht + 1) * HEIGHTMAP_SCALE);
+        MinMaxAABoxClass mmbox2(min_pt2, max_pt2);
+        hbox.Init(mmbox2);
+    }
+
+    raytest.m_result->compute_contact_point = true;
+    start_cell_x += m_map->Border_Size();
+    start_cell_y += m_map->Border_Size();
+    end_cell_x += m_map->Border_Size();
+    end_cell_y += m_map->Border_Size();
+
+    for (int m = 1; m < 5; m *= 3) {
+        for (int y = start_cell_y - m; y <= m + end_cell_y; y++) {
+            for (int x = start_cell_x - m; x <= m + end_cell_x; x++) {
+                p0.X = (x - m_map->Border_Size()) * 10.0f;
+                p0.Y = (y - m_map->Border_Size()) * 10.0f;
+                p0.Z = Get_Clip_Height(x, y) * HEIGHTMAP_SCALE;
+
+                p1.X = (x + 1 - m_map->Border_Size()) * 10.0f;
+                p1.Y = (y - m_map->Border_Size()) * 10.0f;
+                p1.Z = Get_Clip_Height(x + 1, y) * HEIGHTMAP_SCALE;
+
+                p2.X = (x + 1 - m_map->Border_Size()) * 10.0f;
+                p2.Y = (y + 1 - m_map->Border_Size()) * 10.0f;
+                p2.Z = Get_Clip_Height(x + 1, y + 1) * HEIGHTMAP_SCALE;
+
+                p3.X = (x - m_map->Border_Size()) * 10.0f;
+                p3.Y = (y + 1 - m_map->Border_Size()) * 10.0f;
+                p3.Z = Get_Clip_Height(x, y + 1) * HEIGHTMAP_SCALE;
+
+                TriClass tri;
+                tri.V[0] = &p0;
+                tri.V[1] = &p1;
+                tri.V[2] = &p2;
+                tri.N = &normal;
+                tri.Compute_Normal();
+                hit |= CollisionMath::Collide(raytest.m_ray, tri, raytest.m_result);
+
+                if (raytest.m_result->start_bad) {
+                    return true;
+                }
+
+                tri.V[0] = &p2;
+                tri.V[1] = &p3;
+                tri.V[2] = &p0;
+                tri.N = &normal;
+                tri.Compute_Normal();
+                hit |= CollisionMath::Collide(raytest.m_ray, tri, raytest.m_result);
+
+                if (hit) {
+                    raytest.m_result->surface_type = 13;
+                }
+            }
+        }
+    }
+
+    return hit;
 }
 
 void BaseHeightMapRenderObjClass::Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const
@@ -432,18 +581,80 @@ void BaseHeightMapRenderObjClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) co
 int BaseHeightMapRenderObjClass::Init_Height_Data(
     int x, int y, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights, bool update_shoreline)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    return Call_Method<int,
-        BaseHeightMapRenderObjClass,
-        int,
-        int,
-        WorldHeightMap *,
-        RefMultiListIterator<RenderObjClass> *,
-        bool>(PICK_ADDRESS(0x00754160, 0x00600681), this, x, y, map, lights, update_shoreline);
-#else
+    Ref_Ptr_Set(m_map, map);
+
+    if (m_shroud != nullptr) {
+        m_shroud->Init(m_map, g_theWriteableGlobalData->m_partitionCellSize, g_theWriteableGlobalData->m_partitionCellSize);
+    }
+
+    m_roadBuffer->Set_Map(m_map);
+    unsigned char *data = nullptr;
+
+    if (map != nullptr) {
+        data = map->Get_Data_Ptr();
+    }
+
+    if (m_treeBuffer != nullptr) {
+        Region2D region;
+        region.lo.x = 0.0f;
+        region.lo.y = 0.0f;
+        region.hi.x = (map->Get_X_Extent() - 2 * map->Get_Border_Size()) * 10.0f;
+        region.hi.y = (map->Get_Y_Extent() - 2 * map->Get_Border_Size()) * 10.0f;
+        m_treeBuffer->Set_Partition_Region(&region);
+    }
+
+    if (update_shoreline) {
+        m_numShorelineBlendTiles = 0;
+
+        if (map != nullptr) {
+            int x_extent = map->Get_X_Extent();
+            int y_extent = map->Get_Y_Extent();
+            int min_height = WorldHeightMap::Get_Max_Height_Value();
+            int max_height = 0;
+
+            for (int y_pos = 0; y_pos < y_extent; y_pos++) {
+                for (int x_pos = 0; x_pos < x_extent; x_pos++) {
+                    unsigned char height = map->Get_Height(x_pos, y_pos);
+
+                    if (height < min_height) {
+                        min_height = height;
+                    }
+
+                    if (max_height < height) {
+                        max_height = height;
+                    }
+                }
+            }
+
+            m_minHeight = min_height * HEIGHTMAP_SCALE;
+            m_maxHeight = max_height * HEIGHTMAP_SCALE;
+            Update_Shoreline_Tiles(0, 0, x_extent - 1, y_extent - 1, map);
+
+            if (g_theWaterTransparency->m_transparentWaterMinOpacity != m_transparentWaterMinOpacity) {
+                Init_Dest_Alpha_LUT();
+            }
+        }
+    }
+
+    Set_Force_Visible(true);
+    m_needFullUpdate = true;
+    m_scorchesInBuffer = 0;
+    m_curNumScorchVertices = 0;
+    m_curNumScorchIndices = 0;
+
+    if (data != nullptr && m_stageTwoTexture == nullptr) {
+        Free_Map_Resources();
+        Ref_Ptr_Set(m_map, map);
+        m_stageTwoTexture = new CloudMapTerrainTextureClass(MIP_LEVELS_ALL);
+        m_stageThreeTexture = new LightMapTerrainTextureClass(m_macroTextureName, MIP_LEVELS_ALL);
+        m_destAlphaLUT = new TextureClass(256, 1, WW3D_FORMAT_A8R8G8B8, MIP_LEVELS_1, POOL_MANAGED, false, true);
+        Init_Dest_Alpha_LUT();
+        Allocate_Scorch_Buffers();
+        m_vertexMaterialClass = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
+        m_shaderClass = s_detailOpaqueShader;
+    }
+
     return 0;
-#endif
 }
 
 void BaseHeightMapRenderObjClass::Static_Lighting_Changed()
@@ -465,22 +676,147 @@ void BaseHeightMapRenderObjClass::Xfer_Snapshot(Xfer *xfer)
 
 int BaseHeightMapRenderObjClass::Get_Static_Diffuse(int x, int y)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    return Call_Method<int, BaseHeightMapRenderObjClass, int, int>(PICK_ADDRESS(0x00754E70, 0x006017D2), this, x, y);
-#else
-    return 0;
-#endif
+    if (x < 0) {
+        x = 0;
+    }
+
+    if (y < 0) {
+        y = 0;
+    }
+
+    if (x >= m_map->Get_X_Extent()) {
+        x = m_map->Get_X_Extent() - 1;
+    }
+
+    if (y >= m_map->Get_Y_Extent()) {
+        y = m_map->Get_Y_Extent() - 1;
+    }
+
+    if (m_map == nullptr) {
+        return 0;
+    }
+
+    Vector3 v1;
+    Vector3 v2;
+    Vector3 normal;
+
+    int y1 = y - 1;
+    int y2 = y + 1;
+
+    if (y2 >= m_map->Get_Y_Extent()) {
+        y2 = m_map->Get_Y_Extent() - 1;
+    }
+
+    if (y1 < 0) {
+        y1 = 0;
+    }
+
+    int x1 = x - 1;
+    int x2 = x + 1;
+
+    if (x2 >= m_map->Get_X_Extent()) {
+        x2 = m_map->Get_X_Extent() - 1;
+    }
+
+    if (x1 < 0) {
+        x1 = 0;
+    }
+
+    Vector3 light[LIGHT_COUNT];
+
+    for (int i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
+        light[i].Set(-g_theWriteableGlobalData->m_terrainLightPos[i].x,
+            -g_theWriteableGlobalData->m_terrainLightPos[i].y,
+            -g_theWriteableGlobalData->m_terrainLightPos[i].z);
+    }
+
+    v1.Set(20.0f, 0.0f, (m_map->Get_Height(x2, y) - m_map->Get_Height(x1, y)) * HEIGHTMAP_SCALE);
+    v2.Set(0.0f, 20.0f, (m_map->Get_Height(x, y2) - m_map->Get_Height(x, y1)) * HEIGHTMAP_SCALE);
+    Vector3::Normalized_Cross_Product(v1, v2, &normal);
+
+    VertexFormatXYZDUV2 vb;
+    vb.x = (x - m_map->Border_Size()) * 10.0f;
+    vb.y = (y - m_map->Border_Size()) * 10.0f;
+    vb.z = m_map->Get_Height(x, y) * HEIGHTMAP_SCALE;
+    vb.u1 = 0.0f;
+    vb.v1 = 0.0f;
+    vb.u2 = 1.0f;
+    vb.v2 = 1.0f;
+
+    RTS3DScene *scene = static_cast<RTS3DScene *>(m_scene);
+
+    if (scene != nullptr) {
+        RefMultiListIterator<RenderObjClass> *lights = scene->Create_Lights_Iterator();
+        Do_The_Light(&vb, light, &normal, lights, 1);
+
+        if (lights != nullptr) {
+            scene->Destroy_Lights_Iterator(lights);
+        }
+    } else {
+        Do_The_Light(&vb, light, &normal, nullptr, 1);
+    }
+
+    return vb.diffuse;
 }
 
-float BaseHeightMapRenderObjClass::Get_Max_Cell_Height(float x, float y)
+float BaseHeightMapRenderObjClass::Get_Max_Cell_Height(float x, float y) const
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    return Call_Method<float, BaseHeightMapRenderObjClass, float, float>(PICK_ADDRESS(0x00752D00, 0x005FF000), this, x, y);
-#else
-    return 0;
-#endif
+    if (m_map == nullptr) {
+        return 0.0f;
+    }
+
+    WorldHeightMap *map;
+
+    if (g_theTerrainVisual != nullptr) {
+        map = g_theTerrainVisual->Get_Logic_Height_Map();
+    } else {
+        map = m_map;
+    }
+
+    int x2 = map->Border_Size() + (x / 10.0f);
+    int y2 = map->Border_Size() + (y / 10.0f);
+
+    if (x2 < 0) {
+        x2 = 0;
+    }
+
+    if (y2 < 0) {
+        y2 = 0;
+    }
+
+    if (x2 >= map->Get_X_Extent() - 1) {
+        x2 = map->Get_X_Extent() - 2;
+    }
+
+    if (y2 >= map->Get_Y_Extent() - 1) {
+        y2 = map->Get_Y_Extent() - 2;
+    }
+
+    unsigned char *data = map->Get_Data_Ptr();
+    float p1 = data[m_map->Get_X_Extent() * y2 + x2] * HEIGHTMAP_SCALE;
+    float p2 = data[m_map->Get_X_Extent() * y2 + (x2 + 1)] * HEIGHTMAP_SCALE;
+    float p3 = data[m_map->Get_X_Extent() * (y2 + 1) + (x2 + 1)] * HEIGHTMAP_SCALE;
+    float p4 = data[m_map->Get_X_Extent() * (y2 + 1) + x2] * HEIGHTMAP_SCALE;
+    float r1;
+    float r2;
+
+    if (p1 <= p2) {
+        r1 = p2;
+    } else {
+        r1 = p1;
+    }
+
+    if (r1 <= p3) {
+        r2 = p3;
+    } else {
+        r2 = p1;
+    }
+
+    if (r2 <= p4) {
+        return p4;
+    } else {
+        return r2;
+    }
 }
 
 void BaseHeightMapRenderObjClass::Set_Time_Of_Day(TimeOfDayType time)
@@ -494,27 +830,234 @@ void BaseHeightMapRenderObjClass::Do_The_Light(VertexFormatXYZDUV2 *vb,
     RefMultiListIterator<RenderObjClass> *lights,
     unsigned char alpha)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    Call_Method<void,
-        BaseHeightMapRenderObjClass,
-        VertexFormatXYZDUV2 *,
-        Vector3 *,
-        Vector3 *,
-        RefMultiListIterator<RenderObjClass> *,
-        unsigned char>(PICK_ADDRESS(0x007512A0, 0x005FD3A8), this, vb, light, normal, lights, alpha);
-#endif
+    float shade_r = g_theWriteableGlobalData->m_terrainAmbient[0].red;
+    float shade_g = g_theWriteableGlobalData->m_terrainAmbient[0].green;
+    float shade_b = g_theWriteableGlobalData->m_terrainAmbient[0].blue;
+
+    if (lights != nullptr) {
+        for (lights->First(); !lights->Is_Done(); lights->Next()) {
+            LightClass *obj = static_cast<LightClass *>(lights->Peek_Obj());
+            Vector3 light_dir(vb->x, vb->y, vb->z);
+            float ambient_factor = 1.0f;
+
+            switch (obj->Get_Type()) {
+                case LightClass::POINT:
+                case LightClass::SPOT: {
+                    Vector3 light_loc = obj->Get_Position();
+                    light_dir -= light_loc;
+                    double far_start;
+                    double far_end;
+                    obj->Get_Far_Attenuation_Range(far_start, far_end);
+
+                    if (light_loc.X - far_end > vb->x) {
+                        continue;
+                    }
+
+                    if (light_loc.X + far_end < vb->x) {
+                        continue;
+                    }
+
+                    if (light_loc.Y - far_end > vb->y) {
+                        continue;
+                    }
+
+                    if (light_loc.Y + far_end < vb->y) {
+                        continue;
+                    }
+
+                    float dist = light_dir.Length();
+
+                    if (dist >= far_end || far_start < 0.1f) {
+                        continue;
+                    }
+
+                    ambient_factor = 1.0f - (dist - far_start) / (far_end - far_start);
+                    ambient_factor = std::clamp(ambient_factor, 0.0f, 1.0f);
+                    break;
+                }
+                case LightClass::DIRECTIONAL: {
+                    light_dir = obj->Get_Transform().Get_Z_Vector();
+                    ambient_factor = 1.0f;
+                    break;
+                }
+            }
+
+            light_dir.Normalize();
+            Vector3 light_dir_neg(-light_dir.X, -light_dir.Y, -light_dir.Z);
+            float diffuse_factor = (light_dir_neg * *normal) * ambient_factor;
+
+            Vector3 diffuse;
+            obj->Get_Diffuse(&diffuse);
+
+            Vector3 ambient;
+            obj->Get_Ambient(&ambient);
+
+            if (diffuse_factor > 1.0f) {
+                diffuse_factor = 1.0f;
+            }
+
+            if (diffuse_factor < 0.0f) {
+                diffuse_factor = 0.0f;
+            }
+
+            shade_r += diffuse_factor * diffuse.X;
+            shade_g += diffuse_factor * diffuse.Y;
+            shade_b += diffuse_factor * diffuse.Z;
+            shade_r += ambient_factor * ambient.X;
+            shade_g += ambient_factor * ambient.Y;
+            shade_b += ambient_factor * ambient.Z;
+        }
+    }
+
+    for (int i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
+        float diffuse_factor = light[i] * *normal;
+
+        if (diffuse_factor > 1.0f) {
+            diffuse_factor = 1.0f;
+        }
+
+        if (diffuse_factor < 0.0f) {
+            diffuse_factor = 0.0f;
+        }
+
+        shade_r += diffuse_factor * g_theWriteableGlobalData->m_terrainDiffuse[i].red;
+        shade_g += diffuse_factor * g_theWriteableGlobalData->m_terrainDiffuse[i].green;
+        shade_b += diffuse_factor * g_theWriteableGlobalData->m_terrainDiffuse[i].blue;
+    }
+
+    if (shade_r > 1.0f) {
+        shade_r = 1.0f;
+    }
+
+    if (shade_r < 0.0f) {
+        shade_r = 0.0f;
+    }
+
+    if (shade_g > 1.0f) {
+        shade_g = 1.0f;
+    }
+
+    if (shade_g < 0.0f) {
+        shade_g = 0.0f;
+    }
+
+    if (shade_b > 1.0f) {
+        shade_b = 1.0f;
+    }
+
+    if (shade_b < 0.0f) {
+        shade_b = 0.0f;
+    }
+
+    if (m_useDepthFade && vb->z <= g_theWriteableGlobalData->m_waterPositionZ) {
+        float fade = (1.4f - vb->z) / g_theWriteableGlobalData->m_waterPositionZ;
+        shade_r = (1.0f - (1.0f - m_depthFade.X) * fade) * shade_r;
+        shade_g = (1.0f - (1.0f - m_depthFade.Y) * fade) * shade_g;
+        shade_b = (1.0f - (1.0f - m_depthFade.Z) * fade) * shade_b;
+    }
+
+    shade_r = shade_r * 255.0f;
+    shade_g = shade_g * 255.0f;
+    shade_b = shade_b * 255.0f;
+
+    vb->diffuse = Make_Color(GameMath::Fast_To_Int_Truncate(shade_r),
+        GameMath::Fast_To_Int_Truncate(shade_g),
+        GameMath::Fast_To_Int_Truncate(shade_b),
+        alpha);
 }
 
-float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord3D *pos)
+float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord3D *pos) const
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    return Call_Method<float, BaseHeightMapRenderObjClass, float, float, Coord3D *>(
-        PICK_ADDRESS(0x00752580, 0x005FE5B6), this, x, y, pos);
-#else
-    return 0.0f;
-#endif
+    WorldHeightMap *map;
+
+    if (g_theTerrainVisual != nullptr) {
+        map = g_theTerrainVisual->Get_Logic_Height_Map();
+    } else {
+        map = m_map;
+    }
+
+    if (map != nullptr) {
+        float f1 = x * 0.1f;
+        float f2 = y * 0.1f;
+        float f3 = GameMath::Fast_Float_Floor(f1);
+        float f4 = GameMath::Fast_Float_Floor(f2);
+        float f5 = f1 - f3;
+        float f6 = f2 - f4;
+        int i1 = map->Border_Size() + GameMath::Lrintf(f3);
+        int i2 = map->Border_Size() + GameMath::Lrintf(f4);
+        int x_extent = map->Get_X_Extent();
+
+        if (i1 <= x_extent - 3 && i2 <= map->Get_Y_Extent() - 3 && i2 >= 1 && i1 >= 1) {
+            unsigned char *data = map->Get_Data_Ptr();
+            int i3 = x_extent * i2 + i1;
+            float f7 = data[i3];
+            float f8 = data[x_extent + 1 + i3];
+            float f9;
+
+            if (f6 <= f5) {
+                float f10 = data[i3 + 1];
+                f9 = ((f8 - f10) * f6 + f10 + (1.0f - f5) * (f7 - f10)) * HEIGHTMAP_SCALE;
+            } else {
+                float f10 = data[x_extent + i3];
+                f9 = ((1.0f - f6) * (f7 - f10) + f10 + (f8 - f10) * f5) * HEIGHTMAP_SCALE;
+            }
+
+            if (pos != nullptr) {
+                int i4 = x_extent * (i2 - 1) + i1;
+                int i5 = x_extent * i2 + i1;
+                int i6 = x_extent + i5;
+                int i7 = x_extent * (i2 + 2) + i1;
+                unsigned char c1 = data[i5];
+                unsigned char c2 = data[i5 + 1];
+                unsigned char c3 = data[x_extent + 1 + i5];
+                unsigned char c4 = data[x_extent + i5];
+                unsigned char c5 = data[i4];
+                unsigned char c6 = data[i4 + 1];
+                unsigned char c7 = data[i7 + 1];
+                unsigned char c8 = data[i7];
+                float f11 = c2 - data[i5 - 1];
+                float f12 = data[i5 + 2] - c1;
+                float f13 = data[x_extent + 2 + i5] - c4;
+                float f14 = c4 - c5;
+                float f15 = c3 - c6;
+                float f16 = c7 - c2;
+                float f17 = c8 - c1;
+                float f18 = (1.0f - f5) * f11 + f5 * f12;
+                float f19 = (1.0f - f5) * f12 + f5 * f13;
+                float f20 = f18 * (1.0f - f6) + f6 * f19;
+                float f21 = (1.0f - f5) * f14 + f5 * f17;
+                float f22 = (1.0f - f5) * f15 + f5 * f16;
+                float f23 = f21 * (1.0f - f6) + f6 * f22;
+                Vector3 v1;
+                Vector3 v2;
+                Vector3 v3;
+                v1.Set(32.0f, 0.0f, f20);
+                v2.Set(0.0f, 32.0f, f23);
+                Vector3::Normalized_Cross_Product(v1, v2, &v3);
+                pos->x = v3.X;
+                pos->y = v3.Y;
+                pos->z = v3.Z;
+            }
+
+            return f9;
+        } else {
+            if (pos != nullptr) {
+                pos->x = 0.0f;
+                pos->y = 0.0f;
+                pos->z = 1.0f;
+            }
+
+            return Get_Clip_Height(i1, i2) * HEIGHTMAP_SCALE;
+        }
+    } else {
+        if (pos) {
+            pos->x = 0.0f;
+            pos->y = 0.0f;
+            pos->z = 1.0f;
+        }
+
+        return 0.0f;
+    }
 }
 
 void Do_Trees(RenderInfoClass &rinfo)
@@ -692,13 +1235,123 @@ void BaseHeightMapRenderObjClass::Init_Dest_Alpha_LUT()
 
 bool BaseHeightMapRenderObjClass::Is_Clear_Line_Of_Sight(const Coord3D &pos1, const Coord3D &pos2) const
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    return Call_Method<bool, const BaseHeightMapRenderObjClass, const Coord3D &, const Coord3D &>(
-        PICK_ADDRESS(0x00752960, 0x005FEBBC), this, pos1, pos2);
-#else
-    return false;
-#endif
+    if (m_map == nullptr) {
+        return false;
+    }
+
+    WorldHeightMap *map;
+
+    if (g_theTerrainVisual != nullptr) {
+        map = g_theTerrainVisual->Get_Logic_Height_Map();
+    } else {
+        map = m_map;
+    }
+
+    int border = map->Border_Size();
+    int x1 = border + GameMath::Fast_To_Int_Floor(0.1f * pos1.x);
+    int y1 = border + GameMath::Fast_To_Int_Floor(0.1f * pos1.y);
+    int x2 = border + GameMath::Fast_To_Int_Floor(0.1f * pos2.x);
+    int y2 = border + GameMath::Fast_To_Int_Floor(0.1f * pos2.y);
+    int x_dist = abs(x2 - x1);
+    int y_dist = abs(y2 - y1);
+    int x_pos = x1;
+    int i2 = y1;
+    int i3;
+    int i4;
+
+    if (x2 < x1) {
+        i3 = -1;
+        i4 = -1;
+    } else {
+        i3 = 1;
+        i4 = 1;
+    }
+
+    int i5;
+    int i6;
+
+    if (y2 < y1) {
+        i5 = -1;
+        i6 = -1;
+    } else {
+        i5 = 1;
+        i6 = 1;
+    }
+
+    int i7;
+    int i8;
+    int i9;
+    int i10;
+
+    if (x_dist < y_dist) {
+        i4 = 0;
+        i5 = 0;
+        i7 = y_dist;
+        i8 = y_dist / 2;
+        i9 = x_dist;
+        i10 = y_dist;
+    } else {
+        i3 = 0;
+        i6 = 0;
+        i7 = x_dist;
+        i8 = x_dist / 2;
+        i9 = y_dist;
+        i10 = x_dist;
+    }
+
+    float z = pos1.z;
+    float z2 = (pos2.z - z) * (1.0f / i10);
+    unsigned char *data = map->Get_Data_Ptr();
+    int x_extent = map->Get_X_Extent();
+    int y_extent = map->Get_Y_Extent();
+
+    for (int y_pos = 0; y_pos < i10 && x_pos >= 0 && i2 >= 0 && x_pos < x_extent - 1 && i2 < y_extent - 1; y_pos++) {
+        int i11 = x_extent * i2 + x_pos;
+        float f1;
+
+        if (data[i11 + 1] >= data[i11]) {
+            f1 = data[i11 + 1];
+        } else {
+            f1 = data[i11];
+        }
+
+        float f2;
+
+        if (data[x_extent + i11] >= f1) {
+            f2 = data[x_extent + i11];
+        } else {
+            f2 = f1;
+        }
+
+        float f3;
+
+        if (data[x_extent + 1 + i11] >= f2) {
+            f3 = data[x_extent + 1 + i11];
+        } else {
+            f3 = f2;
+        }
+
+        if (z + 0.5f < f3 * HEIGHTMAP_SCALE) {
+            return false;
+        }
+
+        if (Get_Max_Height() <= z && z2 > 0.0f) {
+            return true;
+        }
+
+        z = z + z2;
+        i8 += i9;
+
+        if (i8 >= i7) {
+            i8 -= i7;
+            x_pos += i3;
+            i2 += i5;
+        }
+        x_pos += i4;
+        i2 += i6;
+    }
+
+    return true;
 }
 
 bool BaseHeightMapRenderObjClass::Is_Cliff_Cell(float x, float y)
@@ -753,10 +1406,90 @@ void BaseHeightMapRenderObjClass::Load_Roads_And_Bridges(W3DTerrainLogic *pTerra
 
 void BaseHeightMapRenderObjClass::Record_Shore_Line_Sort_Infos()
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass>(PICK_ADDRESS(0x00753580, 0x005FF958), this);
-#endif
+    if (!g_theWriteableGlobalData->m_unsortedShoreLines && m_shorelineTiles != nullptr && m_map != nullptr) {
+        int count = m_map->Get_X_Extent() - 1;
+        int axis = 1;
+
+        if (count <= m_map->Get_Y_Extent() - 1) {
+            count = m_map->Get_Y_Extent() - 1;
+            axis = 0;
+        }
+
+        m_sortAxis = axis;
+
+        if (m_shorelineSortInfos == nullptr || count > m_shorelineSortInfoCount) {
+            if (m_shorelineSortInfos != nullptr) {
+                delete[] m_shorelineSortInfos;
+            }
+
+            m_shorelineSortInfoCount = count;
+            m_shorelineSortInfos = new ShorelineSortInfo[count];
+        }
+
+        memset(m_shorelineSortInfos, 0, sizeof(ShorelineSortInfo) * m_shorelineSortInfoCount);
+
+        if (m_sortAxis != 0) {
+            m_startCell = m_shorelineTiles[0].index & 0xFFFF;
+            m_endCell = m_startCell;
+            ShorelineSortInfo *info;
+
+            for (int i = 0; i < m_numShorelineBlendTiles; i += info->unk2) {
+                int index = m_shorelineTiles[i].index & 0xFFFF;
+                info = &m_shorelineSortInfos[index];
+
+                if (index > m_endCell) {
+                    m_endCell = index;
+                }
+
+                int i1 = i + 1;
+                int i2 = m_shorelineTiles[i].index >> 16;
+                int i3 = i2;
+
+                while ((m_shorelineTiles[i1].index & 0xFFFF) == index && i1 < m_numShorelineBlendTiles) {
+                    if (m_shorelineTiles[i1].index >> 16 > i2) {
+                        i2 = m_shorelineTiles[i1].index >> 16;
+                    }
+
+                    i1++;
+                }
+
+                info->unk1 = i;
+                info->unk2 = i1 - i;
+                info->unk3 = i3;
+                info->unk4 = i2;
+            }
+        } else {
+            m_startCell = m_shorelineTiles[0].index >> 16;
+            m_endCell = m_startCell;
+            ShorelineSortInfo *info;
+
+            for (int i = 0; i < m_numShorelineBlendTiles; i += info->unk2) {
+                int index = m_shorelineTiles[i].index >> 16;
+                info = &m_shorelineSortInfos[index];
+
+                if (index > m_endCell) {
+                    m_endCell = index;
+                }
+
+                int i1 = i + 1;
+                int i2 = m_shorelineTiles[i].index & 0xFFFF;
+                int i3 = i2;
+
+                while ((m_shorelineTiles[i1].index >> 16) == index && i1 < m_numShorelineBlendTiles) {
+                    if ((m_shorelineTiles[i1].index & 0xFFFF) > i2) {
+                        i2 = m_shorelineTiles[i1].index & 0xFFFF;
+                    }
+
+                    i1++;
+                }
+
+                info->unk1 = i;
+                info->unk2 = i1 - i;
+                info->unk3 = i3;
+                info->unk4 = i2;
+            }
+        }
+    }
 }
 
 void BaseHeightMapRenderObjClass::Remove_All_Props()
@@ -821,17 +1554,493 @@ void BaseHeightMapRenderObjClass::Remove_Trees_And_Props_For_Construction(
 
 void BaseHeightMapRenderObjClass::Render_Shore_Lines(CameraClass *camera)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass, CameraClass *>(PICK_ADDRESS(0x00755460, 0x00602046), this, camera);
+#ifdef BUILD_WITH_D3D8
+    if (g_theWriteableGlobalData->m_unsortedShoreLines) {
+        m_shorelineBlendTilesRendered = 0;
+
+        if (g_theWriteableGlobalData->m_showSoftWaterEdge && g_theWaterTransparency->m_transparentWaterDepth != 0.0f
+            && m_numShorelineBlendTiles != 0 && DX8Wrapper::Get_Back_Buffer_Format() == WW3D_FORMAT_A8R8G8B8) {
+            int vertex_count = 0;
+            int poly_count = 0;
+            int y = m_map->Get_Draw_Origin_Y() + m_map->Get_Draw_Height() - 1;
+            int x = m_map->Get_Draw_Origin_X() + m_map->Get_Draw_Width() - 1;
+
+            if (x > m_map->Get_X_Extent() - 1) {
+                x = m_map->Get_X_Extent() - 1;
+            }
+
+            if (y > m_map->Get_Y_Extent() - 1) {
+                y = m_map->Get_Y_Extent() - 1;
+            }
+
+            int origin_x = m_map->Get_Draw_Origin_X();
+            int origin_y = m_map->Get_Draw_Origin_Y();
+            int index = 0;
+            ShaderClass shader(ShaderClass::s_presetOpaque2DShader);
+            shader.Set_Depth_Compare(ShaderClass::PASS_LEQUAL);
+            DX8Wrapper::Set_Shader(shader);
+            VertexMaterialClass *material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
+            DX8Wrapper::Set_Material(material);
+            Ref_Ptr_Release(material);
+            DX8Wrapper::Set_Texture(0, m_destAlphaLUT);
+            Matrix3D tm(true);
+            DX8Wrapper::Set_Transform(D3DTS_WORLD, tm);
+            DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 8);
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_TEXCOORDINDEX, 0);
+
+            while (index != m_numShorelineBlendTiles) {
+                DynamicVBAccessClass vb(VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, DX8_FVF_XYZNDUV2, 2048);
+                DynamicIBAccessClass ib(IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, 3072);
+
+                {
+                    DynamicVBAccessClass::WriteLockClass vb_lock(&vb);
+                    VertexFormatXYZNDUV2 *vertices = vb_lock.Get_Formatted_Vertex_Array();
+                    DynamicIBAccessClass::WriteLockClass ib_lock(&ib);
+                    unsigned short *indices = ib_lock.Get_Index_Array();
+
+                    if (indices == nullptr || vertices == nullptr) {
+                        DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 7);
+                        return;
+                    }
+
+                    while (index < m_numShorelineBlendTiles && vertex_count < 2048) {
+                        ShorelineTile *tile = &m_shorelineTiles[index];
+                        int index_x = tile->index & 0xFFFF;
+                        int index_y = tile->index >> 16;
+
+                        if (index_x >= origin_x && index_x < x && index_y >= origin_y && index_y < y) {
+                            vertices->x = tile->x1;
+                            vertices->y = tile->y1;
+                            vertices->z = tile->z1;
+                            vertices->nx = 0.0f;
+                            vertices->ny = 0.0f;
+                            vertices->nz = 0.0f;
+                            vertices->diffuse = 0;
+                            vertices->u1 = tile->u1;
+                            vertices->v1 = 0.0f;
+                            vertices->u2 = 0.0f;
+                            vertices->v2 = 0.0f;
+                            vertices++;
+
+                            vertices->x = tile->x2;
+                            vertices->y = tile->y2;
+                            vertices->z = tile->z2;
+                            vertices->nx = 0.0f;
+                            vertices->ny = 0.0f;
+                            vertices->nz = 0.0f;
+                            vertices->diffuse = 0;
+                            vertices->u1 = tile->u2;
+                            vertices->v1 = 0.0f;
+                            vertices->u2 = 0.0f;
+                            vertices->v2 = 0.0f;
+                            vertices++;
+
+                            vertices->x = tile->x3;
+                            vertices->y = tile->y3;
+                            vertices->z = tile->z3;
+                            vertices->nx = 0.0f;
+                            vertices->ny = 0.0f;
+                            vertices->nz = 0.0f;
+                            vertices->diffuse = 0;
+                            vertices->u1 = tile->u3;
+                            vertices->v1 = 0.0f;
+                            vertices->u2 = 0.0f;
+                            vertices->v2 = 0.0f;
+                            vertices++;
+
+                            vertices->x = tile->x4;
+                            vertices->y = tile->y4;
+                            vertices->z = tile->z4;
+                            vertices->nx = 0.0f;
+                            vertices->ny = 0.0f;
+                            vertices->nz = 0.0f;
+                            vertices->diffuse = 0;
+                            vertices->u1 = tile->u4;
+                            vertices->v1 = 0.0f;
+                            vertices->u2 = 0.0f;
+                            vertices->v2 = 0.0f;
+                            vertices++;
+
+                            if (m_map->Is_Cell_Flipped(index_x, index_y)) {
+                                indices[0] = vertex_count + 1;
+                                indices[1] = vertex_count + 3;
+                                indices[2] = vertex_count;
+                                indices[3] = vertex_count + 1;
+                                indices[4] = vertex_count + 2;
+                                indices[5] = vertex_count + 3;
+                            } else {
+                                indices[0] = vertex_count;
+                                indices[1] = vertex_count + 2;
+                                indices[2] = vertex_count + 3;
+                                indices[3] = vertex_count;
+                                indices[4] = vertex_count + 1;
+                                indices[5] = vertex_count + 2;
+                            }
+
+                            indices += 6;
+                            vertex_count += 4;
+                            poly_count += 6;
+                        }
+
+                        index++;
+                    }
+                }
+
+                if (poly_count > 0 && vertex_count > 0) {
+                    DX8Wrapper::Set_Index_Buffer(ib, 0);
+                    DX8Wrapper::Set_Vertex_Buffer(vb);
+                    DX8Wrapper::Draw_Triangles(0, poly_count / 3, 0, vertex_count);
+                    m_shorelineBlendTilesRendered += poly_count / 6;
+                }
+
+                vertex_count = 0;
+                poly_count = 0;
+            }
+
+            DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 7);
+            ShaderClass::Invalidate();
+        }
+    } else {
+        Render_Shore_Lines_Sorted(camera);
+    }
 #endif
 }
 
 void BaseHeightMapRenderObjClass::Render_Shore_Lines_Sorted(CameraClass *camera)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass, CameraClass *>(PICK_ADDRESS(0x00755D40, 0x006027B2), this, camera);
+#ifdef BUILD_WITH_D3D8
+    m_shorelineBlendTilesRendered = 0;
+
+    if (!g_theWriteableGlobalData->m_showSoftWaterEdge || g_theWaterTransparency->m_transparentWaterDepth == 0.0
+        || !m_numShorelineBlendTiles || DX8Wrapper::Get_Back_Buffer_Format() != WW3D_FORMAT_A8R8G8B8) {
+        return;
+    }
+
+    int vertex_count = 0;
+    int poly_count = 0;
+    int y = m_map->Get_Draw_Origin_Y() + m_map->Get_Draw_Height() - 1;
+    int x = m_map->Get_Draw_Origin_X() + m_map->Get_Draw_Width() - 1;
+
+    if (x > m_map->Get_X_Extent() - 1) {
+        x = m_map->Get_X_Extent() - 1;
+    }
+
+    if (y > m_map->Get_Y_Extent() - 1) {
+        y = m_map->Get_Y_Extent() - 1;
+    }
+
+    int origin_x = m_map->Get_Draw_Origin_X();
+    int origin_y = m_map->Get_Draw_Origin_Y();
+
+    if (m_sortAxis != 0) {
+        if (m_startCell > origin_x) {
+            origin_x = m_startCell;
+        }
+
+        if (m_endCell + 1 < x) {
+            x = m_endCell + 1;
+        }
+
+        if (x - origin_x <= 0) {
+            return;
+        }
+    } else {
+        if (m_startCell > origin_y) {
+            origin_y = m_startCell;
+        }
+
+        if (m_endCell + 1 < y) {
+            y = m_endCell + 1;
+        }
+
+        if (y - origin_y <= 0) {
+            return;
+        }
+    }
+
+    ShaderClass shader(ShaderClass::s_presetOpaque2DShader);
+    shader.Set_Depth_Compare(ShaderClass::PASS_LEQUAL);
+    DX8Wrapper::Set_Shader(shader);
+    VertexMaterialClass *material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
+    DX8Wrapper::Set_Material(material);
+    Ref_Ptr_Release(material);
+    DX8Wrapper::Set_Texture(0, m_destAlphaLUT);
+    Matrix3D tm(true);
+    DX8Wrapper::Set_Transform(D3DTS_WORLD, tm);
+    DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 8);
+    DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_TEXCOORDINDEX, 0);
+    bool b = false;
+    int index = 0;
+
+    while (!b) {
+        DynamicVBAccessClass vb(VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, DX8_FVF_XYZNDUV2, 2048);
+        DynamicIBAccessClass ib(IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, 3072);
+
+        {
+            DynamicVBAccessClass::WriteLockClass vb_lock(&vb);
+            VertexFormatXYZNDUV2 *vertices = vb_lock.Get_Formatted_Vertex_Array();
+            DynamicIBAccessClass::WriteLockClass ib_lock(&ib);
+            unsigned short *indices = ib_lock.Get_Index_Array();
+
+            if (indices == nullptr || vertices == nullptr) {
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 7);
+                return;
+            }
+
+            if (m_sortAxis != 0) {
+                int i;
+
+                for (i = origin_x; i < x; i++) {
+                    ShorelineSortInfo *info = &m_shorelineSortInfos[i];
+
+                    if (info->unk2 != 0) {
+                        int i1 = origin_y;
+
+                        if (info->unk3 > origin_y) {
+                            i1 = info->unk3;
+                        }
+
+                        int i2 = y;
+
+                        if (info->unk4 + 1 < y) {
+                            i2 = info->unk4 + 1;
+                        }
+
+                        if (i2 - i1 > 0) {
+                            ShorelineTile *tile = &m_shorelineTiles[info->unk1 + index];
+
+                            for (int j = index; j < info->unk2; j++) {
+                                int i3 = tile->index >> 16;
+
+                                if (i3 >= i1) {
+                                    if (i3 >= i2) {
+                                        break;
+                                    }
+                                    if (vertex_count >= 2048) {
+                                        index = j;
+                                        goto l1;
+                                    }
+
+                                    vertices->x = tile->x1;
+                                    vertices->y = tile->y1;
+                                    vertices->z = tile->z1;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u1;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    vertices->x = tile->x2;
+                                    vertices->y = tile->y2;
+                                    vertices->z = tile->z2;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u2;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    vertices->x = tile->x3;
+                                    vertices->y = tile->y3;
+                                    vertices->z = tile->z3;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u3;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    vertices->x = tile->x4;
+                                    vertices->y = tile->y4;
+                                    vertices->z = tile->z4;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u4;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    if (m_map->Is_Cell_Flipped(i, i3)) {
+                                        indices[0] = vertex_count + 1;
+                                        indices[1] = vertex_count + 3;
+                                        indices[2] = vertex_count;
+                                        indices[3] = vertex_count + 1;
+                                        indices[4] = vertex_count + 2;
+                                        indices[5] = vertex_count + 3;
+                                    } else {
+                                        indices[0] = vertex_count;
+                                        indices[1] = vertex_count + 2;
+                                        indices[2] = vertex_count + 3;
+                                        indices[3] = vertex_count;
+                                        indices[4] = vertex_count + 1;
+                                        indices[5] = vertex_count + 2;
+                                    }
+
+                                    indices += 6;
+                                    vertex_count += 4;
+                                    poly_count += 6;
+                                    tile++;
+                                } else {
+                                    tile++;
+                                }
+                            }
+
+                            index = 0;
+                        }
+                    }
+                }
+
+            l1:
+                origin_x = i;
+                b = i >= x;
+            } else {
+                int i;
+
+                for (i = origin_y; i < y; i++) {
+                    ShorelineSortInfo *info = &m_shorelineSortInfos[i];
+
+                    if (info->unk2 != 0) {
+                        int i1 = origin_x;
+
+                        if (info->unk3 > origin_x) {
+                            i1 = info->unk3;
+                        }
+
+                        int i2 = x;
+
+                        if (info->unk4 + 1 < x) {
+                            i2 = info->unk4 + 1;
+                        }
+
+                        if (i2 - i1 > 0) {
+                            ShorelineTile *tile = &m_shorelineTiles[info->unk1 + index];
+
+                            for (int j = index; j < info->unk2; j++) {
+                                int i3 = tile->index & 0xFFFF;
+
+                                if (i3 >= i1) {
+                                    if (i3 >= i2) {
+                                        break;
+                                    }
+                                    if (vertex_count >= 2048) {
+                                        index = j;
+                                        goto l2;
+                                    }
+
+                                    vertices->x = tile->x1;
+                                    vertices->y = tile->y1;
+                                    vertices->z = tile->z1;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u1;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    vertices->x = tile->x2;
+                                    vertices->y = tile->y2;
+                                    vertices->z = tile->z2;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u2;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    vertices->x = tile->x3;
+                                    vertices->y = tile->y3;
+                                    vertices->z = tile->z3;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u3;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    vertices->x = tile->x4;
+                                    vertices->y = tile->y4;
+                                    vertices->z = tile->z4;
+                                    vertices->nx = 0.0f;
+                                    vertices->ny = 0.0f;
+                                    vertices->nz = 0.0f;
+                                    vertices->diffuse = 0;
+                                    vertices->u1 = tile->u4;
+                                    vertices->v1 = 0.0f;
+                                    vertices->u2 = 0.0f;
+                                    vertices->v2 = 0.0f;
+                                    vertices++;
+
+                                    if (m_map->Is_Cell_Flipped(i3, i)) {
+                                        indices[0] = vertex_count + 1;
+                                        indices[1] = vertex_count + 3;
+                                        indices[2] = vertex_count;
+                                        indices[3] = vertex_count + 1;
+                                        indices[4] = vertex_count + 2;
+                                        indices[5] = vertex_count + 3;
+                                    } else {
+                                        indices[0] = vertex_count;
+                                        indices[1] = vertex_count + 2;
+                                        indices[2] = vertex_count + 3;
+                                        indices[3] = vertex_count;
+                                        indices[4] = vertex_count + 1;
+                                        indices[5] = vertex_count + 2;
+                                    }
+
+                                    indices += 6;
+                                    vertex_count += 4;
+                                    poly_count += 6;
+                                    tile++;
+                                } else {
+                                    tile++;
+                                }
+                            }
+
+                            index = 0;
+                        }
+                    }
+                }
+
+            l2:
+                origin_y = i;
+                b = i >= y;
+            }
+        }
+
+        if (poly_count > 0 && vertex_count > 0) {
+            DX8Wrapper::Set_Index_Buffer(ib, 0);
+            DX8Wrapper::Set_Vertex_Buffer(vb);
+            DX8Wrapper::Draw_Triangles(0, poly_count / 3, 0, vertex_count);
+            m_shorelineBlendTilesRendered += poly_count / 6;
+        }
+
+        vertex_count = 0;
+        poly_count = 0;
+    }
+
+    DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 7);
+    ShaderClass::Invalidate();
 #endif
 }
 
@@ -883,7 +2092,7 @@ void BaseHeightMapRenderObjClass::Unit_Moved(Object *object)
     }
 }
 
-void BaseHeightMapRenderObjClass::Uupdate_Macro_Texture(Utf8String texture_name)
+void BaseHeightMapRenderObjClass::Update_Macro_Texture(Utf8String texture_name)
 {
     m_macroTextureName = texture_name;
     Ref_Ptr_Release(m_stageThreeTexture);
@@ -892,28 +2101,242 @@ void BaseHeightMapRenderObjClass::Uupdate_Macro_Texture(Utf8String texture_name)
 
 void BaseHeightMapRenderObjClass::Update_Scorches()
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass>(PICK_ADDRESS(0x007546C0, 0x00600CE2), this);
-#endif
+    if (m_scorchesInBuffer <= 1 && m_numScorches != 0 && m_indexScorch != nullptr && m_vertexScorch != nullptr) {
+        m_curNumScorchVertices = 0;
+        m_curNumScorchIndices = 0;
+        IndexBufferClass::WriteLockClass ib_lock(m_indexScorch, 0);
+        unsigned short *indices = ib_lock.Get_Index_Array();
+        VertexBufferClass::WriteLockClass vb_lock(m_vertexScorch, 0);
+        VertexFormatXYZDUV1 *vertices = static_cast<VertexFormatXYZDUV1 *>(vb_lock.Get_Vertex_Array());
+        float red = g_theWriteableGlobalData->m_terrainAmbient[0].red;
+        float green = g_theWriteableGlobalData->m_terrainAmbient[0].green;
+        float blue = g_theWriteableGlobalData->m_terrainAmbient[0].blue;
+        red += g_theWriteableGlobalData->m_terrainDiffuse[0].red / 2.0f;
+        green += g_theWriteableGlobalData->m_terrainDiffuse[0].green / 2.0f;
+        blue += g_theWriteableGlobalData->m_terrainDiffuse[0].blue / 2.0f;
+        red *= 255.0f;
+        green *= 255.0f;
+        blue *= 255.0f;
+        unsigned int diffuse = Make_Color(GameMath::Fast_To_Int_Truncate(red),
+            GameMath::Fast_To_Int_Truncate(green),
+            GameMath::Fast_To_Int_Truncate(blue),
+            255);
+        m_scorchesInBuffer = 0;
+
+        for (int i = m_numScorches - 1; i >= 0; i--) {
+            m_scorchesInBuffer++;
+            float radius = m_scorches[i].m_radius;
+            Vector3 location(m_scorches[i].m_location);
+            int scorch_type = m_scorches[i].m_scorchType;
+
+            if (scorch_type < 0) {
+                scorch_type = 0;
+            }
+
+            if (scorch_type >= 9) {
+                scorch_type = 0;
+            }
+
+            int x_min = GameMath::Fast_To_Int_Floor((location.X - radius) / 10.0f);
+            int y_min = GameMath::Fast_To_Int_Floor((location.Y - radius) / 10.0f);
+
+            if (x_min < -m_map->Border_Size()) {
+                x_min = -m_map->Border_Size();
+            }
+
+            if (y_min < -m_map->Border_Size()) {
+                y_min = -m_map->Border_Size();
+            }
+
+            int x_max = GameMath::Fast_To_Int_Ceil((location.X + radius) / 10.0f) + 1;
+            int y_max = GameMath::Fast_To_Int_Ceil((location.Y + radius) / 10.0f) + 1;
+
+            if (x_max > m_map->Get_X_Extent() - m_map->Border_Size()) {
+                x_max = m_map->Get_X_Extent() - m_map->Border_Size();
+            }
+
+            if (y_max > m_map->Get_Y_Extent() - m_map->Border_Size()) {
+                y_max = m_map->Get_Y_Extent() - m_map->Border_Size();
+            }
+
+            int vert_count = m_curNumScorchVertices;
+
+            for (int y = y_min; y < y_max; y++) {
+                for (int x = x_min; x < x_max; x++) {
+                    if (m_curNumScorchVertices >= 8194) {
+                        return;
+                    }
+
+                    vertices->diffuse = diffuse;
+                    float vz =
+                        Get_Clip_Height(m_map->Border_Size() + x, m_map->Border_Size() + y) * HEIGHTMAP_SCALE + 0.0625f;
+                    float u = (scorch_type % 3) * 1.5f;
+                    float v = (scorch_type / 3) * 1.5f;
+                    float vx = x * 10.0f;
+                    float vy = y * 10.0f;
+                    vertices->u1 = (u + 0.5f + (vx - location.X) / (2.0f * radius)) / 4.0f;
+                    vertices->v1 = (v + 0.5f + (vy - location.Y) / (2.0f * radius)) / 4.0f;
+                    vertices->x = vx;
+                    vertices->y = vy;
+                    vertices->z = vz;
+                    vertices++;
+                    m_curNumScorchVertices++;
+                }
+            }
+
+            int x_dist = x_max - x_min;
+
+            for (int y = 0; y < y_max - y_min - 1; y++) {
+                for (int x = 0; x < x_max - x_min - 1; x++) {
+                    if (m_curNumScorchIndices + 6 > 49164) {
+                        return;
+                    }
+
+                    int x_index = m_map->Border_Size() + x_min + x;
+                    int y_index = m_map->Border_Size() + y_min + y;
+
+                    if (m_map->Get_Flip_State(x_index, y_index)) {
+                        *indices++ = x_dist * y + vert_count + x + 1;
+                        *indices++ = x_dist + x + x_dist * y + vert_count;
+                        *indices++ = x + x_dist * y + vert_count;
+                        *indices++ = x_dist * y + vert_count + x + 1;
+                        *indices++ = x + x_dist * y + vert_count + x_dist + 1;
+                        *indices++ = x_dist + x + x_dist * y + vert_count;
+                    } else {
+                        *indices++ = x + x_dist * y + vert_count;
+                        *indices++ = x + x_dist * y + vert_count + x_dist + 1;
+                        *indices++ = x_dist + x + x_dist * y + vert_count;
+                        *indices++ = x + x_dist * y + vert_count;
+                        *indices++ = x_dist * y + vert_count + x + 1;
+                        *indices++ = x + x_dist * y + vert_count + x_dist + 1;
+                    }
+
+                    m_curNumScorchIndices += 6;
+                }
+            }
+        }
+    }
 }
 
 void BaseHeightMapRenderObjClass::Update_Shoreline_Tile(int x, int y, int border_size, WorldHeightMap *map)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass, int, int, int, WorldHeightMap *>(
-        PICK_ADDRESS(0x00753800, 0x005FFD4B), this, x, y, border_size, map);
-#endif
+    float opacity = g_theWaterTransparency->m_transparentWaterDepth * g_theWaterTransparency->m_transparentWaterMinOpacity;
+    float opacity_div = 1.0f / opacity;
+    float x1 = (x - border_size) * 10.0f;
+    float y1 = (y - border_size) * 10.0f;
+    float height1 = g_theWaterRenderObj->Get_Water_Height(x1, y1);
+    float z1 = map->Get_Height(x, y) * HEIGHTMAP_SCALE;
+    int flags = z1 < height1;
+
+    float x2 = (x - border_size + 1) * 10.0f;
+    float y2 = (y - border_size + 1) * 10.0f;
+    float height2 = g_theWaterRenderObj->Get_Water_Height(x2, y1);
+    float z2 = map->Get_Height(x + 1, y) * HEIGHTMAP_SCALE;
+    flags |= (z2 < height2) << 1;
+
+    float height3 = g_theWaterRenderObj->Get_Water_Height(x2, y2);
+    float z3 = map->Get_Height(x + 1, y + 1) * HEIGHTMAP_SCALE;
+    flags |= (z3 < height3) << 2;
+
+    float height4 = g_theWaterRenderObj->Get_Water_Height(x1, y2);
+    float z4 = map->Get_Height(x, y + 1) * HEIGHTMAP_SCALE;
+    flags |= (z4 < height4) << 3;
+
+    if (flags != 0 && height1 * height2 * height3 * height4 > 0.0
+        && (flags < 15 || height1 - z1 < opacity || height2 - z2 < opacity || height3 - z3 < opacity
+            || height4 - z4 < opacity)) {
+        if (m_numShorelineBlendTiles >= m_shorelineBlendTileSize) {
+            ShorelineTile *tiles = new ShorelineTile[m_shorelineBlendTileSize + 512];
+            memcpy(tiles, m_shorelineTiles, m_shorelineBlendTileSize * sizeof(ShorelineTile));
+            delete[] m_shorelineTiles;
+            m_shorelineTiles = tiles;
+            m_shorelineBlendTileSize += 512;
+        }
+
+        ShorelineTile *tile = &m_shorelineTiles[m_numShorelineBlendTiles];
+        tile->index = (y << 16) | x;
+        tile->x1 = x1;
+        tile->y1 = y1;
+        tile->z1 = z1;
+        tile->u1 = (height1 - z1) * opacity_div;
+        tile->x2 = x2;
+        tile->y2 = y1;
+        tile->z2 = z2;
+        tile->u2 = (height2 - z2) * opacity_div;
+        tile->x3 = x2;
+        tile->y3 = y2;
+        tile->z3 = z3;
+        tile->u3 = (height3 - z3) * opacity_div;
+        tile->x4 = x1;
+        tile->y4 = y2;
+        tile->z4 = z4;
+        tile->u4 = (height4 - z4) * opacity_div;
+        m_numShorelineBlendTiles++;
+    }
 }
 
 void BaseHeightMapRenderObjClass::Update_Shoreline_Tiles(int min_x, int min_y, int max_x, int max_y, WorldHeightMap *map)
 {
-    // heightmap TODO
-#ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass, int, int, int, int, WorldHeightMap *>(
-        PICK_ADDRESS(0x00753C90, 0x00600193), this, min_x, min_y, max_x, max_y, map);
-#endif
+    int border_size = map->Get_Border_Size();
+
+    if (min_x < 0) {
+        min_x = 0;
+    }
+
+    if (min_y < 0) {
+        min_y = 0;
+    }
+
+    if (max_x > map->Get_X_Extent() - 1) {
+        max_x = map->Get_X_Extent() - 1;
+    }
+
+    if (max_y > map->Get_Y_Extent() - 1) {
+        max_y = map->Get_Y_Extent() - 1;
+    }
+
+    if (m_shorelineTiles == nullptr) {
+        m_shorelineTiles = new ShorelineTile[4096];
+        m_shorelineBlendTileSize = 4096;
+    }
+
+    for (int i = 0; i < m_numShorelineBlendTiles; i++) {
+        int x_index = m_shorelineTiles[i].index & 0xFFFF;
+        int y_index = m_shorelineTiles[i].index >> 16;
+
+        if (x_index >= min_x && x_index < max_x && y_index >= min_y && y_index < max_y) {
+            memcpy(
+                &m_shorelineTiles[i], &m_shorelineTiles[i + 1], (m_numShorelineBlendTiles - 1 - i) * sizeof(ShorelineTile));
+            m_numShorelineBlendTiles--;
+            i--;
+        }
+    }
+
+    if (g_theWaterTransparency->m_transparentWaterDepth != 0.0f && g_theWriteableGlobalData->m_showSoftWaterEdge) {
+        bool is_vertical_map = false;
+
+        if (!g_theWriteableGlobalData->m_unsortedShoreLines) {
+            if (m_map->Get_Y_Extent() - 1 > m_map->Get_X_Extent()) {
+                is_vertical_map = true;
+            }
+        }
+
+        if (is_vertical_map) {
+            for (int x = min_x; x < max_x; x++) {
+                for (int y = min_y; y < max_y; y++) {
+                    Update_Shoreline_Tile(x, y, border_size, map);
+                }
+            }
+        } else {
+            for (int y = min_y; y < max_y; y++) {
+                for (int x = min_x; x < max_x; x++) {
+                    Update_Shoreline_Tile(x, y, border_size, map);
+                }
+            }
+        }
+
+        Record_Shore_Line_Sort_Infos();
+    }
 }
 
 void BaseHeightMapRenderObjClass::Update_Tree_Position(DrawableID drawable, Coord3D pos, float angle)

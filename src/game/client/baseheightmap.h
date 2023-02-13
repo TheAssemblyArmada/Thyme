@@ -65,10 +65,10 @@ struct ShorelineTile
 
 struct ShorelineSortInfo
 {
-    int field_0;
-    int field_4;
-    unsigned short field_8;
-    unsigned short field_A;
+    int unk1;
+    int unk2;
+    unsigned short unk3;
+    unsigned short unk4;
 };
 
 struct VertexFormatXYZDUV2
@@ -125,14 +125,14 @@ public:
     virtual void Load_Post_Process() override {}
 
     int Get_Static_Diffuse(int x, int y);
-    float Get_Max_Cell_Height(float x, float y);
+    float Get_Max_Cell_Height(float x, float y) const;
     void Set_Time_Of_Day(TimeOfDayType time);
     void Do_The_Light(VertexFormatXYZDUV2 *vb,
         Vector3 *light,
         Vector3 *normal,
         RefMultiListIterator<RenderObjClass> *lights,
         unsigned char alpha);
-    float Get_Height_Map_Height(float x, float y, Coord3D *pos);
+    float Get_Height_Map_Height(float x, float y, Coord3D *pos) const;
     void Notify_Shroud_Changed();
     void Add_Tree(
         DrawableID drawable, Coord3D location, float scale, float angle, float random, W3DTreeDrawModuleData const *module);
@@ -167,7 +167,7 @@ public:
     void Set_Texture_LOD(int LOD);
     bool Show_As_Visible_Cliff(int x, int y) const;
     void Unit_Moved(Object *object);
-    void Uupdate_Macro_Texture(Utf8String texture_name);
+    void Update_Macro_Texture(Utf8String texture_name);
     void Update_Scorches();
     void Update_Shoreline_Tile(int x, int y, int border_size, WorldHeightMap *map);
     void Update_Shoreline_Tiles(int min_x, int min_y, int max_x, int max_y, WorldHeightMap *map);
@@ -194,7 +194,7 @@ public:
         }
     }
 
-    unsigned char Get_Clip_Height(int x, int y)
+    unsigned char Get_Clip_Height(int x, int y) const
     {
         int x_extent = m_map->Get_X_Extent() - 1;
         int y_extent = m_map->Get_Y_Extent() - 1;
@@ -257,8 +257,8 @@ protected:
     int m_shorelineBlendTilesRendered;
     int m_shorelineBlendTileSize;
     float m_transparentWaterMinOpacity;
-    ShorelineSortInfo *m_shorlineSortInfos;
-    int m_shorlineSortInfoCount;
+    ShorelineSortInfo *m_shorelineSortInfos;
+    int m_shorelineSortInfoCount;
     int m_sortAxis;
     int m_endCell;
     int m_startCell;

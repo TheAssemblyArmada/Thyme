@@ -496,6 +496,45 @@ inline bool Is_Valid_Float(float x)
     return true;
 }
 
+inline float Fast_Float_Floor(float val)
+{
+    static const float _almost_one = 0.99999994f;
+
+    if (!Fast_Is_Float_Positive(val)) {
+        val -= _almost_one;
+    }
+
+#ifdef BUILD_WITH_GAMEMATH
+    return gm_truncf(val);
+#else
+    return truncf(val); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
+}
+
+inline float Fast_Float_Ceil(float val)
+{
+    static const float _almost_one = 0.99999994f;
+
+    if (Fast_Is_Float_Positive(val)) {
+        val += _almost_one;
+    }
+
+#ifdef BUILD_WITH_GAMEMATH
+    return gm_truncf(val);
+#else
+    return truncf(val); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
+}
+
+inline int Lrintf(float val)
+{
+#ifdef BUILD_WITH_GAMEMATH
+    return gm_lrintf(val);
+#else
+    return lrintf(val); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
+}
+
 // inline bool Is_Valid_Double(double x)
 //{
 //    uint32_a *plong = reinterpret_cast<uint32_a*>(&x) + 1;

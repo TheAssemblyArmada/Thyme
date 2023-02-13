@@ -78,4 +78,5 @@ private:
     float m_targetRange;
     Vector3 m_targetAmbient;
     Vector3 m_targetDiffuse;
+    friend class HeightMapRenderObjClass;
 };

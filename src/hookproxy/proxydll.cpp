@@ -86,7 +86,7 @@ __declspec(naked) void FakeAVIStreamRelease()
  */
 const wchar_t *Get_Path()
 {
-    static wchar_t buffer[MAX_PATH];
+    static wchar_t buffer[PATH_MAX];
     DWORD size = GetModuleFileNameW(nullptr, buffer, ARRAY_SIZE(buffer));
 
     if (size == 0 || size >= ARRAY_SIZE(buffer)) {
@@ -149,8 +149,8 @@ const char* Get_Payload_Name()
 void Load_Forwarded_Functions()
 {
     static const char dll_name[] = "\\avifil32.dll";
-    char path[MAX_PATH];
-    std::memcpy(path + GetSystemDirectoryA(path, MAX_PATH - sizeof(dll_name)), dll_name, sizeof(dll_name));
+    char path[PATH_MAX];
+    std::memcpy(path + GetSystemDirectoryA(path, PATH_MAX - sizeof(dll_name)), dll_name, sizeof(dll_name));
     HMODULE dll = LoadLibraryA(path);
     if (dll == nullptr) {
         MessageBoxA(nullptr, "Cannot load original avifil32.dll library", "Proxy", MB_ICONERROR);

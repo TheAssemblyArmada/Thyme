@@ -1101,9 +1101,10 @@ Shadow *W3DProjectedShadowManager::Add_Decal(Shadow::ShadowTypeInfo *shadow_info
     }
 
     char fname[64];
-    int len = strlen(shadow_info->m_shadowName);
+    int len = strnlen(shadow_info->m_shadowName, sizeof(fname));
     strncpy(fname, shadow_info->m_shadowName, len);
-    strcpy(&fname[len], ".tga");
+    captainslog_dbgassert(len <= 59, "Texturename too long");
+    strlcpy(&fname[len], ".tga", sizeof(fname) - len);
     tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
     if (!tex) {
@@ -1194,9 +1195,10 @@ Shadow *W3DProjectedShadowManager::Add_Decal(RenderObjClass *robj, Shadow::Shado
     }
 
     char fname[64];
-    int len = strlen(shadow_info->m_shadowName);
+    int len = strnlen(shadow_info->m_shadowName, sizeof(fname));
     strncpy(fname, shadow_info->m_shadowName, len);
-    strcpy(&fname[len], ".tga");
+    captainslog_dbgassert(len <= 59, "Texturename too long");
+    strlcpy(&fname[len], ".tga", sizeof(fname) - len);
     tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
     if (!tex) {
@@ -1316,11 +1318,12 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
     if (shadow_info) {
         if (shadow_info->m_type == SHADOW_DECAL) {
             char fname[64];
-            int len = strlen(shadow_info->m_shadowName);
+            int len = strnlen(shadow_info->m_shadowName, sizeof(fname));
+            captainslog_dbgassert(len <= 59, "Texturename too long");
 
             if (len > 1) {
                 strncpy(fname, shadow_info->m_shadowName, len);
-                strcpy(&fname[len], ".tga");
+                strlcpy(&fname[len], ".tga", sizeof(fname) - len);
             } else {
                 strcpy(fname, "shadow.tga");
             }
@@ -1354,9 +1357,9 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
             char fname[64];
 
             if (shadow_info->m_shadowName[0]) {
-                strcpy(fname, shadow_info->m_shadowName);
+                strncpy(fname, shadow_info->m_shadowName, sizeof(fname));
             } else {
-                strcpy(fname, robj->Get_Name());
+                strncpy(fname, robj->Get_Name(), sizeof(fname));
             }
 
             tex = m_W3DShadowTextureManager->Get_Texture(fname);
@@ -1376,7 +1379,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
 
     } else {
         char fname[64];
-        strcpy(fname, robj->Get_Name());
+        strncpy(fname, robj->Get_Name(), sizeof(fname));
         tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
         if (!tex) {
@@ -1473,11 +1476,12 @@ W3DProjectedShadow *W3DProjectedShadowManager::Create_Decal_Shadow(Shadow::Shado
     float f1 = 10.0f;
 
     char fname[64];
-    int len = strlen(shadow_info->m_shadowName);
+    int len = strnlen(shadow_info->m_shadowName, sizeof(fname));
 
     if (len > 1) {
         strncpy(fname, shadow_info->m_shadowName, len);
-        strcpy(&fname[len], ".tga");
+        captainslog_dbgassert(len <= 59, "Texturename too long");
+        strlcpy(&fname[len], ".tga", sizeof(fname) - len);
     } else {
         strcpy(fname, "shadow.tga");
     }

@@ -30,13 +30,13 @@ bool ChooseDirectory(HWND parent, const char *initialdir, CString &directory)
 {
     OPENFILENAME ofn = { 0 };
     ofn.lStructSize = sizeof(OPENFILENAME);
-    char name[MAX_PATH] = { 0 };
+    char name[PATH_MAX] = { 0 };
     ofn.hwndOwner = parent;
     ofn.lpstrInitialDir = initialdir;
     ofn.hInstance = AfxGetModuleState()->m_hCurrentResourceHandle;
     ofn.lpstrFilter = "";
     ofn.lpstrFile = name;
-    ofn.nMaxFile = MAX_PATH;
+    ofn.nMaxFile = PATH_MAX;
     ofn.lpstrTitle = "Choose Directory";
     ofn.lpfnHook = ChooseDirectoryHook;
     ofn.lpTemplateName = MAKEINTRESOURCE(IDD_SELECTDIR);

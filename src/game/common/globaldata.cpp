@@ -1045,7 +1045,7 @@ GlobalData::GlobalData()
 #endif
     m_keyboardCameraRotateSpeed = 0.1f;
 #ifdef PLATFORM_WINDOWS
-    char path[MAX_PATH];
+    char path[PATH_MAX];
     if (SHGetSpecialFolderPath(nullptr, path, CSIDL_MYDOCUMENTS, true)) {
         m_userDataDirectory = path;
         m_userDataDirectory += "\\Command and Conquer Generals Zero Hour Data\\";

@@ -122,11 +122,11 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
     Ref_Ptr_Release(m_leftMesh);
     Ref_Ptr_Release(m_sectionMesh);
     Ref_Ptr_Release(m_rightMesh);
-    char texture[260] = {};
-    char model[260] = {};
-    char left[260] = {};
-    char section[260] = {};
-    char right[260] = {};
+    char texture[PATH_MAX] = {};
+    char model[PATH_MAX] = {};
+    char left[PATH_MAX] = {};
+    char section[PATH_MAX] = {};
+    char right[PATH_MAX] = {};
     strcpy(texture, "No Texture");
     strcpy(model, "BRIDGESECTIONAL");
     float scale = 0.7f;

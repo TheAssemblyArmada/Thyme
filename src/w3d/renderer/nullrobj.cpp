@@ -20,17 +20,17 @@ using std::strcpy;
 
 Null3DObjClass::Null3DObjClass(char *name)
 {
-    strcpy(m_Name, name);
+    strncpy(m_Name, name, sizeof(m_Name));
 }
 
 Null3DObjClass::Null3DObjClass(const Null3DObjClass &src)
 {
-    strcpy(m_Name, src.m_Name);
+    strncpy(m_Name, src.m_Name, sizeof(m_Name));
 }
 
 Null3DObjClass &Null3DObjClass::operator=(const Null3DObjClass &that)
 {
-    strcpy(m_Name, that.m_Name);
+    strncpy(m_Name, that.m_Name, sizeof(m_Name));
     RenderObjClass::operator=(that);
     return *this;
 }

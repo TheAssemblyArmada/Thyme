@@ -112,11 +112,11 @@ bool g_noBorder = false;
 inline void Set_Working_Directory()
 {
 #if defined(PLATFORM_WINDOWS)
-    char path[MAX_PATH];
+    char path[PATH_MAX];
 
     GetModuleFileNameA(GetModuleHandleA(nullptr), path, sizeof(path));
 
-    for (char *i = &path[strlen(path)]; i != path; --i) {
+    for (char *i = &path[strnlen(path, PATH_MAX)]; i != path; --i) {
         if (*i == '\\' || *i == '/') {
             *i = '\0';
             break;
@@ -595,7 +595,7 @@ int main(int argc, char **argv)
     char *tmp = getenv("USERPROFILE");
 
     if (tmp != NULL) {
-        strcpy(dirbuf, tmp);
+        strncpy(dirbuf, tmp, PATH_MAX);
         strcat(dirbuf, "\\Documents\\Command and Conquer Generals Zero Hour Data");
         mkdir(dirbuf);
         strcat(dirbuf, "\\");
@@ -603,7 +603,7 @@ int main(int argc, char **argv)
         GetModuleFileNameA(0, dirbuf, sizeof(dirbuf));
 
         // Get the path to the executable minus the actual filename.
-        for (char *i = &dirbuf[strlen(dirbuf)]; i != dirbuf; --i) {
+        for (char *i = &dirbuf[strnlen(dirbuf, PATH_MAX)]; i != dirbuf; --i) {
             if (*i == '\\' || *i == '/') {
                 *i = '\0';
                 break;
@@ -613,13 +613,13 @@ int main(int argc, char **argv)
 #else
     char *homedir = getenv("HOME");
     if (homedir != nullptr) {
-        strcpy(dirbuf, homedir);
+        strncpy(dirbuf, homedir, PATH_MAX);
     }
 
     if (homedir == nullptr) {
         homedir = getpwuid(getuid())->pw_dir;
         if (homedir != nullptr) {
-            strcpy(dirbuf, homedir);
+            strncpy(dirbuf, homedir, PATH_MAX);
         }
     }
 
@@ -628,10 +628,10 @@ int main(int argc, char **argv)
     }
 #endif
     const char *prefix = "";
-    strcpy(prevbuf, dirbuf);
+    strncpy(prevbuf, dirbuf, PATH_MAX);
     strcat(prevbuf, prefix);
     strcat(prevbuf, "ThymeDebugLogPrev.txt");
-    strcpy(curbuf, dirbuf);
+    strncpy(curbuf, dirbuf, PATH_MAX);
     strcat(curbuf, prefix);
     strcat(curbuf, "ThymeDebugLogFile.txt");
     remove(prevbuf);

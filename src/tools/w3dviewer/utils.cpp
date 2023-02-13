@@ -20,7 +20,7 @@
 
 CString GetFilePath(const char *name)
 {
-    char path[MAX_PATH];
+    char path[PATH_MAX];
     strcpy(path, name);
     char *c = strrchr(path, '\\');
 

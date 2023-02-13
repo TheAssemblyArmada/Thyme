@@ -878,7 +878,7 @@ W3DErrorType MeshGeometryClass::Load_W3D(ChunkLoadClass &cload)
     memset(tmpname, 0, namelen);
 
     if (strlen(header.ContainerName) > 0) {
-        strcpy(tmpname, header.ContainerName);
+        strncpy(tmpname, header.ContainerName, namelen - 2);
         strcat(tmpname, ".");
     }
 

@@ -314,8 +314,8 @@ struct W3dTextureReplacerStruct
 {
     char MeshPath[15][32];
     char BonePath[15][32];
-    char OldTextureName[260];
-    char NewTextureName[260];
+    char OldTextureName[PATH_MAX];
+    char NewTextureName[PATH_MAX];
     W3dTextureInfoStruct TextureParams;
 };
 

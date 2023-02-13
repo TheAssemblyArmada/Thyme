@@ -868,7 +868,7 @@ struct W3dEmitterUserInfoStruct
 
 struct W3dEmitterInfoStruct
 {
-    char TextureFilename[260];
+    char TextureFilename[PATH_MAX];
     float StartSize;
     float EndSize;
     float Lifetime;

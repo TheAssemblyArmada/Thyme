@@ -772,8 +772,8 @@ void WaterTracksRenderSystem::Save_Tracks()
     if (g_theTerrainLogic) {
         Utf8String filename = g_theTerrainLogic->Get_Source_Filename();
         char fname[256];
-        strcpy(fname, filename.Str());
-        strcpy(&fname[strlen(fname) - 4], ".wak");
+        strncpy(fname, filename.Str(), sizeof(fname) - 5);
+        strncpy(&fname[strlen(fname) - 4], ".wak", 5);
         FILE *f = fopen(fname, "wb");
         int count = 0;
         if (f) {

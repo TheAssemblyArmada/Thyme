@@ -241,8 +241,8 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext)
             CWnd *pane = m_splitter.GetPane(0, 1);
 
             if (pane != nullptr) {
-                char path[MAX_PATH];
-                GetModuleFileName(nullptr, path, MAX_PATH);
+                char path[PATH_MAX];
+                GetModuleFileName(nullptr, path, PATH_MAX);
                 char *str = strrchr(path, '\\');
 
                 if (str != nullptr) {

@@ -3880,7 +3880,7 @@ void ListViewSetItemText(HWND list, int item, int subitem, char *str)
 
 bool GetOpenFile(char *buf, const char *filter, const char *dir, HWND parent, const char *title)
 {
-    char lBuf[MAX_PATH] = "";
+    char lBuf[PATH_MAX] = "";
     StringClass ws = buf;
     strcpy(lBuf, ws);
     OPENFILENAME of;
@@ -3895,7 +3895,7 @@ bool GetOpenFile(char *buf, const char *filter, const char *dir, HWND parent, co
     of.nMaxCustFilter = 0;
     of.nFilterIndex = 0;
     of.lpstrFile = lBuf;
-    of.nMaxFile = MAX_PATH;
+    of.nMaxFile = PATH_MAX;
     of.lpstrFileTitle = nullptr;
     of.nMaxFileTitle = 0;
     of.lpstrInitialDir = dir;
@@ -3912,7 +3912,7 @@ bool GetOpenFile(char *buf, const char *filter, const char *dir, HWND parent, co
         return false;
     }
 
-    _snprintf(buf, MAX_PATH, "%s", of.lpstrFile);
+    _snprintf(buf, PATH_MAX, "%s", of.lpstrFile);
     return true;
 }
 
@@ -3947,7 +3947,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
         case WM_COMMAND:
             switch (LOWORD(wParam)) {
                 case ID_OPEN: {
-                    char fname[MAX_PATH];
+                    char fname[PATH_MAX];
                     fname[0] = 0;
 
                     if (GetOpenFile(fname,

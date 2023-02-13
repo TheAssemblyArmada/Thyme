@@ -358,7 +358,7 @@ bool GameTextManager::Get_String_Count(const char *filename, int &count)
         Remove_Leading_And_Trailing(m_bufferIn);
 
         if (m_bufferIn[0] == '"') {
-            size_t len = strlen(m_bufferIn);
+            size_t len = strnlen(m_bufferIn, sizeof(m_bufferIn));
             m_bufferIn[len] = '\n';
             m_bufferIn[len + 1] = '\0';
             Read_To_End_Of_Quote(file, &m_bufferIn[1], m_bufferOut, m_bufferEx, sizeof(m_bufferOut));
@@ -435,7 +435,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
 #endif
 
         m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int>(strnlen(m_bufferIn, sizeof(m_bufferIn)), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -444,7 +444,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
             captainslog_trace("We have '%s' buffered.", m_bufferIn);
 
             if (m_bufferIn[0] == '"') {
-                size_t len = strlen(m_bufferIn);
+                size_t len = strnlen(m_bufferIn, 10240);
                 m_bufferIn[len] = '\n';
                 m_bufferIn[len + 1] = '\0';
                 Read_To_End_Of_Quote(file, m_bufferIn + 1, m_bufferOut, m_bufferEx, sizeof(m_bufferOut));
@@ -625,7 +625,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
 #endif
 
         m_mapStringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int>(strnlen(m_bufferIn, sizeof(m_bufferIn)), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -635,7 +635,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
             captainslog_trace("Read line '%s'.", m_bufferIn);
 
             if (m_bufferIn[0] == '"') {
-                size_t len = strlen(m_bufferIn);
+                size_t len = strnlen(m_bufferIn, 10240);
                 m_bufferIn[len] = '\n';
                 m_bufferIn[len + 1] = '\0';
                 Read_To_End_Of_Quote(file, m_bufferIn + 1, m_bufferOut, m_bufferEx, sizeof(m_bufferOut));

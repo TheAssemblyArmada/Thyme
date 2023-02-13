@@ -149,7 +149,7 @@ void ImageCollection::Load(int texture_size)
         }
     }
 
-    char buf[MAX_PATH];
+    char buf[PATH_MAX];
     sprintf(buf, "Data\\INI\\MappedImages\\TextureSize_%d", texture_size);
     ini.Load_Directory(buf, true, INI_LOAD_OVERWRITE, nullptr);
     ini.Load_Directory("Data\\INI\\MappedImages\\HandCreated", true, INI_LOAD_OVERWRITE, nullptr);

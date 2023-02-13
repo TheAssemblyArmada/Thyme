@@ -1307,7 +1307,7 @@ void W3DModelDraw::Allocate_Shadows()
     if (m_shadow == nullptr && m_renderObject != nullptr && g_theW3DShadowManager != nullptr
         && thing->Get_Shadow_Type() != SHADOW_NONE) {
 
-        strcpy(info.m_shadowName, thing->Get_Shadow_Texture_Name().Str());
+        strncpy(info.m_shadowName, thing->Get_Shadow_Texture_Name().Str(), sizeof(info.m_shadowName));
         captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
 
         info.m_allowUpdates = false;
@@ -1911,9 +1911,9 @@ void W3DModelDraw::Set_Terrain_Decal(TerrainDecalType decal)
         info.m_type = SHADOW_ALPHA_DECAL;
 
         if (decal == TERRAIN_DECAL_9) {
-            strcpy(info.m_shadowName, tmplate->Get_Shadow_Texture_Name().Str());
+            strncpy(info.m_shadowName, tmplate->Get_Shadow_Texture_Name().Str(), sizeof(info.m_shadowName));
         } else {
-            strcpy(info.m_shadowName, s_terrainDecalTextureName[decal]);
+            strncpy(info.m_shadowName, s_terrainDecalTextureName[decal], sizeof(info.m_shadowName));
         }
 
         info.m_sizeX = tmplate->Get_Shadow_Size_X();
@@ -2186,7 +2186,7 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
         }
 
         if (m_renderObject != nullptr && g_theW3DShadowManager != nullptr && thing->Get_Shadow_Type()) {
-            strcpy(info.m_shadowName, thing->Get_Shadow_Texture_Name().Str());
+            strncpy(info.m_shadowName, thing->Get_Shadow_Texture_Name().Str(), sizeof(info.m_shadowName));
             captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
             info.m_allowUpdates = false;
             info.m_allowWorldAlign = true;
@@ -2569,9 +2569,9 @@ int W3DModelDraw::Get_Current_Bone_Positions(
         char bone_id[256];
 
         if (i) {
-            sprintf(bone_id, "%s%02d", bone_name_prefix, i);
+            snprintf(bone_id, sizeof(bone_id), "%s%02d", bone_name_prefix, i);
         } else {
-            strcpy(bone_id, bone_name_prefix);
+            strncpy(bone_id, bone_name_prefix, sizeof(bone_id));
         }
 
         int index = m_renderObject->Get_Bone_Index(bone_id);

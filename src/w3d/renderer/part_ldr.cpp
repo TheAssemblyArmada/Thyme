@@ -261,15 +261,15 @@ void ParticleEmitterDefClass::Set_Name(const char *pname)
 
 void ParticleEmitterDefClass::Set_Texture_Filename(const char *pname)
 {
-    strcpy(m_info.TextureFilename, pname);
+    strncpy(m_info.TextureFilename, pname, sizeof(m_info.TextureFilename));
     Normalize_Filename();
 }
 
 void ParticleEmitterDefClass::Normalize_Filename()
 {
 #ifdef PLATFORM_WINDOWS
-    char path[MAX_PATH];
-    strcpy(path, m_info.TextureFilename);
+    char path[PATH_MAX];
+    strncpy(path, m_info.TextureFilename, PATH_MAX);
     const char *filename = strrchr(path, '\\');
 
     if (filename != nullptr) {

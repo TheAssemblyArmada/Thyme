@@ -270,7 +270,7 @@ static void Write_Stack_Line(void *address, void(__cdecl *callback)(const char *
 {
     static char filename[STACK_SYMNAME_MAX];
     static char funcname[PATH_MAX];
-    static char dest[260];
+    static char dest[PATH_MAX];
 
     uintptr_t addr;
     unsigned line;

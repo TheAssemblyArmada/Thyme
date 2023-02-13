@@ -2070,7 +2070,7 @@ void W3DDisplay::Calculate_Terrain_LOD()
         s_3DScene->Draw_Terrain_Only(true);
         g_theTerrainRenderObject->Adjust_Terrain_LOD(0);
         int i;
-        char buf[260];
+        char buf[PATH_MAX];
 
         for (i = 0; i < 20; i++) {
             LARGE_INTEGER PerformanceCounter;

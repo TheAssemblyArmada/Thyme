@@ -61,7 +61,7 @@ MapViewOfFileClass::~MapViewOfFileClass()
 
 bool GetModuleSectionInfo(ImageSectionInfo &info)
 {
-    wchar_t fileName[MAX_PATH] = { 0 };
+    wchar_t fileName[PATH_MAX] = { 0 };
 
     if (GetModuleFileNameW(NULL, fileName, ARRAY_SIZE(fileName)) != 0) {
         MapViewOfFileClass mapView(fileName);

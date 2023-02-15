@@ -109,6 +109,7 @@ option(FETCHCONTENT_QUIET "" OFF)
 include(CMakeDependentOption)
 cmake_dependent_option(USE_STDFS "Use C++ 17 filesystem for crossplatform file handling." ${DEFAULT_STDFS} "STANDALONE" OFF)
 cmake_dependent_option(USE_SDL2 "Use SDL2 for crossplatform window handling." ${DEFAULT_SDL2} "STANDALONE" OFF)
+cmake_dependent_option(USE_ALSOFT "Use OpenAL soft audio library." ${DEFAULT_ALSOFT} "USE_FFMPEG" OFF)
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -304,7 +305,7 @@ if(USE_ALSOFT)
     FetchContent_Declare(
         ALSoft
         GIT_REPOSITORY https://github.com/kcat/openal-soft.git
-        GIT_TAG        1.21.1
+        GIT_TAG        1.23.0
     )
 
     FetchContent_MakeAvailable(ALSoft)

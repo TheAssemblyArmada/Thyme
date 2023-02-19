@@ -1189,7 +1189,8 @@ void W3DTreeBuffer::Update_Vertex_Buffer()
                 if (m_trees[tree].vb_index == i) {
                     int tree_type = m_trees[tree].tree_type;
 
-                    if ((tree_type >= 0 && (m_trees[tree].push_aside_move_time != 0.0f)
+                    if (tree_type >= 0
+                        && (m_trees[tree].push_aside_move_time != 0.0f
                             || m_trees[tree].topple_state != TTree::TOPPLE_UPRIGHT)) {
                         m_vertexesDirty = true;
 

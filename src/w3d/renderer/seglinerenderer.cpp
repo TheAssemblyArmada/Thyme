@@ -188,8 +188,8 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
     DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
     DX8Wrapper::Set_Transform(D3DTS_VIEW, m);
     Vector2 uv_offset = m_currentUVOffset + (m_UVOffsetDeltaPerMS * (W3D::Get_Sync_Time() - m_lastUsedSyncTime));
-    uv_offset.X = uv_offset.X - GameMath::Floor(uv_offset.X);
-    uv_offset.Y = uv_offset.Y - GameMath::Floor(uv_offset.Y);
+    uv_offset.X = uv_offset.X - FastMath::Floor(uv_offset.X);
+    uv_offset.Y = uv_offset.Y - FastMath::Floor(uv_offset.Y);
     m_currentUVOffset.Set(uv_offset);
     m_lastUsedSyncTime = W3D::Get_Sync_Time();
     unsigned int chunk_size = (1 << MAX_SEGLINE_SUBDIV_LEVELS >> m_subdivisionLevel) + 1;

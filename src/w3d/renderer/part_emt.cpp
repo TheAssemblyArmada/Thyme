@@ -587,7 +587,7 @@ void ParticleEmitterClass::Initialize_Particle(
         float pos_l2 = rand_pos.Length2();
 
         if (pos_l2) {
-            outwards = rand_pos * (m_outwardVel * GameMath::Inv_Sqrt(pos_l2));
+            outwards = rand_pos * (m_outwardVel * FastMath::Inv_Sqrt(pos_l2));
         } else {
             outwards.X = m_outwardVel;
             outwards.Y = 0.0f;

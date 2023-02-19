@@ -114,7 +114,7 @@ int GlobalLanguage::Adjust_Font_Size(int size)
     float adjustment = std::clamp(
         (((g_theWriteableGlobalData->m_xResolution / 800) - 1.0f) * m_resolutionFontAdjustment) + 1.0f, 1.0f, 2.0f);
 
-    return GameMath::Fast_To_Int_Floor(adjustment * size);
+    return FastMath::Fast_To_Int_Floor(adjustment * size);
 }
 
 // Was originally INI::parseLanguageDefinition

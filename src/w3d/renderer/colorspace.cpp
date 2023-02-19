@@ -87,7 +87,7 @@ void HSV_To_RGB(Vector3 &rgb, const Vector3 &hsv)
     }
 
     float sector = hsv.X / 60.0f;
-    int i = GameMath::Floor(sector);
+    int i = FastMath::Floor(sector);
     float f = sector - i;
     float p = hsv.Z * (1.0f - hsv.Y);
     float q = hsv.Z * (1.0f - (hsv.Y * f));

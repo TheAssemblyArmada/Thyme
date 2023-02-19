@@ -44,7 +44,7 @@ void CameraShakeSystemClass::CameraShakerClass::Compute_Rotations(const Vector3 
 
     if (m_radius * m_radius >= len2) {
 
-        float angle = (1.0f - GameMath::Sqrt(len2) / m_radius) * m_intensity * (1.0f - m_time / m_duration);
+        float angle = (1.0f - FastMath::Sqrt(len2) / m_radius) * m_intensity * (1.0f - m_time / m_duration);
 
         for (int i = 0; i < 3; ++i) {
 
@@ -52,7 +52,7 @@ void CameraShakeSystemClass::CameraShakerClass::Compute_Rotations(const Vector3 
             float f3 = angle * s_axis_rotation[i];
             float f4 = (f2 * m_time) + m_vector2[i];
 
-            (*set_angles)[i] += GameMath::Sin(f4) * f3;
+            (*set_angles)[i] += FastMath::Sin(f4) * f3;
 
             Vector3 angles;
 

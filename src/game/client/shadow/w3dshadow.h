@@ -110,9 +110,9 @@ public:
             m_color2 = (opacity << 24) + (m_color1 & 0xFFFFFF);
         } else if ((m_type & SHADOW_ADDITIVE_DECAL) != 0) {
             float o = m_opacity / 255.0f;
-            m_color2 = GameMath::Fast_To_Int_Truncate(((m_color1 >> 16) & 0xFF) * o)
-                | GameMath::Fast_To_Int_Truncate(((m_color1 >> 8) & 0xFF) * o)
-                | GameMath::Fast_To_Int_Truncate((m_color1 & 0xFF) * o);
+            m_color2 = FastMath::Fast_To_Int_Truncate(((m_color1 >> 16) & 0xFF) * o)
+                | FastMath::Fast_To_Int_Truncate(((m_color1 >> 8) & 0xFF) * o)
+                | FastMath::Fast_To_Int_Truncate((m_color1 & 0xFF) * o);
         }
     }
 

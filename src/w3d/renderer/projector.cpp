@@ -45,8 +45,8 @@ void ProjectorClass::Set_Perspective_Projection(float hfov, float vfov, float zn
     m_mapper->Set_Type(MatrixMapperClass::PERSPECTIVE_PROJECTION);
     m_projection.Init_Perspective(hfov, vfov, 0.1f, zfar);
 
-    float tan_hfov2 = GameMath::Tan(hfov) * 0.5f;
-    float tan_vfov2 = GameMath::Tan(vfov) * 0.5f;
+    float tan_hfov2 = FastMath::Tan(hfov) * 0.5f;
+    float tan_vfov2 = FastMath::Tan(vfov) * 0.5f;
 
     m_lcalBoundingVolume.m_center.Set(0.0f, 0.0f, -(zfar + znear) * 0.5f);
     m_lcalBoundingVolume.m_extent.X = zfar * tan_hfov2;

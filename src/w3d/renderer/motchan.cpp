@@ -453,7 +453,7 @@ AdaptiveDeltaMotionChannelClass::AdaptiveDeltaMotionChannelClass() :
     if (!g_tableValid) {
         const double quarter_rot = DEG_TO_RAD(90.0);
         for (int i = 0; i < 240; ++i) {
-            g_filterTable[i + 16] = 1.0f - GameMath::Sin((i / 240.0f) * quarter_rot);
+            g_filterTable[i + 16] = 1.0f - FastMath::Sin((i / 240.0f) * quarter_rot);
         }
         g_tableValid = true;
     }

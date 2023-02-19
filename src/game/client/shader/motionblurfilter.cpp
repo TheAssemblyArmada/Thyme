@@ -119,7 +119,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
 
     if (mode < FM_VIEW_MB_PAN_ALPHA) {
         if (mode == FM_VIEW_MB_END_PAN_ALPHA) {
-            float f3 = GameMath::Sqrt(m_priorDelta.x * m_priorDelta.x + m_priorDelta.y * m_priorDelta.y);
+            float f3 = FastMath::Sqrt(m_priorDelta.x * m_priorDelta.x + m_priorDelta.y * m_priorDelta.y);
             f1 = m_priorDelta.x / f3 * 0.5f + f1;
             f2 = f2 - m_priorDelta.y / f3 * 0.5f;
             m_decrement = false;
@@ -131,7 +131,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
             b1 = true;
         }
     } else {
-        float f3 = GameMath::Sqrt(delta.x * delta.x + delta.y * delta.y);
+        float f3 = FastMath::Sqrt(delta.x * delta.x + delta.y * delta.y);
         f2 = f2 - 0.5f;
         m_decrement = false;
         m_maxCount = (f3 * 200.0f * m_panFactor / 30.0f);
@@ -181,7 +181,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
     if (!b1) {
         for (int i = 0; i < 4; i++) {
             float f3 = 1.0f - m_maxCount / 60.0f * 0.89999998f;
-            f3 = GameMath::Sqrt(f3);
+            f3 = FastMath::Sqrt(f3);
             vertex[i].u = (vertex[i].u - f1) * f3 + f1;
             vertex[i].v = (vertex[i].v - f2) * f3 + f2;
         }

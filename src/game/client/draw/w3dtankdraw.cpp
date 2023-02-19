@@ -112,7 +112,7 @@ void W3DTankDraw::Do_Draw_Module(const Matrix3D *transform)
                     Stop_Move_Debris();
                 }
 
-                len = GameMath::Sqrt(len);
+                len = FastMath::Sqrt(len);
                 Coord3D mul;
                 mul.x = 0.5f * len + 0.1f;
 
@@ -157,7 +157,7 @@ void W3DTankDraw::Do_Draw_Module(const Matrix3D *transform)
                             >= Get_W3D_Tank_Draw_Module_Data()->m_treadDriveSpeedFraction) {
                             for (int i = 0; i < m_treadCount; i++) {
                                 float offset = m_treads[i].m_materialSettings.m_customUVOffset.X - rate;
-                                offset -= GameMath::Floor(offset);
+                                offset -= FastMath::Floor(offset);
                                 m_treads[i].m_materialSettings.m_customUVOffset.Set(offset, 0.0f);
                             }
                         }
@@ -289,7 +289,7 @@ void W3DTankDraw::Update_Tread_Positions(float uv_delta)
             offset = m_treads[i].m_materialSettings.m_customUVOffset.X - uv_delta;
         }
 
-        offset -= GameMath::Floor(offset);
+        offset -= FastMath::Floor(offset);
         m_treads[i].m_materialSettings.m_customUVOffset.Set(offset, 0.0f);
     }
 }

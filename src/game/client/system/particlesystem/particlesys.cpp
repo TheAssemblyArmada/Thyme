@@ -24,10 +24,10 @@
 #include <algorithm>
 #include <captainslog.h>
 
-using GameMath::Cos;
+using FastMath::Cos;
+using FastMath::Sin;
+using FastMath::Sqrt;
 using GameMath::Fabs;
-using GameMath::Sin;
-using GameMath::Sqrt;
 
 /**
  * 0x004CDA10

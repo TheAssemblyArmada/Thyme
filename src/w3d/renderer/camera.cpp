@@ -113,13 +113,13 @@ void CameraClass::Set_View_Plane(const Vector2 &vmin, const Vector2 &vmax)
 
 void CameraClass::Set_View_Plane(float hfov, float vfov)
 {
-    float width_half = GameMath::Tan(hfov / 2.0f);
+    float width_half = FastMath::Tan(hfov / 2.0f);
     float height_half = 0.0f;
 
     if (vfov == -1) {
         height_half = (1.0f / m_aspectRatio) * width_half;
     } else {
-        height_half = GameMath::Tan(vfov / 2.0f);
+        height_half = FastMath::Tan(vfov / 2.0f);
         m_aspectRatio = width_half / height_half;
     }
 
@@ -342,12 +342,12 @@ void CameraClass::Get_Clip_Planes(float &znear, float &zfar) const
 
 float CameraClass::Get_Horizontal_FOV() const
 {
-    return 2 * GameMath::Atan2(m_viewPlane.Width(), 2.0f);
+    return 2 * FastMath::Atan2(m_viewPlane.Width(), 2.0f);
 }
 
 float CameraClass::Get_Vertical_FOV() const
 {
-    return 2 * GameMath::Atan2(m_viewPlane.Height(), 2.0f);
+    return 2 * FastMath::Atan2(m_viewPlane.Height(), 2.0f);
 }
 
 float CameraClass::Get_Aspect_Ratio() const

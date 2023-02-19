@@ -43,15 +43,15 @@ void W3DRopeDraw::Build_Segments()
 {
     captainslog_dbgassert(m_segments.empty(), "Segments expected empty");
     m_segments.clear();
-    int segment_count = (int)GameMath::Ceil(m_height / m_wobbleLen);
+    int segment_count = (int)FastMath::Ceil(m_height / m_wobbleLen);
     float segment_height = m_height / segment_count;
     Coord3D pos = *Get_Drawable()->Get_Position();
 
     for (int i = 0; i < segment_count; i++) {
         SegInfo segment;
         float angle = Get_Client_Random_Value_Real(0.0f, DEG_TO_RADF(360.0f));
-        segment.m_cosAngle = GameMath::Cos(angle);
-        segment.m_sinAngle = GameMath::Sin(angle);
+        segment.m_cosAngle = FastMath::Cos(angle);
+        segment.m_sinAngle = FastMath::Sin(angle);
 
         segment.m_line1 = new Line3DClass(Vector3(pos.x, pos.y, pos.z),
             Vector3(pos.x, pos.y, pos.z + segment_height),
@@ -132,7 +132,7 @@ void W3DRopeDraw::Do_Draw_Module(const Matrix3D *transform)
     }
 
     if (!m_segments.empty()) {
-        float wobble_sin_angle = GameMath::Sin(m_wobbleAngle) * m_wobbleAmplitude;
+        float wobble_sin_angle = FastMath::Sin(m_wobbleAngle) * m_wobbleAmplitude;
         const Coord3D *pos = Get_Drawable()->Get_Position();
         Vector3 start(pos->x, pos->y, pos->z + m_curDropHeight);
         float segment_length = m_ropeLength / m_segments.size();

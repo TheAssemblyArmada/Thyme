@@ -110,8 +110,8 @@ void W3DBibBuffer::Load_Bibs_In_Vertex_And_Index_Buffers()
                 grn = grn * 255.0f;
                 blu = blu * 255.0f;
 
-                unsigned int color = (GameMath::Fast_To_Int_Truncate(red) << 16) | (GameMath::Fast_To_Int_Truncate(grn) << 8)
-                    | GameMath::Fast_To_Int_Truncate(blu) | 0xFF000000;
+                unsigned int color = (FastMath::Fast_To_Int_Truncate(red) << 16) | (FastMath::Fast_To_Int_Truncate(grn) << 8)
+                    | FastMath::Fast_To_Int_Truncate(blu) | 0xFF000000;
 
                 for (int i = 0; i <= 1; ++i) {
 

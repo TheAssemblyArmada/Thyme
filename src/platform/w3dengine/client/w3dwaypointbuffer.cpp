@@ -232,8 +232,8 @@ void W3DWaypointBuffer::Draw_Waypoints(RenderInfoClass &rinfo)
 
                                         if (pos5.x * pos3.x + pos5.y * pos3.y > 0.0f) {
                                             float orientation = obj->Get_Orientation();
-                                            float cos = GameMath::Cos(orientation);
-                                            float sin = GameMath::Sin(orientation);
+                                            float cos = FastMath::Cos(orientation);
+                                            float sin = FastMath::Sin(orientation);
                                             float f1 = info.Get_Major_Radius() * cos;
                                             float f2 = info.Get_Minor_Radius() * cos;
                                             float f3 = info.Get_Major_Radius() * sin;

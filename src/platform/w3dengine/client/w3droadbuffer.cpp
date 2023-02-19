@@ -2575,7 +2575,7 @@ void W3DRoadBuffer::Insert_Curve_Segment_At(int ndx1, int ndx2)
             b = true;
         }
 
-        float f4 = GameMath::Acos(f2) / 0.52359879f;
+        float f4 = FastMath::Acos(f2) / 0.52359879f;
         if (f4 < 0.9f || m_roads[ndx1].m_pt1.is_angled) {
             Miter(ndx1, ndx2);
             return;

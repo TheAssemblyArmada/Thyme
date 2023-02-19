@@ -21,7 +21,7 @@
 #include "videoplayer.h"
 #include "view.h"
 
-using GameMath::Fast_To_Int_Truncate;
+using FastMath::Fast_To_Int_Truncate;
 
 /**
  * 0x0077C700

@@ -405,13 +405,13 @@ void MeshClass::Render_Material_Pass(MaterialPassClass *pass, IndexBufferClass *
                     indices[i * 3 + 1] = (unsigned short)v1;
                     indices[i * 3 + 2] = (unsigned short)v2;
 
-                    min_v = GameMath::Min(v0, min_v);
-                    min_v = GameMath::Min(v1, min_v);
-                    min_v = GameMath::Min(v2, min_v);
+                    min_v = FastMath::Min(v0, min_v);
+                    min_v = FastMath::Min(v1, min_v);
+                    min_v = FastMath::Min(v2, min_v);
 
-                    max_v = GameMath::Max(v0, max_v);
-                    max_v = GameMath::Max(v1, max_v);
-                    max_v = GameMath::Max(v2, max_v);
+                    max_v = FastMath::Max(v0, max_v);
+                    max_v = FastMath::Max(v1, max_v);
+                    max_v = FastMath::Max(v2, max_v);
                 }
             }
 

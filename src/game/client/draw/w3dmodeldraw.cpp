@@ -1553,7 +1553,7 @@ void W3DModelDraw::Adjust_Animation(ModelConditionInfo const *prev_state, float 
                 } else if (Maintain_Frame_Across_States(m_curState->m_flags) && prev_state != nullptr
                     && prev_state != m_curState && Maintain_Frame_Across_States(prev_state->m_flags)
                     && Maintain_Frame_Across_States_2(m_curState->m_flags, prev_state->m_flags) && f >= 0.0f) {
-                    frame = GameMath::Fast_To_Int_Truncate(anim->Get_Num_Frames() * f - 1.0f);
+                    frame = FastMath::Fast_To_Int_Truncate(anim->Get_Num_Frames() * f - 1.0f);
                 }
 
                 m_renderObject->Set_Animation(anim, frame, m_curState->m_mode);
@@ -2718,7 +2718,7 @@ bool W3DModelDraw::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
 void W3DModelDraw::Set_Animation_Loop_Duration(unsigned int num_frames)
 {
     m_loopDuration = -1;
-    Set_Cur_Anim_Duration_In_Msec(GameMath::Ceil(num_frames * MSEC_PER_LOGICFRAME_REAL));
+    Set_Cur_Anim_Duration_In_Msec(FastMath::Ceil(num_frames * MSEC_PER_LOGICFRAME_REAL));
 }
 
 void W3DModelDraw::Set_Animation_Completion_Time(unsigned int num_frames)
@@ -2727,7 +2727,7 @@ void W3DModelDraw::Set_Animation_Completion_Time(unsigned int num_frames)
         && m_nextState->m_transition && m_nextState->m_animations.size()) {
         float cur_fps = m_curState->m_animations.front().Get_Frames_Per_Second();
         float next_fps = m_nextState->m_animations.front().Get_Frames_Per_Second();
-        int duration = GameMath::Fast_To_Int_Floor(num_frames * cur_fps / (cur_fps + next_fps));
+        int duration = FastMath::Fast_To_Int_Floor(num_frames * cur_fps / (cur_fps + next_fps));
         Set_Animation_Loop_Duration(duration);
         m_loopDuration = num_frames - duration;
     } else {

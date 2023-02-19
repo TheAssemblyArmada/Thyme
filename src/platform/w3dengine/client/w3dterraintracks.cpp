@@ -359,8 +359,8 @@ void TerrainTracksRenderObjClassSystem::Flush()
             g = g * 255.0f;
             b = b * 255.0f;
 
-            int color = (GameMath::Fast_To_Int_Truncate(r) << 16) | (GameMath::Fast_To_Int_Truncate(g) << 8)
-                | GameMath::Fast_To_Int_Truncate(b);
+            int color = (FastMath::Fast_To_Int_Truncate(r) << 16) | (FastMath::Fast_To_Int_Truncate(g) << 8)
+                | FastMath::Fast_To_Int_Truncate(b);
 
             float edges = (float)(m_maxTankTrackEdges - m_maxTankTrackOpaqueEdges);
 
@@ -393,7 +393,7 @@ void TerrainTracksRenderObjClassSystem::Flush()
                             vertices->z = vert->Z;
                             vertices->u1 = uv->X;
                             vertices->v1 = uv->Y;
-                            vertices->diffuse = (GameMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | color;
+                            vertices->diffuse = (FastMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | color;
                             vertices++;
 
                             vert = &mod->m_edges[j].end_point_pos[1];
@@ -404,7 +404,7 @@ void TerrainTracksRenderObjClassSystem::Flush()
                             vertices->z = vert->Z;
                             vertices->u1 = uv->X;
                             vertices->v1 = uv->Y;
-                            vertices->diffuse = (GameMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | color;
+                            vertices->diffuse = (FastMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | color;
                             vertices++;
                         }
                     }

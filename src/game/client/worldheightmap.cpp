@@ -1490,9 +1490,9 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
             }
 
             float f15 = (float)(i6 - i5) * HEIGHT_SCALE;
-            float f16 = GameMath::Sqrt(f15 * f15 + 1.0f);
+            float f16 = FastMath::Sqrt(f15 * f15 + 1.0f);
             float f17 = (float)(i6 - i3) * HEIGHT_SCALE;
-            float f18 = GameMath::Sqrt(f17 * f17 + 1.0f);
+            float f18 = FastMath::Sqrt(f17 * f17 + 1.0f);
 
             if (f16 < (float)STRETCH_LIMIT) {
                 f16 = 1.0f;
@@ -1522,9 +1522,9 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
             v[3] = min_v;
 
             float f21 = (float)(i4 - i3) * HEIGHT_SCALE;
-            float f22 = GameMath::Sqrt(f21 * f21 + 1.0f);
+            float f22 = FastMath::Sqrt(f21 * f21 + 1.0f);
             float f23 = (float)(i5 - i4) * HEIGHT_SCALE;
-            float f24 = GameMath::Sqrt(f23 * f23 + 1.0f);
+            float f24 = FastMath::Sqrt(f23 * f23 + 1.0f);
 
             if (f22 < (float)STRETCH_LIMIT) {
                 f22 = 1.0f;
@@ -1951,8 +1951,8 @@ void WorldHeightMap::Set_Cell_Cliff_Flag_From_Heights(int x_index, int y_index)
 
 void WorldHeightMap::Get_Terrain_Color_At(float x, float y, RGBColor *color)
 {
-    int i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
-    int i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
+    int i1 = FastMath::Fast_To_Int_Floor(x / 10.0f);
+    int i2 = FastMath::Fast_To_Int_Floor(y / 10.0f);
     int i3 = m_borderSize + i1;
     int i4 = m_borderSize + i2;
     color->blue = 0.0f;
@@ -1991,8 +1991,8 @@ void WorldHeightMap::Get_Terrain_Color_At(float x, float y, RGBColor *color)
 
 Utf8String WorldHeightMap::Get_Terrain_Name_At(float x, float y)
 {
-    int i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
-    int i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
+    int i1 = FastMath::Fast_To_Int_Floor(x / 10.0f);
+    int i2 = FastMath::Fast_To_Int_Floor(y / 10.0f);
     int i3 = m_borderSize + i1;
     int i4 = m_borderSize + i2;
 

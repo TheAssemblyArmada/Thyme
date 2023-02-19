@@ -301,10 +301,10 @@ void Draw_Graphical_Framerate_Bar()
     float f1 = 1000.0f / (float)(time - lastTime) / (1000.0f / (float)g_theWriteableGlobalData->m_framesPerSecondLimit);
     f1 = std::clamp(f1, 0.0f, 1.0f);
 
-    unsigned int red = GameMath::Fast_To_Int_Truncate((1.0f - f1) * 255.0f);
-    unsigned int green = GameMath::Fast_To_Int_Truncate(f1 * 255.0f);
+    unsigned int red = FastMath::Fast_To_Int_Truncate((1.0f - f1) * 255.0f);
+    unsigned int green = FastMath::Fast_To_Int_Truncate(f1 * 255.0f);
     unsigned int color = Make_Color(red, green, 0, 127);
-    g_theDisplay->Draw_Fill_Rect(1, 1, GameMath::Fast_To_Int_Truncate((float)g_theDisplay->Get_Width() * f1), 15, color);
+    g_theDisplay->Draw_Fill_Rect(1, 1, FastMath::Fast_To_Int_Truncate((float)g_theDisplay->Get_Width() * f1), 15, color);
     lastTime = time;
 }
 

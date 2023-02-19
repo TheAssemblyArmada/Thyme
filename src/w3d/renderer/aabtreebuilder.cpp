@@ -167,7 +167,7 @@ AABTreeBuilderClass::SplitChoiceStruct AABTreeBuilderClass::Select_Splitting_Pla
     SplitChoiceStruct best_plane_stats;
     SplitChoiceStruct considered_plane_stats;
 
-    for (int trys = 0; trys < GameMath::Min(NUM_TRYS, polycount); trys++) {
+    for (int trys = 0; trys < FastMath::Min(NUM_TRYS, polycount); trys++) {
         AAPlaneClass plane;
 
         int poly_index = polyindices[rand() % polycount];

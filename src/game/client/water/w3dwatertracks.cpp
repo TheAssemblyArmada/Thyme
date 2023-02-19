@@ -137,7 +137,7 @@ void WaterTracksObj::Init(
     m_timeUntilBreak = (m_distanceFromShore - m_width) / m_velocity;
     m_velocityUnk = -(m_velocity * m_velocity) / (2.0f * m_width);
     m_timingUnk2 = -m_velocity / m_velocityUnk;
-    m_timingUnk3 = GameMath::Sqrt(GameMath::Fabs(2.0f * m_width / m_velocityUnk));
+    m_timingUnk3 = FastMath::Sqrt(GameMath::Fabs(2.0f * m_width / m_velocityUnk));
     m_totalMs = (int)(m_timeUntilBreak + m_timingUnk2 + m_timingUnk3);
     m_scaleUnk = 2.0f * m_heightFraction / (m_timingUnk2 * m_timingUnk2);
     m_timeToCompress = s_waveTypeInfo[m_type].time_to_compress;
@@ -264,7 +264,7 @@ int WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int batch_start)
     verts->x = vertex.X;
     verts->y = vertex.Y;
     verts->z = waterz + 1.5f;
-    verts->diffuse = (GameMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
+    verts->diffuse = (FastMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
 
     if (m_flipUV == 0.0f) {
         verts->u1 = 0.0f;
@@ -279,7 +279,7 @@ int WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int batch_start)
     verts->x = vertex.X;
     verts->y = vertex.Y;
     verts->z = waterz + 1.5f;
-    verts->diffuse = (GameMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
+    verts->diffuse = (FastMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
 
     if (m_flipUV == 0.0f) {
         verts->u1 = 1.0f;
@@ -294,7 +294,7 @@ int WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int batch_start)
     verts->x = vertex.X;
     verts->y = vertex.Y;
     verts->z = waterz + 1.5f;
-    verts->diffuse = (GameMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
+    verts->diffuse = (FastMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
 
     if (m_flipUV == 0.0f) {
         verts->u1 = 0.0f;
@@ -309,7 +309,7 @@ int WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int batch_start)
     verts->x = vertex.X;
     verts->y = vertex.Y;
     verts->z = waterz + 1.5f;
-    verts->diffuse = (GameMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
+    verts->diffuse = (FastMath::Fast_To_Int_Truncate(alpha * 255.0f) << 24) | 0xFFFFFF;
 
     if (m_flipUV == 0.0f) {
         verts->u1 = 1.0f;
@@ -534,7 +534,7 @@ void Test_Water_Update()
             int x = terrain_point_end.x - terrain_point_start.x;
             int y = terrain_point_end.y - terrain_point_start.y;
 
-            if (s_waveTypeInfo[current_wave_type].final_width >= GameMath::Sqrt(x * x + y * y)) {
+            if (s_waveTypeInfo[current_wave_type].final_width >= FastMath::Sqrt(x * x + y * y)) {
                 g_theDisplay->Draw_Line(mouse_anchor.x, mouse_anchor.y, point.x, point.y, 1.0f, 0xFFCCCCFF);
                 DX8Wrapper::Invalidate_Cached_Render_States();
                 ShaderClass::Invalidate();
@@ -717,8 +717,8 @@ void WaterTracksRenderSystem::Flush(RenderInfoClass &rinfo)
                 g = g * 255.0f;
                 b = b * 255.0f;
                 // TODO investigate this, seems that color is leftover code
-                int color = (GameMath::Fast_To_Int_Truncate(r) << 16) | (GameMath::Fast_To_Int_Truncate(g) << 8)
-                    | GameMath::Fast_To_Int_Truncate(b);
+                int color = (FastMath::Fast_To_Int_Truncate(r) << 16) | (FastMath::Fast_To_Int_Truncate(g) << 8)
+                    | FastMath::Fast_To_Int_Truncate(b);
                 Matrix3D m(true);
                 DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
                 DX8Wrapper::Set_Material(m_vertexMaterialClass);

@@ -261,7 +261,7 @@ void W3DLaserDraw::Do_Draw_Module(const Matrix3D *transform)
 
                 float f5 = c3.Length();
                 float f6 = f5 / mid_length * GAMEMATH_PI * 0.5f;
-                float f7 = GameMath::Cos(f6);
+                float f7 = FastMath::Cos(f6);
                 f7 = f7 * data->m_arcHeight;
                 c4.z = c4.z + f7;
 
@@ -269,7 +269,7 @@ void W3DLaserDraw::Do_Draw_Module(const Matrix3D *transform)
                 c3.Sub(&c5);
                 float f8 = c3.Length();
                 float f9 = f8 / mid_length * GAMEMATH_PI * 0.5f;
-                f7 = GameMath::Cos(f9);
+                f7 = FastMath::Cos(f9);
                 f7 = f7 * data->m_arcHeight;
                 c5.z = c5.z + f7;
 

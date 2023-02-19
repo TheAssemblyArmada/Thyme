@@ -719,10 +719,10 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
             vVector *= shadow->m_sizeY;
             float uOffset = shadow->m_offsetX + 0.5f;
             float vOffset = shadow->m_offsetY + 0.5f;
-            int startX = size + GameMath::Fast_To_Int_Floor((objPos.X + min_x) * f1);
-            int endX = size + GameMath::Fast_To_Int_Ceil((objPos.X + max_x) * f1);
-            int startY = size + GameMath::Fast_To_Int_Floor((objPos.Y + min_y) * f1);
-            int endY = size + GameMath::Fast_To_Int_Ceil((objPos.Y + max_y) * f1);
+            int startX = size + FastMath::Fast_To_Int_Floor((objPos.X + min_x) * f1);
+            int endX = size + FastMath::Fast_To_Int_Ceil((objPos.X + max_x) * f1);
+            int startY = size + FastMath::Fast_To_Int_Floor((objPos.Y + min_y) * f1);
+            int endY = size + FastMath::Fast_To_Int_Ceil((objPos.Y + max_y) * f1);
 
             if (startX <= g_drawStartX) {
                 startX = g_drawStartX;
@@ -759,7 +759,7 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
             int i5 = endX - startX - 103;
 
             if (i5 > 0) {
-                int i6 = GameMath::Fast_To_Int_Floor((float)i5 / 2.0f);
+                int i6 = FastMath::Fast_To_Int_Floor((float)i5 / 2.0f);
                 startX += i6;
                 endX -= i5 - i6;
             }
@@ -767,7 +767,7 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
             int i7 = endY - startY - 103;
 
             if (i7 > 0) {
-                int i8 = GameMath::Fast_To_Int_Floor((float)i7 / 2.0f);
+                int i8 = FastMath::Fast_To_Int_Floor((float)i7 / 2.0f);
                 startY += i8;
                 endY -= i7 - i8;
             }

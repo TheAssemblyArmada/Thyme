@@ -1369,7 +1369,7 @@ void WaterRenderObjClass::Render_Sky_Body(Matrix3D *mat)
     Vector3::Normalized_Cross_Product(v3, v2, &v4);
 
     Matrix3D m(true);
-    m.Set(v4, GameMath::Acos(v3 * v2));
+    m.Set(v4, FastMath::Acos(v3 * v2));
     m.Adjust_Translation(Vector3(150.0f, 550.0f, 30.0f));
     DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
 
@@ -1456,7 +1456,7 @@ void WaterRenderObjClass::Render_Water_Mesh()
         unsigned int color2 = (s->water_diffuse & 0xFF000000) >> 24;
         color2 -= 32;
         color |= color2 << 24;
-        float f1 = GameMath::Cos(3.0f * m_riverVOrigin) * 0.02f;
+        float f1 = FastMath::Cos(3.0f * m_riverVOrigin) * 0.02f;
         float f2 = 25.0f * m_riverVOrigin;
         float f3 = m_riverVOrigin / v;
         WaterMeshData *mesh = &m_meshData[x + 3];
@@ -1544,25 +1544,25 @@ void WaterRenderObjClass::Add_Velocity(float world_x, float world_y, float z_vel
         float gy;
 
         if (World_To_Grid_Space(world_x, world_y, gx, gy)) {
-            float minx = GameMath::Floor(gx - m_gridChangeMaxRange);
+            float minx = FastMath::Floor(gx - m_gridChangeMaxRange);
 
             if (minx < 0.0f) {
                 minx = 0.0f;
             }
 
-            float maxx = GameMath::Ceil(gx + m_gridChangeMaxRange);
+            float maxx = FastMath::Ceil(gx + m_gridChangeMaxRange);
 
             if (m_gridCellsX < maxx) {
                 maxx = m_gridCellsX;
             }
 
-            float miny = GameMath::Floor(gy - m_gridChangeMaxRange);
+            float miny = FastMath::Floor(gy - m_gridChangeMaxRange);
 
             if (miny < 0.0f) {
                 miny = 0.0f;
             }
 
-            float maxy = GameMath::Ceil(gy + m_gridChangeMaxRange);
+            float maxy = FastMath::Ceil(gy + m_gridChangeMaxRange);
 
             if (m_gridCellsY < maxy) {
                 maxy = m_gridCellsY;
@@ -1588,25 +1588,25 @@ void WaterRenderObjClass::Change_Grid_Height(float wx, float wy, float delta)
     float gy;
 
     if (World_To_Grid_Space(wx, wy, gx, gy)) {
-        float minx = GameMath::Floor(gx - m_gridChangeMaxRange);
+        float minx = FastMath::Floor(gx - m_gridChangeMaxRange);
 
         if (minx < 0.0f) {
             minx = 0.0f;
         }
 
-        float maxx = GameMath::Ceil(gx + m_gridChangeMaxRange);
+        float maxx = FastMath::Ceil(gx + m_gridChangeMaxRange);
 
         if (m_gridCellsX < maxx) {
             maxx = m_gridCellsX;
         }
 
-        float miny = GameMath::Floor(gy - m_gridChangeMaxRange);
+        float miny = FastMath::Floor(gy - m_gridChangeMaxRange);
 
         if (miny < 0.0f) {
             miny = 0.0f;
         }
 
-        float maxy = GameMath::Ceil(gy + m_gridChangeMaxRange);
+        float maxy = FastMath::Ceil(gy + m_gridChangeMaxRange);
 
         if (m_gridCellsY < maxy) {
             maxy = m_gridCellsY;
@@ -1615,7 +1615,7 @@ void WaterRenderObjClass::Change_Grid_Height(float wx, float wy, float delta)
         for (int i = miny; i < maxy; i++) {
             for (int j = minx; j < maxx; j++) {
                 WaterMeshData *mesh = &m_meshData[(m_gridCellsX + 3) * (i + 1) + j + 1];
-                float dist = GameMath::Sqrt((gx - j) * (gx - j) + (gy - i) * (gy - i));
+                float dist = FastMath::Sqrt((gx - j) * (gx - j) + (gy - i) * (gy - i));
                 float height = 1.0f / (dist * m_gridChangeAtt1 + m_gridChangeAtt0 + dist * dist * m_gridChangeAtt2) * delta
                     + mesh->height;
 
@@ -1710,8 +1710,8 @@ float WaterRenderObjClass::Get_Water_Height(float x, float y)
     const WaterHandle *h = nullptr;
     float z = 0.0f;
     ICoord3D point;
-    point.x = GameMath::Fast_To_Int_Floor(x + 0.5f);
-    point.y = GameMath::Fast_To_Int_Floor(y + 0.5f);
+    point.x = FastMath::Fast_To_Int_Floor(x + 0.5f);
+    point.y = FastMath::Fast_To_Int_Floor(y + 0.5f);
     point.z = 0;
 
     for (PolygonTrigger *i = PolygonTrigger::Get_First_Polygon_Trigger(); i; i = i->Get_Next()) {
@@ -1827,8 +1827,8 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
             }
         }
 
-        int color = (GameMath::Fast_To_Int_Truncate(red) << 16) | (GameMath::Fast_To_Int_Truncate(green) << 8)
-            | GameMath::Fast_To_Int_Truncate(blue);
+        int color = (FastMath::Fast_To_Int_Truncate(red) << 16) | (FastMath::Fast_To_Int_Truncate(green) << 8)
+            | FastMath::Fast_To_Int_Truncate(blue);
         color |= m_settings[m_tod].water_diffuse & 0xFF000000;
 
         int inner = ptrig->Get_River_Start();
@@ -2141,8 +2141,8 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         }
     }
 
-    int color = (GameMath::Fast_To_Int_Truncate(red) << 16) | (GameMath::Fast_To_Int_Truncate(green) << 8)
-        | GameMath::Fast_To_Int_Truncate(blue);
+    int color = (FastMath::Fast_To_Int_Truncate(red) << 16) | (FastMath::Fast_To_Int_Truncate(green) << 8)
+        | FastMath::Fast_To_Int_Truncate(blue);
     color |= m_settings[m_tod].water_diffuse & 0xFF000000;
 
     DynamicVBAccessClass dyn_vb_access(VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8,
@@ -2195,11 +2195,11 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
                     dest_verts->x = pos.X;
                     dest_verts->y = pos.Y;
                     f1 = pos.X * f2 + 25.0f * m_riverVOrigin;
-                    f3 = (GameMath::Sin(f1) - 1.0f) * f4;
+                    f3 = (FastMath::Sin(f1) - 1.0f) * f4;
                     dest_verts->z = pos.Z + f3;
                     dest_verts->diffuse = color2;
-                    dest_verts->u1 = GameMath::Cos(11.0f * m_riverVOrigin) * double(0.02) * f3 + pos.X / 150.0f;
-                    dest_verts->v1 = GameMath::Cos(5.0f * m_riverVOrigin) * double(0.02) * f3 + pos.Y / 150.0f;
+                    dest_verts->u1 = FastMath::Cos(11.0f * m_riverVOrigin) * double(0.02) * f3 + pos.X / 150.0f;
+                    dest_verts->v1 = FastMath::Cos(5.0f * m_riverVOrigin) * double(0.02) * f3 + pos.Y / 150.0f;
                     dest_verts->u2 = pos.X / 50.0f;
                     dest_verts->v2 = 0.30000001f * pos.X / 50.0f + pos.Y / 50.0f;
                     dest_verts->nx = 0.0f;
@@ -2213,8 +2213,8 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         {
             DynamicVBAccessClass::WriteLockClass lock(&dyn_vb_access);
             VertexFormatXYZNDUV2 *dest_verts = lock.Get_Formatted_Vertex_Array();
-            float f1 = GameMath::Cos(11.0f * m_riverVOrigin) * double(0.02);
-            float f2 = GameMath::Cos(5.0f * m_riverVOrigin) * double(0.02);
+            float f1 = FastMath::Cos(11.0f * m_riverVOrigin) * double(0.02);
+            float f2 = FastMath::Cos(5.0f * m_riverVOrigin) * double(0.02);
             float f3 = 25.0f * m_riverVOrigin;
             float f4 = 1.0f / 150.0f;
             float f5 = GAMEMATH_PI / 40.f;

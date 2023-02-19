@@ -44,7 +44,7 @@ void W3DSupplyDraw::Update_Draw_Module_Supply_Status(int max, int current)
         m_currentSupplyBoneCount = m_totalSupplyBoneCount;
     }
 
-    int newcount = GameMath::Ceil((float)m_totalSupplyBoneCount * ((float)current / (float)max));
+    int newcount = FastMath::Ceil((float)m_totalSupplyBoneCount * ((float)current / (float)max));
     newcount = std::min(newcount, m_totalSupplyBoneCount);
 
     if (newcount != m_currentSupplyBoneCount) {

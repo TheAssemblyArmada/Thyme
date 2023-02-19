@@ -86,7 +86,7 @@ void SwayClientUpdate::Client_Update()
         if (m_curValue > GAMEMATH_PI2) {
             m_curValue -= GAMEMATH_PI2;
         }
-        const float angle = GameMath::Cos(m_curValue);
+        const float angle = FastMath::Cos(m_curValue);
         const float new_angle = angle * m_curAngleLimit + m_leanAngle;
         const float delta_angle = new_angle - m_curAngle;
         // #TODO Negate -delta_angle to make trees sway in same direction as trees not using this module.

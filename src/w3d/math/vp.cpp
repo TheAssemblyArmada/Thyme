@@ -209,13 +209,13 @@ void VectorProcessorClass::DotProduct(float *dst, const Vector3 &a, const Vector
 void VectorProcessorClass::ClampMin(float *dst, float *src, float min, int count)
 {
     for (int i = 0; i < count; i++) {
-        dst[i] = GameMath::Max(src[i], min);
+        dst[i] = FastMath::Max(src[i], min);
     }
 }
 
 void VectorProcessorClass::Power(float *dst, float *src, float pow, int count)
 {
     for (int i = 0; i < count; i++) {
-        dst[i] = GameMath::Pow(src[i], pow);
+        dst[i] = FastMath::Pow(src[i], pow);
     }
 }

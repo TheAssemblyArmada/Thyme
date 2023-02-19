@@ -244,8 +244,8 @@ void W3DTreeBuffer::Add_Tree(
         float random_high = 1.0f + random;
         float random_low = 1.0f - random;
         float random_scale = Get_Client_Random_Value_Real(random_low, random_high);
-        m_trees[m_numTrees].sin = GameMath::Sin(angle);
-        m_trees[m_numTrees].cos = GameMath::Cos(angle);
+        m_trees[m_numTrees].sin = FastMath::Sin(angle);
+        m_trees[m_numTrees].cos = FastMath::Cos(angle);
 
         if (random > 0.0f) {
             m_trees[m_numTrees].scale = scale * random_scale;
@@ -296,8 +296,8 @@ int W3DTreeBuffer::Get_Partition_Bucket(const Coord3D *loc) const
         y = m_partitionRegion.hi.y;
     }
 
-    int x_index = GameMath::Fast_To_Int_Floor(x / (m_partitionRegion.hi.x - m_partitionRegion.lo.x) * 99.9f);
-    int y_index = GameMath::Fast_To_Int_Floor(y / (m_partitionRegion.hi.y - m_partitionRegion.lo.y) * 99.9f);
+    int x_index = FastMath::Fast_To_Int_Floor(x / (m_partitionRegion.hi.x - m_partitionRegion.lo.x) * 99.9f);
+    int y_index = FastMath::Fast_To_Int_Floor(y / (m_partitionRegion.hi.y - m_partitionRegion.lo.y) * 99.9f);
     captainslog_dbgassert(
         x_index >= 0 && y_index >= 0 && x_index < PARTITION_WIDTH_HEIGHT && y_index < PARTITION_WIDTH_HEIGHT,
         "Invalid range.");
@@ -504,8 +504,8 @@ bool W3DTreeBuffer::Update_Tree_Position(DrawableID drawable, Coord3D pos, float
     for (int i = 0; i < m_numTrees; i++) {
         if (m_trees[i].drawable_id == drawable) {
             m_trees[i].location = Vector3(pos.x, pos.y, pos.z);
-            m_trees[i].sin = GameMath::Sin(angle);
-            m_trees[i].cos = GameMath::Cos(angle);
+            m_trees[i].sin = FastMath::Sin(angle);
+            m_trees[i].cos = FastMath::Cos(angle);
             m_trees[i].bounds = m_treeTypes[m_trees[i].tree_type].bounds;
             m_trees[i].bounds.Center *= m_trees[i].scale;
             m_trees[i].bounds.Radius *= m_trees[i].scale;
@@ -521,10 +521,10 @@ bool W3DTreeBuffer::Update_Tree_Position(DrawableID drawable, Coord3D pos, float
 void W3DTreeBuffer::Update_Sway(const BreezeInfo &info)
 {
     for (int i = 0; i < 100; i++) {
-        float angle = GameMath::Cos((i + i) * GAMEMATH_PI / 101.0f);
+        float angle = FastMath::Cos((i + i) * GAMEMATH_PI / 101.0f);
         float angle2 = angle * info.intensity + info.lean;
-        float sin = GameMath::Sin(angle2);
-        float cos = GameMath::Cos(angle2);
+        float sin = FastMath::Sin(angle2);
+        float cos = FastMath::Cos(angle2);
         m_swayVector[i].X = sin * info.sway_direction.x;
         m_swayVector[i].Y = sin * info.sway_direction.y;
         m_swayVector[i].Z = cos - 1.0f;
@@ -619,9 +619,9 @@ int W3DTreeBuffer::Do_Lighting(
     green = green * 255.0f;
     blue = blue * 255.0f;
 
-    return Make_Color(GameMath::Fast_To_Int_Truncate(red),
-        GameMath::Fast_To_Int_Truncate(green),
-        GameMath::Fast_To_Int_Truncate(blue),
+    return Make_Color(FastMath::Fast_To_Int_Truncate(red),
+        FastMath::Fast_To_Int_Truncate(green),
+        FastMath::Fast_To_Int_Truncate(blue),
         255);
 }
 
@@ -1287,8 +1287,8 @@ void W3DTreeBuffer::Unit_Moved(Object *unit)
             y = m_partitionRegion.hi.y;
         }
 
-        int min_x_index = GameMath::Fast_To_Int_Floor(x / (m_partitionRegion.hi.x - m_partitionRegion.lo.x) * 99.9f);
-        int min_y_index = GameMath::Fast_To_Int_Floor(y / (m_partitionRegion.hi.y - m_partitionRegion.lo.y) * 99.9f);
+        int min_x_index = FastMath::Fast_To_Int_Floor(x / (m_partitionRegion.hi.x - m_partitionRegion.lo.x) * 99.9f);
+        int min_y_index = FastMath::Fast_To_Int_Floor(y / (m_partitionRegion.hi.y - m_partitionRegion.lo.y) * 99.9f);
         captainslog_dbgassert(min_x_index >= 0 && min_y_index >= 0 && min_x_index < PARTITION_WIDTH_HEIGHT
                 && min_y_index < PARTITION_WIDTH_HEIGHT,
             "Invalid range.");
@@ -1312,8 +1312,8 @@ void W3DTreeBuffer::Unit_Moved(Object *unit)
             y = m_partitionRegion.hi.y;
         }
 
-        int max_x_index = GameMath::Fast_To_Int_Ceil(x / (m_partitionRegion.hi.x - m_partitionRegion.lo.x) * 99.9f);
-        int max_y_index = GameMath::Fast_To_Int_Ceil(y / (m_partitionRegion.hi.y - m_partitionRegion.lo.y) * 99.9f);
+        int max_x_index = FastMath::Fast_To_Int_Ceil(x / (m_partitionRegion.hi.x - m_partitionRegion.lo.x) * 99.9f);
+        int max_y_index = FastMath::Fast_To_Int_Ceil(y / (m_partitionRegion.hi.y - m_partitionRegion.lo.y) * 99.9f);
         captainslog_dbgassert(max_x_index >= 0 && max_y_index >= 0 && max_x_index <= PARTITION_WIDTH_HEIGHT
                 && max_y_index <= PARTITION_WIDTH_HEIGHT,
             "Invalid range.");
@@ -1380,7 +1380,7 @@ void W3DTreeBuffer::Draw_Trees(CameraClass *camera, RefMultiListIterator<class R
                 }
             }
 
-            int sway_current = GameMath::Fast_To_Int_Floor(m_swayCurrent[i]);
+            int sway_current = FastMath::Fast_To_Int_Floor(m_swayCurrent[i]);
 
             if (sway_current >= 0 && sway_current + 1 < 100) {
                 float f1 = m_swayCurrent[i] - sway_current;

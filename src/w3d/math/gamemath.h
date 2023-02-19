@@ -19,6 +19,7 @@
 #include "array.h"
 #include <captainslog.h>
 #include <cfloat>
+#include <cmath>
 #include <cstdlib>
 
 #ifdef PROCESSOR_X86
@@ -27,8 +28,6 @@
 
 #ifdef BUILD_WITH_GAMEMATH
 #include <gmath.h>
-#else
-#include <cmath>
 #endif
 
 #define GAMEMATH_EPSILON 0.0001f
@@ -548,3 +547,179 @@ inline int Lrintf(float val)
 //}
 
 } // namespace GameMath
+
+// These functions are for places where we don't need the results to be the same across platforms
+namespace FastMath
+{
+
+inline int Lrintf(float val)
+{
+#ifdef PROCESSOR_X86
+    return _mm_cvtt_ss2si(_mm_load_ss(&val));
+#else
+    return (int)val;
+#endif
+}
+
+inline float Max(float a, float b)
+{
+#ifdef PROCESSOR_X86
+    return _mm_cvtss_f32(_mm_max_ss(_mm_set_ss(a), _mm_set_ss(b)));
+#else
+    if (a > b) {
+        return a;
+    }
+
+    return b;
+#endif
+}
+
+inline float Min(float a, float b)
+{
+#ifdef PROCESSOR_X86
+    return _mm_cvtss_f32(_mm_min_ss(_mm_set_ss(a), _mm_set_ss(b)));
+#else
+    if (a < b) {
+        return a;
+    }
+
+    return b;
+#endif
+}
+
+inline float Pow(float val, float power)
+{
+    return powf(val, power);
+}
+
+inline float Cos(float val)
+{
+    return cosf(val);
+}
+
+inline float Sin(float val)
+{
+    return sinf(val);
+}
+
+inline float Inv_Sin(float val)
+{
+    return (val > 0.0f) ? 1.0f / Sin(val) : GAMEMATH_FLOAT_MAX;
+}
+
+inline float Sqrt(float val)
+{
+#ifdef PROCESSOR_X86
+    return _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(val)));
+#else
+    return sqrtf(val);
+#endif
+}
+
+inline float Inv_Sqrt(float val)
+{
+    return float(1.0f / Sqrt(val));
+}
+
+inline float Acos(float val)
+{
+    return (float)acos(val);
+}
+
+inline float Asin(float val)
+{
+    return (float)asin(val);
+}
+
+inline float Atan(float val)
+{
+    return static_cast<float>(atan(val));
+}
+
+inline float Atan2(float y, float x)
+{
+    return static_cast<float>(atan2(y, x));
+}
+
+inline float Tan(float val)
+{
+    return tanf(val);
+}
+
+inline float Ceil(float val)
+{
+    return ceilf(val);
+}
+
+inline float Floor(float val)
+{
+    return floorf(val);
+}
+
+inline bool Fast_Is_Float_Positive(const float &val)
+{
+    return ((*reinterpret_cast<uint32_a const *>(&val)) & 0x80000000) == 0;
+}
+
+inline float Truncf(float val)
+{
+    int v1 = ~0x7FFFFFu;
+
+    if ((unsigned char)(*(unsigned int *)(&val) >> 23) < 127u) {
+        v1 = 0;
+    }
+
+    int i1 = ((v1 >> ((*reinterpret_cast<unsigned int *>(&val) >> 23) - 127)) & *reinterpret_cast<unsigned int *>(&val));
+    return *reinterpret_cast<float *>(&i1);
+}
+
+inline int Fast_To_Int_Floor(float val)
+{
+    static const float _almost_one = 0.99999994f;
+
+    if (!Fast_Is_Float_Positive(val)) {
+        val -= _almost_one;
+    }
+
+    return Lrintf(Truncf(val));
+}
+
+inline int Fast_To_Int_Ceil(float val)
+{
+    static const float _almost_one = 0.99999994f;
+
+    if (Fast_Is_Float_Positive(val)) {
+        val += _almost_one;
+    }
+
+    return Lrintf(Truncf(val));
+}
+
+inline int Fast_To_Int_Truncate(float val)
+{
+    return Lrintf(Truncf(val));
+}
+
+inline float Fast_Float_Floor(float val)
+{
+    static const float _almost_one = 0.99999994f;
+
+    if (!Fast_Is_Float_Positive(val)) {
+        val -= _almost_one;
+    }
+
+    return Truncf(val);
+}
+
+inline float Fast_Float_Ceil(float val)
+{
+    static const float _almost_one = 0.99999994f;
+
+    if (Fast_Is_Float_Positive(val)) {
+        val += _almost_one;
+    }
+
+    return Truncf(val);
+}
+
+} // namespace FastMath

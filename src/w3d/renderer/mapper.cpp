@@ -127,8 +127,8 @@ void LinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &matrix)
         offset_u = std::clamp(offset_u, -m_scale.X, m_scale.X);
         offset_v = std::clamp(offset_v, -m_scale.Y, m_scale.Y);
     } else {
-        offset_u -= GameMath::Floor(offset_u);
-        offset_v -= GameMath::Floor(offset_v);
+        offset_u -= FastMath::Floor(offset_u);
+        offset_v -= FastMath::Floor(offset_v);
     }
 
     matrix.Make_Identity();
@@ -306,8 +306,8 @@ void RotateTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
         m_currentAngle += 2 * GAMEMATH_PI;
     }
 
-    float c = GameMath::Cos(m_currentAngle);
-    float s = GameMath::Sin(m_currentAngle);
+    float c = FastMath::Cos(m_currentAngle);
+    float s = FastMath::Sin(m_currentAngle);
 
     mat.Make_Identity();
     mat[0].Set(m_scale.X * c, -m_scale.X * s, -m_scale.X * (c * m_center.U - s * m_center.V - m_center.U), 0.0f);
@@ -356,8 +356,8 @@ void SineLinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 
     m_currentAngle += delta * ms_to_radians;
 
-    float offset_u = m_uafp.X * GameMath::Sin(m_uafp.Y * m_currentAngle + m_uafp.Z * GAMEMATH_PI);
-    float offset_v = m_vafp.X * GameMath::Sin(m_vafp.Y * m_currentAngle + m_vafp.Z * GAMEMATH_PI);
+    float offset_u = m_uafp.X * FastMath::Sin(m_uafp.Y * m_currentAngle + m_uafp.Z * GAMEMATH_PI);
+    float offset_v = m_vafp.X * FastMath::Sin(m_vafp.Y * m_currentAngle + m_vafp.Z * GAMEMATH_PI);
 
     mat.Make_Identity();
     mat[0].Z = offset_u;
@@ -420,8 +420,8 @@ void StepLinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
         m_currentStep.U = std::clamp(m_currentStep.U, -m_scale.X, m_scale.X);
         m_currentStep.V = std::clamp(m_currentStep.V, -m_scale.Y, m_scale.Y);
     } else {
-        m_currentStep.U -= GameMath::Floor(m_currentStep.U);
-        m_currentStep.V -= GameMath::Floor(m_currentStep.V);
+        m_currentStep.U -= FastMath::Floor(m_currentStep.U);
+        m_currentStep.V -= FastMath::Floor(m_currentStep.V);
     }
 
     mat.Make_Identity();
@@ -579,7 +579,7 @@ void EdgeMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
     m_lastUsedSyncTime = now;
 
     m_vOffset += delta * m_vSpeed;
-    m_vOffset -= GameMath::Floor(m_vOffset);
+    m_vOffset -= FastMath::Floor(m_vOffset);
 
     mat = Matrix4(0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, m_vOffset, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
@@ -740,8 +740,8 @@ void ScreenMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
         offset_u = std::clamp(offset_u, -m_scale.X, m_scale.X);
         offset_v = std::clamp(offset_v, -m_scale.Y, m_scale.Y);
     } else {
-        offset_u = offset_u - GameMath::Floor(offset_u);
-        offset_v = offset_v - GameMath::Floor(offset_v);
+        offset_u = offset_u - FastMath::Floor(offset_u);
+        offset_v = offset_v - FastMath::Floor(offset_v);
     }
 
 #ifdef BUILD_WITH_D3D8
@@ -827,8 +827,8 @@ void RandomTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
         }
     }
 
-    float sin = GameMath::Sin(m_currentAngle);
-    float cos = GameMath::Cos(m_currentAngle);
+    float sin = FastMath::Sin(m_currentAngle);
+    float cos = FastMath::Cos(m_currentAngle);
 
     mat.Make_Identity();
     mat[0][0] = sin * m_scale.X;

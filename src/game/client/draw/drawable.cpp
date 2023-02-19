@@ -514,8 +514,8 @@ void Drawable::Draw_Ammo(IRegion2D const *region)
                 if (object->Get_Ammo_Pip_Showing_Info(clip_size, ammo_in_clip)) {
                     if (s_fullAmmo != nullptr && s_emptyAmmo != nullptr) {
                         float scale = 1.0f;
-                        int width = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
-                        int height = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
+                        int width = FastMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
+                        int height = FastMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
                         Coord3D pos = *object->Get_Position();
                         pos.x += g_theWriteableGlobalData->m_ammoPipWorldOffset.x;
                         pos.y += g_theWriteableGlobalData->m_ammoPipWorldOffset.y;
@@ -527,7 +527,7 @@ void Drawable::Draw_Ammo(IRegion2D const *region)
                             float radius = object->Get_Geometry_Info().Get_Bounding_Sphere_Radius() * scale;
                             int left = region->lo.x;
                             int top =
-                                GameMath::Fast_To_Int_Truncate(radius * g_theWriteableGlobalData->m_ammoPipScreenOffset.y)
+                                FastMath::Fast_To_Int_Truncate(radius * g_theWriteableGlobalData->m_ammoPipScreenOffset.y)
                                 + screen.y;
 
                             for (int i = 0; i < clip_size; i++) {
@@ -585,8 +585,8 @@ void Drawable::Draw_Contained(IRegion2D const *region)
                     }
 
                     float scale = 1.0f;
-                    int width = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
-                    int height = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
+                    int width = FastMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
+                    int height = FastMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
                     Coord3D pos = *object->Get_Position();
                     pos.x += g_theWriteableGlobalData->m_containerPipWorldOffset.x;
                     pos.y += g_theWriteableGlobalData->m_containerPipWorldOffset.y;
@@ -598,7 +598,7 @@ void Drawable::Draw_Contained(IRegion2D const *region)
                         float radius = object->Get_Geometry_Info().Get_Bounding_Sphere_Radius() * scale;
                         int left = region->lo.x;
                         int top =
-                            GameMath::Fast_To_Int_Truncate(radius * g_theWriteableGlobalData->m_containerPipScreenOffset.y)
+                            FastMath::Fast_To_Int_Truncate(radius * g_theWriteableGlobalData->m_containerPipScreenOffset.y)
                             + screen.y;
 
                         for (int i = 0; i < max; i++) {
@@ -678,9 +678,9 @@ void Drawable::Draw_Healing(IRegion2D const *region)
                     if (Get_Icon_Info()->anims[icon] != nullptr) {
                         int width = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Width();
                         int height = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Height();
-                        int x = GameMath::Fast_To_Int_Truncate(
+                        int x = FastMath::Fast_To_Int_Truncate(
                             region->lo.x + (region->hi.x - region->lo.x) * 0.75f - width * 0.5f);
-                        int y = GameMath::Fast_To_Int_Truncate(region->lo.y - height);
+                        int y = FastMath::Fast_To_Int_Truncate(region->lo.y - height);
                         Get_Icon_Info()->anims[icon]->Draw(x, y, width, height);
                     }
                 }
@@ -719,7 +719,7 @@ void Drawable::Draw_Enthusiastic(IRegion2D const *region)
 
             int width = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Width() * scale;
             int height = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Height() * scale;
-            int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.25f - width * 0.5f);
+            int x = FastMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.25f - width * 0.5f);
             int y = region->hi.y + height * 0.25f;
             Get_Icon_Info()->anims[icon]->Draw(x, y, width, height);
         }
@@ -743,10 +743,10 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
         if (Get_Icon_Info()->anims[ICON_CARBOMB] != nullptr && region != nullptr) {
             int fwidth = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Width();
             int fheight = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Height();
-            int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.5f);
-            int height = GameMath::Fast_To_Int_Truncate((float)width / (float)(fwidth) * (float(fheight)));
-            int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-            int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
+            int width = FastMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.5f);
+            int height = FastMath::Fast_To_Int_Truncate((float)width / (float)(fwidth) * (float(fheight)));
+            int x = FastMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+            int y = FastMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
             Get_Icon_Info()->anims[ICON_CARBOMB]->Draw(x, y, width, height);
             Get_Icon_Info()->timings[ICON_CARBOMB] = 0x3FFFFFFF;
         }
@@ -769,7 +769,7 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
                 Get_Icon_Info()->anims[ICON_BOMB_TIMED] =
                     new Anim2D(s_animationTemplates[ICON_BOMB_TIMED], g_theAnim2DCollection);
 
-                int i1 = GameMath::Fast_To_Int_Ceil((update->Get_Die_Frame() - frame) * (1.0f / 30.0f));
+                int i1 = FastMath::Fast_To_Int_Ceil((update->Get_Die_Frame() - frame) * (1.0f / 30.0f));
                 unsigned short frames = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Template()->Get_Num_Frames();
 
                 if (i1 > frames - 1) {
@@ -783,10 +783,10 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
             if (Get_Icon_Info()->anims[ICON_BOMB_TIMED] != nullptr && region != nullptr) {
                 int fwidth = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Width();
                 int fheight = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Height();
-                int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
-                int height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-                int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
+                int width = FastMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
+                int height = FastMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
+                int x = FastMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int y = FastMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
                 Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Draw(x, y, width, height);
@@ -801,10 +801,10 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
             if (Get_Icon_Info()->anims[ICON_BOMB_REMOTE] != nullptr && region != nullptr) {
                 int fwidth = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Width();
                 int fheight = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Height();
-                int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
-                int height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-                int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
+                int width = FastMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
+                int height = FastMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
+                int x = FastMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int y = FastMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
             }

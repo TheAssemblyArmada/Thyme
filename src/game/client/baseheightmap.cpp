@@ -54,7 +54,7 @@ BaseHeightMapRenderObjClass::BaseHeightMapRenderObjClass() :
     m_needFullUpdate(false),
     m_showImpassableAreas(false),
     m_updating(false),
-    m_maxHeight((GameMath::Pow(256.0f, 1.0f) - 1.0f) * HEIGHTMAP_SCALE),
+    m_maxHeight((FastMath::Pow(256.0f, 1.0f) - 1.0f) * HEIGHTMAP_SCALE),
     m_minHeight(0.0f),
     m_shorelineTiles(nullptr),
     m_numShorelineBlendTiles(0),
@@ -449,19 +449,19 @@ bool BaseHeightMapRenderObjClass::Cast_Ray(RayCollisionTestClass &raytest)
         }
 
         if (p0.X > p1.X) {
-            start_cell_x = GameMath::Fast_To_Int_Floor(p1.X / 10.0f);
-            end_cell_x = GameMath::Fast_To_Int_Ceil(p0.X / 10.0f);
+            start_cell_x = FastMath::Fast_To_Int_Floor(p1.X / 10.0f);
+            end_cell_x = FastMath::Fast_To_Int_Ceil(p0.X / 10.0f);
         } else {
-            start_cell_x = GameMath::Fast_To_Int_Floor(p0.X / 10.0f);
-            end_cell_x = GameMath::Fast_To_Int_Ceil(p1.X / 10.0f);
+            start_cell_x = FastMath::Fast_To_Int_Floor(p0.X / 10.0f);
+            end_cell_x = FastMath::Fast_To_Int_Ceil(p1.X / 10.0f);
         }
 
         if (p0.Y > p1.Y) {
-            start_cell_y = GameMath::Fast_To_Int_Floor(p1.Y / 10.0f);
-            end_cell_y = GameMath::Fast_To_Int_Ceil(p0.Y / 10.0f);
+            start_cell_y = FastMath::Fast_To_Int_Floor(p1.Y / 10.0f);
+            end_cell_y = FastMath::Fast_To_Int_Ceil(p0.Y / 10.0f);
         } else {
-            start_cell_y = GameMath::Fast_To_Int_Floor(p0.Y / 10.0f);
-            end_cell_y = GameMath::Fast_To_Int_Ceil(p1.Y / 10.0f);
+            start_cell_y = FastMath::Fast_To_Int_Floor(p0.Y / 10.0f);
+            end_cell_y = FastMath::Fast_To_Int_Ceil(p1.Y / 10.0f);
         }
 
         int max_ht = m_map->Get_Max_Height_Value();
@@ -960,9 +960,9 @@ void BaseHeightMapRenderObjClass::Do_The_Light(VertexFormatXYZDUV2 *vb,
     shade_g = shade_g * 255.0f;
     shade_b = shade_b * 255.0f;
 
-    vb->diffuse = Make_Color(GameMath::Fast_To_Int_Truncate(shade_r),
-        GameMath::Fast_To_Int_Truncate(shade_g),
-        GameMath::Fast_To_Int_Truncate(shade_b),
+    vb->diffuse = Make_Color(FastMath::Fast_To_Int_Truncate(shade_r),
+        FastMath::Fast_To_Int_Truncate(shade_g),
+        FastMath::Fast_To_Int_Truncate(shade_b),
         alpha);
 }
 
@@ -979,12 +979,12 @@ float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord
     if (map != nullptr) {
         float f1 = x * 0.1f;
         float f2 = y * 0.1f;
-        float f3 = GameMath::Fast_Float_Floor(f1);
-        float f4 = GameMath::Fast_Float_Floor(f2);
+        float f3 = FastMath::Fast_Float_Floor(f1);
+        float f4 = FastMath::Fast_Float_Floor(f2);
         float f5 = f1 - f3;
         float f6 = f2 - f4;
-        int i1 = map->Border_Size() + GameMath::Lrintf(f3);
-        int i2 = map->Border_Size() + GameMath::Lrintf(f4);
+        int i1 = map->Border_Size() + FastMath::Lrintf(f3);
+        int i2 = map->Border_Size() + FastMath::Lrintf(f4);
         int x_extent = map->Get_X_Extent();
 
         if (i1 <= x_extent - 3 && i2 <= map->Get_Y_Extent() - 3 && i2 >= 1 && i1 >= 1) {
@@ -1152,7 +1152,7 @@ void BaseHeightMapRenderObjClass::Draw_Scorches()
 
 bool BaseHeightMapRenderObjClass::Evaluate_As_Visible_Cliff(int x, int y, float height)
 {
-    static float distance[4] = { 0.0f, 10.0f, GameMath::Sqrt(2.0f) * 10.0f, 10.0f };
+    static float distance[4] = { 0.0f, 10.0f, FastMath::Sqrt(2.0f) * 10.0f, 10.0f };
     unsigned char heights[4];
     float fheights[4];
 
@@ -1248,10 +1248,10 @@ bool BaseHeightMapRenderObjClass::Is_Clear_Line_Of_Sight(const Coord3D &pos1, co
     }
 
     int border = map->Border_Size();
-    int x1 = border + GameMath::Fast_To_Int_Floor(0.1f * pos1.x);
-    int y1 = border + GameMath::Fast_To_Int_Floor(0.1f * pos1.y);
-    int x2 = border + GameMath::Fast_To_Int_Floor(0.1f * pos2.x);
-    int y2 = border + GameMath::Fast_To_Int_Floor(0.1f * pos2.y);
+    int x1 = border + FastMath::Fast_To_Int_Floor(0.1f * pos1.x);
+    int y1 = border + FastMath::Fast_To_Int_Floor(0.1f * pos1.y);
+    int x2 = border + FastMath::Fast_To_Int_Floor(0.1f * pos2.x);
+    int y2 = border + FastMath::Fast_To_Int_Floor(0.1f * pos2.y);
     int x_dist = abs(x2 - x1);
     int y_dist = abs(y2 - y1);
     int x_pos = x1;
@@ -2117,9 +2117,9 @@ void BaseHeightMapRenderObjClass::Update_Scorches()
         red *= 255.0f;
         green *= 255.0f;
         blue *= 255.0f;
-        unsigned int diffuse = Make_Color(GameMath::Fast_To_Int_Truncate(red),
-            GameMath::Fast_To_Int_Truncate(green),
-            GameMath::Fast_To_Int_Truncate(blue),
+        unsigned int diffuse = Make_Color(FastMath::Fast_To_Int_Truncate(red),
+            FastMath::Fast_To_Int_Truncate(green),
+            FastMath::Fast_To_Int_Truncate(blue),
             255);
         m_scorchesInBuffer = 0;
 
@@ -2137,8 +2137,8 @@ void BaseHeightMapRenderObjClass::Update_Scorches()
                 scorch_type = 0;
             }
 
-            int x_min = GameMath::Fast_To_Int_Floor((location.X - radius) / 10.0f);
-            int y_min = GameMath::Fast_To_Int_Floor((location.Y - radius) / 10.0f);
+            int x_min = FastMath::Fast_To_Int_Floor((location.X - radius) / 10.0f);
+            int y_min = FastMath::Fast_To_Int_Floor((location.Y - radius) / 10.0f);
 
             if (x_min < -m_map->Border_Size()) {
                 x_min = -m_map->Border_Size();
@@ -2148,8 +2148,8 @@ void BaseHeightMapRenderObjClass::Update_Scorches()
                 y_min = -m_map->Border_Size();
             }
 
-            int x_max = GameMath::Fast_To_Int_Ceil((location.X + radius) / 10.0f) + 1;
-            int y_max = GameMath::Fast_To_Int_Ceil((location.Y + radius) / 10.0f) + 1;
+            int x_max = FastMath::Fast_To_Int_Ceil((location.X + radius) / 10.0f) + 1;
+            int y_max = FastMath::Fast_To_Int_Ceil((location.Y + radius) / 10.0f) + 1;
 
             if (x_max > m_map->Get_X_Extent() - m_map->Border_Size()) {
                 x_max = m_map->Get_X_Extent() - m_map->Border_Size();
@@ -2362,7 +2362,7 @@ void BaseHeightMapRenderObjClass::Update_View_Impassable_Areas(bool unk, int min
         max_y = y_extent;
     }
 
-    float height = GameMath::Tan((m_cliffAngle / 360.0f + m_cliffAngle / 360.0f) * GAMEMATH_PI);
+    float height = FastMath::Tan((m_cliffAngle / 360.0f + m_cliffAngle / 360.0f) * GAMEMATH_PI);
 
     for (int y = max_x; y < max_y; y++) {
         for (int x = min_x; x < min_y; x++) {

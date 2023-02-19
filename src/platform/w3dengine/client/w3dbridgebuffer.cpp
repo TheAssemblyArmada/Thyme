@@ -324,7 +324,7 @@ int W3DBridge::Get_Model_Vertices_Fixed(VertexFormatXYZNDUV1 *destination_vb,
     Vector3 normal(-vec.Y, vec.X, 0.0f);
     normal.Normalize();
     float f = (m_end.Z - m_start.Z) / vec.Length();
-    Vector3 vec_z(-f, 0.0f, GameMath::Sqrt(1.0f - f * f));
+    Vector3 vec_z(-f, 0.0f, FastMath::Sqrt(1.0f - f * f));
     vec /= m_length;
     normal *= m_scale;
     vec_z *= m_scale;
@@ -485,14 +485,14 @@ void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
         vec_normal *= m_scale;
 
         float f = (m_end.Z - m_start.Z) / vec.Length();
-        Vector3 vec_z(-f, 0.0f, GameMath::Sqrt(1.0f - f * f));
+        Vector3 vec_z(-f, 0.0f, FastMath::Sqrt(1.0f - f * f));
         vec_z *= m_scale;
         float section_span_length = m_rightMinX - m_leftMaxX;
         int section_span_count = 1;
 
         if (m_bridgeType == SECTIONAL_BRIDGE) {
             float f3 = vec.Length() - (m_length - section_span_length);
-            section_span_count = GameMath::Fast_To_Int_Floor((section_span_length / 2.0f + f3) / section_span_length);
+            section_span_count = FastMath::Fast_To_Int_Floor((section_span_length / 2.0f + f3) / section_span_length);
         }
 
         vec /= (float)(section_span_count - 1) * section_span_length + m_length;

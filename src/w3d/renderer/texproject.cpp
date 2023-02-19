@@ -365,8 +365,8 @@ bool TexProjectClass::Compute_Perspective_Projection(
 
     float tan_hfov2 = GameMath::Fabs(box.m_extent.X / (box.m_center.Z + box.m_extent.Z));
     float tan_vfov2 = GameMath::Fabs(box.m_extent.Y / (box.m_center.Z + box.m_extent.Z));
-    float hfov = 2.0f * GameMath::Atan(tan_hfov2);
-    float vfov = 2.0f * GameMath::Atan(tan_vfov2);
+    float hfov = 2.0f * FastMath::Atan(tan_hfov2);
+    float vfov = 2.0f * FastMath::Atan(tan_vfov2);
 
     Set_Perspective_Projection(hfov, vfov, znear, zfar);
     Set_Transform(texture_tm);

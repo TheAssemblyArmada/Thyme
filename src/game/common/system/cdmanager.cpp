@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "cdmanager.h"
+#include "captainslog.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -21,11 +22,38 @@
 CDManagerInterface *g_theCDManager;
 #endif
 
+class CDManager : public CDManagerInterface
+{
+public:
+    CDManager() {}
+    virtual ~CDManager() override {}
+    virtual void Init() override {}
+    virtual void Reset() override {}
+    virtual void Update() override {}
+
+    virtual int Drive_Count() override
+    {
+        captainslog_relassert(false, 0, "CDManager error");
+        return 0;
+    }
+
+    virtual CDDriveInterface *Get_Drive() override
+    {
+        captainslog_relassert(false, 0, "CDManager error");
+        return nullptr;
+    }
+
+    virtual CDDriveInterface *New_Drive(const char *drive) override
+    {
+        captainslog_relassert(false, 0, "CDManager error");
+        return nullptr;
+    }
+
+    virtual void Refresh_Drives() override { captainslog_relassert(false, 0, "CDManager error"); }
+    virtual void Destroy_All_Drives() override { captainslog_relassert(false, 0, "CDManager error"); }
+};
+
 CDManagerInterface *Create_CD_Manager()
 {
-#ifdef GAME_DLL
-    return Call_Function<CDManagerInterface *>(PICK_ADDRESS(0x007427B0, 0x00642E41));
-#else
-    return nullptr;
-#endif
+    return new CDManager;
 }

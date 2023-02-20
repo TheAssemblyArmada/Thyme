@@ -30,7 +30,7 @@ public:
     virtual void Load_Post_Process() {}
 
     void Empty() { m_money = 0; }
-    void Deposit(unsigned amount, bool play_sound);
+    void Deposit(unsigned int amount, bool play_sound);
 
     static void Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data);
 

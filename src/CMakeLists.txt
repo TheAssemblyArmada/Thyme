@@ -199,6 +199,7 @@ set(GAMEENGINE_SRC
     game/common/modules/module.cpp
     game/common/modules/modulefactory.cpp
     game/common/modules/updatemodule.cpp
+    game/common/rts/academystats.cpp
     game/common/rts/actionmanager.cpp
     game/common/rts/buildinfo.cpp
     game/common/rts/energy.cpp

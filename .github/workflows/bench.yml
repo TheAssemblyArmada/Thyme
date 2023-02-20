@@ -1,0 +1,58 @@
+name: bench-linux
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  # deployments permission to deploy GitHub pages website
+  deployments: write
+  # contents permission to update benchmark contents in gh-pages branch
+  contents: write
+
+jobs:
+  create_release:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Create Development release
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
+
+  build_thyme_ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y libgtk-3-dev ninja-build libwxgtk3.0-gtk3-dev libsdl2-dev libavcodec-dev libavformat-dev
+
+      - name: Configure Thyme
+        run: |
+          cmake -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_BENCHMARKS=ON -B build -G Ninja
+
+      - name: Build Thyme
+        run: |
+          cmake --build build
+
+      - name: Bench Thyme
+        run: |
+          cd build
+          ./thyme_benchmarks --benchmark_format=json | tee benchmark_result.json
+
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Thyme Benchmarks
+          tool: 'googlecpp'
+          output-file-path: build/benchmark_result.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true

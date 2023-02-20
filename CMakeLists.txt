@@ -417,6 +417,16 @@ if(DLL_INSTALL_PREFIX AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")
 endif()
 
 # Build tests
+if(BUILD_TESTS OR BUILD_BENCHMARKS)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        release-1.12.1
+    )
+    
+    FetchContent_MakeAvailable(googletest)
+endif()
+
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)

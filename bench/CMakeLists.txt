@@ -8,6 +8,8 @@ FetchContent_MakeAvailable(benchmark)
 
 set(BENCH_SRCS
   bench_refpack.cpp
+  bench_gamemath_cm.cpp
+  bench_gamemath_gm.cpp
 )
 
 add_executable(thyme_benchmarks ${BENCH_SRCS})

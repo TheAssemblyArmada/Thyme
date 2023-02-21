@@ -2,6 +2,9 @@
 [![linux](https://github.com/TheAssemblyArmada/Thyme/workflows/linux/badge.svg)](https://github.com/TheAssemblyArmarda/Thyme/actions)
 [![codecov](https://codecov.io/gh/TheAssemblyArmada/Thyme/branch/develop/graph/badge.svg)](https://codecov.io/gh/TheAssemblyArmada/Thyme)
 
+[![en-GB](https://img.shields.io/badge/lang-en--GB-green.svg)](https://github.com/TheAssemblyArmada/Thyme/README.md)
+[![de-DE](https://img.shields.io/badge/lang-de--DE-green.svg)](https://github.com/TheAssemblyArmada/Thyme/README.de-DE.md)
+
 **Thyme** is an open source re-implementation of Command & Conquer Generals: Zero Hour.
 Zero Hour is the expansion pack of Command & Conquer Generals, released in 2003.
 
@@ -19,17 +22,35 @@ You can chat and discuss the development of Thyme on our [Discord channel](https
 
 ## Running Thyme
 
-Currently Thyme can only be run on Windows.
 
-To run Thyme, you first need to have Command & Conquer Generals: Zero Hour installed. If you don't have the original game disc, Generals: Zero Hour can currently be bought most easily as a downloadable version that is part of the Command & Conquer The Ultimate Collection from [Origin](https://www.origin.com/en-us/store/command-and-conquer/command-and-conquer-the-ultimate-collection/ultimate-collection) or a third-party like [Amazon](https://www.amazon.com/Command-Conquer-Ultimate-Collection-PC/dp/B0095C0I4W).
+**As of now (Feb. 2023) Thyme only runs on Windows and must be compiled by yourself.**
 
-If you wish to use our custom launcher without messing with patches or anything, only an install original Windows disc based English language version of Generals: Zero Hour (patched to version 1.04) is supported. That 1.04 patch can be downloaded [here](https://web.archive.org/web/20170130195007/http://ftp.ea.com/pub/eapacific/generals/generalszh/DownloadablePatches/GeneralsZH-104-english.exe) if your installation hasn't been updated yet.
+In order to run Thyme, you must meet one of the following prerequisites:
 
-If you don't have the disc version or just want to run an executable directly, you will need to generate `thyme.exe` using the exe patching guide on the [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki).
+1. You have an installation from the original English version on disc (**NOT** "The First Decade", 
+"The Ultimate Collection" or any other bundled version) which **must** be patched to version 1.04
+2. You have got hold of the game.dat from the installation referred to in point 1, and copied it to the root directory 
+of the C6C General ZH installation
 
-Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://github.com/TheAssemblyArmada/Thyme/releases). You will have to expand the assets to download the latest thyme_x86_dll.zip. You could also [build Thyme yourself](#building-thyme-yourself).
+If you have either of these options ready, you can proceed with building and compiling the `thyme.dll` and 
+`avifil32.dll` as described [here](#building-thyme-yourself).
 
-The easiest way to get Thyme to actually run is to place `thymelauncher.exe` together with `thyme.dll` in the Generals: Zero Hour installation folder. You can then launch `thymelauncher.exe` from that directory or create a shortcut to them.
+Once you have successfully created these DLLs, copy them to the C&C Generals ZH root directory.
+
+Next, rename the game.dat in your ZH root directory to `game.exe` (the name doesn't matter as long as it has the .exe 
+extension).
+
+Congratulations, you should now be able to start Thyme by running `game.exe`!
+
+To check if Thyme is loaded successfully, you can start the game from CMD or PowerShell 
+(right click in the folder while holding down the Shift key and select "Open PowerShell") with the following command:
+
+`.\game.exe -win`
+
+This should start the game in windowed mode, so you can see if the window has a name that includes "Thyme".
+
+
+If you have any problems getting Thyme to work following this guide, feel free to contact us on our [Discord](#Chat).
 
 ### Disclaimer
 

@@ -5,25 +5,11 @@ on:
   push:
 
 permissions:
-  # deployments permission to deploy GitHub pages website
   deployments: write
-  # contents permission to update benchmark contents in gh-pages branch
   contents: write
 
 jobs:
-  create_release:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Create Development release
-        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
-        uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
-
-  build_thyme_ubuntu:
+  bench_thyme_ubuntu:
     runs-on: ubuntu-latest
 
     steps:

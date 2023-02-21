@@ -30,7 +30,7 @@ In order to run Thyme, you must meet one of the following prerequisites:
 1. You have an installation from the original English version on disc (**NOT** "The First Decade", 
 "The Ultimate Collection" or any other bundled version) which **must** be patched to version 1.04
 2. You have got hold of the game.dat from the installation referred to in point 1, and copied it to the root directory 
-of the C6C General ZH installation
+of the C&C General ZH installation
 
 If you have either of these options ready, you can proceed with building and compiling the `thyme.dll` and 
 `avifil32.dll` as described [here](#building-thyme-yourself).

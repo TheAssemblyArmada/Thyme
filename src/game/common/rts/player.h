@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "academystats.h"
 #include "energy.h"
 #include "handicap.h"
 #include "missionstats.h"
@@ -53,16 +54,6 @@ struct SpecialPowerReadyTimerType // #TODO Implement and move elsewhere
 {
     int m_unk1; // possibly m_id
     unsigned int m_unk2; // possibly m_frame
-};
-
-class AcademyStats // #TODO Implement and move elsewhere
-{
-public:
-    char unk[0x9C];
-    unsigned int m_minesClearedCount;
-    char unk3[0x14];
-
-    void Increment_Mines_Disarmed() { m_minesClearedCount++; }
 };
 
 enum KindOfType : int32_t;

@@ -15,14 +15,13 @@
 #include "money.h"
 #include "audiomanager.h"
 #include "ini.h"
+#include "player.h"
+#include "playerlist.h"
 
 void Money::Xfer_Snapshot(Xfer *xfer) {}
 
-void Money::Deposit(unsigned amount, bool play_sound)
+void Money::Deposit(unsigned int amount, bool play_sound)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Money, unsigned, bool>(PICK_ADDRESS(0x005008D0, 0), this, amount, play_sound);
-#else
     if (amount == 0) {
         return;
     }
@@ -35,8 +34,11 @@ void Money::Deposit(unsigned amount, bool play_sound)
     }
 
     m_money += amount;
-    // TODO Requires PlayerList, Player, AcademyStats
-#endif
+    Player *player = g_thePlayerList->Get_Nth_Player(m_playerIndex);
+
+    if (player != nullptr) {
+        player->Get_Academy_Stats()->Record_Income();
+    }
 }
 
 void Money::Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data)

@@ -18,13 +18,40 @@
 #endif
 #include "turretai.h"
 
+static const char *s_theLocomotorSetNames[] = { "SET_NORMAL",
+    "SET_NORMAL_UPGRADED",
+    "SET_FREEFALL",
+    "SET_WANDER",
+    "SET_PANIC",
+    "SET_TAXIING",
+    "SET_SUPERSONIC",
+    "SET_SLUGGISH",
+    nullptr };
+
 void AIUpdateModuleData::Parse_Locomotor_Set(INI *ini, void *formal, void *store, const void *user_data)
 {
-    // todo needs AIUpdateModuleData
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x005CFEF0, 0x007F35AD), ini, formal, store, user_data);
-#endif
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(formal);
+    AIUpdateModuleData *data = tmplate->Friend_Get_AI_Module_Info();
+    captainslog_relassert(data != nullptr,
+        CODE_06,
+        "Attempted to specify a locomotor for object %s without an AIUpdate block.",
+        tmplate->Get_Name().Str());
+
+    LocomotorSetType type =
+        static_cast<LocomotorSetType>(INI::Scan_IndexList(ini->Get_Next_Token(), s_theLocomotorSetNames));
+    captainslog_relassert(data->m_locomotorTemplates[type].empty() || ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
+        CODE_06,
+        "re-specifying a LocomotorSet is no longer allowed");
+    data->m_locomotorTemplates[type].clear();
+
+    for (const char *token = ini->Get_Next_Token(); token != nullptr; token = ini->Get_Next_Token_Or_Null()) {
+        if (*token != 0 && strcasecmp(token, "None") != 0) {
+            LocomotorTemplate *loco =
+                g_theLocomotorStore->Find_Locomotor_Template(g_theNameKeyGenerator->Name_To_Key(token));
+            captainslog_relassert(loco != nullptr, CODE_06, "Locomotor %s not found!", token);
+            data->m_locomotorTemplates[type].push_back(loco);
+        }
+    }
 }
 
 void AIUpdateModuleData::Parse_Turret(INI *ini, void *formal, void *store, const void *user_data)

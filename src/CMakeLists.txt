@@ -574,7 +574,7 @@ if(USE_SDL2)
 endif()
 
 if(USE_GAMEMATH)
-    list(APPEND GAME_LINK_LIBRARIES gamemath_static_lib)
+    list(APPEND GAME_LINK_LIBRARIES gamemath::gamemath)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_GAMEMATH)
 endif()
 

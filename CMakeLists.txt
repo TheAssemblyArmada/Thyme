@@ -248,7 +248,7 @@ if(USE_GAMEMATH)
     FetchContent_Declare(
         gamemath_git
         GIT_REPOSITORY https://github.com/TheAssemblyArmada/GameMath.git
-        GIT_TAG        f133b2cc8f85de6c2967ae77177daf0b8bbf39c0
+        GIT_TAG        59f7ccd494f7e7c916a784ac26ef266f9f09d78d
     )
 
     # We don't use FetchContent_MakeAvailable here because we don't want all gamemath targets including, just our dependencies.

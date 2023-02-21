@@ -83,6 +83,8 @@ Um eine funktionierende Datei zu erzeugen, müssen Sie das Projekt derzeit selbs
 Das Kompilieren mit Clang gegen ein Windows SDK ist theoretisch für eine "Cross-compile" Lösung möglich aber zurzeit 
 nicht getestet.
 
+Es ist ebenfalls möglich eine "Standalone Binary" zu kompilieren, wenn Sie das Kompilieren für andere Platformen testen wollen.
+
 Für [nähere Information](https://github.com/TheAssemblyArmada/Thyme/wiki/Compiling-Thyme) schauen Sie ins 
 [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki). 
 
@@ -91,6 +93,11 @@ Für [nähere Information](https://github.com/TheAssemblyArmada/Thyme/wiki/Compi
 Ein nativer Support für Linux und MacOS ist für die Zukunft geplant, wird jedoch aufgrund dessen, wie das Projekt entwickelt 
 wird, für einige Zeit nicht möglich sein. 
 Währenddessen sollte es möglich sein "Wine" unter Linux und MacOS zu nutzen. Dies ist jedoch nicht getestet worden.
+
+Wenn Sie an der Entwicklung des "Cross-Plattform" Aspekts des Projekts interessiert sind, ist es nun möglich ein 
+"standalone" kompilat durch das Übergeben von ```-DSTANDALONE=TRUE``` an die CMake Konfiguration zu erzeugen.
+Die erzeugte "Binary" hat aktuell jedoch eine sehr eingeschränkte Funktionalität.
+
 
 ## Etwas beitragen
 

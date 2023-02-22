@@ -91,6 +91,7 @@ StaticNameKey g_teamTransportsExitKey("teamTransportsExit");
 StaticNameKey g_teamStartsFullKey("teamStartsFull");
 StaticNameKey g_teamReinforcementOriginKey("teamReinforcementOrigin");
 StaticNameKey g_teamVeterancyKey("teamVeterancy");
+StaticNameKey g_multiplayerIsLocalKey("multiplayerIsLocal");
 
 NameKeyType StaticNameKey::Key()
 {

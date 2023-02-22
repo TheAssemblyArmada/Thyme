@@ -112,6 +112,7 @@
 #include "particlesysmanager.h"
 #include "partitionmanager.h"
 #include "physicsupdate.h"
+#include "player.h"
 #include "playerlist.h"
 #include "playertemplate.h"
 #include "pointgr.h"
@@ -806,6 +807,11 @@ void Setup_Hooks()
     Hook_Method(0x004D35E0, &PlayerTemplateStore::Get_Nth_Player_Template);
     Hook_Method(0x004D3630, &PlayerTemplateStore::Get_All_Side_Strings);
     Hook_Function(0x004D3860, &PlayerTemplateStore::Parse_Player_Template_Definition);
+    Hook_Any(0x004D2B00, PlayerTemplate::Get_Starting_Unit);
+    Hook_Any(0x004D2FB0, PlayerTemplate::Get_Flag_Watermark_Image);
+    Hook_Any(0x004D2FD0, PlayerTemplate::Get_Side_Icon_Image);
+    Hook_Any(0x004D2FF0, PlayerTemplate::Get_General_Image);
+    Hook_Any(0x004D3010, PlayerTemplate::Get_Enabled_Image);
 
     // partsysinfo.h
     Hook_Method(0x004CD460, &ParticleSystemInfo::Hook_Ctor);
@@ -2083,6 +2089,7 @@ void Setup_Hooks()
     Hook_Any(0x0045B1F0, PlayerList::Get_Each_Player_From_Mask);
     Hook_Any(0x0045B250, PlayerList::Get_Players_With_Relationship);
     Hook_Any(0x0045A9C0, PlayerList::Get_Nth_Player);
+    Hook_Any(0x0045B0F0, PlayerList::Validate_Team);
 
     // w3dmodeldraw.cpp
     Hook_Any(0x007AF130, ModelConditionInfo::Add_Public_Bone);
@@ -2633,4 +2640,13 @@ void Setup_Hooks()
     Hook_Any(0x007752C0, W3DGameClient::Create_FontLibrary);
     Hook_Any(0x007A9E70, W3DFontLibrary::Load_Font_Data);
     Hook_Any(0x007A9F30, W3DFontLibrary::Release_Font_Data);
+
+    // player.h
+    Hook_Any(0x00455830, Player::Has_Science);
+    Hook_Any(0x00453AD0, Player::Get_Production_Cost_Change_Percent);
+    Hook_Any(0x00453BC0, Player::Get_Production_Time_Change_Percent);
+    Hook_Any(0x004536D0, Player::Iterate_Objects);
+    Hook_Any(0x00450B70, Player::Set_Build_List);
+    Hook_Any(0x00451210, Player::Set_Default_Team);
+    Hook_Any(0x00450940, Player::Set_Player_Relationship);
 }

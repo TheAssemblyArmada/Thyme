@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "playertemplate.h"
+#include "image.h"
 #include <algorithm>
 #include <cstddef>
 
@@ -35,44 +36,27 @@ PlayerTemplate::PlayerTemplate() :
 
 Image *PlayerTemplate::Get_Head_Watermark_Image()
 {
-    // Optimised out of original Windows binary as not used in ZH. Exists in macOS build.
-    return nullptr;
+    return g_theMappedImageCollection->Find_Image_By_Name(m_headWaterMark);
 }
 
 Image *PlayerTemplate::Get_Flag_Watermark_Image()
 {
-#ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D2FB0, 0), this);
-#else
-    return nullptr;
-#endif
+    return g_theMappedImageCollection->Find_Image_By_Name(m_flagWaterMark);
 }
 
 Image *PlayerTemplate::Get_Side_Icon_Image()
 {
-#ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D2FD0, 0), this);
-#else
-    return nullptr;
-#endif
+    return g_theMappedImageCollection->Find_Image_By_Name(m_sideIconImage);
 }
 
 Image *PlayerTemplate::Get_General_Image()
 {
-#ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D2FF0, 0), this);
-#else
-    return nullptr;
-#endif
+    return g_theMappedImageCollection->Find_Image_By_Name(m_generalImage);
 }
 
 Image *PlayerTemplate::Get_Enabled_Image()
 {
-#ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D3010, 0), this);
-#else
-    return nullptr;
-#endif
+    return g_theMappedImageCollection->Find_Image_By_Name(m_enabledImage);
 }
 
 /**
@@ -177,7 +161,7 @@ PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
     }
 
     for (auto it = m_playerTemplates.begin(); it != m_playerTemplates.end(); ++it) {
-        if (it->Check_Name_Key(key)) {
+        if (it->Get_Name_Key() == key) {
             return &(*it);
         }
     }
@@ -289,11 +273,20 @@ void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
 
     if (temp != nullptr) {
         ini->Init_From_INI(temp, _parse_table);
-        temp->m_nameKey = key;
+        temp->Set_Name_Key(key);
     } else {
         PlayerTemplate new_temp;
         ini->Init_From_INI(&new_temp, _parse_table);
-        new_temp.m_nameKey = key;
+        new_temp.Set_Name_Key(key);
         g_thePlayerTemplateStore->m_playerTemplates.push_back(new_temp);
+    }
+}
+
+Utf8String PlayerTemplate::Get_Starting_Unit(int unit) const
+{
+    if (unit < STARTING_UNIT_COUNT) {
+        return m_startingUnits[unit];
+    } else {
+        return Utf8String::s_emptyString;
     }
 }

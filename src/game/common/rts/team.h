@@ -497,6 +497,7 @@ public:
     Utf8String Get_Attack_Priority_Name() const { return m_attackPriorityName; }
     unsigned int Get_ID() const { return m_ID; }
     void Set_Attack_Priority_Name(Utf8String &name) { m_attackPriorityName = name; }
+    void Set_Owning_Player(Player *player) { m_owningPlayer = player; }
 
 private:
     enum TeamPrototypeFlags

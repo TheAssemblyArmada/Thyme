@@ -1195,7 +1195,7 @@ int ThingTemplate::Calc_Time_To_Build(const Player *player) const
         int count = 0;
 
         if (facility != nullptr) {
-            player->Count_Objects_By_ThingTemplate(1, &facility, false, &count, true);
+            player->Count_Objects_By_Thing_Template(1, &facility, false, &count, true);
             float mult = g_theWriteableGlobalData->m_multipleFactory;
 
             if (mult > 0.0f) {

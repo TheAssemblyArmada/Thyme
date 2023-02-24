@@ -101,7 +101,7 @@ Player::~Player()
 void Player::CRC_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Player, Xfer *>(PICK_ADDRESS(0x00457C80, 0x00861D13), this, xfer);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00457C80, 0x00861D13), this, xfer);
 #endif
 }
 
@@ -109,7 +109,7 @@ void Player::CRC_Snapshot(Xfer *xfer)
 void Player::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Player, Xfer *>(PICK_ADDRESS(0x00457D30, 0x00861EB8), this, xfer);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00457D30, 0x00861EB8), this, xfer);
 #endif
 }
 

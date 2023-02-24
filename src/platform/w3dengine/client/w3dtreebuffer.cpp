@@ -144,7 +144,7 @@ void W3DTreeBuffer::Xfer_Snapshot(Xfer *xfer)
         }
     }
 
-    for (int i = 0; i < num_trees; i) {
+    for (int i = 0; i < num_trees; i++) {
         TTree tree;
         memset(&tree, 0, sizeof(tree));
         Utf8String model_name;

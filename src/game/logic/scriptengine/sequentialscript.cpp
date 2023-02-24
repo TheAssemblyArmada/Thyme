@@ -34,6 +34,6 @@ void SequentialScript::Xfer_Snapshot(Xfer *xfer)
 {
     // Requires parts of Team and TeamFactory
 #ifdef GAME_DLL
-    Call_Method<void, SequentialScript, Xfer *>(PICK_ADDRESS(0x00436980, 0x007128E7), this, xfer);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00436980, 0x007128E7), this, xfer);
 #endif
 }

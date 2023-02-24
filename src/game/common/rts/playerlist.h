@@ -46,7 +46,7 @@ public:
     // SnapShot interface
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override{};
+    virtual void Load_Post_Process() override {}
 
     Player *Find_Player_With_NameKey(NameKeyType key);
     void Team_About_To_Be_Deleted(Team *team);

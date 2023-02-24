@@ -13,24 +13,88 @@
  *            LICENSE
  */
 #include "player.h"
+#include "buildinfo.h"
 #include "namekeygenerator.h"
+#include "squad.h"
 #include "team.h"
 #include <algorithm>
 
 // zh: 0x0044F7B0, wb: 0x0085960A
-Player::Player(int32_t player_index)
+Player::Player(int32_t player_index) :
+    m_playerIsPreorder(false),
+    m_playerIsDead(false),
+    m_playerIndex(player_index),
+    m_upgradeList(0),
+    m_buildListInfo(nullptr),
+    m_ai(nullptr),
+    m_resourceGatheringManager(nullptr),
+    m_defaultTeam(nullptr),
+    m_radarCount(0),
+    m_disableProofRadarCount(0),
+    m_radarDisabled(false),
+    m_tunnelSystem(nullptr),
+    m_playerTemplate(nullptr),
+    m_battlePlanBonuses(nullptr),
+    m_skillPointsModifier(1.0f),
+    m_canBuildUnits(true),
+    m_canBuildBase(true),
+    m_bountyCostToBuild(0.0f),
+    m_playerColor(0),
+    m_aiSquad(nullptr),
+    m_rankLevel(0),
+    m_sciencePurchasePoints(0),
+    m_currentSkillPoints(0),
+    m_lastAttackedByFrame(0),
+    m_unitsShouldHunt(0)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, int32_t>(PICK_ADDRESS(0x0044F7B0, 0x0085960A), this, player_index);
-#endif
+    m_playerRelations = new PlayerRelationMap();
+    m_teamRelations = new TeamRelationMap();
+    m_activeBattlePlans[0] = 0;
+    m_activeBattlePlans[1] = 0;
+    m_activeBattlePlans[2] = 0;
+    m_side = nullptr;
+    m_baseSide = nullptr;
+
+    for (int i = 0; i < SQUAD_COUNT; i++) {
+        m_squads[i] = nullptr;
+    }
+
+    for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+        m_attackedByPlayer[i] = false;
+    }
+
+    Init(nullptr);
 }
 
 // zh: 0x00450550, wb: 0x0085A1F2
 Player::~Player()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player>(PICK_ADDRESS(0x00450550, 0x0085A1F2), this);
-#endif
+    m_defaultTeam = nullptr;
+    m_playerTemplate = nullptr;
+
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        (*i)->Set_Owning_Player(nullptr);
+    }
+
+    m_playerTeamPrototypes.clear();
+    m_teamRelations->Delete_Instance();
+    m_playerRelations->Delete_Instance();
+
+    for (int i = 0; i < SQUAD_COUNT; i++) {
+        if (m_squads[i] != nullptr) {
+            m_squads[i]->Delete_Instance();
+            m_squads[i] = nullptr;
+        }
+    }
+
+    if (m_aiSquad != nullptr) {
+        m_aiSquad->Delete_Instance();
+        m_aiSquad = nullptr;
+    }
+
+    if (m_battlePlanBonuses != nullptr) {
+        m_battlePlanBonuses->Delete_Instance();
+    }
 }
 
 // zh: 0x00457C80, wb: 0x00861D13
@@ -50,10 +114,10 @@ void Player::Xfer_Snapshot(Xfer *xfer)
 }
 
 // zh: 0x0044FDD0, wb: 0x00859AC9
-void Player::Init(const PlayerTemplate *player_template)
+void Player::Init(const PlayerTemplate *pt)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Player, const PlayerTemplate *>(PICK_ADDRESS(0x0044FDD0, 0x00859AC9), this, player_template);
+    Call_Method<void, Player, const PlayerTemplate *>(PICK_ADDRESS(0x0044FDD0, 0x00859AC9), this, pt);
 #endif
 }
 
@@ -145,28 +209,28 @@ Team *Player::Get_Default_Team()
 }
 
 // zh: 0x00456820, wb: 0x0086048D
-void Player::On_Power_Brown_Out_Change(bool b)
+void Player::On_Power_Brown_Out_Change(bool change)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00456820, 0x0086048D), this, b);
+    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00456820, 0x0086048D), this, change);
 #endif
 }
 
 // zh: 0x00450AA0, wb: 0x0085A70A
-bool Player::Remove_Team_Relationship(const Team *team)
+bool Player::Remove_Team_Relationship(const Team *that)
 {
 #ifdef GAME_DLL
-    return Call_Method<bool, Player, const Team *>(PICK_ADDRESS(0x00450AA0, 0x0085A70A), this, team);
+    return Call_Method<bool, Player, const Team *>(PICK_ADDRESS(0x00450AA0, 0x0085A70A), this, that);
 #else
     return false;
 #endif
 }
 
 // zh: 0x00450870, wb: 0x0085A4AA
-Relationship Player::Get_Relationship(const Team *team) const
+Relationship Player::Get_Relationship(const Team *that) const
 {
 #ifdef GAME_DLL
-    return Call_Method<Relationship, const Player, const Team *>(PICK_ADDRESS(0x00450870, 0x0085A4AA), this, team);
+    return Call_Method<Relationship, const Player, const Team *>(PICK_ADDRESS(0x00450870, 0x0085A4AA), this, that);
 #else
     return Relationship();
 #endif
@@ -190,19 +254,22 @@ int Player::Get_Squad_Number_For_Object(const Object *obj) const
 }
 
 // zh: 0x00452BA0, wb: 0x0085C3AA
-void Player::Becoming_Local_Player(bool b)
+void Player::Becoming_Local_Player(bool yes)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00452BA0, 0x0085C3AA), this, b);
+    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00452BA0, 0x0085C3AA), this, yes);
 #endif
 }
 
-void Player::Count_Objects_By_ThingTemplate(
-    int num_tmplates, ThingTemplate const *const *things, bool b1, int *counts, bool b2) const
+void Player::Count_Objects_By_Thing_Template(int num_tmplates,
+    ThingTemplate const *const *things,
+    bool ignore_dead,
+    int *counts,
+    bool ignore_under_construction) const
 {
 #ifdef GAME_DLL
     Call_Method<void, Player const, int, ThingTemplate const *const *, bool, int *, bool>(
-        PICK_ADDRESS(0x00453710, 0x0085D45D), this, num_tmplates, things, b1, counts, b2);
+        PICK_ADDRESS(0x00453710, 0x0085D45D), this, num_tmplates, things, ignore_dead, counts, ignore_under_construction);
 #endif
 }
 
@@ -314,4 +381,48 @@ void Player::Iterate_Objects(void (*func)(Object *, void *), void *data) const
     for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
         (*i)->Iterate_Objects(func, data);
     }
+}
+
+void Player::Init_From_Dict(const Dict *d)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, const Dict *>(PICK_ADDRESS(0x00451320, 0x0085ADE4), this, d);
+#endif
+}
+
+void Player::Set_Build_List(BuildListInfo *build_list)
+{
+    if (m_buildListInfo != nullptr) {
+        m_buildListInfo->Delete_Instance();
+    }
+
+    m_buildListInfo = build_list;
+}
+
+void Player::Set_Default_Team()
+{
+    Utf8String str;
+    str.Set("team");
+    str += m_playerName;
+    Team *team = g_theTeamFactory->Find_Team(str);
+    captainslog_dbgassert(team != nullptr, "no team");
+
+    if (team != nullptr) {
+        m_defaultTeam = team;
+        team->Set_Active();
+    }
+}
+
+void Player::Set_Player_Relationship(const Player *that, Relationship r)
+{
+    if (that != nullptr) {
+        m_playerRelations->m_relationships[that->Get_Player_Index()] = r;
+    }
+}
+
+void Player::Set_Player_Type(PlayerType t, bool is_skirmish)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, PlayerType, bool>(PICK_ADDRESS(0x00451050, 0x0085ABEC), this, t, is_skirmish);
+#endif
 }

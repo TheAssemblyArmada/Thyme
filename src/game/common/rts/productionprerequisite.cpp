@@ -67,7 +67,7 @@ int ProductionPrerequisite::Calc_Num_Prereq_Units_Owned(const Player *player, in
         things[i] = m_prereqUnit[i].unit;
     }
 
-    player->Count_Objects_By_ThingTemplate(size, things, false, counts, true);
+    player->Count_Objects_By_Thing_Template(size, things, false, counts, true);
     return size;
 }
 

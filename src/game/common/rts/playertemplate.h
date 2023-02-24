@@ -49,10 +49,35 @@ public:
     Image *Get_Side_Icon_Image();
     Image *Get_General_Image();
     Image *Get_Enabled_Image();
+    Utf8String Get_Starting_Unit(int unit) const;
+
     Utf8String Get_Name() { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }
     Utf8String Get_Side_Name() { return m_side; }
-    bool Check_Name_Key(NameKeyType key) { return key == m_nameKey; }
+    NameKeyType Get_Name_Key() const { return m_nameKey; }
+    void Set_Name_Key(NameKeyType key) { m_nameKey = key; }
     Utf8String Get_Beacon_Name() const { return m_beaconName; }
+    Utf8String Get_Purchase_Command_Set_Rank_One() const { return m_purchaseCommandSetRankOne; }
+    Utf8String Get_Purchase_Command_Set_Rank_Three() const { return m_purchaseCommandSetRankThree; }
+    Utf8String Get_Purchase_Command_Set_Rank_Eight() const { return m_purchaseCommandSetRankEight; }
+    bool Get_Old_Faction() const { return m_oldFaction; }
+    Utf16String Get_Display_Name() const { return m_displayName; }
+    Utf8String Get_Starting_Building() const { return m_startingBuilding; }
+    Utf8String Get_Base_Side() const { return m_baseSide; }
+    const RGBColor *Get_Preferred_Color() const { return &m_preferredColor; }
+    const Money *Get_Money() const { return &m_money; }
+    const Handicap *Get_Handicap() const { return &m_handicap; }
+    const std::map<const NameKeyType, float> *Get_Production_Cost_Changes() const { return &m_productionCostChanges; }
+    const std::map<const NameKeyType, float> *Get_Production_Time_Changes() const { return &m_productionTimeChanges; }
+    const std::vector<ScienceType> *Get_Intrinsinc_Sciences() const { return &m_intrinsicSciences; }
+    int Get_Intrinsic_Science_Purchase_Points() const { return m_intrinsicSciencePurchasePoints; }
+
+    const std::map<const NameKeyType, VeterancyLevel> *Get_Production_Veterancy_Levels() const
+    {
+        return &m_productionVeterancyLevels;
+    }
+
+    bool Is_Playable_Side() const { return m_isPlayableSide; }
+    bool Is_Observer() const { return m_isObserver; }
 
     static void Parse_Production_Cost_Change(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Production_Time_Change(INI *ini, void *formal, void *store, const void *user_data);
@@ -114,6 +139,7 @@ public:
     PlayerTemplate *Find_Player_Template(NameKeyType key);
     PlayerTemplate *Get_Nth_Player_Template(int index);
     void Get_All_Side_Strings(std::list<Utf8String> *list);
+    int Get_Player_Template_Count() const { return m_playerTemplates.size(); }
 
     static void Parse_Player_Template_Definition(INI *ini);
 

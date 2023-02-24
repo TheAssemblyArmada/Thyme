@@ -134,3 +134,4 @@ extern StaticNameKey g_teamTransportsExitKey;
 extern StaticNameKey g_teamStartsFullKey;
 extern StaticNameKey g_teamReinforcementOriginKey;
 extern StaticNameKey g_teamVeterancyKey;
+extern StaticNameKey g_multiplayerIsLocalKey;

@@ -13,6 +13,10 @@
  *            LICENSE
  */
 #include "playerlist.h"
+#include "network.h"
+#include "sideslist.h"
+#include "staticnamekey.h"
+#include "team.h"
 
 #ifdef GAME_DLL
 #else
@@ -50,13 +54,8 @@ void PlayerList::Init()
 // zh: 0x0045AA20 wb: 0x007BF05E
 void PlayerList::Reset()
 {
-#ifdef GAME_DLL
-    Call_Method<void, SubsystemInterface>(PICK_ADDRESS(0x0045AA20, 0x007BF05E), this);
-#else
-    // Requires TeamFactory
-    // g_theTeamFactory->Clear();
+    g_theTeamFactory->Clear();
     Init();
-#endif
 }
 
 // zh: 0x0045B060 wb: 0x007BF5A7
@@ -70,11 +69,94 @@ void PlayerList::Update()
 // zh: 0x0045AA40 wb: 0x007BF07F
 void PlayerList::New_Game()
 {
-#ifdef GAME_DLL
-    Call_Method<void, PlayerList>(PICK_ADDRESS(0x0045AA40, 0x007BF07F), this);
-#else
-    // Requires TeamFactory, g_theNetwork
-#endif
+    captainslog_dbgassert(this != nullptr, "null this");
+    g_theTeamFactory->Clear();
+    Init();
+    bool is_local = false;
+
+    for (int i = 0; i < g_theSidesList->Get_Num_Sides(); i++) {
+        Dict &dict = g_theSidesList->Get_Sides_Info(i)->Get_Dict();
+        Utf8String name = dict.Get_AsciiString(g_playerNameKey.Key());
+
+        if (!name.Is_Empty()) {
+            Player *player = m_players[m_playerCount++];
+            player->Init_From_Dict(&dict);
+            bool exists;
+
+            if (dict.Get_Bool(g_multiplayerIsLocalKey.Key(), &exists)) {
+                captainslog_debug("Player %s is multiplayer local", name.Str());
+                Set_Local_Player(player);
+                is_local = true;
+            }
+
+            if (!is_local && g_theNetwork == nullptr) {
+                if (dict.Get_Bool(g_playerIsHumanKey.Key())) {
+                    Set_Local_Player(player);
+                    is_local = true;
+                }
+            }
+
+            player->Set_Build_List(g_theSidesList->Get_Sides_Info(i)->Get_BuildList());
+            g_theSidesList->Get_Sides_Info(i)->Clear_BuildList();
+        }
+    }
+
+    if (!is_local) {
+        captainslog_dbgassert(
+            g_theNetwork != nullptr, "*** Map has no human player... picking first nonneutral player for control");
+
+        for (int i = 0; i < g_theSidesList->Get_Num_Sides(); i++) {
+            Player *player = Get_Nth_Player(i);
+
+            if (player != Get_Neutral_Player()) {
+                player->Set_Player_Type(Player::PLAYER_HUMAN, false);
+                Set_Local_Player(player);
+                is_local = true;
+                break;
+            }
+        }
+    }
+
+    g_theTeamFactory->Init_From_Sides(g_theSidesList);
+
+    for (int i = 0; i < g_theSidesList->Get_Num_Sides(); i++) {
+        Dict &dict = g_theSidesList->Get_Sides_Info(i)->Get_Dict();
+        Player *player =
+            Find_Player_With_NameKey(g_theNameKeyGenerator->Name_To_Key(dict.Get_AsciiString(g_playerNameKey.Key()).Str()));
+        Utf8String enemies = dict.Get_AsciiString(g_playerEnemiesKey.Key());
+        Utf8String enemy;
+
+        while (enemies.Next_Token(&enemy)) {
+            Player *enemy_player = Find_Player_With_NameKey(g_theNameKeyGenerator->Name_To_Key(enemy.Str()));
+
+            if (enemy_player != nullptr) {
+                player->Set_Player_Relationship(enemy_player, ENEMIES);
+            } else {
+                captainslog_debug("unknown enemy %s", enemy.Str());
+            }
+        }
+
+        Utf8String allies = dict.Get_AsciiString(g_playerAlliesKey.Key());
+        Utf8String ally;
+
+        while (allies.Next_Token(&ally)) {
+            Player *ally_player = Find_Player_With_NameKey(g_theNameKeyGenerator->Name_To_Key(ally.Str()));
+
+            if (ally_player != nullptr) {
+                player->Set_Player_Relationship(ally_player, ALLIES);
+            } else {
+                captainslog_debug("unknown ally %s", ally.Str());
+            }
+        }
+
+        player->Set_Player_Relationship(player, ALLIES);
+
+        if (player != Get_Neutral_Player()) {
+            player->Set_Player_Relationship(Get_Neutral_Player(), NEUTRAL);
+        }
+
+        player->Set_Default_Team();
+    }
 }
 
 // zh: 0x0045B080 wb: 0x007BF5DD
@@ -140,12 +222,14 @@ void PlayerList::Update_Team_States()
 // zh: 0x0045B0F0 wb: 0x007BF685
 Team *PlayerList::Validate_Team(Utf8String name)
 {
-#ifdef GAME_DLL
-    return Call_Method<Team *, PlayerList, Utf8String>(PICK_ADDRESS(0x0045B0F0, 0x007BF685), this, name);
-#else
-    // Requires TeamFactory::Find_Team
-    return nullptr;
-#endif
+    Team *team = g_theTeamFactory->Find_Team(name);
+
+    if (team == nullptr) {
+        captainslog_dbgassert(false, "no team or player named %s could be found!", name.Str());
+        team = Get_Neutral_Player()->Get_Default_Team();
+    }
+
+    return team;
 }
 
 // zh: 0x0045B170 wb: 0x007BF739

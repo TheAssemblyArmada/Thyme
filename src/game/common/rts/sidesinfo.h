@@ -33,6 +33,8 @@ public:
     void Set_ScriptList(ScriptList *list) { m_scripts = list; }
     ScriptList *Get_ScriptList() const { return m_scripts; }
     Dict &Get_Dict() { return m_dict; }
+    BuildListInfo *Get_BuildList() { return m_buildList; }
+    void Clear_BuildList() { m_buildList = nullptr; }
 
     SidesInfo &operator=(const SidesInfo &that);
 

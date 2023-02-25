@@ -114,6 +114,7 @@ set(GAMEENGINE_SRC
     game/client/draw/w3dtreedraw.cpp
     game/client/draw/w3dtruckdraw.cpp
     game/client/draw/tintenvelope.cpp
+    game/client/gui/controlbar.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/gamewindow.cpp
     game/client/gui/gamewindowmanager.cpp
@@ -259,6 +260,7 @@ set(GAMEENGINE_SRC
     game/logic/ai/ai.cpp
     game/logic/ai/aipathfind.cpp
     game/logic/ai/aistates.cpp
+    game/logic/ai/squad.cpp
     game/logic/ai/turretai.cpp
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp

@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Squad
+ * @brief Resource Gathering Manager
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -15,22 +15,20 @@
 #pragma once
 #include "always.h"
 #include "mempoolobj.h"
-#include "object.h"
+#include "snapshot.h"
 
-class Squad : public MemoryPoolObject, public SnapShot
+class ResourceGatheringManager : public MemoryPoolObject, public SnapShot
 {
-    IMPLEMENT_POOL(Squad)
+    IMPLEMENT_POOL(ResourceGatheringManager)
 
 public:
-    Squad() {}
-    virtual ~Squad() override {}
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    virtual ~ResourceGatheringManager() override;
 
-    bool Is_On_Squad(const Object *obj) const;
+    virtual void CRC_Snapshot(Xfer *xfer);
+    virtual void Xfer_Snapshot(Xfer *xfer);
+    virtual void Load_Post_Process();
 
 private:
-    std::vector<ObjectID> m_objectIDs;
-    std::vector<Object *> m_objectsCached;
+    std::list<ObjectID> m_supplyWarehouses;
+    std::list<ObjectID> m_supplyCenters;
 };

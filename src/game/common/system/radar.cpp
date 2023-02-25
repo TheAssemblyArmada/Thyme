@@ -13,7 +13,24 @@
  *            LICENSE
  */
 #include "radar.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
 #ifndef GAME_DLL
 Radar *g_theRadar;
 #endif
+
+void Radar::Remove_Object(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Radar, Object *>(PICK_ADDRESS(0x00499F40, 0x0090A0EE), this, obj);
+#endif
+}
+
+void Radar::Add_Object(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Radar, Object *>(PICK_ADDRESS(0x00499D10, 0x00909D5C), this, obj);
+#endif
+}

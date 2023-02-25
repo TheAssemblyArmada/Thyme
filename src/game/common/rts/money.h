@@ -31,6 +31,8 @@ public:
 
     void Empty() { m_money = 0; }
     void Deposit(unsigned int amount, bool play_sound);
+    int Get() const { return m_money; }
+    void Set_Player_Index(int index) { m_playerIndex = index; }
 
     static void Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data);
 

@@ -34,6 +34,13 @@ enum AcademyClassificationType
     ACT_SUPERPOWER,
 };
 
+enum UpgradeStatusType
+{
+    UPGRADE_STATUS_INVALID,
+    UPGRADE_STATUS_IN_PRODUCTION,
+    UPGRADE_STATUS_COMPLETE,
+};
+
 class UpgradeTemplate : public MemoryPoolObject
 {
     IMPLEMENT_POOL(UpgradeTemplate);
@@ -81,6 +88,33 @@ private:
     UpgradeTemplate *m_upgradeList;
     int m_upgradeCount;
     bool m_buttonImagesCached;
+};
+
+class Upgrade : public MemoryPoolObject, public SnapShot
+{
+    IMPLEMENT_POOL(Upgrade);
+
+public:
+    Upgrade(const UpgradeTemplate *upgrade_template);
+
+    virtual ~Upgrade() override {}
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override {}
+
+    Upgrade *Friend_Get_Next() const { return m_next; }
+    Upgrade *Friend_Get_Prev() const { return m_prev; }
+    void Friend_Set_Next(Upgrade *upgrade) { m_next = upgrade; }
+    void Friend_Set_Prev(Upgrade *upgrade) { m_prev = upgrade; }
+    UpgradeStatusType Get_Status() const { return m_status; }
+    const UpgradeTemplate *Get_Template() const { return m_template; }
+    void Set_Status(UpgradeStatusType status) { m_status = status; }
+
+private:
+    const UpgradeTemplate *m_template;
+    UpgradeStatusType m_status;
+    Upgrade *m_next;
+    Upgrade *m_prev;
 };
 
 #ifdef GAME_DLL

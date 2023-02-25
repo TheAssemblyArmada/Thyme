@@ -23,6 +23,7 @@
 class TerrainLogic;
 class RadarObject;
 class GameWindow;
+class Object;
 
 class Radar : public SnapShot, public SubsystemInterface
 {
@@ -41,6 +42,9 @@ public:
     virtual void Init() override;
     virtual void Reset() override;
     virtual void Update() override;
+
+    void Remove_Object(Object *obj);
+    void Add_Object(Object *obj);
 
 private:
     enum

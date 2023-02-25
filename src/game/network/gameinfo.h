@@ -65,6 +65,8 @@ public:
     virtual void Adjust_Slots_For_Map(int i);
     virtual void Close_Open_Slots();
 
+    const Money *Get_Money() { return &m_money; }
+
 private:
     int m_isPlayerPreorder;
     int m_crcInterval;
@@ -84,3 +86,9 @@ private:
     short m_superweaponRestrictions;
     bool m_originalArmies;
 };
+
+#ifdef GAME_DLL
+extern GameInfo *&g_theGameInfo;
+#else
+extern GameInfo *g_theGameInfo;
+#endif

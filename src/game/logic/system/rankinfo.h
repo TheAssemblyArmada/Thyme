@@ -58,6 +58,7 @@ private:
     int m_skillPointsNeeded;
     unsigned m_sciencePurchasePointsGranted;
     std::vector<ScienceType> m_sciencesGranted;
+    friend class Player;
 };
 
 #ifdef GAME_DLL

@@ -22,7 +22,7 @@ public:
     float red;
     float green;
     float blue;
-    int Get_As_Int()
+    int Get_As_Int() const
     {
         return ((unsigned int)(int)(green * 255.0f) << 8) | ((unsigned int)(int)(red * 255.0f) << 16) | (int)(blue * 255.0f);
     }

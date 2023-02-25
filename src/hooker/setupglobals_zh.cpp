@@ -758,3 +758,11 @@ FlatHeightMapRenderObjClass *&g_theFlatHeightMap =
 // heightmap.cpp
 class HeightMapRenderObjClass;
 HeightMapRenderObjClass *&g_theHeightMap = Make_Global<HeightMapRenderObjClass *>(PICK_ADDRESS(0x00A3AEC8, 0x00E1A634));
+
+// controlbar.cpp
+class ControlBar;
+ControlBar *&g_theControlBar = Make_Global<ControlBar *>(PICK_ADDRESS(0x00A2B6E0, 0x00E2391C));
+
+// gameinfo.cpp
+class GameInfo;
+GameInfo *&g_theGameInfo = Make_Global<GameInfo *>(PICK_ADDRESS(0x00A2C2B8, 0x04CA8B04));

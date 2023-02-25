@@ -13,3 +13,7 @@
  *            LICENSE
  */
 #include "gameinfo.h"
+
+#ifndef GAME_DLL
+GameInfo *g_theGameInfo;
+#endif

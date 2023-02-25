@@ -88,6 +88,7 @@ private:
     std::unordered_map<unsigned int, Relationship> m_relationships;
 #endif
     friend class Team;
+    friend class Player;
 };
 
 class TeamFactory : public SubsystemInterface, public SnapShot

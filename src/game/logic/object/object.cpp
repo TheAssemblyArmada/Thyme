@@ -564,3 +564,10 @@ int Object::Get_Num_Consecutive_Shots_Fired_At_Target(const Object *target) cons
     return 0;
 #endif
 }
+
+void Object::Update_Upgrade_Modules()
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object>(PICK_ADDRESS(0x00548E90, 0x007D25F5), this);
+#endif
+}

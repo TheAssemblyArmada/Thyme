@@ -58,3 +58,15 @@ UpgradeTemplate *UpgradeCenter::Find_Upgrade_By_Key(NameKeyType key)
 
     return nullptr;
 }
+
+Upgrade::Upgrade(const UpgradeTemplate *upgrade_template) :
+    m_template(upgrade_template), m_status(UPGRADE_STATUS_INVALID), m_next(nullptr), m_prev(nullptr)
+{
+}
+
+void Upgrade::Xfer_Snapshot(Xfer *xfer)
+{
+    unsigned char version = 1;
+    xfer->xferVersion(&version, 1);
+    xfer->xferUser(&m_status, sizeof(m_status));
+}

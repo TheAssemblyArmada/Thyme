@@ -41,7 +41,6 @@ class RebuildHoleBehaviorInterface;
 class SlavedUpdateInterface;
 class SlowDeathBehaviorInterface;
 class SpawnBehaviorInterface;
-class SpecialPowerModuleInterface;
 class SpecialPowerUpdateInterface;
 class SpyVisionUpdate;
 class StealthUpdate;
@@ -50,6 +49,33 @@ class UpdateModuleInterface;
 class UpgradeModuleInterface;
 class WeaponTemplate;
 class ParticleSystemTemplate;
+class SpecialPowerTemplate;
+class Waypoint;
+class AudioEventRTS;
+
+class SpecialPowerModuleInterface
+{
+public:
+    virtual bool Is_Module_For_Power(const SpecialPowerTemplate *tmplate) const = 0;
+    virtual bool Is_Ready() const = 0;
+    virtual float Get_Percent_Ready() const = 0;
+    virtual unsigned int Get_Ready_Frame() const = 0;
+    virtual Utf8String Get_Power_Name() const = 0;
+    virtual const SpecialPowerTemplate *Get_Special_Power_Template() const = 0;
+    virtual ScienceType Get_Required_Science() const = 0;
+    virtual void On_Special_Power_Creation() = 0;
+    virtual void Set_Ready_Frame(unsigned int frame) = 0;
+    virtual void Pause_Countdown(bool pause) = 0;
+    virtual void Do_Special_Power(unsigned int i) = 0;
+    virtual void Do_Special_Power_At_Object(Object *obj, unsigned int i) = 0;
+    virtual void Do_Special_Power_At_Location(const Coord3D *pos, float f, unsigned int i) = 0;
+    virtual void Do_Special_Power_Using_Waypoints(const Waypoint *waypoint, unsigned int i) = 0;
+    virtual void Mark_Special_Power_Triggered(const Coord3D *pos) = 0;
+    virtual void Start_Power_Recharge() = 0;
+    virtual const AudioEventRTS &Get_Initiate_Sound() const = 0;
+    virtual bool Is_Script_Only() const = 0;
+    virtual ThingTemplate *Get_Reference_Thing_Template() const = 0;
+};
 
 class LandMineInterface
 {

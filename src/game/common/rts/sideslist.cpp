@@ -58,7 +58,7 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
         if (m_sides[i].Get_ScriptList() != nullptr) {
             captainslog_relassert(has_scripts, 6, "We have a script list, but has_scripts is not set.");
             // Transfer script class.
-            xfer->xferSnapshot(m_sides[i].Get_ScriptList()->Get_Scripts());
+            xfer->xferSnapshot(m_sides[i].Get_ScriptList());
         }
     }
 }

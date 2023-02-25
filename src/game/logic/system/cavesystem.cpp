@@ -56,7 +56,7 @@ void TunnelTracker::Load_Post_Process()
 {
     // Requires AI, PartitionManager classes.
 #ifdef GAME_DLL
-    Call_Method<void, TunnelTracker>(0x00587DA0, this);
+    Call_Method<void, SnapShot>(0x00587DA0, this);
 #else
     // TODO
 #endif

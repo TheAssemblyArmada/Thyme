@@ -29,7 +29,7 @@ GameStateMap::~GameStateMap()
 void GameStateMap::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, SnapShot>(PICK_ADDRESS(0x00495310, 0x00A01D92), this);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00495310, 0x00A01D92), this, xfer);
 #endif
 }
 

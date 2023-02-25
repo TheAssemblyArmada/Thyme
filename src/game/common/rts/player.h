@@ -23,6 +23,7 @@
 #include "scorekeeper.h"
 #include "snapshot.h"
 #include "unicodestring.h"
+#include "upgrade.h"
 #include <list>
 #include <map>
 
@@ -48,15 +49,31 @@ class ResourceGatheringManager;
 class PlayerRelationMap;
 class TeamRelationMap;
 class TunnelTracker;
-class KindOfPercentProductionChange;
 class Upgrade;
+
+class KindOfPercentProductionChange : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(KindOfPercentProductionChange)
+
+public:
+    KindOfPercentProductionChange() {}
+    virtual ~KindOfPercentProductionChange() override {}
+
+private:
+    BitFlags<KINDOF_COUNT> m_flags;
+    float m_cost;
+    unsigned int m_count;
+
+    friend class Player;
+};
 
 class BattlePlanBonuses : public MemoryPoolObject // not 100% sure on this class
 {
     IMPLEMENT_POOL(BattlePlanBonuses)
 
 public:
-    virtual ~BattlePlanBonuses() override;
+    BattlePlanBonuses() {}
+    virtual ~BattlePlanBonuses() override {}
 
 private:
     float m_armorBonus;
@@ -66,22 +83,26 @@ private:
     float m_sightBonus;
     BitFlags<KINDOF_COUNT> m_validKindOf;
     BitFlags<KINDOF_COUNT> m_invalidKindOf;
+    friend class Player;
 };
 
-struct SpecialPowerReadyTimerType // #TODO Implement and move elsewhere
+struct SpecialPowerReadyTimerType
 {
-    int m_unk1; // possibly m_id
-    unsigned int m_unk2; // possibly m_frame
+    SpecialPowerReadyTimerType() { Reset(); }
+
+    void Reset()
+    {
+        m_frame = 0xFFFFFFFF;
+        m_id = 0;
+    }
+
+    unsigned int m_id;
+    unsigned int m_frame;
 };
 
 enum ScienceAvailabilityType
 {
     SCIENCE_AVAILABILITY_UNK,
-};
-
-enum UpgradeStatusType
-{
-    UPGRADE_STATUS_UNK,
 };
 
 enum BattlePlanStatus
@@ -149,8 +170,12 @@ public:
     bool Get_Units_Should_Hunt() const { return m_unitsShouldHunt; }
     const std::list<TeamPrototype *> *Get_Player_Team_Prototype_List() const { return &m_playerTeamPrototypes; }
     ResourceGatheringManager *Get_Resource_Gathering_Manager() const { return m_resourceGatheringManager; }
+    BuildListInfo *Get_Build_List() { return m_buildListInfo; }
+    bool Get_Can_Build_Units() const { return m_canBuildUnits; }
+    int Get_Last_Attacked_By_Frame() const { return m_lastAttackedByFrame; }
 
     void Set_Retaliation_Mode_Enabled(bool set) { m_retaliationModeEnabled = set; }
+    void Set_Can_Build_Units(bool set) { m_canBuildUnits = set; }
 
     int Get_Total_Battle_Plan_Count() const
     {
@@ -336,7 +361,7 @@ public:
 #endif
 
 private:
-    PlayerTemplate *m_playerTemplate;
+    const PlayerTemplate *m_playerTemplate;
     Utf16String m_playerDisplayName;
     Handicap m_handicap;
     Utf8String m_playerName;

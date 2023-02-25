@@ -15,6 +15,8 @@
 #pragma once
 #include "always.h"
 
+class Player;
+
 class AcademyStats
 {
 public:
@@ -22,6 +24,7 @@ public:
     unsigned int m_minesClearedCount;
     char unk3[0x14];
 
+    void Init(const Player *player);
     void Record_Income();
     void Increment_Mines_Disarmed() { m_minesClearedCount++; }
 };

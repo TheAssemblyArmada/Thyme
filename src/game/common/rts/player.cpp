@@ -13,9 +13,29 @@
  *            LICENSE
  */
 #include "player.h"
+#include "aiplayer.h"
+#include "behaviormodule.h"
 #include "buildinfo.h"
+#include "cavesystem.h"
+#include "controlbar.h"
+#include "drawable.h"
+#include "gameclient.h"
+#include "gameinfo.h"
+#include "gamelogic.h"
+#include "gametext.h"
+#include "globaldata.h"
 #include "namekeygenerator.h"
+#include "opencontain.h"
+#include "partitionmanager.h"
+#include "playerlist.h"
+#include "playertemplate.h"
+#include "radar.h"
+#include "rankinfo.h"
+#include "resourcegatheringmanager.h"
+#include "scriptengine.h"
+#include "simpleobjectiterator.h"
 #include "squad.h"
+#include "stealthupdate.h"
 #include "team.h"
 #include <algorithm>
 
@@ -24,7 +44,7 @@ Player::Player(int32_t player_index) :
     m_playerIsPreorder(false),
     m_playerIsDead(false),
     m_playerIndex(player_index),
-    m_upgradeList(0),
+    m_upgradeList(nullptr),
     m_buildListInfo(nullptr),
     m_ai(nullptr),
     m_resourceGatheringManager(nullptr),
@@ -100,25 +120,476 @@ Player::~Player()
 // zh: 0x00457C80, wb: 0x00861D13
 void Player::CRC_Snapshot(Xfer *xfer)
 {
-#ifdef GAME_DLL
-    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00457C80, 0x00861D13), this, xfer);
+    bool has_bonuses = m_battlePlanBonuses != nullptr;
+    xfer->xferBool(&has_bonuses);
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO unknown CRC stuff
 #endif
+
+    if (m_battlePlanBonuses != nullptr) {
+#ifdef GAME_DEBUG_STRUCTS
+        // TODO dumpBattlePlanBonuses
+#endif
+        xfer->xferReal(&m_battlePlanBonuses->m_armorBonus);
+        xfer->xferReal(&m_battlePlanBonuses->m_sightBonus);
+        xfer->xferInt(&m_battlePlanBonuses->m_bombardment);
+        xfer->xferInt(&m_battlePlanBonuses->m_holdTheLine);
+        xfer->xferInt(&m_battlePlanBonuses->m_searchAndDestroy);
+        m_battlePlanBonuses->m_validKindOf.Xfer(xfer);
+        m_battlePlanBonuses->m_invalidKindOf.Xfer(xfer);
+    }
+
+    xfer->xferInt(&m_currentSkillPoints);
+    xfer->xferInt(&m_sciencePurchasePoints);
 }
 
 // zh: 0x00457D30, wb: 0x00861EB8
 void Player::Xfer_Snapshot(Xfer *xfer)
 {
-#ifdef GAME_DLL
-    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00457D30, 0x00861EB8), this, xfer);
-#endif
+    unsigned char version = 8;
+    xfer->xferVersion(&version, 8);
+    xfer->xferSnapshot(&m_money);
+    unsigned short upgrade_count = 0;
+
+    for (Upgrade *upgrade = m_upgradeList; upgrade != nullptr; upgrade = upgrade->Friend_Get_Next()) {
+        upgrade_count++;
+    }
+
+    xfer->xferUnsignedShort(&upgrade_count);
+
+    if (version >= 7) {
+        xfer->xferBool(&m_playerIsPreorder);
+    }
+
+    if (version >= 8) {
+        xfer->xferScienceVec(&m_disabledSciences);
+        xfer->xferScienceVec(&m_hiddenSciences);
+    }
+
+    Utf8String str;
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (Upgrade *upgrade = m_upgradeList; upgrade != nullptr; upgrade = upgrade->Friend_Get_Next()) {
+            str = upgrade->Get_Template()->Get_Name();
+            xfer->xferAsciiString(&str);
+            xfer->xferSnapshot(upgrade);
+        }
+    } else {
+        for (unsigned short i = 0; i < upgrade_count; i++) {
+            xfer->xferAsciiString(&str);
+            UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(str);
+            captainslog_relassert(tmplate != nullptr, 6, "Player::xfer - Unable to find upgrade '%s'", str.Str());
+            Upgrade *upgrade = Add_Upgrade(tmplate, UPGRADE_STATUS_INVALID);
+            xfer->xferSnapshot(upgrade);
+        }
+    }
+
+    xfer->xferInt(&m_radarCount);
+    xfer->xferBool(&m_playerIsDead);
+    xfer->xferInt(&m_disableProofRadarCount);
+    xfer->xferBool(&m_radarDisabled);
+    xfer->xferUpgradeMask(&m_upgradesInProgress);
+    xfer->xferUpgradeMask(&m_upgradesCompleted);
+    xfer->xferSnapshot(&m_energy);
+
+    unsigned short team_count = static_cast<unsigned short>(m_playerTeamPrototypes.size());
+    xfer->xferUnsignedShort(&team_count);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+            unsigned int id = (*i)->Get_ID();
+            xfer->xferUser(&id, sizeof(id));
+        }
+    } else {
+        m_playerTeamPrototypes.clear();
+
+        for (unsigned short i = 0; i < team_count; i++) {
+            unsigned int id;
+            xfer->xferUser(&id, sizeof(id));
+            TeamPrototype *prototype = g_theTeamFactory->Find_Team_Prototype_By_ID(id);
+            captainslog_relassert(prototype != nullptr, 6, "Player::xfer - Unable to find team prototype by id");
+            m_playerTeamPrototypes.push_back(prototype);
+        }
+    }
+
+    unsigned short build_list_count = 0;
+
+    for (BuildListInfo *build_list = m_buildListInfo; build_list != nullptr; build_list = build_list->Get_Next()) {
+        build_list_count++;
+    }
+
+    xfer->xferUnsignedShort(&build_list_count);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (BuildListInfo *build_list = m_buildListInfo; build_list != nullptr; build_list = build_list->Get_Next()) {
+            xfer->xferSnapshot(build_list);
+        }
+    } else {
+        if (m_buildListInfo != nullptr) {
+            m_buildListInfo->Delete_Instance();
+            m_buildListInfo = nullptr;
+        }
+
+        for (unsigned short i = 0; i < build_list_count; i++) {
+            BuildListInfo *build_list = new BuildListInfo();
+            build_list->Set_Next(nullptr);
+
+            if (m_buildListInfo != nullptr) {
+                BuildListInfo *build_list2;
+
+                for (build_list2 = m_buildListInfo; build_list2->Get_Next() != nullptr;
+                     build_list2 = build_list2->Get_Next()) {
+                }
+
+                build_list2->Set_Next(build_list);
+            } else {
+                m_buildListInfo = build_list;
+            }
+
+            xfer->xferSnapshot(build_list);
+        }
+    }
+
+    bool has_ai = m_ai != nullptr;
+    xfer->xferBool(&has_ai);
+    captainslog_relassert(
+        (!has_ai && m_ai == nullptr) || (has_ai && m_ai != nullptr), 6, "Player::xfer - m_ai present/missing mismatch");
+
+    if (m_ai != nullptr) {
+        xfer->xferSnapshot(m_ai);
+    }
+
+    bool has_resource_manager = m_resourceGatheringManager != nullptr;
+    xfer->xferBool(&has_resource_manager);
+    captainslog_relassert((!has_resource_manager && m_resourceGatheringManager == nullptr)
+            || (has_resource_manager && m_resourceGatheringManager != nullptr),
+        6,
+        "Player::xfer - m_resourceGatheringManager present/missing mismatch");
+
+    if (m_resourceGatheringManager != nullptr) {
+        xfer->xferSnapshot(m_resourceGatheringManager);
+    }
+
+    bool has_tunnel_system = m_tunnelSystem != nullptr;
+    xfer->xferBool(&has_tunnel_system);
+
+    captainslog_relassert(
+        (!has_tunnel_system && m_tunnelSystem == nullptr) || (has_tunnel_system && m_tunnelSystem != nullptr),
+        6,
+        "Player::xfer - m_tunnelSystem present/missing mismatch");
+
+    if (m_tunnelSystem != nullptr) {
+        xfer->xferSnapshot(m_tunnelSystem);
+    }
+
+    int team_id;
+
+    if (m_defaultTeam != nullptr) {
+        team_id = m_defaultTeam->Get_Team_ID();
+    } else {
+        team_id = 0;
+    }
+
+    xfer->xferUser(&team_id, sizeof(team_id));
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        m_defaultTeam = g_theTeamFactory->Find_Team_By_ID(team_id);
+    }
+
+    if (version < 5) {
+        unsigned short science_count = static_cast<unsigned short>(m_sciences.size());
+        xfer->xferUnsignedShort(&science_count);
+
+        if (xfer->Get_Mode() == XFER_SAVE) {
+            for (auto i = m_sciences.begin(); i != m_sciences.end(); i++) {
+                ScienceType science = *i;
+                xfer->xferUser(&science, sizeof(science));
+            }
+        } else {
+            for (int i = 0; i < science_count; i++) {
+                ScienceType science;
+                xfer->xferUser(&science, sizeof(science));
+                m_sciences.push_back(science);
+            }
+        }
+    } else {
+        if (xfer->Get_Mode() == XFER_LOAD) {
+            m_sciences.clear();
+        }
+
+        xfer->xferScienceVec(&m_sciences);
+    }
+
+    xfer->xferInt(&m_rankLevel);
+    xfer->xferInt(&m_currentSkillPoints);
+    xfer->xferInt(&m_sciencePurchasePoints);
+    xfer->xferInt(&m_skillPointsNeededForNextRank);
+    xfer->xferInt(&m_rankProgress);
+    xfer->xferUnicodeString(&m_scienceGeneralName);
+    xfer->xferSnapshot(m_playerRelations);
+    xfer->xferSnapshot(m_teamRelations);
+    xfer->xferBool(&m_canBuildUnits);
+    xfer->xferBool(&m_canBuildBase);
+    xfer->xferBool(&m_playerIsObserver);
+
+    if (version < 2) {
+        m_skillPointsModifier = 1.0f;
+    } else {
+        xfer->xferReal(&m_skillPointsModifier);
+    }
+
+    if (version < 3) {
+        m_listInScoreScreen = true;
+    } else {
+        xfer->xferBool(&m_listInScoreScreen);
+    }
+
+    xfer->xferUser(m_attackedByPlayer, sizeof(m_attackedByPlayer));
+    xfer->xferReal(&m_bountyCostToBuild);
+    xfer->xferSnapshot(&m_scoreKeeper);
+    unsigned short change_list_count = static_cast<unsigned short>(m_kindOfPercentProductionChangeList.size());
+    xfer->xferUnsignedShort(&change_list_count);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (auto i = m_kindOfPercentProductionChangeList.begin(); i != m_kindOfPercentProductionChangeList.end(); i++) {
+            KindOfPercentProductionChange *k = *i;
+            k->m_flags.Xfer(xfer);
+            xfer->xferReal(&k->m_cost);
+            xfer->xferUnsignedInt(&k->m_count);
+        }
+    } else {
+        captainslog_relassert(m_kindOfPercentProductionChangeList.size() == 0,
+            6,
+            "Player::xfer - m_kindOfPercentProductionChangeList should be empty but is not");
+        for (int i = 0; i < change_list_count; i++) {
+            KindOfPercentProductionChange *k = new KindOfPercentProductionChange;
+            k->m_flags.Xfer(xfer);
+            xfer->xferReal(&k->m_cost);
+            xfer->xferUnsignedInt(&k->m_count);
+            m_kindOfPercentProductionChangeList.push_back(k);
+        }
+    }
+
+    if (version > 4) {
+        unsigned short special_power_timer_count = static_cast<unsigned short>(m_specialPowerReadyTimerList.size());
+        xfer->xferUnsignedShort(&special_power_timer_count);
+
+        if (xfer->Get_Mode() == XFER_SAVE) {
+            for (auto i = m_specialPowerReadyTimerList.begin(); i != m_specialPowerReadyTimerList.end(); i++) {
+                SpecialPowerReadyTimerType &timer = (*i);
+                xfer->xferUnsignedInt(&timer.m_id);
+                xfer->xferUnsignedInt(&timer.m_frame);
+            }
+        } else {
+            captainslog_relassert(m_specialPowerReadyTimerList.size() == 0,
+                6,
+                "Player::xfer - m_specialPowerReadyTimerList should be empty but is not");
+            for (int i = 0; i < special_power_timer_count; i++) {
+                SpecialPowerReadyTimerType timer;
+                xfer->xferUnsignedInt(&timer.m_id);
+                xfer->xferUnsignedInt(&timer.m_frame);
+                m_specialPowerReadyTimerList.push_back(timer);
+            }
+        }
+    } else {
+        m_specialPowerReadyTimerList.clear();
+    }
+
+    unsigned short squad_count = SQUAD_COUNT;
+    xfer->xferUnsignedShort(&squad_count);
+    captainslog_relassert(squad_count == SQUAD_COUNT, 6, "Player::xfer - size of m_squadCount array has changed");
+
+    for (int i = 0; i < squad_count; i++) {
+        captainslog_relassert(m_squads[i] != nullptr, 6, "Player::xfer - NULL squad at index '%d'", i);
+        xfer->xferSnapshot(m_squads[i]);
+    }
+
+    bool has_ai_squad = m_aiSquad != nullptr;
+    xfer->xferBool(&has_ai_squad);
+
+    if (has_ai_squad) {
+        if (m_aiSquad == nullptr && xfer->Get_Mode() == XFER_LOAD) {
+            m_aiSquad = new Squad();
+        }
+
+        xfer->xferSnapshot(m_aiSquad);
+    }
+
+    bool has_battle_plan_bonuses = m_battlePlanBonuses != nullptr;
+    xfer->xferBool(&has_battle_plan_bonuses);
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        if (m_battlePlanBonuses != nullptr) {
+            m_battlePlanBonuses->Delete_Instance();
+            m_battlePlanBonuses = nullptr;
+        }
+
+        if (has_battle_plan_bonuses) {
+            m_battlePlanBonuses = new BattlePlanBonuses();
+        }
+    }
+
+    if (m_battlePlanBonuses != nullptr) {
+        xfer->xferReal(&m_battlePlanBonuses->m_armorBonus);
+        xfer->xferReal(&m_battlePlanBonuses->m_sightBonus);
+        xfer->xferInt(&m_battlePlanBonuses->m_bombardment);
+        xfer->xferInt(&m_battlePlanBonuses->m_holdTheLine);
+        xfer->xferInt(&m_battlePlanBonuses->m_searchAndDestroy);
+        m_battlePlanBonuses->m_validKindOf.Xfer(xfer);
+        m_battlePlanBonuses->m_invalidKindOf.Xfer(xfer);
+    }
+
+    xfer->xferInt(&m_activeBattlePlans[0]);
+    xfer->xferInt(&m_activeBattlePlans[1]);
+    xfer->xferInt(&m_activeBattlePlans[2]);
+
+    if (version < 6) {
+        m_unitsShouldHunt = false;
+    } else {
+        xfer->xferBool(&m_unitsShouldHunt);
+    }
 }
 
 // zh: 0x0044FDD0, wb: 0x00859AC9
 void Player::Init(const PlayerTemplate *pt)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, const PlayerTemplate *>(PICK_ADDRESS(0x0044FDD0, 0x00859AC9), this, pt);
+    captainslog_dbgassert(m_playerTeamPrototypes.size() == 0, "Player::m_playerTeamPrototypes is not empty at game start!");
+    m_skillPointsModifier = 1.0f;
+    m_lastAttackedByFrame = 0;
+    m_playerIsPreorder = 0;
+    m_playerIsDead = 0;
+    m_radarCount = 0;
+    m_disableProofRadarCount = 0;
+    m_radarDisabled = 0;
+    m_activeBattlePlans[0] = 0;
+    m_activeBattlePlans[1] = 0;
+    m_activeBattlePlans[2] = 0;
+
+    if (m_battlePlanBonuses != nullptr) {
+        m_battlePlanBonuses->Delete_Instance();
+        m_battlePlanBonuses = nullptr;
+    }
+
+    Delete_Upgrade_List();
+    m_energy.Init(this);
+    m_missionStats.Init();
+
+    if (m_buildListInfo != nullptr) {
+        m_buildListInfo->Delete_Instance();
+        m_buildListInfo = nullptr;
+    }
+
+    m_defaultTeam = nullptr;
+
+    if (m_ai != nullptr) {
+        m_ai->Delete_Instance();
+        m_ai = nullptr;
+    }
+
+    if (m_resourceGatheringManager != nullptr) {
+        m_resourceGatheringManager->Delete_Instance();
+        m_resourceGatheringManager = nullptr;
+    }
+
+    for (int i = 0; i < SQUAD_COUNT; i++) {
+        if (m_squads[i] != nullptr) {
+            m_squads[i]->Delete_Instance();
+            m_squads[i] = nullptr;
+        }
+
+        m_squads[i] = new Squad();
+    }
+
+    if (m_aiSquad != nullptr) {
+        m_aiSquad->Delete_Instance();
+        m_aiSquad = nullptr;
+    }
+
+    m_aiSquad = new Squad();
+
+    if (m_tunnelSystem != nullptr) {
+        m_tunnelSystem->Delete_Instance();
+        m_tunnelSystem = nullptr;
+    }
+
+    m_canBuildBase = true;
+    m_canBuildUnits = true;
+    m_playerIsObserver = false;
+    m_bountyCostToBuild = 0.0f;
+    m_listInScoreScreen = true;
+    m_unitsShouldHunt = false;
+#ifdef GAME_DEBUG_STRUCTS
+    m_ignorePrereqs = false;
+    m_freeBuild = false;
+    m_instantBuild = false;
 #endif
+
+    if (pt != nullptr) {
+        m_side = pt->Get_Side_Name();
+        m_baseSide = pt->Get_Base_Side();
+        m_productionCostChanges = *pt->Get_Production_Cost_Changes();
+        m_productionTimeChanges = *pt->Get_Production_Time_Changes();
+        m_productionVeterancyLevels = *pt->Get_Production_Veterancy_Levels();
+        m_playerColor = pt->Get_Preferred_Color()->Get_As_Int() | 0xFF000000;
+        m_playerNightColor = m_playerColor;
+        m_money = *pt->Get_Money();
+        m_money.Set_Player_Index(Get_Player_Index());
+        m_handicap = *pt->Get_Handicap();
+
+        if (m_money.Get() == 0) {
+            if (g_theGameInfo != nullptr) {
+                m_money = *g_theGameInfo->Get_Money();
+            } else {
+                m_money = g_theWriteableGlobalData->m_defaultStartingCash;
+            }
+        }
+
+        m_playerDisplayName.Clear();
+        m_playerName.Clear();
+        m_playerNameKey = NAMEKEY_INVALID;
+        m_playerType = PLAYER_COMPUTER;
+        m_playerIsObserver = pt->Is_Observer();
+        m_playerIsDead = m_playerIsObserver;
+    } else {
+        m_side = "";
+        m_baseSide = "";
+        m_productionCostChanges.clear();
+        m_productionTimeChanges.clear();
+        m_productionVeterancyLevels.clear();
+        m_playerColor = -1;
+        m_playerNightColor = -1;
+        m_money.Empty();
+        m_handicap.Init();
+        m_playerDisplayName = Utf16String::s_emptyString;
+        m_playerName = Utf8String::s_emptyString;
+        m_playerNameKey = g_theNameKeyGenerator->Name_To_Key(Utf8String::s_emptyString.Str());
+        m_playerType = PLAYER_COMPUTER;
+        Set_Player_Relationship(this, ALLIES);
+    }
+
+    m_scoreKeeper.Reset(m_playerIndex);
+    m_playerTemplate = pt;
+    Reset_Rank();
+    m_disabledSciences.clear();
+    m_hiddenSciences.clear();
+
+    for (auto i = m_specialPowerReadyTimerList.begin(); i != m_specialPowerReadyTimerList.end();) {
+        SpecialPowerReadyTimerType &timer = *i;
+        i = m_specialPowerReadyTimerList.erase(i);
+        timer.Reset();
+    }
+
+    for (auto i = m_kindOfPercentProductionChangeList.begin(); i != m_kindOfPercentProductionChangeList.end();) {
+        KindOfPercentProductionChange *k = (*i);
+        i = m_kindOfPercentProductionChangeList.erase(i);
+
+        if (k != nullptr) {
+            k->Delete_Instance();
+        }
+    }
+
+    Get_Academy_Stats()->Init(this);
+    m_retaliationModeEnabled = false;
 }
 
 // zh: 0x00450ED0, wb: 0x0085A9FF
@@ -132,48 +603,47 @@ void Player::Update()
 // zh: 0x00451040, wb: 0x0085ABC5
 void Player::New_Map()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player>(PICK_ADDRESS(0x00451040, 0x0085ABC5), this);
-#endif
+    if (m_ai != nullptr) {
+        m_ai->New_Map();
+    }
 }
 
 // zh: 0x00452E40, wb: 0x0085C643
 bool Player::Compute_Superweapon_Target(const SpecialPowerTemplate *sp_template, Coord3D *loc, int32_t unk1, float unk2)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Player, const SpecialPowerTemplate *, Coord3D *, int32_t, float>(
-        PICK_ADDRESS(0x00452E40, 0x0085C643), this, sp_template, loc, unk1, unk2);
-#else
-    return false;
-#endif
+    if (m_ai != nullptr) {
+        return m_ai->Compute_Superweapon_Target(sp_template, loc, unk1, unk2);
+    } else {
+        return false;
+    }
 }
 
 // zh: 0x004532F0, wb: 0x0085CE36
 bool Player::Check_Bridges(Object *obj, Waypoint *waypoint)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Player, Object *, Waypoint *>(PICK_ADDRESS(0x004532F0, 0x0085CE36), this, obj, waypoint);
-#else
-    return false;
-#endif
+    if (m_ai != nullptr) {
+        return m_ai->Check_Bridges(obj, waypoint);
+    } else {
+        return false;
+    }
 }
 
 // zh: 0x00453320, wb: 0x0085CE7C
 bool Player::Get_AI_Base_Center(Coord3D *center)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Player, Coord3D *>(PICK_ADDRESS(0x00453320, 0x0085CE7C), this, center);
-#else
-    return false;
-#endif
+    if (m_ai != nullptr) {
+        return m_ai->Get_AI_Base_Center(center);
+    } else {
+        return false;
+    }
 }
 
 // zh: 0x00453350, wb: 0x0085CEB5
 void Player::Repair_Structure(ObjectID obj_id)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, ObjectID>(PICK_ADDRESS(0x00453350, 0x0085CEB5), this, obj_id);
-#endif
+    if (m_ai != nullptr) {
+        m_ai->Repair_Structure(obj_id);
+    }
 }
 
 NameKeyType Player::Get_Player_NameKey() const
@@ -219,46 +689,137 @@ void Player::On_Power_Brown_Out_Change(bool change)
 // zh: 0x00450AA0, wb: 0x0085A70A
 bool Player::Remove_Team_Relationship(const Team *that)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Player, const Team *>(PICK_ADDRESS(0x00450AA0, 0x0085A70A), this, that);
-#else
+    if (m_teamRelations->m_relationships.empty()) {
+        return false;
+    }
+
+    if (that == nullptr) {
+        m_teamRelations->m_relationships.clear();
+        return true;
+    }
+
+    auto it = m_teamRelations->m_relationships.find(that->Get_Team_ID());
+
+    if (it != m_teamRelations->m_relationships.end()) {
+        m_teamRelations->m_relationships.erase(it);
+        return true;
+    }
+
     return false;
-#endif
 }
 
 // zh: 0x00450870, wb: 0x0085A4AA
 Relationship Player::Get_Relationship(const Team *that) const
 {
-#ifdef GAME_DLL
-    return Call_Method<Relationship, const Player, const Team *>(PICK_ADDRESS(0x00450870, 0x0085A4AA), this, that);
-#else
-    return Relationship();
-#endif
+    if (that == nullptr) {
+        return NEUTRAL;
+    }
+
+    if (!m_teamRelations->m_relationships.empty()) {
+        auto it = m_teamRelations->m_relationships.find(that->Get_Team_ID());
+
+        if (it != m_teamRelations->m_relationships.end()) {
+            return (*it).second;
+        }
+    }
+
+    if (!m_playerRelations->m_relationships.empty()) {
+        Player *player = that->Get_Controlling_Player();
+
+        if (player != nullptr) {
+            auto i = m_playerRelations->m_relationships.find(player->Get_Player_Index());
+
+            if (i != m_playerRelations->m_relationships.end()) {
+                return (*i).second;
+            }
+        }
+    }
+
+    return NEUTRAL;
 }
 
 // zh: 0x00453A50, wb: 0x0085D941
 void Player::Update_Team_States()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player>(PICK_ADDRESS(0x00453A50, 0x0085D941), this);
-#endif
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        (*i)->Update_State();
+    }
 }
 
 int Player::Get_Squad_Number_For_Object(const Object *obj) const
 {
-#ifdef GAME_DLL
-    return Call_Method<int, const Player, const Object *>(PICK_ADDRESS(0x00457650, 0x008616BA), this, obj);
-#else
-    return 0;
-#endif
+    for (int i = 0; i < SQUAD_COUNT; i++) {
+        if (m_squads[i]->Is_On_Squad(obj)) {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 // zh: 0x00452BA0, wb: 0x0085C3AA
 void Player::Becoming_Local_Player(bool yes)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00452BA0, 0x0085C3AA), this, yes);
-#endif
+    if (yes) {
+        if (g_theGameClient != nullptr) {
+            RGBColor color;
+            color.Set_From_Int(m_playerColor);
+            g_theGameClient->Set_Team_Color(GameMath::Fast_To_Int_Truncate(color.red * 255.0f),
+                GameMath::Fast_To_Int_Truncate(color.green * 255.0f),
+                GameMath::Fast_To_Int_Truncate(color.blue * 255.0f));
+        }
+
+        if (g_thePartitionManager != nullptr) {
+            SimpleObjectIterator *iterator = g_thePartitionManager->Iterate_All_Objects(nullptr);
+
+            for (Object *obj = iterator->First(); obj != nullptr; obj = iterator->Next()) {
+                ContainModuleInterface *contain = obj->Get_Contain();
+
+                if (contain != nullptr) {
+                    contain->Recalc_Apparent_Controlling_Player();
+                    g_theRadar->Remove_Object(obj);
+                    g_theRadar->Add_Object(obj);
+                }
+
+                if (obj->Is_KindOf(KINDOF_DISGUISER)) {
+                    Drawable *drawable = obj->Get_Drawable();
+
+                    if (drawable != nullptr) {
+                        StealthUpdate *stealth = obj->Get_Stealth_Update();
+
+                        if (stealth != nullptr) {
+                            if (stealth->Has_Disguised_Template()) {
+                                Player *player = g_thePlayerList->Get_Nth_Player(stealth->Get_Player_Index());
+                                int indicator;
+
+                                if (Get_Relationship(obj->Get_Team()) == ALLIES || !Is_Player_Active()) {
+                                    if (g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT) {
+                                        indicator = obj->Get_Night_Indicator_Color();
+                                    } else {
+                                        indicator = obj->Get_Indicator_Color();
+                                    }
+                                } else if (g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT) {
+                                    indicator = player->Get_Night_Color();
+                                } else {
+                                    indicator = player->Get_Color();
+                                }
+
+                                drawable->Set_Indicator_Color(indicator);
+                                g_theRadar->Remove_Object(obj);
+                                g_theRadar->Add_Object(obj);
+                            }
+                        }
+                    }
+                }
+            }
+
+            iterator->Delete_Instance();
+        }
+
+        if (g_theControlBar != nullptr) {
+            g_theControlBar->Mark_UI_Dirty();
+        }
+    }
 }
 
 void Player::Count_Objects_By_Thing_Template(int num_tmplates,
@@ -425,4 +986,194 @@ void Player::Set_Player_Type(PlayerType t, bool is_skirmish)
 #ifdef GAME_DLL
     Call_Method<void, Player, PlayerType, bool>(PICK_ADDRESS(0x00451050, 0x0085ABEC), this, t, is_skirmish);
 #endif
+}
+
+Upgrade *Player::Add_Upgrade(const UpgradeTemplate *upgrade_template, UpgradeStatusType status)
+{
+    Upgrade *upgrade = Find_Upgrade(upgrade_template);
+
+    if (upgrade == nullptr) {
+        upgrade = new Upgrade(upgrade_template);
+        upgrade->Friend_Set_Prev(nullptr);
+        upgrade->Friend_Set_Next(m_upgradeList);
+
+        if (m_upgradeList != nullptr) {
+            m_upgradeList->Friend_Set_Prev(upgrade);
+        }
+
+        m_upgradeList = upgrade;
+    }
+
+    upgrade->Set_Status(status);
+    BitFlags<128> mask = upgrade_template->Get_Upgrade_Mask();
+
+    if (status == UPGRADE_STATUS_IN_PRODUCTION) {
+        m_upgradesInProgress.Set(mask);
+    } else if (status == UPGRADE_STATUS_COMPLETE) {
+        m_upgradesInProgress.Clear(mask);
+        m_upgradesCompleted.Set(mask);
+        On_Upgrade_Completed(upgrade_template);
+    }
+
+    if (g_thePlayerList->Get_Local_Player() == this) {
+        g_theControlBar->Mark_UI_Dirty();
+    }
+
+    return upgrade;
+}
+
+Upgrade *Player::Find_Upgrade(const UpgradeTemplate *upgrade_template)
+{
+    for (Upgrade *upgrade = m_upgradeList; upgrade != nullptr; upgrade = upgrade->Friend_Get_Next()) {
+        if (upgrade->Get_Template() == upgrade_template) {
+            return upgrade;
+        }
+    }
+
+    return nullptr;
+}
+
+void Player::On_Upgrade_Completed(const UpgradeTemplate *upgrade_template)
+{
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> iter = (*i)->Iterate_Team_Instance_List();
+
+        while (!iter.Done()) {
+            Team *team = iter.Cur();
+
+            if (team != nullptr) {
+                DLINK_ITERATOR<Object> iter2 = team->Iterate_Team_Member_List();
+
+                while (!iter2.Done()) {
+                    Object *obj = iter2.Cur();
+
+                    if (obj != nullptr) {
+                        obj->Update_Upgrade_Modules();
+                    }
+
+                    iter2.Advance();
+                }
+            }
+
+            iter.Advance();
+        }
+    }
+}
+
+void Player::Delete_Upgrade_List()
+{
+    while (m_upgradeList != nullptr) {
+        Upgrade *upgrade = m_upgradeList->Friend_Get_Next();
+        m_upgradeList->Delete_Instance();
+        m_upgradeList = upgrade;
+    }
+
+    m_upgradesInProgress.Clear();
+    m_upgradesCompleted.Clear();
+}
+
+void Player::Reset_Rank()
+{
+    m_rankLevel = 1;
+    m_currentSkillPoints = 0;
+    const RankInfo *next_rank_info = g_theRankInfoStore->Get_Rank_Info(m_rankLevel + 1);
+
+    if (next_rank_info != nullptr) {
+        m_skillPointsNeededForNextRank = next_rank_info->m_skillPointsNeeded;
+    } else {
+        m_skillPointsNeededForNextRank = 0x7FFFFFFF;
+    }
+
+    m_rankProgress = 0;
+    m_sciences.clear();
+
+    if (Get_Player_Template() != nullptr) {
+        m_sciencePurchasePoints = Get_Player_Template()->Get_Intrinsic_Science_Purchase_Points();
+    } else {
+        m_sciencePurchasePoints = 0;
+    }
+
+    const RankInfo *cur_rank_info = g_theRankInfoStore->Get_Rank_Info(m_rankLevel);
+
+    if (cur_rank_info != nullptr) {
+        m_sciencePurchasePoints += cur_rank_info->m_sciencePurchasePointsGranted;
+    }
+
+    if (g_theGameText != nullptr) {
+        m_scienceGeneralName = g_theGameText->Fetch("SCIENCE:GeneralName");
+    } else {
+        m_scienceGeneralName = Utf16String::s_emptyString;
+    }
+
+    Reset_Sciences();
+}
+
+void Player::Reset_Sciences()
+{
+    m_sciences.clear();
+
+    if (Get_Player_Template() != nullptr) {
+        m_sciences = *Get_Player_Template()->Get_Intrinsinc_Sciences();
+    }
+
+    for (int i = 1; i <= m_rankLevel; i++) {
+        const RankInfo *info = g_theRankInfoStore->Get_Rank_Info(i);
+
+        if (info != nullptr) {
+            for (auto j = info->m_sciencesGranted.begin(); j != info->m_sciencesGranted.end(); j++) {
+                Add_Science(*j);
+            }
+        }
+    }
+
+    for (auto i = m_sciences.begin(); i != m_sciences.end(); i++) {
+        g_theScriptEngine->Notify_Of_Acquired_Science(Get_Player_Index(), *i);
+    }
+}
+
+bool Player::Add_Science(ScienceType t)
+{
+    if (Has_Science(t)) {
+        return false;
+    }
+
+    m_sciences.push_back(t);
+
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> iter = (*i)->Iterate_Team_Instance_List();
+
+        while (!iter.Done()) {
+            Team *team = iter.Cur();
+
+            if (team != nullptr) {
+                DLINK_ITERATOR<Object> iter2 = team->Iterate_Team_Member_List();
+
+                while (!iter2.Done()) {
+                    Object *obj = iter2.Cur();
+
+                    if (obj != nullptr) {
+                        for (BehaviorModule **module = obj->Get_All_Modules(); *module != nullptr; module++) {
+                            SpecialPowerModuleInterface *interface = (*module)->Get_Special_Power();
+
+                            if (interface != nullptr) {
+                                if (interface->Get_Required_Science() == t) {
+                                    interface->On_Special_Power_Creation();
+                                    interface->Set_Ready_Frame(g_theGameLogic->Get_Frame());
+                                }
+                            }
+                        }
+                    }
+
+                    iter2.Advance();
+                }
+            }
+
+            iter.Advance();
+        }
+
+        g_theControlBar->Mark_UI_Dirty();
+    }
+
+    g_theScriptEngine->Notify_Of_Acquired_Science(Get_Player_Index(), t);
+    return true;
 }

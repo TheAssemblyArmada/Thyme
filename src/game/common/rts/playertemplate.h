@@ -51,8 +51,8 @@ public:
     Image *Get_Enabled_Image();
     Utf8String Get_Starting_Unit(int unit) const;
 
-    Utf8String Get_Name() { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }
-    Utf8String Get_Side_Name() { return m_side; }
+    Utf8String Get_Name() const { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }
+    Utf8String Get_Side_Name() const { return m_side; }
     NameKeyType Get_Name_Key() const { return m_nameKey; }
     void Set_Name_Key(NameKeyType key) { m_nameKey = key; }
     Utf8String Get_Beacon_Name() const { return m_beaconName; }
@@ -66,12 +66,12 @@ public:
     const RGBColor *Get_Preferred_Color() const { return &m_preferredColor; }
     const Money *Get_Money() const { return &m_money; }
     const Handicap *Get_Handicap() const { return &m_handicap; }
-    const std::map<const NameKeyType, float> *Get_Production_Cost_Changes() const { return &m_productionCostChanges; }
-    const std::map<const NameKeyType, float> *Get_Production_Time_Changes() const { return &m_productionTimeChanges; }
+    const std::map<NameKeyType, float> *Get_Production_Cost_Changes() const { return &m_productionCostChanges; }
+    const std::map<NameKeyType, float> *Get_Production_Time_Changes() const { return &m_productionTimeChanges; }
     const std::vector<ScienceType> *Get_Intrinsinc_Sciences() const { return &m_intrinsicSciences; }
     int Get_Intrinsic_Science_Purchase_Points() const { return m_intrinsicSciencePurchasePoints; }
 
-    const std::map<const NameKeyType, VeterancyLevel> *Get_Production_Veterancy_Levels() const
+    const std::map<NameKeyType, VeterancyLevel> *Get_Production_Veterancy_Levels() const
     {
         return &m_productionVeterancyLevels;
     }
@@ -94,9 +94,9 @@ private:
     RGBColor m_preferredColor;
     Utf8String m_startingBuilding;
     Utf8String m_startingUnits[STARTING_UNIT_COUNT];
-    std::map<const NameKeyType, float> m_productionCostChanges;
-    std::map<const NameKeyType, float> m_productionTimeChanges;
-    std::map<const NameKeyType, VeterancyLevel> m_productionVeterancyLevels;
+    std::map<NameKeyType, float> m_productionCostChanges;
+    std::map<NameKeyType, float> m_productionTimeChanges;
+    std::map<NameKeyType, VeterancyLevel> m_productionVeterancyLevels;
     std::vector<ScienceType> m_intrinsicSciences;
     Utf8String m_purchaseCommandSetRankOne;
     Utf8String m_purchaseCommandSetRankThree;

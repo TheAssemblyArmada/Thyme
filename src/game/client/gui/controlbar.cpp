@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Academy Stats
+ * @brief Control Bar
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,21 +12,18 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "academystats.h"
+#include "controlbar.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
-void AcademyStats::Record_Income()
-{
-#ifdef GAME_DLL
-    Call_Method<void, AcademyStats>(PICK_ADDRESS(0x00575810, 0x008DD650), this);
+#ifndef GAME_DLL
+ControlBar *g_theControlBar;
 #endif
-}
 
-void AcademyStats::Init(const Player *player)
+void ControlBar::Mark_UI_Dirty()
 {
 #ifdef GAME_DLL
-    Call_Method<void, AcademyStats, const Player *>(PICK_ADDRESS(0x00575300, 0x008DCE35), this, player);
+    Call_Method<void, ControlBar>(PICK_ADDRESS(0x0045B3F0, 0x00729C50), this);
 #endif
 }

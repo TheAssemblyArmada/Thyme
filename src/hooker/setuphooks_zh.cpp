@@ -2649,4 +2649,10 @@ void Setup_Hooks()
     Hook_Any(0x00450B70, Player::Set_Build_List);
     Hook_Any(0x00451210, Player::Set_Default_Team);
     Hook_Any(0x00450940, Player::Set_Player_Relationship);
+    Hook_Any(0x0044FDD0, Player::Init);
+    Hook_Any(0x00450AA0, Player::Remove_Team_Relationship);
+    Hook_Any(0x00450870, Player::Get_Relationship);
+    Hook_Any(0x00455FF0, Player::Add_Upgrade);
+    Hook_Any(0x00455590, Player::Reset_Rank);
+    Hook_Any(0x00455030, Player::Add_Science);
 }

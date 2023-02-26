@@ -21,6 +21,11 @@
 class TeamInQueue;
 class WorkOrder;
 
+enum SkillSetSelection
+{
+    INVALID_SKILLSET_SELECTION = -1,
+};
+
 // member names are a best guess at this point
 class AIPlayer : public MemoryPoolObject, public SnapShot
 {
@@ -62,11 +67,14 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    bool Get_AI_Base_Center(Coord3D *center)
+    bool Get_AI_Base_Center(Coord3D *center) const
     {
         *center = m_baseCenter;
         return m_baseCenterValid;
     }
+
+    void Set_Difficulty(GameDifficulty difficulty) { m_difficulty = difficulty; }
+    GameDifficulty Get_Difficulty() const { return m_difficulty; }
 
 private:
     struct DLINKHEAD_TeamBuildQueue
@@ -81,6 +89,7 @@ private:
 
     DLINKHEAD_TeamBuildQueue m_dlinkhead_TeamBuildQueue;
     DLINKHEAD_TeamReadyQueue m_dlinkhead_TeamReadyQueue;
+    Player *m_player;
     bool m_readyToBuildTeam;
     bool m_readyToBuildStructure;
     int m_teamTimer;
@@ -90,7 +99,7 @@ private:
     int m_teamDelay;
     int m_frameLastBuildingBuilt;
     GameDifficulty m_difficulty;
-    int m_skillSet;
+    int m_skillsetSelector;
     Coord3D m_baseCenter;
     bool m_baseCenterValid;
     float m_baseRadius;

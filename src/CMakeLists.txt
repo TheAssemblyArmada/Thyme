@@ -211,6 +211,7 @@ set(GAMEENGINE_SRC
     game/common/rts/playerlist.cpp
     game/common/rts/playertemplate.cpp
     game/common/rts/productionprerequisite.cpp
+    game/common/rts/resourcegatheringmanager.cpp
     game/common/rts/science.cpp
     game/common/rts/scorekeeper.cpp
     game/common/rts/sidesinfo.cpp

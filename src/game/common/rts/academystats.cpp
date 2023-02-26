@@ -30,3 +30,10 @@ void AcademyStats::Init(const Player *player)
     Call_Method<void, AcademyStats, const Player *>(PICK_ADDRESS(0x00575300, 0x008DCE35), this, player);
 #endif
 }
+
+void AcademyStats::Update()
+{
+#ifdef GAME_DLL
+    Call_Method<void, AcademyStats>(PICK_ADDRESS(0x005755A0, 0x008DD21B), this);
+#endif
+}

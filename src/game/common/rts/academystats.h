@@ -25,6 +25,7 @@ public:
     char unk3[0x14];
 
     void Init(const Player *player);
+    void Update();
     void Record_Income();
     void Increment_Mines_Disarmed() { m_minesClearedCount++; }
 };

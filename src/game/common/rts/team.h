@@ -435,7 +435,7 @@ public:
     void Heal_All_Objects();
     void Iterate_Objects(void (*func)(Object *, void *), void *data);
     int Count_Team_Instances();
-    bool Has_Any_Buldings() const;
+    bool Has_Any_Buildings() const;
     bool Has_Any_Buildings(BitFlags<KINDOF_COUNT> must_be_set) const;
     bool Has_Any_Units() const;
     bool Has_Any_Objects() const;

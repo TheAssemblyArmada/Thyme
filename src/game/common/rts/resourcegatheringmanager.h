@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "mempoolobj.h"
+#include "object.h"
 #include "snapshot.h"
 
 class ResourceGatheringManager : public MemoryPoolObject, public SnapShot
@@ -22,11 +23,12 @@ class ResourceGatheringManager : public MemoryPoolObject, public SnapShot
     IMPLEMENT_POOL(ResourceGatheringManager)
 
 public:
+    ResourceGatheringManager() {}
     virtual ~ResourceGatheringManager() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer);
+    virtual void CRC_Snapshot(Xfer *xfer) {}
     virtual void Xfer_Snapshot(Xfer *xfer);
-    virtual void Load_Post_Process();
+    virtual void Load_Post_Process() {}
 
 private:
     std::list<ObjectID> m_supplyWarehouses;

@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "scriptengine.h"
+#include "gamelogic.h"
 
 #ifndef GAME_DLL
 ScriptEngine *g_theScriptEngine = nullptr;
@@ -48,4 +49,9 @@ void ScriptEngine::Append_Debug_Message(const Utf8String &message, bool b)
 #ifdef GAME_DLL
     Call_Method<void, ScriptEngine, const Utf8String &, bool>(PICK_ADDRESS(0x004370D0, 0x00712ED8), this, message, b);
 #endif
+}
+
+void ScriptEngine::Notify_Of_Object_Creation_Or_Destruction()
+{
+    m_objectCreationDestructionFrame = g_theGameLogic->Get_Frame();
 }

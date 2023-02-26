@@ -47,8 +47,8 @@ public:
     int32_t Get_Science_Purchase_Cost(ScienceType science) const;
     bool Is_Science_Grantable(ScienceType science) const;
     bool Get_Name_And_Description(ScienceType science, Utf16String &name, Utf16String &description);
-    bool Player_Has_Prereqs_For_Science(Player *player, ScienceType science);
-    bool Player_Has_Root_Prereqs_For_Science(Player *player, ScienceType science);
+    bool Player_Has_Prereqs_For_Science(const Player *player, ScienceType science);
+    bool Player_Has_Root_Prereqs_For_Science(const Player *player, ScienceType science);
 
     static void Parse_Science_Definition(INI *ini);
 

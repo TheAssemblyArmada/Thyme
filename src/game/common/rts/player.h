@@ -61,7 +61,7 @@ public:
 
 private:
     BitFlags<KINDOF_COUNT> m_flags;
-    float m_cost;
+    float m_percent;
     unsigned int m_count;
 
     friend class Player;
@@ -102,7 +102,10 @@ struct SpecialPowerReadyTimerType
 
 enum ScienceAvailabilityType
 {
-    SCIENCE_AVAILABILITY_UNK,
+    SCIENCE_AVAILABILITY_INVALID = -1,
+    SCIENCE_AVAILABILITY_AVAILABLE,
+    SCIENCE_AVAILABILITY_DISABLED,
+    SCIENCE_AVAILABILITY_HIDDEN,
 };
 
 enum BattlePlanStatus
@@ -173,6 +176,7 @@ public:
     BuildListInfo *Get_Build_List() { return m_buildListInfo; }
     bool Get_Can_Build_Units() const { return m_canBuildUnits; }
     int Get_Last_Attacked_By_Frame() const { return m_lastAttackedByFrame; }
+    int Get_Science_Purchase_Points() const { return m_sciencePurchasePoints; }
 
     void Set_Retaliation_Mode_Enabled(bool set) { m_retaliationModeEnabled = set; }
     void Set_Can_Build_Units(bool set) { m_canBuildUnits = set; }
@@ -257,8 +261,8 @@ public:
     bool Has_Upgrade_Complete(BitFlags<128> test_mask) const;
     bool Has_Upgrade_Complete(const UpgradeTemplate *upgrade_template) const;
 
-    void Add_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT> flags, float cost);
-    void Remove_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT> flags, float cost);
+    void Add_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT> flags, float percent);
+    void Remove_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT> flags, float percent);
     float Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<KINDOF_COUNT> flags) const;
     VeterancyLevel Get_Production_Veterancy_Level(Utf8String build_template_name) const;
     float Get_Production_Cost_Change_Percent(Utf8String build_template_name) const;
@@ -335,8 +339,8 @@ public:
     bool Has_Science(ScienceType t) const;
     bool Has_Prereqs_For_Science(ScienceType t) const;
     bool Is_Capable_Of_Purchasing_Science(ScienceType t) const;
-    bool Is_Science_Hidden(ScienceType) const;
-    bool Is_Science_Disabled(ScienceType) const;
+    bool Is_Science_Hidden(ScienceType t) const;
+    bool Is_Science_Disabled(ScienceType t) const;
     void Add_Science_Purchase_Points(int points);
     bool Add_Science(ScienceType t);
     bool Grant_Science(ScienceType t);

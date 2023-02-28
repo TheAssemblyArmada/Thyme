@@ -172,6 +172,8 @@ public:
     virtual void Adjust_Topple_Direction(Object *obj, Coord3D *direction);
     virtual Script *Find_Script_By_Name(const Utf8String &script_name);
 
+    void Notify_Of_Object_Creation_Or_Destruction();
+
     void Set_Global_Difficulty(GameDifficulty diff);
     void Set_Use_Object_Difficulty_Bonus(bool bonus) { m_useObjectDifficultyBonuses = bonus; }
 

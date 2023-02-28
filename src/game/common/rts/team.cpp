@@ -965,7 +965,7 @@ int TeamPrototype::Count_Team_Instances()
     return count;
 }
 
-bool TeamPrototype::Has_Any_Buldings() const
+bool TeamPrototype::Has_Any_Buildings() const
 {
     DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
 

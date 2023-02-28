@@ -48,8 +48,11 @@ public:
     void Add_Team(const Dict *dict) { m_teamRec.Add_Team(dict); }
     void Remove_Team(int index) { m_teamRec.Remove_Team(index); }
     int Get_Num_Sides() const { return m_numSides; }
+    int Get_Num_Skirmish_Sides() const { return m_numSkirmishSides; }
     int Get_Num_Teams() { return m_teamRec.Get_Num_Teams(); }
+    int Get_Num_Skirmish_Teams() { return m_skirmishTeamsRec.Get_Num_Teams(); }
     TeamsInfo *Get_Team_Info(int index) { return m_teamRec.Get_Team_Info(index); }
+    TeamsInfo *Get_Skirmish_Team_Info(int index) { return m_skirmishTeamsRec.Get_Team_Info(index); }
     void Empty_Teams();
     void Empty_Sides();
     bool Validate_Sides();
@@ -58,7 +61,9 @@ public:
     SidesInfo *Find_Side_Info(Utf8String name, int *index = nullptr);
     SidesInfo *Find_Skirmish_Side_Info(Utf8String name, int *index = nullptr);
     SidesInfo *Get_Sides_Info(int index);
+    SidesInfo *Get_Skirmish_Sides_Info(int index);
     TeamsInfo *Find_Team_Info(Utf8String name, int *index) { return m_teamRec.Find_Team(name, index); }
+    TeamsInfo *Find_Skirmish_Team_Info(Utf8String name, int *index) { return m_skirmishTeamsRec.Find_Team(name, index); }
 
     static bool Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 

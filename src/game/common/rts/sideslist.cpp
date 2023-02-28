@@ -333,6 +333,17 @@ SidesInfo *SidesList::Get_Sides_Info(int index)
 }
 
 /**
+ * @brief Retrieves skirmish side info at the given index.
+ */
+SidesInfo *SidesList::Get_Skirmish_Sides_Info(int index)
+{
+    captainslog_relassert(
+        index >= 0 && index < m_numSkirmishSides, 0xDEAD0003, "Index out of bounds for skirmish side info.");
+
+    return &m_skirmishSides[index];
+}
+
+/**
  * @brief Parses a sides list chunk from a data chunk stream.
  *
  * 0x004D62A0

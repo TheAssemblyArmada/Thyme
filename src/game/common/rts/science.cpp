@@ -136,11 +136,11 @@ bool ScienceStore::Get_Name_And_Description(ScienceType science, Utf16String &na
 }
 
 // zh: 0x00488D50 wb: 0x007277F7
-bool ScienceStore::Player_Has_Prereqs_For_Science(Player *player, ScienceType science)
+bool ScienceStore::Player_Has_Prereqs_For_Science(const Player *player, ScienceType science)
 {
     // TODO: Requires further implementation of Player
 #ifdef GAME_DLL
-    return Call_Method<bool, ScienceStore, Player *, ScienceType>(
+    return Call_Method<bool, ScienceStore, const Player *, ScienceType>(
         PICK_ADDRESS(0x00488D50, 0x007277F7), this, player, science);
 #else
     return false;
@@ -148,11 +148,11 @@ bool ScienceStore::Player_Has_Prereqs_For_Science(Player *player, ScienceType sc
 }
 
 // zh: 0x00488DC0 wb: 0x00727867
-bool ScienceStore::Player_Has_Root_Prereqs_For_Science(Player *player, ScienceType science)
+bool ScienceStore::Player_Has_Root_Prereqs_For_Science(const Player *player, ScienceType science)
 {
     // TODO: Requires further implementation of Player
 #ifdef GAME_DLL
-    return Call_Method<bool, ScienceStore, Player *, ScienceType>(
+    return Call_Method<bool, ScienceStore, const Player *, ScienceType>(
         PICK_ADDRESS(0x00488DC0, 0x00727867), this, player, science);
 #else
     return false;

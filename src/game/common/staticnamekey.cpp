@@ -92,6 +92,13 @@ StaticNameKey g_teamStartsFullKey("teamStartsFull");
 StaticNameKey g_teamReinforcementOriginKey("teamReinforcementOrigin");
 StaticNameKey g_teamVeterancyKey("teamVeterancy");
 StaticNameKey g_multiplayerIsLocalKey("multiplayerIsLocal");
+StaticNameKey g_playerIsSkirmishKey("playerIsSkirmish");
+StaticNameKey g_playerIsPreorderKey("playerIsPreorder");
+StaticNameKey g_multiplayerStartIndexKey("multiplayerStartIndex");
+StaticNameKey g_skirmishDifficultyKey("skirmishDifficulty");
+StaticNameKey g_playerColorKey("playerColor");
+StaticNameKey g_playerNightColorKey("playerNightColor");
+StaticNameKey g_playerStartMoneyKey("playerStartMoney");
 
 NameKeyType StaticNameKey::Key()
 {

@@ -14,7 +14,10 @@
  */
 #include "player.h"
 #include "aiplayer.h"
+#include "audiomanager.h"
+#include "autodepositupdate.h"
 #include "behaviormodule.h"
+#include "bodymodule.h"
 #include "buildinfo.h"
 #include "cavesystem.h"
 #include "controlbar.h"
@@ -24,6 +27,7 @@
 #include "gamelogic.h"
 #include "gametext.h"
 #include "globaldata.h"
+#include "ingameui.h"
 #include "messagestream.h"
 #include "namekeygenerator.h"
 #include "opencontain.h"
@@ -40,6 +44,7 @@
 #include "staticnamekey.h"
 #include "stealthupdate.h"
 #include "team.h"
+#include "victoryconditions.h"
 #include <algorithm>
 
 // zh: 0x0044F7B0, wb: 0x0085960A
@@ -717,12 +722,29 @@ Team *Player::Get_Default_Team()
     return m_defaultTeam;
 }
 
-// zh: 0x00456820, wb: 0x0086048D
-void Player::On_Power_Brown_Out_Change(bool change)
+void Do_Power_Disable(Object *obj, void *data)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00456820, 0x0086048D), this, change);
-#endif
+    bool power_disable = *static_cast<bool *>(data);
+
+    if (obj != nullptr && obj->Is_KindOf(KINDOF_POWERED)) {
+        if (power_disable) {
+            obj->Set_Disabled(DISABLED_TYPE_DISABLED_UNDERPOWERED);
+        } else {
+            obj->Clear_Disabled(DISABLED_TYPE_DISABLED_UNDERPOWERED);
+        }
+    }
+}
+
+// zh: 0x00456820, wb: 0x0086048D
+void Player::On_Power_Brown_Out_Change(bool power_disable)
+{
+    if (power_disable) {
+        Disable_Radar();
+    } else {
+        Enable_Radar();
+    }
+
+    Iterate_Objects(Do_Power_Disable, &power_disable);
 }
 
 // zh: 0x00450AA0, wb: 0x0085A70A
@@ -950,9 +972,9 @@ void PlayerRelationMap::Xfer_Snapshot(Xfer *xfer)
 
 void Player::Pre_Team_Destroy(const Team *team)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, const Team *>(PICK_ADDRESS(0x00453430, 0x0085CFF0), this, team);
-#endif
+    if (m_ai != nullptr) {
+        m_ai->AI_Pre_Team_Destroy(team);
+    }
 }
 
 void Player::Add_Team_To_List(TeamPrototype *team)
@@ -985,11 +1007,94 @@ GameDifficulty Player::Get_Player_Difficulty() const
     }
 }
 
+void Local_Apply_Battle_Plan_Bonuses_To_Object(Object *obj, void *data)
+{
+    BattlePlanBonuses *bonuses = static_cast<BattlePlanBonuses *>(data);
+    const char *name;
+    ObjectID id;
+
+    if (obj != nullptr) {
+        name = obj->Get_Template()->Get_Name().Str();
+    } else {
+        name = "<No Object>";
+    }
+
+    if (obj != nullptr) {
+        id = obj->Get_ID();
+    } else {
+        id = OBJECT_UNK;
+    }
+
+    captainslog_debug("Local_Apply_Battle_Plan_Bonuses_To_Object() - looking at object %d (%s)", id, name);
+    bool is_projectile = obj->Is_KindOf(KINDOF_PROJECTILE);
+
+    if (is_projectile) {
+        obj = g_theGameLogic->Find_Object_By_ID(obj->Get_Producer_ID());
+
+        if (obj != nullptr) {
+            name = obj->Get_Template()->Get_Name().Str();
+        } else {
+            name = "<No Object>";
+        }
+
+        if (obj != nullptr) {
+            id = obj->Get_ID();
+        } else {
+            id = OBJECT_UNK;
+        }
+
+        captainslog_debug("Object is a projectile - looking at object %d (%s) instead", id, name);
+    }
+
+    if (obj != nullptr) {
+        if (obj->Is_Any_KindOf(bonuses->m_validKindOf)) {
+            captainslog_debug("Is valid kindof");
+
+            if (!obj->Is_Any_KindOf(bonuses->m_invalidKindOf)) {
+                captainslog_debug("Is not invalid kindof");
+
+                if (!is_projectile) {
+                    captainslog_debug("Is not projectile.  Armor scalar is %g", bonuses->m_armorBonus);
+
+                    if (bonuses->m_armorBonus != 1.0f) {
+                        obj->Get_Body_Module()->Apply_Damage_Scalar(bonuses->m_armorBonus);
+#ifdef GAME_DEBUG_STRUCTS
+                        // TODO unknown CRC stuff
+#endif
+                        captainslog_debug("After apply, armor scalar is %g", obj->Get_Body_Module()->Get_Damage_Scalar());
+                    }
+
+                    if (bonuses->m_sightBonus != 1.0f) {
+                        obj->Set_Vision_Range(obj->Get_Vision_Range() * bonuses->m_sightBonus);
+                        obj->Set_Shroud_Clearing_Range(obj->Get_Shroud_Clearing_Range() * bonuses->m_sightBonus);
+                    }
+                }
+
+                if (bonuses->m_bombardment <= 0) {
+                    obj->Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_BATTLEPLAN_BOMBARDMENT);
+                } else {
+                    obj->Set_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_BATTLEPLAN_BOMBARDMENT);
+                }
+
+                if (bonuses->m_holdTheLine <= 0) {
+                    obj->Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_BATTLEPLAN_HOLDTHELINE);
+                } else {
+                    obj->Set_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_BATTLEPLAN_HOLDTHELINE);
+                }
+
+                if (bonuses->m_searchAndDestroy <= 0) {
+                    obj->Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_BATTLEPLAN_SEARCHANDDESTROY);
+                } else {
+                    obj->Set_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_BATTLEPLAN_SEARCHANDDESTROY);
+                }
+            }
+        }
+    }
+}
+
 void Player::Apply_Battle_Plan_Bonuses_For_Object(Object *obj)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, Object *>(PICK_ADDRESS(0x00456E00, 0x00860B23), this, obj);
-#endif
+    Local_Apply_Battle_Plan_Bonuses_To_Object(obj, m_battlePlanBonuses);
 }
 
 void Player::Iterate_Objects(void (*func)(Object *, void *), void *data) const
@@ -1290,9 +1395,20 @@ void Player::Set_Player_Relationship(const Player *that, Relationship r)
 
 void Player::Set_Player_Type(PlayerType t, bool is_skirmish)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Player, PlayerType, bool>(PICK_ADDRESS(0x00451050, 0x0085ABEC), this, t, is_skirmish);
-#endif
+    m_playerType = t;
+
+    if (m_ai != nullptr) {
+        m_ai->Delete_Instance();
+        m_ai = nullptr;
+    }
+
+    if (t == PLAYER_COMPUTER) {
+        if (is_skirmish || g_theAI->Get_AI_Data()->m_forceSkirmishAI) {
+            m_ai = new AISkirmishPlayer(this);
+        } else {
+            m_ai = new AIPlayer(this);
+        }
+    }
 }
 
 Upgrade *Player::Add_Upgrade(const UpgradeTemplate *upgrade_template, UpgradeStatusType status)
@@ -1936,4 +2052,222 @@ ScienceAvailabilityType Player::Get_Science_Availability_Type_From_String(const 
     }
 
     return SCIENCE_AVAILABILITY_INVALID;
+}
+
+void Player::Add_To_Build_List(Object *obj)
+{
+    BuildListInfo *info = new BuildListInfo();
+    info->Set_Object_ID(obj->Get_ID());
+    info->Set_Template_Name(obj->Get_Template()->Get_Name());
+    info->Set_Location(*obj->Get_Position());
+    info->Set_Angle(obj->Get_Orientation());
+    info->Set_Num_Rebuilds(0);
+    info->Set_Next(m_buildListInfo);
+    m_buildListInfo = info;
+}
+
+void Player::Add_To_Priority_Build_List(Utf8String template_name, Coord3D *loc, float angle)
+{
+    BuildListInfo *info = new BuildListInfo();
+    info->Set_Template_Name(template_name);
+    info->Set_Location(*loc);
+    info->Set_Angle(angle);
+    info->Set_Unk4();
+    info->Set_Num_Rebuilds(1);
+    info->Set_Next(m_buildListInfo);
+    m_buildListInfo = info;
+}
+
+void Player::Becoming_Team_Member(Object *thg, bool yes)
+{
+    if (thg != nullptr) {
+        if (!thg->Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+            thg->Friend_Adjust_Power_For_Player(yes);
+        }
+
+        if (this != g_thePlayerList->Get_Neutral_Player()) {
+            if (yes) {
+                AutoDepositUpdate *module =
+                    static_cast<AutoDepositUpdate *>(thg->Find_Module(Name_To_Key("AutoDepositUpdate")));
+
+                if (module != nullptr) {
+                    module->Award_Initial_Capture_Bonus(this);
+                }
+            }
+        }
+
+        if (Get_Total_Battle_Plan_Count() > 0 && thg->Get_Apply_Battle_Plan_Bonuses()) {
+            if (yes) {
+                Apply_Battle_Plan_Bonuses_For_Object(thg);
+            } else {
+                Remove_Battle_Plan_Bonuses_For_Object(thg);
+            }
+        }
+
+        if (thg->Is_KindOf(KINDOF_DOZER)) {
+            if (thg->Get_AI_Update_Interface() != nullptr) {
+                if (thg->Get_AI_Update_Interface()->Is_Idle()) {
+                    if (yes) {
+                        g_theInGameUI->Add_Idle_Worker(thg);
+                    } else {
+                        g_theInGameUI->Remove_Idle_Worker(thg, Get_Player_Index());
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Player::Remove_Battle_Plan_Bonuses_For_Object(Object *obj)
+{
+    BattlePlanBonuses *bonuses = new BattlePlanBonuses();
+    *bonuses = *m_battlePlanBonuses;
+    float armor;
+
+    if (bonuses->m_armorBonus <= 0.01f) {
+        armor = 0.01f;
+    } else {
+        armor = bonuses->m_armorBonus;
+    }
+
+    bonuses->m_armorBonus = 1.0f / armor;
+    float sight;
+
+    if (bonuses->m_sightBonus <= 0.01f) {
+        sight = 0.01f;
+    } else {
+        sight = bonuses->m_sightBonus;
+    }
+
+    bonuses->m_sightBonus = 1.0f / sight;
+    bonuses->m_bombardment = -1000000;
+    bonuses->m_searchAndDestroy = -1000000;
+    bonuses->m_holdTheLine = -1000000;
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO dumpBattlePlanBonuses
+#endif
+    Local_Apply_Battle_Plan_Bonuses_To_Object(obj, bonuses);
+    bonuses->Delete_Instance();
+}
+
+bool Player::Ok_To_Play_Radar_Edge_Sound()
+{
+    return !g_theVictoryConditions->Has_Single_Player_Been_Defeated(this) && !m_playerIsDead && !g_theInGameUI->Get_Unk7()
+        && g_theGameLogic->Get_In_Game_Logic_Update() && g_theGameLogic->Get_Frame() != 0;
+}
+
+void Player::Add_Radar(bool disable_proof)
+{
+    bool has_radar = Has_Radar();
+    m_radarCount++;
+
+    if (disable_proof) {
+        m_disableProofRadarCount++;
+    }
+
+    if (!has_radar && Has_Radar() && Ok_To_Play_Radar_Edge_Sound()) {
+        AudioEventRTS radar_sound(g_theAudio->Get_Misc_Audio()->m_radarNotifyOnline);
+        radar_sound.Set_Player_Index(Get_Player_Index());
+        g_theAudio->Add_Audio_Event(&radar_sound);
+    }
+}
+
+void Player::Remove_Radar(bool disable_proof)
+{
+    bool has_radar = Has_Radar();
+    captainslog_dbgassert(m_radarCount > 0,
+        "Remove_Radar: An Object is taking its radar away, but the player radar count says they don't have radar!");
+    m_radarCount--;
+
+    if (disable_proof) {
+        m_disableProofRadarCount--;
+    }
+
+    if (!has_radar && Has_Radar() && Ok_To_Play_Radar_Edge_Sound()) {
+        AudioEventRTS radar_sound(g_theAudio->Get_Misc_Audio()->m_radarNotifyOffline);
+        radar_sound.Set_Player_Index(Get_Player_Index());
+        g_theAudio->Add_Audio_Event(&radar_sound);
+    }
+}
+
+void Player::Enable_Radar()
+{
+    bool has_radar = Has_Radar();
+    m_radarDisabled = false;
+
+    if (!has_radar && Has_Radar() && Ok_To_Play_Radar_Edge_Sound()) {
+        AudioEventRTS radar_sound(g_theAudio->Get_Misc_Audio()->m_radarNotifyOnline);
+        radar_sound.Set_Player_Index(Get_Player_Index());
+        g_theAudio->Add_Audio_Event(&radar_sound);
+    }
+}
+
+void Player::Disable_Radar()
+{
+    bool has_radar = Has_Radar();
+    m_radarDisabled = true;
+
+    if (!has_radar && Has_Radar() && Ok_To_Play_Radar_Edge_Sound()) {
+        AudioEventRTS radar_sound(g_theAudio->Get_Misc_Audio()->m_radarNotifyOffline);
+        radar_sound.Set_Player_Index(Get_Player_Index());
+        g_theAudio->Add_Audio_Event(&radar_sound);
+    }
+}
+
+bool Player::Is_Supply_Source_Safe(int source) const
+{
+    return m_ai == nullptr || m_ai->Is_Supply_Source_Safe(source);
+}
+
+bool Player::Is_Supply_Source_Attacked() const
+{
+    if (m_ai != nullptr) {
+        return m_ai->Is_Supply_Source_Attacked();
+    } else {
+        return false;
+    }
+}
+
+void Player::Set_Team_Delay_Seconds(int seconds)
+{
+    if (m_ai != nullptr) {
+        m_ai->Set_Team_Delay_Seconds(seconds);
+    }
+}
+
+void Player::Guard_Supply_Center(Team *team, int center)
+{
+    if (m_ai != nullptr) {
+        m_ai->Guard_Supply_Center(team, center);
+    }
+}
+
+void Player::Build_By_Supplies(int supplies, const Utf8String &name)
+{
+    if (m_ai != nullptr) {
+        m_ai->Build_By_Supplies(supplies, name);
+    }
+}
+
+void Player::Build_Specific_Building_Nearest_Team(const Utf8String &name, const Team *team)
+{
+    if (m_ai != nullptr) {
+        m_ai->Build_Specific_Building_Nearest_Team(name, team);
+    }
+}
+
+void Player::Build_Upgrade(const Utf8String &upgrade)
+{
+    if (m_ai != nullptr) {
+        m_ai->Build_Upgrade(upgrade);
+    }
+}
+
+bool Player::Calc_Closest_Construction_Zone_Location(const ThingTemplate *tmplate, Coord3D *pos) const
+{
+    if (m_ai != nullptr) {
+        return m_ai->Calc_Closest_Construction_Zone_Location(tmplate, pos);
+    } else {
+        return false;
+    }
 }

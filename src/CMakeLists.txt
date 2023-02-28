@@ -260,6 +260,7 @@ set(GAMEENGINE_SRC
     game/common/thing/thingtemplate.cpp
     game/logic/ai/ai.cpp
     game/logic/ai/aipathfind.cpp
+    game/logic/ai/aiplayer.cpp
     game/logic/ai/aistates.cpp
     game/logic/ai/squad.cpp
     game/logic/ai/turretai.cpp
@@ -276,6 +277,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weaponset.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/object/update/aiupdate.cpp
+    game/logic/object/update/autodepositupdate.cpp
     game/logic/object/update/assistedtargetingupdate.cpp
     game/logic/object/update/laserupdate.cpp
     game/logic/object/update/physicsupdate.cpp

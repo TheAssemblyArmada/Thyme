@@ -2697,4 +2697,18 @@ void Setup_Hooks()
     Hook_Any(0x00457C60, Player::Is_Playable_Side);
     Hook_Any(0x004559B0, Player::Set_Science_Availability);
     Hook_Any(0x00455AF0, Player::Get_Science_Availability_Type_From_String);
+    Hook_Any(0x00450BC0, Player::Add_To_Build_List);
+    Hook_Any(0x00450DB0, Player::Add_To_Priority_Build_List);
+    Hook_Any(0x00452AA0, Player::Becoming_Team_Member);
+    Hook_Any(0x00456E00, Player::Apply_Battle_Plan_Bonuses_For_Object);
+    Hook_Any(0x004563B0, Player::Add_Radar);
+    Hook_Any(0x004564C0, Player::Remove_Radar);
+    Hook_Any(0x00456820, Player::On_Power_Brown_Out_Change);
+    Hook_Any(0x004533B0, Player::Is_Supply_Source_Safe);
+    Hook_Any(0x004533D0, Player::Is_Supply_Source_Attacked);
+    Hook_Any(0x004533F0, Player::Set_Team_Delay_Seconds);
+    Hook_Any(0x00453410, Player::Guard_Supply_Center);
+    Hook_Any(0x00454C50, Player::Build_By_Supplies);
+    Hook_Any(0x00454C70, Player::Build_Specific_Building_Nearest_Team);
+    Hook_Any(0x00454CD0, Player::Calc_Closest_Construction_Zone_Location);
 }

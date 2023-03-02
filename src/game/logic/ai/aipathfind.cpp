@@ -259,3 +259,10 @@ bool Pathfinder::Adjust_Target_Destination(const Object *source_obj,
     return false;
 #endif
 }
+
+void Pathfinder::Classify_Object_Footprint(Object *obj, bool insert)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, Object *, bool>(PICK_ADDRESS(0x0055FA70, 0x00890D45), this, obj, insert);
+#endif
+}

@@ -18,6 +18,24 @@
 #endif
 #include "turretai.h"
 
+AICommandParms::AICommandParms(AICommandType cmd, CommandSourceType cmd_source) :
+    m_cmd(cmd),
+    m_cmdSource(cmd_source),
+    m_obj(nullptr),
+    m_otherObj(nullptr),
+    m_team(nullptr),
+    m_waypoint(nullptr),
+    m_polygon(nullptr),
+    m_intValue(0),
+    m_commandButton(nullptr),
+    m_path(nullptr)
+{
+    m_pos.Zero();
+    m_coords.clear();
+}
+
+AICommandParms::~AICommandParms() {}
+
 static const char *s_theLocomotorSetNames[] = { "SET_NORMAL",
     "SET_NORMAL_UPGRADED",
     "SET_FREEFALL",

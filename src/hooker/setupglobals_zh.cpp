@@ -766,3 +766,7 @@ ControlBar *&g_theControlBar = Make_Global<ControlBar *>(PICK_ADDRESS(0x00A2B6E0
 // gameinfo.cpp
 class GameInfo;
 GameInfo *&g_theGameInfo = Make_Global<GameInfo *>(PICK_ADDRESS(0x00A2C2B8, 0x04CA8B04));
+
+// eva.cpp
+class Eva;
+Eva *&g_theEva = Make_Global<Eva *>(PICK_ADDRESS(0x00A2C090, 0x04CA9C28));

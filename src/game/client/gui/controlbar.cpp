@@ -27,3 +27,17 @@ void ControlBar::Mark_UI_Dirty()
     Call_Method<void, ControlBar>(PICK_ADDRESS(0x0045B3F0, 0x00729C50), this);
 #endif
 }
+
+void ControlBar::Set_Control_Bar_Scheme_By_Player(Player *player)
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar, Player *>(PICK_ADDRESS(0x00460340, 0x0072F421), this, player);
+#endif
+}
+
+void ControlBar::Set_Control_Bar_Scheme_By_Player_Template(PlayerTemplate *tmplate)
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar, PlayerTemplate *>(PICK_ADDRESS(0x004606B0, 0x0072F642), this, tmplate);
+#endif
+}

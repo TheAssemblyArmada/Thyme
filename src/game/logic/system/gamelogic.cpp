@@ -16,6 +16,7 @@
 #include "display.h"
 #include "mapobject.h"
 #include "object.h"
+#include "recorder.h"
 #include "thingfactory.h"
 #include "updatemodule.h"
 #include "xfer.h"
@@ -311,4 +312,11 @@ Object *GameLogic::Friend_Create_Object(ThingTemplate const *thing, BitFlags<OBJ
 #else
     return nullptr;
 #endif
+}
+
+bool GameLogic::Is_In_Single_Player_Game()
+{
+    return m_gameMode == GAME_SINGLE_PLAYER
+        || (g_theRecorder != nullptr && g_theRecorder->Get_Mode() == RECORDERMODETYPE_PLAYBACK
+            && g_theRecorder->Get_Org_Game_Mode() == GAME_SINGLE_PLAYER);
 }

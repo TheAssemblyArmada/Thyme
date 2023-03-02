@@ -117,6 +117,13 @@ void AIGroup::Add(Object *obj)
 #endif
 }
 
+void AIGroup::Remove(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, AIGroup, Object *>(PICK_ADDRESS(0x0054FBF0, 0x008D287E), this, obj);
+#endif
+}
+
 AI::AI() : m_formationID(0), m_groupID(0)
 {
     m_aiData = new TAiData();

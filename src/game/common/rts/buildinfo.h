@@ -51,9 +51,12 @@ public:
     void Set_Next(BuildListInfo *next) { m_nextBuildList = next; }
     void Set_Building_Name(Utf8String name) { m_buildingName = name; }
     void Set_Template_Name(Utf8String name) { m_templateName = name; }
-    void Set_Location(Coord3D &location) { m_location = location; }
+    void Set_Location(const Coord3D &location) { m_location = location; }
     void Set_Angle(float angle) { m_angle = angle; }
     void Set_Intially_Built(bool built) { m_isInitiallyBuilt = built; }
+    void Set_Object_ID(ObjectID id) { m_objectID = id; }
+    void Set_Num_Rebuilds(unsigned int num) { m_numRebuilds = num; }
+    void Set_Unk4() { m_unkbool4 = true; }
     void Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info);
 
 private:
@@ -63,7 +66,7 @@ private:
     Coord2D m_rallyPointOffset;
     float m_angle;
     bool m_isInitiallyBuilt;
-    unsigned m_numRebuilds;
+    unsigned int m_numRebuilds;
     BuildListInfo *m_nextBuildList;
     Utf8String m_script;
     int m_health;
@@ -75,7 +78,7 @@ private:
     Shadow *m_shadowObj;
     bool m_selected;
     ObjectID m_objectID;
-    unsigned m_objectTimestamp;
+    unsigned int m_objectTimestamp;
     bool m_underConstruction;
     int m_unkArray[10];
     bool m_unkbool3;

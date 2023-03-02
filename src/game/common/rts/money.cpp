@@ -26,7 +26,7 @@ void Money::Deposit(unsigned int amount, bool play_sound)
         return;
     }
 
-    AudioEventRTS deposit_sound = g_theAudio->Get_Misc_Audio()->Money_Deposit_Sound();
+    AudioEventRTS deposit_sound = g_theAudio->Get_Misc_Audio()->m_moneyDeposit;
     deposit_sound.Set_Player_Index(m_playerIndex);
 
     if (play_sound) {

@@ -186,6 +186,7 @@ public:
     Utf8String Get_Drawable_Caption_Font() const { return m_drawableCaptionFont; }
     int Get_Drawable_Caption_Color() const { return m_drawableCaptionColor; }
     bool Is_In_Waypoint_Mode() const { return m_waypointMode; }
+    bool Get_Unk7() const { return m_unk7; }
 
 protected:
     struct MoveHintStruct

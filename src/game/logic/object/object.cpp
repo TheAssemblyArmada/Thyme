@@ -571,3 +571,83 @@ void Object::Update_Upgrade_Modules()
     Call_Method<void, Object>(PICK_ADDRESS(0x00548E90, 0x007D25F5), this);
 #endif
 }
+
+void Object::Friend_Adjust_Power_For_Player(bool power)
+{
+    if (!Is_Disabled() || Get_Template()->Get_Energy_Production() <= 0) {
+        Energy *energy = Get_Controlling_Player()->Get_Energy();
+
+        if (power) {
+            energy->Object_Entering_Influence(this);
+        } else {
+            energy->Object_Leaving_Influence(this);
+        }
+    }
+}
+
+void Object::Set_Weapon_Bonus_Condition(WeaponBonusConditionType bonus)
+{
+    unsigned int condition = m_weaponBonusCondition;
+    m_weaponBonusCondition = (1 << bonus) | condition;
+
+    if (condition != m_weaponBonusCondition) {
+        m_weaponSet.Weapon_Set_On_Weapon_Bonus_Change(this);
+    }
+}
+
+void Object::Set_Vision_Range(float range)
+{
+    m_visionRange = range;
+}
+
+void Object::Set_Shroud_Clearing_Range(float range)
+{
+    if (range != m_shroudClearingRange) {
+        m_shroudClearingRange = range;
+        const Coord3D *pos = Get_Position();
+
+        if (pos->x != 0.0f || pos->y != 0.0f || pos->z != 0.0f) {
+            Handle_Partition_Cell_Maintenance();
+        }
+    }
+}
+
+void Object::Clear_Weapon_Bonus_Condition(WeaponBonusConditionType bonus)
+{
+    unsigned int condition = m_weaponBonusCondition;
+    m_weaponBonusCondition = ~(1 << bonus) & condition;
+
+    if (condition != m_weaponBonusCondition) {
+        m_weaponSet.Weapon_Set_On_Weapon_Bonus_Change(this);
+    }
+}
+
+float Object::Get_Shroud_Clearing_Range() const
+{
+    float range = m_shroudClearingRange;
+
+    if (Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+        range = Get_Geometry_Info().Get_Bounding_Circle_Radius();
+    }
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (g_theWriteableGlobalData->m_debugVisibility) {
+        Vector3 v(range, 0.0f, 0.0f);
+
+        for (int i = 0; i < g_theWriteableGlobalData->m_debugVisibilityTileCount; i++) {
+            float f1 = i * 1.0f / g_theWriteableGlobalData->m_debugVisibilityTileCount;
+            float angle = (f1 + f1) * GAMEMATH_PI;
+            v.Rotate_Z(angle);
+            Coord3D pos;
+            pos.x = v.X + Get_Position()->x;
+            pos.y = v.Y + Get_Position()->y;
+            pos.z = v.Z + Get_Position()->z;
+            Add_Icon(&pos,
+                g_theWriteableGlobalData->m_debugVisibilityTileWidth,
+                g_theWriteableGlobalData->m_debugVisibilityTileDuration,
+                g_theWriteableGlobalData->m_debugVisibilityTileTargettableColor);
+        }
+    }
+#endif
+    return range;
+}

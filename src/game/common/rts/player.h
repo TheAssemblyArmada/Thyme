@@ -75,7 +75,6 @@ public:
     BattlePlanBonuses() {}
     virtual ~BattlePlanBonuses() override {}
 
-private:
     float m_armorBonus;
     int m_bombardment;
     int m_searchAndDestroy;
@@ -83,7 +82,6 @@ private:
     float m_sightBonus;
     BitFlags<KINDOF_COUNT> m_validKindOf;
     BitFlags<KINDOF_COUNT> m_invalidKindOf;
-    friend class Player;
 };
 
 struct SpecialPowerReadyTimerType
@@ -175,6 +173,7 @@ public:
     ResourceGatheringManager *Get_Resource_Gathering_Manager() const { return m_resourceGatheringManager; }
     BuildListInfo *Get_Build_List() { return m_buildListInfo; }
     bool Get_Can_Build_Units() const { return m_canBuildUnits; }
+    bool Get_Can_Build_Base() const { return m_canBuildBase; }
     int Get_Last_Attacked_By_Frame() const { return m_lastAttackedByFrame; }
     int Get_Science_Purchase_Points() const { return m_sciencePurchasePoints; }
 
@@ -211,7 +210,7 @@ public:
     void On_Structure_Undone(Object *structure);
     void On_Structure_Construction_Complete(Object *builder, Object *structure, bool add_score);
     void On_Upgrade_Completed(const UpgradeTemplate *upgrade_template);
-    void On_Power_Brown_Out_Change(bool change);
+    void On_Power_Brown_Out_Change(bool power_disable);
 
     bool Is_Supply_Source_Safe(int source) const;
     bool Is_Supply_Source_Attacked() const;
@@ -245,7 +244,7 @@ public:
     void Build_Base_Defense(bool build);
     void Build_Base_Defense_Structure(const Utf8String &name, bool build);
     void Build_Specific_Building(const Utf8String &name);
-    void Build_By_Supplies(const Utf8String &name);
+    void Build_By_Supplies(int supplies, const Utf8String &name);
     void Build_Specific_Building_Nearest_Team(const Utf8String &name, const Team *team);
 
     void Set_Build_List(BuildListInfo *build_list);
@@ -278,7 +277,7 @@ public:
     void Enable_Radar();
     void Disable_Radar();
     bool Has_Radar() const;
-    bool Ok_To_Play_Radar_Edge_Sound() const;
+    bool Ok_To_Play_Radar_Edge_Sound();
 
     void Add_AIGroup_To_Current_Selection(AIGroup *group);
     void Set_Currently_Selected_AIGroup(AIGroup *group);

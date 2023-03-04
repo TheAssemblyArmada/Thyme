@@ -284,6 +284,11 @@ public:
         const Weapon *weapon,
         Coord3D *destination_pos);
 
+    void Classify_Object_Footprint(Object *obj, bool insert);
+
+    void Remove_Object_From_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, false); }
+    void Add_Object_To_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, true); }
+
 private:
     PathfindCell *m_mapPointer; // not 100% confirmed
     PathfindCell **m_map; // confirmed

@@ -41,6 +41,27 @@ void Money::Deposit(unsigned int amount, bool play_sound)
     }
 }
 
+unsigned int Money::Withdraw(unsigned int amount, bool play_sound)
+{
+    if (amount > m_money) {
+        amount = m_money;
+    }
+
+    if (amount == 0) {
+        return 0;
+    }
+
+    AudioEventRTS deposit_sound = g_theAudio->Get_Misc_Audio()->m_moneyWithdrawn;
+    deposit_sound.Set_Player_Index(m_playerIndex);
+
+    if (play_sound) {
+        g_theAudio->Add_Audio_Event(&deposit_sound);
+    }
+
+    m_money -= amount;
+    return amount;
+}
+
 void Money::Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data)
 {
     INI::Parse_Unsigned_Int(ini, formal, &(static_cast<Money *>(store)->m_money), user_data);

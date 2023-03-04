@@ -2711,4 +2711,17 @@ void Setup_Hooks()
     Hook_Any(0x00454C50, Player::Build_By_Supplies);
     Hook_Any(0x00454C70, Player::Build_Specific_Building_Nearest_Team);
     Hook_Any(0x00454CD0, Player::Calc_Closest_Construction_Zone_Location);
+    Hook_Any(0x00452E90, Player::Find_Most_Ready_Shortcut_Special_Power_Of_Type);
+    Hook_Any(0x00452FD0, Player::Find_Most_Ready_Shortcut_Special_Power_For_Thing);
+    Hook_Any(0x004530C0, Player::Find_Any_Existing_Object_With_Thing_Template);
+    Hook_Any(0x00453160, Player::Has_Any_Shortcut_Special_Power);
+    Hook_Any(0x004531C0, Player::Count_Ready_Shortcut_Special_Powers_Of_Type);
+    Hook_Any(0x00453450, Player::On_Structure_Construction_Complete);
+    Hook_Any(0x00453820, Player::Find_Closest_By_Kind_Of);
+    Hook_Any(0x00453DB0, Player::Set_Units_Should_Hunt);
+    Hook_Any(0x004540B0, Player::Kill_Player);
+    Hook_Any(0x004541E0, Player::Set_Objects_Enabled);
+    Hook_Any(0x00456870, Player::Reset_Or_Start_Special_Power_Ready_Frame);
+    Hook_Any(0x00456950, Player::Express_Special_Power_Ready_Frame);
+    Hook_Any(0x00456A00, Player::Get_Or_Start_Special_Power_Ready_Frame);
 }

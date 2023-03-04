@@ -75,6 +75,7 @@ set(GAMEENGINE_SRC
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
     game/client/drawgroupinfo.cpp
+    game/client/eva.cpp
     game/client/flatheightmap.cpp
     game/client/fxlist.cpp
     game/client/gameclient.cpp

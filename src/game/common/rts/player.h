@@ -302,7 +302,7 @@ public:
     Object *Find_Most_Ready_Shortcut_Weapon_For_Thing(const ThingTemplate *tmplate, unsigned int &percent);
     Object *Find_Most_Ready_Shortcut_Special_Power_Of_Type(SpecialPowerType type);
     Object *Find_Natural_Command_Center();
-    Object *Find_Closest_By_Kind_Of(Object *, BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
+    Object *Find_Closest_By_Kind_Of(Object *obj, BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
 
     void Set_Player_Type(PlayerType t, bool is_skirmish);
     void Set_Attacked_By(int player);
@@ -321,8 +321,8 @@ public:
     void Becoming_Local_Player(bool yes);
     void Kill_Player();
 
-    void Add_New_Shared_Special_Power_Timer(const SpecialPowerTemplate *tmplate, unsigned int timer);
-    unsigned int Get_Or_Start_Special_Power_Ready_Frame(const SpecialPowerTemplate *tmplate) const;
+    void Add_New_Shared_Special_Power_Timer(const SpecialPowerTemplate *tmplate, unsigned int frame);
+    unsigned int Get_Or_Start_Special_Power_Ready_Frame(const SpecialPowerTemplate *tmplate);
     void Express_Special_Power_Ready_Frame(const SpecialPowerTemplate *tmplate, unsigned int frame);
     void Reset_Or_Start_Special_Power_Ready_Frame(const SpecialPowerTemplate *tmplate);
 

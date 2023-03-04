@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "player.h"
+#include "ai.h"
+#include "aipathfind.h"
 #include "aiplayer.h"
 #include "audiomanager.h"
 #include "autodepositupdate.h"
@@ -22,6 +24,7 @@
 #include "cavesystem.h"
 #include "controlbar.h"
 #include "drawable.h"
+#include "eva.h"
 #include "gameclient.h"
 #include "gameinfo.h"
 #include "gamelogic.h"
@@ -40,6 +43,7 @@
 #include "scriptengine.h"
 #include "sideslist.h"
 #include "simpleobjectiterator.h"
+#include "specialpower.h"
 #include "squad.h"
 #include "staticnamekey.h"
 #include "stealthupdate.h"
@@ -2270,4 +2274,531 @@ bool Player::Calc_Closest_Construction_Zone_Location(const ThingTemplate *tmplat
     } else {
         return false;
     }
+}
+
+struct FindStruct
+{
+    const Player *player;
+    Object *obj;
+    SpecialPowerType special_power_type;
+    const ThingTemplate *thing;
+    unsigned int frame;
+    unsigned int percent;
+    int count;
+};
+
+void Do_Find_Command_Center(Object *obj, void *data)
+{
+    FindStruct *f = static_cast<FindStruct *>(data);
+
+    if (obj != nullptr) {
+        if (f->obj == nullptr && obj->Is_KindOf(KINDOF_COMMANDCENTER)) {
+            if (obj->Get_Template()->Get_Default_Owning_Side() == f->player->Get_Side()
+                && !obj->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !obj->Get_Status(OBJECT_STATUS_SOLD)) {
+                f->obj = obj;
+            }
+        }
+    }
+}
+
+Object *Player::Find_Natural_Command_Center()
+{
+    FindStruct f;
+    f.player = this;
+    f.obj = nullptr;
+    Iterate_Objects(Do_Find_Command_Center, &f);
+    return f.obj;
+}
+
+void Do_Find_Special_Power_Source_Object(Object *obj, void *data)
+{
+    FindStruct *f = static_cast<FindStruct *>(data);
+
+    if (f->frame != 0 && !obj->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !obj->Get_Status(OBJECT_STATUS_SOLD)
+        && !obj->Is_Effectively_Dead()) {
+        if (f->special_power_type != SPECIAL_INVALID || !obj->Has_Any_Special_Power()) {
+
+            SpecialPowerModuleInterface *power = obj->Find_Special_Power_Module_Interface(f->special_power_type);
+
+            if (power != nullptr) {
+                if (!power->Is_Script_Only()) {
+                    unsigned int frame = power->Get_Ready_Frame();
+
+#ifdef GAME_DEBUG_STRUCTS
+                    if (!g_theWriteableGlobalData->m_demoToggleSpecialPowerDelays) {
+                        frame = 0;
+                    }
+#endif
+
+                    if (obj->Is_Disabled()) {
+                        frame = 0xFFFFFFF5;
+                    }
+
+                    if (frame >= g_theGameLogic->Get_Frame()) {
+                        if (frame < f->frame) {
+                            f->obj = obj;
+                            f->frame = frame;
+                        }
+                    } else {
+                        f->obj = obj;
+                        f->frame = 0;
+                    }
+                }
+            }
+        } else {
+            SpecialPowerModuleInterface *power = obj->Find_Any_Shortcut_Special_Power_Module_Interface();
+
+            if (power != nullptr) {
+                if (!power->Is_Script_Only()) {
+                    f->obj = obj;
+                    f->frame = 0;
+                }
+            }
+        }
+    }
+}
+
+Object *Player::Find_Most_Ready_Shortcut_Special_Power_Of_Type(SpecialPowerType type)
+{
+    FindStruct f;
+    f.player = this;
+    f.obj = nullptr;
+    f.special_power_type = type;
+    f.frame = 0xFFFFFFFF;
+    Iterate_Objects(Do_Find_Special_Power_Source_Object, &f);
+    return f.obj;
+}
+
+void Do_Find_Most_Ready_Weapon_For_Thing(Object *obj, void *data)
+{
+    FindStruct *f = static_cast<FindStruct *>(data);
+
+    if (f->percent < 100) {
+        if (f->thing->Is_Equivalent_To(obj->Get_Template())) {
+            if (!obj->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !obj->Get_Status(OBJECT_STATUS_SOLD)
+                && !obj->Is_Effectively_Dead() && obj->Has_Any_Weapon()) {
+                unsigned int percent = obj->Get_Most_Percent_Ready_To_Fire_Any_Weapon();
+
+                if (percent > f->percent) {
+                    f->obj = obj;
+                    f->percent = percent;
+                }
+            }
+        }
+    }
+}
+
+Object *Player::Find_Most_Ready_Shortcut_Weapon_For_Thing(const ThingTemplate *tmplate, unsigned int &percent)
+{
+    FindStruct f;
+    f.player = this;
+    f.obj = nullptr;
+    f.thing = tmplate;
+    f.percent = 0;
+    Iterate_Objects(Do_Find_Most_Ready_Weapon_For_Thing, &f);
+    percent = f.percent;
+    return f.obj;
+}
+
+void Do_Find_Most_Ready_Special_Power_For_Thing(Object *obj, void *data)
+{
+    FindStruct *f = static_cast<FindStruct *>(data);
+
+    if (f->percent < 100) {
+        if (f->thing->Is_Equivalent_To(obj->Get_Template())) {
+            if (!obj->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !obj->Get_Status(OBJECT_STATUS_SOLD)
+                && !obj->Is_Effectively_Dead()) {
+                for (BehaviorModule **module = obj->Get_All_Modules(); *module != nullptr; module++) {
+                    SpecialPowerModuleInterface *power = (*module)->Get_Special_Power();
+
+                    if (power != nullptr) {
+                        unsigned int percent = static_cast<unsigned int>(power->Get_Percent_Ready());
+
+                        if (percent > f->percent) {
+                            f->obj = obj;
+                            f->percent = percent;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+Object *Player::Find_Most_Ready_Shortcut_Special_Power_For_Thing(const ThingTemplate *tmplate, unsigned int &percent)
+{
+    FindStruct f;
+    f.player = this;
+    f.obj = nullptr;
+    f.thing = tmplate;
+    f.percent = 0;
+    Iterate_Objects(Do_Find_Most_Ready_Special_Power_For_Thing, &f);
+    percent = f.percent;
+    return f.obj;
+}
+
+void Do_Find_Existing_Object_With_Thing_Template(Object *obj, void *data)
+{
+    FindStruct *f = static_cast<FindStruct *>(data);
+
+    if (f->thing->Is_Equivalent_To(obj->Get_Template())) {
+        if (!obj->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !obj->Get_Status(OBJECT_STATUS_SOLD)
+            && !obj->Is_Effectively_Dead()) {
+            f->obj = obj;
+        }
+    }
+}
+
+Object *Player::Find_Any_Existing_Object_With_Thing_Template(const ThingTemplate *tmplate)
+{
+    FindStruct f;
+    f.player = this;
+    f.obj = nullptr;
+    f.thing = tmplate;
+    Iterate_Objects(Do_Find_Existing_Object_With_Thing_Template, &f);
+    return f.obj;
+}
+
+bool Player::Has_Any_Shortcut_Special_Power() const
+{
+    FindStruct f;
+    f.player = this;
+    f.obj = nullptr;
+    f.special_power_type = SPECIAL_INVALID;
+    f.frame = 0xFFFFFFFF;
+    Iterate_Objects(Do_Find_Special_Power_Source_Object, &f);
+    return f.obj != nullptr;
+}
+
+void Do_Count_Special_Powers_Ready(Object *obj, void *data)
+{
+    FindStruct *f = static_cast<FindStruct *>(data);
+
+    if (!obj->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !obj->Get_Status(OBJECT_STATUS_SOLD)
+        && !obj->Is_Effectively_Dead() && obj->Has_Special_Power(f->special_power_type)) {
+        SpecialPowerModuleInterface *power = obj->Find_Special_Power_Module_Interface(f->special_power_type);
+
+        if (power != nullptr) {
+            if (!power->Is_Script_Only()) {
+                const SpecialPowerTemplate *tmplate = power->Get_Special_Power_Template();
+
+                if (!tmplate->Get_Shared_Synced_Timer() || f->count != 1) {
+                    unsigned int frame = power->Get_Ready_Frame();
+
+#ifdef GAME_DEBUG_STRUCTS
+                    if (!g_theWriteableGlobalData->m_demoToggleSpecialPowerDelays) {
+                        frame = 0;
+                    }
+#endif
+
+                    if (obj->Is_Disabled()) {
+                        frame = 0xFFFFFFF5;
+                    }
+
+                    if (frame < g_theGameLogic->Get_Frame()) {
+                        f->count++;
+                    }
+                }
+            }
+        }
+    }
+}
+
+int Player::Count_Ready_Shortcut_Special_Powers_Of_Type(SpecialPowerType type) const
+{
+    FindStruct f;
+    f.special_power_type = type;
+    f.count = 0;
+    Iterate_Objects(Do_Count_Special_Powers_Ready, &f);
+    return f.count;
+}
+
+void Player::On_Structure_Construction_Complete(Object *builder, Object *structure, bool add_score)
+{
+    g_theScriptEngine->Notify_Of_Object_Creation_Or_Destruction();
+    g_theAI->Get_Pathfinder()->Remove_Object_From_Pathfind_Map(structure);
+    g_theAI->Get_Pathfinder()->Add_Object_To_Pathfind_Map(structure);
+
+    if (!add_score) {
+        m_scoreKeeper.Add_Object_Built(structure);
+        m_scoreKeeper.Add_Money_Spent(structure->Get_Template()->Calc_Cost_To_Build(this));
+    }
+
+    structure->Friend_Adjust_Power_For_Player(true);
+
+    if (m_ai != nullptr) {
+        m_ai->On_Structure_Produced(builder, structure);
+    }
+
+    if (g_theControlBar != nullptr) {
+        g_theControlBar->Mark_UI_Dirty();
+    }
+
+    Player *local_player = g_thePlayerList->Get_Local_Player();
+
+    if (structure->Has_Special_Power(SPECIAL_PARTICLE_UPLINK_CANNON)
+        || structure->Has_Special_Power(SUPW_SPECIAL_PARTICLE_UPLINK_CANNON)
+        || structure->Has_Special_Power(LAZR_SPECIAL_PARTICLE_UPLINK_CANNON)) {
+        if (local_player == structure->Get_Controlling_Player()) {
+            g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_OWN_PARTICLECANNON);
+        } else {
+            if (local_player->Get_Relationship(structure->Get_Team()) != ENEMIES) {
+                g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_ALLY_PARTICLECANNON);
+            } else {
+                g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_ENEMY_PARTICLECANNON);
+            }
+        }
+    }
+
+    if (structure->Has_Special_Power(SPECIAL_NEUTRON_MISSILE) || structure->Has_Special_Power(NUKE_SPECIAL_NEUTRON_MISSILE)
+        || structure->Has_Special_Power(SUPW_SPECIAL_NEUTRON_MISSILE)) {
+        if (local_player == structure->Get_Controlling_Player()) {
+            g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_OWN_NUKE);
+        } else {
+            if (local_player->Get_Relationship(structure->Get_Team()) != ENEMIES) {
+                g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_ALLY_NUKE);
+            } else {
+                g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_ENEMY_NUKE);
+            }
+        }
+    }
+
+    if (structure->Has_Special_Power(SPECIAL_SCUD_STORM)) {
+        if (local_player == structure->Get_Controlling_Player()) {
+            g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_OWN_SCUDSTORM);
+        } else {
+            if (local_player->Get_Relationship(structure->Get_Team()) != ENEMIES) {
+                g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_ALLY_SCUDSTORM);
+            } else {
+                g_theEva->Set_Should_Play(EVA_MESSAGE_SUPERWEAPONDETECTED_ENEMY_SCUDSTORM);
+            }
+        }
+    }
+}
+
+struct ClosestKindOfData
+{
+    BitFlags<KINDOF_COUNT> must_be_set;
+    BitFlags<KINDOF_COUNT> must_be_clear;
+    Object *obj;
+    Object *closest_obj;
+    float distance;
+
+    ClosestKindOfData() : obj(nullptr), closest_obj(nullptr), distance(GAMEMATH_FLOAT_MAX)
+    {
+        must_be_set.Clear();
+        must_be_clear.Clear();
+    }
+};
+
+void Find_Closest_Kind_Of(Object *obj, void *data)
+{
+    ClosestKindOfData *k = static_cast<ClosestKindOfData *>(data);
+
+    if (obj->Is_KindOf_Multi(k->must_be_set, k->must_be_clear)) {
+        float distance = g_thePartitionManager->Get_Distance_Squared(k->obj, obj, FROM_CENTER_2D, nullptr);
+
+        if (distance < k->distance) {
+            k->closest_obj = obj;
+            k->distance = distance;
+        }
+    }
+}
+
+Object *Player::Find_Closest_By_Kind_Of(
+    Object *obj, BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear)
+{
+    if (obj == nullptr) {
+        return nullptr;
+    }
+
+    ClosestKindOfData k;
+    k.must_be_set = must_be_set;
+    k.must_be_clear = must_be_clear;
+    k.obj = obj;
+    Iterate_Objects(Find_Closest_Kind_Of, &k);
+    return k.closest_obj;
+}
+
+void Player::Set_Units_Should_Hunt(bool should_hunt, CommandSourceType source)
+{
+    m_unitsShouldHunt = should_hunt;
+    Coord3D loc;
+    g_thePartitionManager->Get_Most_Valuable_Location(
+        Get_Player_Index(), PLAYER_RELATIONSHIP_FLAGS_ENEMIES, VOT_VALUE, &loc);
+
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
+
+            if (team != nullptr) {
+                DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
+
+                while (!obj_it.Done()) {
+                    Object *obj = obj_it.Cur();
+
+                    if (obj != nullptr) {
+                        BitFlags<KINDOF_COUNT> flags;
+                        flags.Set(KINDOF_DOZER, true);
+                        flags.Set(KINDOF_HARVESTER, true);
+                        flags.Set(KINDOF_IGNORES_SELECT_ALL, true);
+
+                        if (!obj->Is_Any_KindOf(flags)) {
+                            obj->Leave_Group();
+                            AIUpdateInterface *update = obj->Get_AI_Update_Interface();
+
+                            if (update != nullptr) {
+                                if (should_hunt) {
+                                    update->AI_Hunt(source);
+                                } else {
+                                    update->AI_Idle(source);
+                                }
+                            }
+                        }
+                    }
+
+                    obj_it.Advance();
+                }
+            }
+
+            team_it.Advance();
+        }
+    }
+}
+
+void Player::Kill_Player()
+{
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
+
+            if (team != nullptr) {
+                team->Evacuate_Team();
+            }
+
+            team_it.Advance();
+        }
+    }
+
+    m_playerIsDead = true;
+
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
+
+            if (team != nullptr) {
+                team->Kill_Team();
+            }
+
+            team_it.Advance();
+        }
+    }
+
+    if (g_theGameLogic->Is_In_Single_Player_Game() && Get_Player_Type() == PLAYER_COMPUTER) {
+        m_playerIsDead = false;
+    } else {
+        if (Is_Local_Player() && g_theGameLogic->Is_In_Shell_Game()) {
+            Becoming_Local_Player(true);
+
+            if (g_theControlBar != nullptr) {
+                if (Is_Player_Active()) {
+                    g_theControlBar->Set_Control_Bar_Scheme_By_Player(this);
+                } else {
+                    g_theControlBar->Set_Control_Bar_Scheme_By_Player_Template(
+                        g_thePlayerTemplateStore->Find_Player_Template(
+                            g_theNameKeyGenerator->Name_To_Key("FactionObserver")));
+                }
+            }
+        }
+
+        m_money.Withdraw(m_money.Get(), true);
+    }
+}
+
+void Player::Set_Objects_Enabled(Utf8String template_type_to_affect, bool enable)
+{
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
+
+            if (team != nullptr) {
+                DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
+
+                while (!obj_it.Done()) {
+                    Object *obj = obj_it.Cur();
+
+                    if (obj != nullptr) {
+                        if (obj->Get_Template()->Get_Name().Compare(template_type_to_affect) == 0) {
+                            obj->Set_Script_Status(STATUS_ENABLED, !enable);
+                        }
+                    }
+
+                    obj_it.Advance();
+                }
+            }
+
+            team_it.Advance();
+        }
+    }
+}
+
+void Player::Add_New_Shared_Special_Power_Timer(const SpecialPowerTemplate *tmplate, unsigned int frame)
+{
+    SpecialPowerReadyTimerType t;
+    t.m_id = tmplate->Get_ID();
+    t.m_frame = frame;
+    m_specialPowerReadyTimerList.push_back(t);
+}
+
+void Player::Reset_Or_Start_Special_Power_Ready_Frame(const SpecialPowerTemplate *tmplate)
+{
+    unsigned int id = tmplate->Get_ID();
+    unsigned int frame = g_theGameLogic->Get_Frame();
+
+    for (auto i = m_specialPowerReadyTimerList.begin(); i != m_specialPowerReadyTimerList.end(); i++) {
+        SpecialPowerReadyTimerType &t = *i;
+
+        if (t.m_id == id) {
+            t.m_frame = tmplate->Get_Reload_Time() + frame;
+            return;
+        }
+    }
+
+    Add_New_Shared_Special_Power_Timer(tmplate, frame);
+}
+
+void Player::Express_Special_Power_Ready_Frame(const SpecialPowerTemplate *tmplate, unsigned int frame)
+{
+    for (auto i = m_specialPowerReadyTimerList.begin(); i != m_specialPowerReadyTimerList.end(); i++) {
+        SpecialPowerReadyTimerType &t = *i;
+
+        if (t.m_id == tmplate->Get_ID()) {
+            t.m_frame = frame;
+        }
+    }
+}
+
+unsigned int Player::Get_Or_Start_Special_Power_Ready_Frame(const SpecialPowerTemplate *tmplate)
+{
+    unsigned int id = tmplate->Get_ID();
+    unsigned int frame = g_theGameLogic->Get_Frame();
+
+    for (auto i = m_specialPowerReadyTimerList.begin(); i != m_specialPowerReadyTimerList.end(); i++) {
+        SpecialPowerReadyTimerType &t = *i;
+
+        if (t.m_id == id) {
+            return t.m_frame;
+        }
+    }
+
+    Add_New_Shared_Special_Power_Timer(tmplate, frame);
+    return frame;
 }

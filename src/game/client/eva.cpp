@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Control Bar
+ * @brief EVA
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,22 +12,18 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#pragma once
-#include "always.h"
-
-class Player;
-class PlayerTemplate;
-
-class ControlBar
-{
-public:
-    void Mark_UI_Dirty();
-    void Set_Control_Bar_Scheme_By_Player(Player *player);
-    void Set_Control_Bar_Scheme_By_Player_Template(PlayerTemplate *tmplate);
-};
-
+#include "eva.h"
 #ifdef GAME_DLL
-extern ControlBar *&g_theControlBar;
-#else
-extern ControlBar *g_theControlBar;
+#include "hooker.h"
 #endif
+
+#ifndef GAME_DLL
+Eva *g_theEva;
+#endif
+
+void Eva::Set_Should_Play(EvaMessage message)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Eva, EvaMessage>(PICK_ADDRESS(0x00513750, 0x009BBA4C), this, message);
+#endif
+}

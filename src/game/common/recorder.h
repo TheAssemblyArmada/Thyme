@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "gameinfo.h"
+#include "gametype.h"
 #include "subsysteminterface.h"
 
 class CRCInfo;
@@ -41,6 +42,8 @@ public:
 
     bool Playback_File(Utf8String name);
     bool Is_Multiplayer();
+    RecorderModeType Get_Mode() const { return m_mode; }
+    GameMode Get_Org_Game_Mode() const { return m_orgGameMode; }
 
 private:
     CRCInfo *m_crcInfo;
@@ -52,7 +55,7 @@ private:
     ReplayGameInfo m_gameInfo;
     bool m_wasDesync;
     bool m_unk2;
-    int m_orgGameMode;
+    GameMode m_orgGameMode;
     unsigned int m_nextFrame;
 };
 

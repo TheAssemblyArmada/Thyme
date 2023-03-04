@@ -20,7 +20,7 @@ SpecialPowerStore *g_theSpecialPowerStore;
 
 SpecialPowerStore::~SpecialPowerStore()
 {
-    for (int i = 0; i < m_specialPowerTemplates.size(); i++) {
+    for (unsigned int i = 0; i < m_specialPowerTemplates.size(); i++) {
         m_specialPowerTemplates[i]->Delete_Instance();
     }
 
@@ -38,4 +38,9 @@ void SpecialPowerStore::Reset()
             ++it;
         }
     }
+}
+
+const SpecialPowerTemplate *SpecialPowerTemplate::Get_FO() const
+{
+    return static_cast<const SpecialPowerTemplate *>(Friend_Get_Final_Override());
 }

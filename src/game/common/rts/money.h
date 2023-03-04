@@ -31,6 +31,7 @@ public:
 
     void Empty() { m_money = 0; }
     void Deposit(unsigned int amount, bool play_sound);
+    unsigned int Withdraw(unsigned int amount, bool play_sound);
     int Get() const { return m_money; }
     void Set_Player_Index(int index) { m_playerIndex = index; }
 

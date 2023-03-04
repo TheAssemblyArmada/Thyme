@@ -15,12 +15,12 @@
 #pragma once
 #include "always.h"
 #include "aistates.h"
+#include "damage.h"
 #include "locomotor.h"
 #include "object.h"
 #include "updatemodule.h"
 
 class INI;
-class AICommandParms;
 class DozerAIInterface;
 class SupplyTruckAIInterface;
 class WorkerAIInterface;
@@ -30,6 +30,85 @@ class AIStateMachine;
 class Path;
 class TurretAIData;
 class TurretAI;
+
+enum AICommandType
+{
+    AICMD_MOVE_TO_POSITION,
+    AICMD_MOVE_TO_OBJECT,
+    AICMD_TIGHTEN_TO_POSITION,
+    AICMD_MOVE_TO_POSITION_AND_EVACUATE,
+    AICMD_MOVE_TO_POSITION_AND_EVACUATE_AND_EXIT,
+    AICMD_IDLE,
+    AICMD_FOLLOW_WAYPOINT_PATH,
+    AICMD_FOLLOW_WAYPOINT_PATH_AS_TEAM,
+    AICMD_UNK8,
+    AICMD_FOLLOW_PATH,
+    AICMD_FOLLOW_EXITPRODUCTION_PATH,
+    AICMD_ATTACK_OBJECT,
+    AICMD_FORCE_ATTACK_OBJECT,
+    AICMD_ATTACK_TEAM,
+    AICMD_ATTACK_POSITION,
+    AICMD_ATTACKMOVE_TO_POSITION,
+    AICMD_ATTACKFOLLOW_WAYPOINT_PATH,
+    AICMD_ATTACKFOLLOW_WAYPOINT_PATH_AS_TEAM,
+    AICMD_HUNT,
+    AICMD_REPAIR,
+    AICMD_RESUME_CONSTRUCTION,
+    AICMD_GET_HEALED,
+    AICMD_GET_REPAIRED,
+    AICMD_ENTER,
+    AICMD_DOCK,
+    AICMD_EXIT,
+    AICMD_EVACUATE,
+    AICMD_EXECUTE_RAILED_TRANSPORT,
+    AICMD_GO_PRONE,
+    AICMD_GUARD_POSITION,
+    AICMD_GUARD_OBJECT,
+    AICMD_GUARD_AREA,
+    AICMD_DEPLOY_ASSAULT_RETURN,
+    AICMD_ATTACK_AREA,
+    AICMD_HACK_INTERNET,
+    AICMD_FACE_OBJECT,
+    AICMD_FACE_POSITION,
+    AICMD_RAPPEL_INTO,
+    AICMD_COMBAT_DROP,
+    AICMD_COMMAND_BUTTON_POSITION,
+    AICMD_COMMAND_BUTTON_OBJECT,
+    AICMD_COMMAND_BUTTON,
+    AICMD_WANDER,
+    AICMD_WANDER_IN_PLACE,
+    AICMD_PANIC,
+    AICMD_BUSY,
+    AICMD_FOLLOW_WAYPOINT_PATH_EXACT,
+    AICMD_FOLLOW_WAYPOINT_PATH_AS_TEAM_EXACT,
+    AICMD_MOVE_AWAY_FROM_UNIT,
+    AICMD_FOLLOW_WAYPATH_APPEND,
+    AICMD_UNK50,
+    AICMD_GUARD_TUNNEL_NETWORK,
+    AICMD_EVACUATE_INSTANTLY,
+    AICMD_EXIT_INSTANTLY,
+    AICMD_GUARD_RETALIATE,
+    AICMD_NUM_COMMANDS,
+};
+
+struct AICommandParms
+{
+    AICommandType m_cmd;
+    CommandSourceType m_cmdSource;
+    Coord3D m_pos;
+    Object *m_obj;
+    Object *m_otherObj;
+    Team *m_team;
+    std::vector<Coord3D> m_coords;
+    Waypoint *m_waypoint;
+    PolygonTrigger *m_polygon;
+    int m_intValue;
+    DamageInfo m_damage;
+    CommandButton *m_commandButton;
+    Path *m_path;
+    AICommandParms(AICommandType cmd, CommandSourceType cmd_source);
+    ~AICommandParms();
+};
 
 enum GuardTargetType
 {
@@ -85,6 +164,18 @@ class AICommandInterface
 {
 public:
     virtual void AI_Do_Command(AICommandParms const *params) = 0;
+
+    void AI_Hunt(CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_HUNT, cmd_source);
+        AI_Do_Command(&params);
+    }
+
+    void AI_Idle(CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_IDLE, cmd_source);
+        AI_Do_Command(&params);
+    }
 };
 
 class AIUpdateModuleData : public UpdateModuleData

@@ -30,6 +30,7 @@ class AIGroup
 {
 public:
     void Add(Object *obj);
+    void Remove(Object *obj);
 };
 
 enum FormationID : int32_t

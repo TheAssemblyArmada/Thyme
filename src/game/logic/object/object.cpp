@@ -22,6 +22,7 @@
 #include "globaldata.h"
 #include "opencontain.h"
 #include "playerlist.h"
+#include "specialpower.h"
 #include "team.h"
 #include "updatemodule.h"
 #include "w3ddebugicons.h"
@@ -650,4 +651,84 @@ float Object::Get_Shroud_Clearing_Range() const
     }
 #endif
     return range;
+}
+
+bool Object::Has_Any_Special_Power() const
+{
+    return m_specialPowers.Any();
+}
+
+bool Object::Has_Special_Power(SpecialPowerType spt) const
+{
+    return m_specialPowers.Test(spt);
+}
+
+SpecialPowerModuleInterface *Object::Find_Special_Power_Module_Interface(SpecialPowerType type) const
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpecialPowerModuleInterface *power = (*module)->Get_Special_Power();
+
+        if (power != nullptr) {
+            const SpecialPowerTemplate *tmplate = power->Get_Special_Power_Template();
+
+            if (tmplate != nullptr) {
+                if (tmplate->Get_Type() == type) {
+                    return power;
+                }
+
+                if (type == SPECIAL_INVALID) {
+                    return power;
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+SpecialPowerModuleInterface *Object::Find_Any_Shortcut_Special_Power_Module_Interface() const
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpecialPowerModuleInterface *power = (*module)->Get_Special_Power();
+
+        if (power != nullptr) {
+            const SpecialPowerTemplate *tmplate = power->Get_Special_Power_Template();
+
+            if (tmplate != nullptr) {
+                if (tmplate->Get_Shortcut_Power()) {
+                    return power;
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+bool Object::Has_Any_Weapon() const
+{
+    return m_weaponSet.Has_Any_Weapon();
+}
+
+unsigned int Object::Get_Most_Percent_Ready_To_Fire_Any_Weapon() const
+{
+    return m_weaponSet.Get_Most_Percent_Ready_To_Fire_Any_Weapon();
+}
+
+void Object::Leave_Group()
+{
+    if (m_aiGroup != nullptr) {
+        AIGroup *group = m_aiGroup;
+        m_aiGroup = nullptr;
+        group->Remove(this);
+    }
+}
+
+bool Object::Set_Script_Status(ObjectScriptStatusBit bit, bool set)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Object, ObjectScriptStatusBit, bool>(PICK_ADDRESS(0x00547100, 0x007D0360), this, bit, set);
+#else
+    return false;
+#endif
 }

@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "always.h"
+#include "academystats.h"
 #include "audioeventrts.h"
 #include "mempoolobj.h"
 #include "namekeygenerator.h"
@@ -25,13 +26,6 @@ enum UpgradeType
 {
     UPGRADE_TYPE_PLAYER,
     UPGRADE_TYPE_OBJECT,
-};
-
-enum AcademyClassificationType
-{
-    ACT_NONE,
-    ACT_UPGRADE_RADAR,
-    ACT_SUPERPOWER,
 };
 
 enum UpgradeStatusType

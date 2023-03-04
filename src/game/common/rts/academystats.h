@@ -17,6 +17,13 @@
 
 class Player;
 
+enum AcademyClassificationType
+{
+    ACT_NONE,
+    ACT_UPGRADE_RADAR,
+    ACT_SUPERPOWER,
+};
+
 class AcademyStats
 {
 public:

@@ -243,6 +243,7 @@ enum GameDifficulty
     DIFFICULTY_EASY,
     DIFFICULTY_NORMAL,
     DIFFICULTY_HARD,
+    DIFFICULTY_COUNT,
 };
 
 enum Relationship

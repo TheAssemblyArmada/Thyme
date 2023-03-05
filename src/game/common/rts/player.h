@@ -108,7 +108,10 @@ enum ScienceAvailabilityType
 
 enum BattlePlanStatus
 {
-    BATTLE_PLAN_STATUS_UNK,
+    BATTLE_PLAN_STATUS_NONE,
+    BATTLE_PLAN_STATUS_BOMBARDMENT,
+    BATTLE_PLAN_STATUS_HOLD_THE_LINE,
+    BATTLE_PLAN_STATUS_SEARCH_AND_DESTROY,
 };
 
 class Player : public SnapShot

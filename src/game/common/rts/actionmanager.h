@@ -14,7 +14,15 @@
  */
 #pragma once
 #include "always.h"
+#include "gametype.h"
 #include "subsysteminterface.h"
+
+class Object;
+
+enum CanEnterType
+{
+    CAN_ENTER_UNK,
+};
 
 class ActionManager : public SubsystemInterface
 {
@@ -24,6 +32,8 @@ public:
     virtual void Init() override {}
     virtual void Reset() override {}
     virtual void Update() override {}
+
+    bool Can_Enter_Object(const Object *obj, const Object *object_to_enter, CommandSourceType source, CanEnterType type);
 };
 
 #ifdef GAME_DLL

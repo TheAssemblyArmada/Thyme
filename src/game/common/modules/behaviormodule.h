@@ -15,7 +15,9 @@
 #pragma once
 
 #include "always.h"
+#include "buildassistant.h"
 #include "module.h"
+#include "opencontain.h"
 
 class AIUpdateInterface;
 class BodyModuleInterface;
@@ -35,7 +37,7 @@ class HordeUpdateInterface;
 class OverchargeBehaviorInterface;
 class ParkingPlaceBehaviorInterface;
 class PowerPlantUpdateInterface;
-class ProductionUpdateInterface;
+class ProductionEntry;
 class RailedTransportDockUpdateInterface;
 class RebuildHoleBehaviorInterface;
 class SlavedUpdateInterface;
@@ -52,6 +54,33 @@ class ParticleSystemTemplate;
 class SpecialPowerTemplate;
 class Waypoint;
 class AudioEventRTS;
+
+enum ProductionID
+{
+    PRODUCTION_UNK,
+};
+
+class ProductionUpdateInterface
+{
+public:
+    virtual CanMakeType Can_Queue_Create_Unit(const ThingTemplate *unit_type) const = 0;
+    virtual CanMakeType Can_Queue_Upgrade(const UpgradeTemplate *upgrade) const = 0;
+    virtual unsigned int Request_Unique_Unit_ID() = 0;
+    virtual bool Queue_Upgrade(const UpgradeTemplate *upgrade) = 0;
+    virtual void Cancel_Upgrade(const UpgradeTemplate *upgrade) = 0;
+    virtual bool Is_Upgrade_In_Queue(const UpgradeTemplate *upgrade) const = 0;
+    virtual unsigned int Count_Unit_Type_In_Queue(const ThingTemplate *unit_type) const = 0;
+    virtual bool Queue_Create_Unit(const ThingTemplate *unit_type, ProductionID production_id) = 0;
+    virtual void Cancel_Unit_Create(ProductionID production_id) = 0;
+    virtual void Cancel_All_Units_Of_Type(const ThingTemplate *unit_type) = 0;
+    virtual void Cancel_And_Refund_All_Production() = 0;
+    virtual unsigned int Get_Production_Count() const = 0;
+    virtual const ProductionEntry *First_Production() const = 0;
+    virtual const ProductionEntry *Next_Production(const ProductionEntry *production) const = 0;
+    virtual void Set_Hold_Door_Open(ExitDoorType type, bool b) = 0;
+    virtual CommandButton *Get_Special_Power_Construction_Command_Button() const = 0;
+    virtual void Set_Special_Power_Construction_Command_Button(const CommandButton *button) = 0;
+};
 
 class SpecialPowerModuleInterface
 {

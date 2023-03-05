@@ -13,7 +13,21 @@
  *            LICENSE
  */
 #include "actionmanager.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
 #ifndef GAME_DLL
 ActionManager *g_theActionManager;
 #endif
+
+bool ActionManager::Can_Enter_Object(
+    const Object *obj, const Object *object_to_enter, CommandSourceType source, CanEnterType type)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, ActionManager, const Object *, const Object *, CommandSourceType, CanEnterType>(
+        PICK_ADDRESS(0x00496500, 0x008E06EC), this, obj, object_to_enter, source, type);
+#else
+    return false;
+#endif
+}

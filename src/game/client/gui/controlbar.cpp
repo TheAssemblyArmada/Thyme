@@ -41,3 +41,19 @@ void ControlBar::Set_Control_Bar_Scheme_By_Player_Template(PlayerTemplate *tmpla
     Call_Method<void, ControlBar, PlayerTemplate *>(PICK_ADDRESS(0x004606B0, 0x0072F642), this, tmplate);
 #endif
 }
+
+// On_Player_Rank_Changed and On_Player_Science_Purchase_Points_Changed have identical addresses in game exe (because the
+// code is identical)
+void ControlBar::On_Player_Rank_Changed(const Player *player)
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar, const Player *>(PICK_ADDRESS(0x0045EB90, 0x001055D6), this, player);
+#endif
+}
+
+void ControlBar::On_Player_Science_Purchase_Points_Changed(const Player *player)
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar, const Player *>(PICK_ADDRESS(0x0045EB90, 0x001056F2), this, player);
+#endif
+}

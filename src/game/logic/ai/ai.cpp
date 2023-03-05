@@ -124,6 +124,15 @@ void AIGroup::Remove(Object *obj)
 #endif
 }
 
+const std::vector<ObjectID> &AIGroup::Get_All_IDs() const
+{
+#ifdef GAME_DLL
+    return Call_Method<const std::vector<ObjectID> &, const AIGroup>(PICK_ADDRESS(0x0054FAC0, 0x008D26A1), this);
+#else
+    return std::vector<ObjectID>();
+#endif
+}
+
 AI::AI() : m_formationID(0), m_groupID(0)
 {
     m_aiData = new TAiData();

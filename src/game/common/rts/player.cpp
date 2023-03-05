@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "player.h"
+#include "actionmanager.h"
 #include "ai.h"
 #include "aipathfind.h"
 #include "aiplayer.h"
@@ -20,8 +21,10 @@
 #include "autodepositupdate.h"
 #include "behaviormodule.h"
 #include "bodymodule.h"
+#include "buildassistant.h"
 #include "buildinfo.h"
 #include "cavesystem.h"
+#include "colorspace.h"
 #include "controlbar.h"
 #include "drawable.h"
 #include "eva.h"
@@ -48,6 +51,7 @@
 #include "staticnamekey.h"
 #include "stealthupdate.h"
 #include "team.h"
+#include "thingfactory.h"
 #include "victoryconditions.h"
 #include <algorithm>
 
@@ -548,7 +552,7 @@ void Player::Init(const PlayerTemplate *pt)
         m_money.Set_Player_Index(Get_Player_Index());
         m_handicap = *pt->Get_Handicap();
 
-        if (m_money.Get() == 0) {
+        if (m_money.Count_Money() == 0) {
             if (g_theGameInfo != nullptr) {
                 m_money = *g_theGameInfo->Get_Money();
             } else {
@@ -570,7 +574,7 @@ void Player::Init(const PlayerTemplate *pt)
         m_productionVeterancyLevels.clear();
         m_playerColor = -1;
         m_playerNightColor = -1;
-        m_money.Empty();
+        m_money.Init();
         m_handicap.Init();
         m_playerDisplayName = Utf16String::s_emptyString;
         m_playerName = Utf8String::s_emptyString;
@@ -612,16 +616,16 @@ void Player::Update()
     }
 
     for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
-        DLINK_ITERATOR<Team> iter = (*i)->Iterate_Team_Instance_List();
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
 
-        while (!iter.Done()) {
-            Team *team = iter.Cur();
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
 
             if (team != nullptr) {
                 team->Update_Generic_Scripts();
             }
 
-            iter.Advance();
+            team_it.Advance();
         }
     }
 
@@ -1463,26 +1467,26 @@ Upgrade *Player::Find_Upgrade(const UpgradeTemplate *upgrade_template)
 void Player::On_Upgrade_Completed(const UpgradeTemplate *upgrade_template)
 {
     for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
-        DLINK_ITERATOR<Team> iter = (*i)->Iterate_Team_Instance_List();
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
 
-        while (!iter.Done()) {
-            Team *team = iter.Cur();
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
 
             if (team != nullptr) {
-                DLINK_ITERATOR<Object> iter2 = team->Iterate_Team_Member_List();
+                DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
 
-                while (!iter2.Done()) {
-                    Object *obj = iter2.Cur();
+                while (!obj_it.Done()) {
+                    Object *obj = obj_it.Cur();
 
                     if (obj != nullptr) {
                         obj->Update_Upgrade_Modules();
                     }
 
-                    iter2.Advance();
+                    obj_it.Advance();
                 }
             }
 
-            iter.Advance();
+            team_it.Advance();
         }
     }
 }
@@ -1567,16 +1571,16 @@ bool Player::Add_Science(ScienceType t)
     m_sciences.push_back(t);
 
     for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
-        DLINK_ITERATOR<Team> iter = (*i)->Iterate_Team_Instance_List();
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
 
-        while (!iter.Done()) {
-            Team *team = iter.Cur();
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
 
             if (team != nullptr) {
-                DLINK_ITERATOR<Object> iter2 = team->Iterate_Team_Member_List();
+                DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
 
-                while (!iter2.Done()) {
-                    Object *obj = iter2.Cur();
+                while (!obj_it.Done()) {
+                    Object *obj = obj_it.Cur();
 
                     if (obj != nullptr) {
                         for (BehaviorModule **module = obj->Get_All_Modules(); *module != nullptr; module++) {
@@ -1591,11 +1595,11 @@ bool Player::Add_Science(ScienceType t)
                         }
                     }
 
-                    iter2.Advance();
+                    obj_it.Advance();
                 }
             }
 
-            iter.Advance();
+            team_it.Advance();
         }
 
         g_theControlBar->Mark_UI_Dirty();
@@ -1885,7 +1889,7 @@ bool Player::Is_Science_Disabled(ScienceType t) const
 
 bool Player::Can_Afford_Build(const ThingTemplate *tmplate) const
 {
-    return tmplate->Calc_Cost_To_Build(this) <= Get_Money()->Get();
+    return tmplate->Calc_Cost_To_Build(this) <= static_cast<int>(Get_Money()->Count_Money());
 }
 
 bool Player::Has_Upgrade_Complete(BitFlags<128> test_mask) const
@@ -2717,7 +2721,7 @@ void Player::Kill_Player()
             }
         }
 
-        m_money.Withdraw(m_money.Get(), true);
+        m_money.Withdraw(m_money.Count_Money(), true);
     }
 }
 
@@ -2801,4 +2805,734 @@ unsigned int Player::Get_Or_Start_Special_Power_Ready_Frame(const SpecialPowerTe
 
     Add_New_Shared_Special_Power_Timer(tmplate, frame);
     return frame;
+}
+
+void Player::Transfer_Assets_From_That(Player *that)
+{
+    Team *team = Get_Default_Team();
+
+    if (team != nullptr) {
+        std::list<Object *> beacons;
+        ThingTemplate *beacon = g_theThingFactory->Find_Template(that->Get_Player_Template()->Get_Beacon_Name(), true);
+        for (auto i = that->m_playerTeamPrototypes.begin(); i != that->m_playerTeamPrototypes.end(); i++) {
+            DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+            while (!team_it.Done()) {
+                Team *team = team_it.Cur();
+
+                if (team != nullptr) {
+                    DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
+
+                    while (!obj_it.Done()) {
+                        Object *obj = obj_it.Cur();
+
+                        if (obj != nullptr) {
+                            if (obj->Get_Template()->Is_Equivalent_To(beacon)) {
+                                beacons.push_back(obj);
+                            }
+                        }
+
+                        obj_it.Advance();
+                    }
+                }
+
+                team_it.Advance();
+            }
+        }
+
+        for (auto i = beacons.begin(); i != beacons.end(); i++) {
+            (*i)->Set_Team(team);
+        }
+
+        unsigned int amount = that->Get_Money()->Count_Money();
+        that->Get_Money()->Withdraw(amount, true);
+        Get_Money()->Deposit(amount, true);
+    }
+}
+
+void Player::Garrison_All_Units(CommandSourceType source)
+{
+    BitFlags<KINDOF_COUNT> flags(BitFlags<KINDOF_COUNT>::kInit, KINDOF_STRUCTURE);
+    PartitionFilterAcceptByKindOf k(flags, KINDOFMASK_NONE);
+    PartitionFilter *filters[] = { &k, nullptr };
+
+    Coord3D pos;
+    pos.x = 50.0f;
+    pos.y = 50.0f;
+    pos.z = 50.0f;
+
+    SimpleObjectIterator *iter = g_thePartitionManager->Iterate_Objects_In_Range(
+        &pos, 1000000000.0f, FROM_CENTER_3D, filters, ITER_SORTED_NEAR_TO_FAR);
+    MemoryPoolObjectHolder holder(iter);
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
+
+            if (team != nullptr) {
+                DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
+
+                while (!obj_it.Done()) {
+                    Object *obj = obj_it.Cur();
+
+                    if (obj != nullptr) {
+                        AIUpdateInterface *update = obj->Get_AI_Update_Interface();
+
+                        if (update != nullptr) {
+                            for (Object *o = iter->First(); o != nullptr; o = iter->Next()) {
+                                ContainModuleInterface *contain = o->Get_Contain();
+
+                                if (contain != nullptr) {
+                                    unsigned short mask = contain->Get_Player_Who_Entered();
+
+                                    if (mask != 0) {
+                                        if (mask != obj->Get_Controlling_Player()->Get_Player_Mask()) {
+                                            continue;
+                                        }
+                                    }
+                                }
+
+                                if (g_theActionManager->Can_Enter_Object(obj, o, source, CAN_ENTER_UNK)) {
+                                    update->AI_Enter(o, source);
+                                }
+                            }
+                        }
+                    }
+
+                    obj_it.Advance();
+                }
+            }
+
+            team_it.Advance();
+        }
+    }
+}
+
+void Player::Ungarrison_All_Units(CommandSourceType source)
+{
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
+
+            if (team != nullptr) {
+                DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
+
+                while (!obj_it.Done()) {
+                    Object *obj = obj_it.Cur();
+
+                    if (obj != nullptr) {
+                        AIUpdateInterface *update = obj->Get_AI_Update_Interface();
+
+                        if (update != nullptr) {
+                            if (obj->Is_KindOf(KINDOF_STRUCTURE)) {
+                                update->AI_Evacuate(false, source);
+                            }
+                        }
+                    }
+
+                    obj_it.Advance();
+                }
+            }
+
+            team_it.Advance();
+        }
+    }
+}
+
+void Player::Set_Units_Should_Idle_Or_Resume(bool should_idle_or_resume)
+{
+    for (auto i = m_playerTeamPrototypes.begin(); i != m_playerTeamPrototypes.end(); i++) {
+        DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
+
+        while (!team_it.Done()) {
+            Team *team = team_it.Cur();
+
+            if (team != nullptr) {
+                DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
+
+                while (!obj_it.Done()) {
+                    Object *obj = obj_it.Cur();
+
+                    if (obj != nullptr) {
+                        AIUpdateInterface *update = obj->Get_AI_Update_Interface();
+
+                        if (update != nullptr) {
+                            if (should_idle_or_resume) {
+                                update->AI_Move_To_Position(obj->Get_Position(), COMMANDSOURCE_SCRIPT);
+                            } else if (update->Is_Idle()) {
+                                SupplyTruckAIInterface *supply = update->Get_Supply_Truck_AI_Interface();
+
+                                if (supply != nullptr) {
+                                    supply->Set_Force_Wanting_State(true);
+                                }
+                            }
+                        }
+                    }
+
+                    obj_it.Advance();
+                }
+            }
+
+            team_it.Advance();
+        }
+    }
+}
+
+void Sell_Buildings(Object *obj, void *data)
+{
+    if (obj->Is_Faction_Structure() || obj->Is_KindOf(KINDOF_COMMANDCENTER) || obj->Is_KindOf(KINDOF_FS_POWER)) {
+        g_theBuildAssistant->Sell_Object(obj);
+    }
+}
+
+void Player::Sell_Everything_Under_The_Sun()
+{
+    Iterate_Objects(Sell_Buildings, nullptr);
+}
+
+void Player::Do_Bounty_For_Kill(const Object *killer, const Object *killed)
+{
+    if (killer != nullptr && killed != nullptr && !killed->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+        unsigned int amount =
+            GameMath::Fast_To_Int_Ceil(killed->Get_Template()->Calc_Cost_To_Build(this) * m_bountyCostToBuild);
+
+        if (amount != 0) {
+            Get_Money()->Deposit(amount, true);
+            m_scoreKeeper.Add_Money_Earned(amount);
+            Utf16String str;
+            str.Format(g_theGameText->Fetch("GUI:AddCash"), amount);
+
+            Coord3D pos;
+            pos.Zero();
+            pos.Add(killer->Get_Position());
+            pos.z += 10.0f;
+
+            g_theInGameUI->Add_Floating_Text(str, &pos, Make_Color(255, 255, 0, 255));
+        }
+    }
+}
+
+bool Player::Add_Skill_Points(int points)
+{
+    int new_points = GameMath::Fast_Float_Ceil(points * m_skillPointsModifier);
+
+    if (new_points == 0) {
+        return false;
+    }
+
+    int level = std::min(g_theRankInfoStore->Get_Rank_Level_Count(), g_theGameLogic->Get_Rank_Level_Limit());
+    bool ret = false;
+    m_currentSkillPoints =
+        std::min(g_theRankInfoStore->Get_Rank_Info(level)->m_skillPointsNeeded, new_points + m_currentSkillPoints);
+
+    while (m_currentSkillPoints >= m_skillPointsNeededForNextRank) {
+        Set_Rank_Level(m_rankLevel + 1);
+        ret = true;
+    }
+
+    return ret;
+}
+
+bool Player::Set_Rank_Level(int rank)
+{
+    if (rank >= 1) {
+        if (rank > g_theRankInfoStore->Get_Rank_Level_Count()) {
+            rank = g_theRankInfoStore->Get_Rank_Level_Count();
+        }
+    } else {
+        rank = 1;
+    }
+
+    if (rank > g_theGameLogic->Get_Rank_Level_Limit()) {
+        rank = g_theGameLogic->Get_Rank_Level_Limit();
+    }
+
+    if (rank == m_rankLevel) {
+        return false;
+    }
+
+    int points = m_sciencePurchasePoints;
+
+    if (rank < m_rankLevel) {
+        Reset_Rank();
+    }
+
+    for (int i = m_rankLevel + 1; i <= rank; i++) {
+        const RankInfo *info = g_theRankInfoStore->Get_Rank_Info(i);
+        captainslog_dbgassert(info != nullptr, "rank should never be null here");
+
+        if (info != nullptr) {
+            m_sciencePurchasePoints += info->m_sciencePurchasePointsGranted;
+
+            if (m_sciencePurchasePoints < 0) {
+                m_sciencePurchasePoints = 0;
+            }
+
+            if (m_currentSkillPoints < info->m_skillPointsNeeded) {
+                m_currentSkillPoints = info->m_skillPointsNeeded;
+            }
+
+            for (auto it = info->m_sciencesGranted.begin(); it != info->m_sciencesGranted.end(); it++) {
+                Add_Science((*it));
+            }
+
+            m_rankProgress = info->m_skillPointsNeeded;
+        }
+    }
+
+    const RankInfo *info = g_theRankInfoStore->Get_Rank_Info(rank + 1);
+    int skill;
+
+    if (info != nullptr) {
+        skill = info->m_skillPointsNeeded;
+    } else {
+        skill = 0x7FFFFFFF;
+    }
+
+    m_skillPointsNeededForNextRank = skill;
+    m_rankLevel = rank;
+    captainslog_dbgassert(
+        m_currentSkillPoints >= m_rankProgress && m_currentSkillPoints < m_skillPointsNeededForNextRank, "hmm, wrong");
+
+    if (g_theControlBar != nullptr) {
+        if (m_skillPointsNeededForNextRank != 0 && Is_Local_Player()) {
+            g_theEva->Set_Should_Play(EVA_MESSAGE_GENERALLEVELUP);
+        }
+
+        g_theControlBar->On_Player_Rank_Changed(this);
+
+        if (points != m_sciencePurchasePoints) {
+            g_theControlBar->On_Player_Science_Purchase_Points_Changed(this);
+        }
+    }
+
+    return true;
+}
+
+bool Player::Add_Skill_Points_For_Kill(const Object *killer, const Object *killed)
+{
+    if (killer != nullptr && killed != nullptr && !killed->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+        return Add_Skill_Points(killed->Get_Template()->Get_Skill_Point_Value(killed->Get_Veterancy_Level()));
+    }
+
+    return false;
+}
+
+void Player::Add_Science_Purchase_Points(int points)
+{
+    int old_points = m_sciencePurchasePoints;
+    m_sciencePurchasePoints = points + old_points;
+
+    if (m_sciencePurchasePoints < 0) {
+        m_sciencePurchasePoints = 0;
+    }
+
+    if (old_points != m_sciencePurchasePoints) {
+        if (g_theControlBar != nullptr) {
+            g_theControlBar->On_Player_Science_Purchase_Points_Changed(this);
+        }
+    }
+}
+
+bool Player::Attempt_To_Purchase_Science(ScienceType t)
+{
+    if (Is_Capable_Of_Purchasing_Science(t)) {
+        int cost = g_theScienceStore->Get_Science_Purchase_Cost(t);
+        Add_Science_Purchase_Points(-cost);
+        Add_Science(t);
+        Get_Academy_Stats()->Add_Science_Points_Spent(cost);
+
+        if (g_thePlayerList->Get_Local_Player() == this) {
+            g_theControlBar->Mark_UI_Dirty();
+        }
+
+        return true;
+    } else {
+        captainslog_dbgassert(
+            false, "Is_Capable_Of_Purchasing_Science: need other prereqs/points to purchase, request is ignored!");
+        return false;
+    }
+}
+
+struct CanBuildStruct
+{
+    int m_count;
+    const ThingTemplate *m_thingTemplate;
+    NameKeyType m_linkKey;
+    bool m_isStructure;
+};
+
+void Count_Existing(Object *obj, void *data)
+{
+    CanBuildStruct *can_build = static_cast<CanBuildStruct *>(data);
+
+    if (!obj->Is_Effectively_Dead()) {
+        if (can_build->m_thingTemplate->Is_Equivalent_To(obj->Get_Template())
+            || (can_build->m_linkKey != NAMEKEY_INVALID && obj->Get_Template() != nullptr
+                && can_build->m_linkKey == obj->Get_Template()->Get_Max_Simultaneous_Link_Key())) {
+            can_build->m_count++;
+        }
+
+        if (can_build->m_isStructure) {
+            ProductionUpdateInterface *update = obj->Get_Production_Update_Interface();
+
+            if (update != nullptr) {
+                can_build->m_count += update->Count_Unit_Type_In_Queue(can_build->m_thingTemplate);
+            }
+        }
+    }
+}
+
+bool Player::Can_Build_More_Of_Type(const ThingTemplate *tmplate) const
+{
+    int max = tmplate->Get_Max_Simultaneous_Of_Type();
+
+    if (max != 0) {
+        CanBuildStruct can_build;
+        can_build.m_count = 0;
+        can_build.m_thingTemplate = tmplate;
+        can_build.m_linkKey = tmplate->Get_Max_Simultaneous_Link_Key();
+        can_build.m_isStructure = !tmplate->Is_KindOf(KINDOF_STRUCTURE);
+        Iterate_Objects(Count_Existing, &can_build);
+
+        if (can_build.m_count >= max) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Player::Can_Build(const ThingTemplate *tmplate) const
+{
+    if (tmplate == nullptr) {
+        return false;
+    }
+
+    if (!Allowed_To_Build(tmplate)) {
+        return false;
+    }
+
+    if (tmplate->Get_Buildable() == BSTATUS_NO) {
+        return false;
+    }
+
+    if (tmplate->Get_Buildable() == BSTATUS_IGNORE_PREREQUISITES) {
+        return true;
+    }
+
+    if (tmplate->Get_Buildable() == BSTATUS_ONLY_AI && Get_Player_Type() != PLAYER_COMPUTER) {
+        return false;
+    }
+
+    bool ret = true;
+
+    for (int i = 0; i < tmplate->Get_Prereq_Count(); i++) {
+        if (!tmplate->Get_Nth_Prereq(i)->Is_Satisifed(this)) {
+            ret = false;
+        }
+    }
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (Is_Ignore_Prereqs()) {
+        ret = true;
+    }
+#endif
+
+    return ret && Can_Build_More_Of_Type(tmplate);
+}
+
+void Player::Friend_Apply_Difficulty_Bonuses_For_Object(Object *obj, bool apply)
+{
+    static WeaponBonusConditionType wbonus[2][DIFFICULTY_COUNT] = { { WEAPONBONUSCONDITION_SOLO_HUMAN_EASY,
+                                                                        WEAPONBONUSCONDITION_SOLO_HUMAN_NORMAL,
+                                                                        WEAPONBONUSCONDITION_SOLO_HUMAN_HARD },
+        { WEAPONBONUSCONDITION_SOLO_AI_EASY, WEAPONBONUSCONDITION_SOLO_AI_NORMAL, WEAPONBONUSCONDITION_SOLO_AI_HARD } };
+
+    if (g_theGameLogic->Is_In_Single_Player_Game()) {
+        float health = g_theWriteableGlobalData->m_soloHealthBonus[Get_Player_Type()][Get_Player_Difficulty()];
+
+        if (health != 1.0f) {
+            BodyModuleInterface *body = obj->Get_Body_Module();
+
+            if (apply) {
+                body->Set_Max_Health(body->Get_Max_Health() * health, MAX_HEALTH_PRESERVE_RATIO);
+            } else {
+                body->Set_Max_Health(body->Get_Max_Health() / health, MAX_HEALTH_PRESERVE_RATIO);
+            }
+        }
+
+        if (apply) {
+            obj->Set_Weapon_Bonus_Condition(wbonus[Get_Player_Type()][Get_Player_Difficulty()]);
+        } else {
+            obj->Clear_Weapon_Bonus_Condition(wbonus[Get_Player_Type()][Get_Player_Difficulty()]);
+        }
+    }
+}
+
+void Player::Change_Battle_Plan(BattlePlanStatus status, int count, BattlePlanBonuses *bonuses)
+{
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO dumpBattlePlanBonuses
+#endif
+    bool added = false;
+    bool removed = false;
+
+    switch (status) {
+        case BATTLE_PLAN_STATUS_BOMBARDMENT:
+            m_activeBattlePlans[0] += count;
+
+            if (m_activeBattlePlans[0] == 1 && count == 1) {
+                added = true;
+            } else if (m_activeBattlePlans[0] == 0 && count == -1) {
+                removed = true;
+            }
+            break;
+        case BATTLE_PLAN_STATUS_HOLD_THE_LINE:
+            m_activeBattlePlans[1] += count;
+
+            if (m_activeBattlePlans[1] == 1 && count == 1) {
+                added = true;
+            } else if (m_activeBattlePlans[1] == 0 && count == -1) {
+                removed = true;
+            }
+            break;
+        case BATTLE_PLAN_STATUS_SEARCH_AND_DESTROY:
+            m_activeBattlePlans[2] += count;
+
+            if (m_activeBattlePlans[2] == 1 && count == 1) {
+                added = true;
+            } else if (m_activeBattlePlans[2] == 0 && count == -1) {
+                removed = true;
+            }
+            break;
+    }
+
+    if (!added) {
+        if (!removed) {
+            return;
+        }
+
+        float armor;
+
+        if (bonuses->m_armorBonus <= 0.01f) {
+            armor = 0.01f;
+        } else {
+            armor = bonuses->m_armorBonus;
+        }
+
+        bonuses->m_armorBonus = 1.0f / armor;
+        float sight;
+
+        if (bonuses->m_sightBonus <= 0.01f) {
+            sight = 0.01f;
+        } else {
+            sight = bonuses->m_sightBonus;
+        }
+
+        bonuses->m_sightBonus = 1.0f / sight;
+
+        if (bonuses->m_bombardment > 0) {
+            bonuses->m_bombardment = -1;
+        }
+
+        if (bonuses->m_holdTheLine > 0) {
+            bonuses->m_holdTheLine = -1;
+        }
+
+        if (bonuses->m_searchAndDestroy > 0) {
+            bonuses->m_searchAndDestroy = -1;
+        }
+    }
+
+    Apply_Battle_Plan_Bonuses_For_Player_Objects(bonuses);
+}
+
+void Player::Apply_Battle_Plan_Bonuses_For_Player_Objects(const BattlePlanBonuses *bonuses)
+{
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO dumpBattlePlanBonuses
+#endif
+    if (m_battlePlanBonuses != nullptr) {
+        captainslog_debug("Adding bonus into existing m_battlePlanBonuses");
+#ifdef GAME_DEBUG_STRUCTS
+        // TODO dumpBattlePlanBonuses
+#endif
+        m_battlePlanBonuses->m_armorBonus *= bonuses->m_armorBonus;
+        m_battlePlanBonuses->m_sightBonus *= bonuses->m_sightBonus;
+        m_battlePlanBonuses->m_bombardment += bonuses->m_bombardment;
+
+        if (m_battlePlanBonuses->m_bombardment < 0) {
+            m_battlePlanBonuses->m_bombardment = 0;
+        }
+
+        m_battlePlanBonuses->m_holdTheLine += bonuses->m_holdTheLine;
+
+        if (m_battlePlanBonuses->m_holdTheLine < 0) {
+            m_battlePlanBonuses->m_holdTheLine = 0;
+        }
+
+        m_battlePlanBonuses->m_searchAndDestroy += bonuses->m_searchAndDestroy;
+
+        if (m_battlePlanBonuses->m_searchAndDestroy < 0) {
+            m_battlePlanBonuses->m_searchAndDestroy = 0;
+        }
+    } else {
+        captainslog_debug("Allocating new m_battlePlanBonuses");
+        m_battlePlanBonuses = new BattlePlanBonuses();
+        *m_battlePlanBonuses = *bonuses;
+    }
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO dumpBattlePlanBonuses
+#endif
+    Iterate_Objects(
+        Local_Apply_Battle_Plan_Bonuses_To_Object, static_cast<void *>(const_cast<BattlePlanBonuses *>(bonuses)));
+}
+
+int Player::Get_Battle_Plans_Active_Specific(BattlePlanStatus status) const
+{
+    switch (status) {
+        case BATTLE_PLAN_STATUS_BOMBARDMENT:
+            return m_activeBattlePlans[0];
+        case BATTLE_PLAN_STATUS_HOLD_THE_LINE:
+            return m_activeBattlePlans[1];
+        case BATTLE_PLAN_STATUS_SEARCH_AND_DESTROY:
+            return m_activeBattlePlans[2];
+    }
+
+    return 0;
+}
+
+void Player::Process_Create_Team_GameMessage(int squad, GameMessage *message)
+{
+    if (squad < SQUAD_COUNT) {
+        m_squads[squad]->Clear_Squad();
+        int count = message->Get_Argument_Count();
+
+        for (int i = 0; i < count; i++) {
+            ArgumentType *argument = message->Get_Argument(i);
+            Object *obj = g_theGameLogic->Find_Object_By_ID(argument->objectID);
+
+            if (obj != nullptr) {
+                Remove_Object_From_Hotkey_Squad(obj);
+                m_squads[squad]->Add_Object(obj);
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "Process_Create_Team_GameMessage got an invalid hotkey number");
+    }
+}
+
+void Player::Process_Select_Team_GameMessage(int squad, GameMessage *message)
+{
+    if (squad < SQUAD_COUNT) {
+        if (m_squads[squad] != nullptr) {
+            m_aiSquad->Clear_Squad();
+            std::vector<Object *> vector(m_squads[squad]->Get_Live_Objects());
+            size_t size = vector.size();
+
+            for (unsigned int i = 0; i < size; i++) {
+                m_aiSquad->Add_Object(vector[i]);
+            }
+
+            if (size > 0) {
+                Get_Academy_Stats()->Increment_Used_Control_Groups();
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "Process_Select_Team_GameMessage got an invalid hotkey number");
+    }
+}
+
+void Player::Process_Add_Team_GameMessage(int squad, GameMessage *message)
+{
+    if (squad < SQUAD_COUNT) {
+        if (m_squads[squad] != nullptr) {
+            if (m_aiSquad == nullptr) {
+                m_aiSquad = new Squad();
+            }
+
+            std::vector<Object *> vector(m_squads[squad]->Get_Live_Objects());
+            size_t size = vector.size();
+
+            for (unsigned int i = 0; i < size; i++) {
+                m_aiSquad->Add_Object(vector[i]);
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "Process_Add_Team_GameMessage got an invalid hotkey number");
+    }
+}
+
+void Player::Get_Current_Selection_As_AI_Group(AIGroup *group) const
+{
+    if (m_aiSquad != nullptr) {
+        m_aiSquad->AI_Group_From_Squad(group);
+    }
+}
+
+void Player::Set_Currently_Selected_AIGroup(AIGroup *group)
+{
+    if (m_aiSquad == nullptr) {
+        m_aiSquad = new Squad();
+    }
+
+    m_aiSquad->Clear_Squad();
+
+    if (group != nullptr) {
+        m_aiSquad->Squad_From_AI_Group(group, true);
+    }
+}
+
+void Player::Remove_Object_From_Hotkey_Squad(Object *obj)
+{
+    for (int i = 0; i < SQUAD_COUNT; i++) {
+        if (m_squads[i] != nullptr) {
+            m_squads[i]->Remove_Object(obj);
+        }
+    }
+}
+
+void Player::Add_AIGroup_To_Current_Selection(AIGroup *group)
+{
+    if (m_aiSquad == nullptr) {
+        m_aiSquad = new Squad();
+    }
+
+    std::vector<ObjectID> vector(group->Get_All_IDs());
+    size_t size = vector.size();
+
+    for (unsigned int i = 0; i < size; i++) {
+        m_aiSquad->Add_Object_ID(vector[i]);
+    }
+}
+
+struct VisionSpiedStruct
+{
+    bool vision_spied;
+    BitFlags<KINDOF_COUNT> flags;
+    int player;
+};
+
+void Iterator_Set_Units_Vision_Spied(Object *obj, void *data)
+{
+    VisionSpiedStruct *s = static_cast<VisionSpiedStruct *>(data);
+
+    if (obj != nullptr) {
+        if (obj->Is_Any_KindOf(s->flags)) {
+            obj->Set_Vision_Spied(s->vision_spied, s->player);
+        }
+    }
+}
+
+void Player::Set_Units_Vision_Spied(bool vision_spied, BitFlags<KINDOF_COUNT> flags, int player)
+{
+    VisionSpiedStruct s;
+    s.vision_spied = vision_spied;
+    s.flags = flags;
+    s.player = player;
+    Iterate_Objects(Iterator_Set_Units_Vision_Spied, &s);
 }

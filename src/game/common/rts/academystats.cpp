@@ -37,3 +37,10 @@ void AcademyStats::Update()
     Call_Method<void, AcademyStats>(PICK_ADDRESS(0x005755A0, 0x008DD21B), this);
 #endif
 }
+
+void AcademyStats::Xfer_Snapshot(Xfer *xfer)
+{
+#ifdef GAME_DLL
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00576BF0, 0x008DF4B4), this, xfer);
+#endif
+}

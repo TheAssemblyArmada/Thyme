@@ -366,7 +366,7 @@ public:
     void Set_Vision_Range(float range);
     void Set_Shroud_Clearing_Range(float range);
     void Set_Shroud_Range(float range);
-    void Set_Vision_Spied(bool b, int i);
+    void Set_Vision_Spied(bool vision_spied, int player_index);
 
     bool Is_Out_Of_Ammo() const;
     bool Is_Locally_Controlled() const;

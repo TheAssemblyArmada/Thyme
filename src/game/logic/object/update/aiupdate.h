@@ -22,7 +22,6 @@
 
 class INI;
 class DozerAIInterface;
-class SupplyTruckAIInterface;
 class WorkerAIInterface;
 class HackInternetAIInterface;
 class JetAIUpdate;
@@ -154,6 +153,24 @@ enum MoodMatrixAction
     MM_ACTION_ATTACKMOVE,
 };
 
+class SupplyTruckAIInterface
+{
+public:
+    virtual int Get_Number_Boxes() const = 0;
+    virtual bool Lose_One_Box() = 0;
+    virtual bool Gain_One_Box(int i) = 0;
+    virtual bool Is_Available_For_Supplying() const = 0;
+    virtual bool Is_Currently_Ferrying_Supplies() const = 0;
+    virtual float Get_Warehouse_Scan_Distance() const = 0;
+    virtual void Set_Force_Wanting_State(bool wanting) = 0;
+    virtual bool Is_Forced_Into_Wanting_State() const = 0;
+    virtual void Set_Force_Busy_State(bool busy) = 0;
+    virtual bool Is_Forced_Into_Busy_State() const = 0;
+    virtual ObjectID Get_Preferred_Dock_ID() const = 0;
+    virtual unsigned int Get_Action_Delay_For_Dock(Object *dock) = 0;
+    virtual int Get_Upgraded_Supply_Boost() const = 0;
+};
+
 class AssaultTransportAIInterface
 {
 public:
@@ -174,6 +191,27 @@ public:
     void AI_Idle(CommandSourceType cmd_source)
     {
         AICommandParms params(AICMD_IDLE, cmd_source);
+        AI_Do_Command(&params);
+    }
+
+    void AI_Enter(Object *obj, CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_ENTER, cmd_source);
+        params.m_obj = obj;
+        AI_Do_Command(&params);
+    }
+
+    void AI_Evacuate(bool for_attack, CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_EVACUATE, cmd_source);
+        params.m_intValue = for_attack;
+        AI_Do_Command(&params);
+    }
+
+    void AI_Move_To_Position(const Coord3D *pos, CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_MOVE_TO_POSITION, cmd_source);
+        params.m_pos = *pos;
         AI_Do_Command(&params);
     }
 };

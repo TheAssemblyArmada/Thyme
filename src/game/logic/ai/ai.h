@@ -31,6 +31,7 @@ class AIGroup
 public:
     void Add(Object *obj);
     void Remove(Object *obj);
+    const std::vector<ObjectID> &Get_All_IDs() const;
 };
 
 enum FormationID : int32_t

@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #pragma once
+#include "bitflags.h"
 #include "coord.h"
 #include "gametype.h"
 #include "mempoolobj.h"
@@ -41,9 +42,9 @@ class PartitionFilterRelationship : public PartitionFilter
 {
 public:
     PartitionFilterRelationship(Object *obj, int unk) : m_object(obj), m_unk(unk) {}
-    virtual bool Allow(Object *obj);
+    virtual bool Allow(Object *obj) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual const char *Get_Name() { return "PartitionFilterRelationship"; }
+    virtual const char *Get_Name() override { return "PartitionFilterRelationship"; }
 #endif
 private:
     Object *m_object;
@@ -53,9 +54,9 @@ private:
 class PartitionFilterAlive : public PartitionFilter
 {
 public:
-    virtual bool Allow(Object *obj);
+    virtual bool Allow(Object *obj) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual const char *Get_Name() { return "PartitionFilterAlive"; }
+    virtual const char *Get_Name() override { return "PartitionFilterAlive"; }
 #endif
 };
 
@@ -63,12 +64,30 @@ class PartitionFilterSameMapStatus : public PartitionFilter
 {
 public:
     PartitionFilterSameMapStatus(Object *obj) : m_object(obj) {}
-    virtual bool Allow(Object *obj);
+    virtual bool Allow(Object *obj) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual const char *Get_Name() { return "PartitionFilterSameMapStatus"; }
+    virtual const char *Get_Name() override { return "PartitionFilterSameMapStatus"; }
 #endif
 private:
     Object *m_object;
+};
+
+class PartitionFilterAcceptByKindOf : public PartitionFilter
+{
+public:
+    PartitionFilterAcceptByKindOf(BitFlags<KINDOF_COUNT> &must_be_set, BitFlags<KINDOF_COUNT> &must_be_clear) :
+        m_mustBeSet(must_be_set), m_mustBeClear(must_be_clear)
+    {
+    }
+
+    virtual bool Allow(Object *obj) override;
+#ifdef GAME_DEBUG_STRUCTS
+    virtual const char *Get_Name() override { return "PartitionFilterAcceptByKindOf"; }
+#endif
+
+private:
+    BitFlags<KINDOF_COUNT> m_mustBeSet;
+    BitFlags<KINDOF_COUNT> m_mustBeClear;
 };
 
 enum DistanceCalculationType : int32_t

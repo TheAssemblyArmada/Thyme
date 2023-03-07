@@ -16,6 +16,7 @@
 
 #include "asciistring.h"
 #include "coord.h"
+#include "gametype.h"
 #include "mempoolobj.h"
 
 class GameMessageList;
@@ -43,8 +44,8 @@ union ArgumentType
     int integer;
     float real;
     bool boolean;
-    unsigned int objectID;
-    unsigned int drawableID;
+    ObjectID objectID;
+    DrawableID drawableID;
     unsigned int teamID;
     Coord3D position;
     ICoord2D pixel;
@@ -365,8 +366,8 @@ public:
     void Append_Int_Arg(int arg);
     void Append_Real_Arg(float arg);
     void Append_Bool_Arg(bool arg);
-    void Append_ObjectID_Arg(unsigned int arg);
-    void Append_DrawableID_Arg(unsigned int arg);
+    void Append_ObjectID_Arg(ObjectID arg);
+    void Append_DrawableID_Arg(DrawableID arg);
     void Append_TeamID_Arg(unsigned int arg);
     void Append_Location_Arg(Coord3D const &arg);
     void Append_Pixel_Arg(ICoord2D const &arg);

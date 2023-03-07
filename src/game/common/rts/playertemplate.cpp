@@ -108,7 +108,7 @@ void PlayerTemplate::Parse_Start_Money(INI *ini, void *formal, void *store, cons
     Money *money = static_cast<Money *>(store);
     unsigned value;
     INI::Parse_Int(ini, formal, &value, nullptr);
-    money->Empty();
+    money->Init();
     money->Deposit(value, true);
 }
 

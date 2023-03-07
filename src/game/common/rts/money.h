@@ -29,15 +29,15 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer);
     virtual void Load_Post_Process() {}
 
-    void Empty() { m_money = 0; }
+    void Init() { m_money = 0; }
     void Deposit(unsigned int amount, bool play_sound);
     unsigned int Withdraw(unsigned int amount, bool play_sound);
-    int Get() const { return m_money; }
+    unsigned int Count_Money() const { return m_money; }
     void Set_Player_Index(int index) { m_playerIndex = index; }
 
     static void Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data);
 
 protected:
-    unsigned m_money;
+    unsigned int m_money;
     int m_playerIndex;
 };

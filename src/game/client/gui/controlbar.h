@@ -24,6 +24,8 @@ public:
     void Mark_UI_Dirty();
     void Set_Control_Bar_Scheme_By_Player(Player *player);
     void Set_Control_Bar_Scheme_By_Player_Template(PlayerTemplate *tmplate);
+    void On_Player_Rank_Changed(const Player *player);
+    void On_Player_Science_Purchase_Points_Changed(const Player *player);
 };
 
 #ifdef GAME_DLL

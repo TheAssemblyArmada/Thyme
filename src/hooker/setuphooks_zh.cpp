@@ -2724,4 +2724,27 @@ void Setup_Hooks()
     Hook_Any(0x00456870, Player::Reset_Or_Start_Special_Power_Ready_Frame);
     Hook_Any(0x00456950, Player::Express_Special_Power_Ready_Frame);
     Hook_Any(0x00456A00, Player::Get_Or_Start_Special_Power_Ready_Frame);
+    Hook_Any(0x00454320, Player::Transfer_Assets_From_That);
+    Hook_Any(0x004544F0, Player::Garrison_All_Units);
+    Hook_Any(0x00454810, Player::Ungarrison_All_Units);
+    Hook_Any(0x00454980, Player::Set_Units_Should_Idle_Or_Resume);
+    Hook_Any(0x00454B60, Player::Sell_Everything_Under_The_Sun);
+    Hook_Any(0x00454D00, Player::Do_Bounty_For_Kill);
+    Hook_Any(0x00454E40, Player::Add_Skill_Points);
+    Hook_Any(0x004556C0, Player::Set_Rank_Level);
+    Hook_Any(0x00454F20, Player::Add_Skill_Points_For_Kill);
+    Hook_Any(0x004551C0, Player::Add_Science_Purchase_Points);
+    Hook_Any(0x00455320, Player::Attempt_To_Purchase_Science);
+    Hook_Any(0x00455B50, Player::Can_Build_More_Of_Type);
+    Hook_Any(0x00455C60, Player::Can_Build);
+    Hook_Any(0x00456AB0, Player::Friend_Apply_Difficulty_Bonuses_For_Object);
+    Hook_Any(0x00456BD0, Player::Change_Battle_Plan);
+    Hook_Any(0x00456CE0, Player::Apply_Battle_Plan_Bonuses_For_Player_Objects);
+    Hook_Any(0x004571A0, Player::Process_Create_Team_GameMessage);
+    Hook_Any(0x00457270, Player::Process_Select_Team_GameMessage);
+    Hook_Any(0x00457380, Player::Process_Add_Team_GameMessage);
+    Hook_Any(0x00457520, Player::Get_Current_Selection_As_AI_Group);
+    Hook_Any(0x00457540, Player::Set_Currently_Selected_AIGroup);
+    Hook_Any(0x00457690, Player::Add_AIGroup_To_Current_Selection);
+    Hook_Any(0x00457B80, Player::Set_Units_Vision_Spied);
 }

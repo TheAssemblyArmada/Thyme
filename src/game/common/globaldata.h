@@ -192,12 +192,7 @@ public:
     Coord3D m_terrainLightPos[LIGHT_COUNT];
     float m_infantryLight[TIME_OF_DAY_COUNT];
     float m_infantryLightOverride; // Based on ScriptAction::doSetInfantryLightingOverride
-    float m_easySoloHumanHealthBonus;
-    float m_normalSoloHumanHealthBonus;
-    float m_hardSoloHumanHealthBonus;
-    float m_easySoloAIHealthBonus;
-    float m_normalSoloAIHealthBonus;
-    float m_hardSoloAIHealthBonus;
+    float m_soloHealthBonus[2][DIFFICULTY_COUNT]; // for first array, 0 is human, 1 is AI
     int32_t m_maxTranslucencyObjects;
     int32_t m_maxOccludedBuildings;
     int32_t m_maxOccludedObjects;

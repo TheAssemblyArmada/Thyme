@@ -585,21 +585,27 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
     { "HumanSoloPlayerHealthBonus_Easy",
         &INI::Parse_Percent_To_Real,
         nullptr,
-        offsetof(GlobalData, m_easySoloHumanHealthBonus) },
+        offsetof(GlobalData, m_soloHealthBonus[0][DIFFICULTY_EASY]) },
     { "HumanSoloPlayerHealthBonus_Normal",
         &INI::Parse_Percent_To_Real,
         nullptr,
-        offsetof(GlobalData, m_normalSoloHumanHealthBonus) },
+        offsetof(GlobalData, m_soloHealthBonus[0][DIFFICULTY_NORMAL]) },
     { "HumanSoloPlayerHealthBonus_Hard",
         &INI::Parse_Percent_To_Real,
         nullptr,
-        offsetof(GlobalData, m_hardSoloHumanHealthBonus) },
-    { "AISoloPlayerHealthBonus_Easy", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_easySoloAIHealthBonus) },
+        offsetof(GlobalData, m_soloHealthBonus[0][DIFFICULTY_HARD]) },
+    { "AISoloPlayerHealthBonus_Easy",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(GlobalData, m_soloHealthBonus[1][DIFFICULTY_EASY]) },
     { "AISoloPlayerHealthBonus_Normal",
         &INI::Parse_Percent_To_Real,
         nullptr,
-        offsetof(GlobalData, m_normalSoloAIHealthBonus) },
-    { "AISoloPlayerHealthBonus_Hard", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_hardSoloAIHealthBonus) },
+        offsetof(GlobalData, m_soloHealthBonus[1][DIFFICULTY_NORMAL]) },
+    { "AISoloPlayerHealthBonus_Hard",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(GlobalData, m_soloHealthBonus[1][DIFFICULTY_HARD]) },
     { "WeaponBonus", &WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr, nullptr, offsetof(GlobalData, m_weaponBonusSet) },
     { "DefaultStructureRubbleHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_defaultStructureRubbleHeight) },
     { "FixedSeed", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_fixedSeed) },
@@ -974,12 +980,12 @@ GlobalData::GlobalData()
     m_veteranHealthBonus = 1.0f;
     m_eliteHealthBonus = 1.0f;
     m_heroicHealthBonus = 1.0f;
-    m_easySoloHumanHealthBonus = 1.0f;
-    m_normalSoloHumanHealthBonus = 1.0f;
-    m_hardSoloHumanHealthBonus = 1.0f;
-    m_easySoloAIHealthBonus = 1.0f;
-    m_normalSoloAIHealthBonus = 1.0f;
-    m_hardSoloAIHealthBonus = 1.0f;
+    m_soloHealthBonus[0][DIFFICULTY_EASY] = 1.0f;
+    m_soloHealthBonus[0][DIFFICULTY_NORMAL] = 1.0f;
+    m_soloHealthBonus[0][DIFFICULTY_HARD] = 1.0f;
+    m_soloHealthBonus[1][DIFFICULTY_EASY] = 1.0f;
+    m_soloHealthBonus[1][DIFFICULTY_NORMAL] = 1.0f;
+    m_soloHealthBonus[1][DIFFICULTY_HARD] = 1.0f;
     m_defaultStructureRubbleHeight = 1.0f;
     m_weaponBonusSet = NEW_POOL_OBJ(WeaponBonusSet);
     m_shellMapName = "Maps/ShellMap1/ShellMap1.map";

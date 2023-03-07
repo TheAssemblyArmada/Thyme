@@ -814,3 +814,8 @@ ObjectShroudStatus PartitionManager::Get_Prop_Shroud_Status_For_Player(int id, c
     return SHROUDED_INVALID;
 #endif
 }
+
+bool PartitionFilterAcceptByKindOf::Allow(Object *obj)
+{
+    return obj->Is_KindOf_Multi(m_mustBeSet, m_mustBeClear);
+}

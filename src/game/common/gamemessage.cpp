@@ -669,14 +669,14 @@ void GameMessage::Append_Bool_Arg(bool arg)
     argobj->m_type = ARGUMENTDATATYPE_BOOLEAN;
 }
 
-void GameMessage::Append_ObjectID_Arg(unsigned int arg)
+void GameMessage::Append_ObjectID_Arg(ObjectID arg)
 {
     GameMessageArgument *argobj = Allocate_Arg();
     argobj->m_data.objectID = arg;
     argobj->m_type = ARGUMENTDATATYPE_OBJECTID;
 }
 
-void GameMessage::Append_DrawableID_Arg(unsigned int arg)
+void GameMessage::Append_DrawableID_Arg(DrawableID arg)
 {
     GameMessageArgument *argobj = Allocate_Arg();
     argobj->m_data.drawableID = arg;

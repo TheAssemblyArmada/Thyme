@@ -732,3 +732,49 @@ bool Object::Set_Script_Status(ObjectScriptStatusBit bit, bool set)
     return false;
 #endif
 }
+
+bool Object::Is_Faction_Structure() const
+{
+    return Is_Any_KindOf(KINDOFMASK_FS);
+}
+
+ProductionUpdateInterface *Object::Get_Production_Update_Interface()
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        ProductionUpdateInterface *update = (*module)->Get_Production_Update_Interface();
+
+        if (update != nullptr) {
+            return update;
+        }
+    }
+
+    return nullptr;
+}
+
+void Object::Set_Vision_Spied(bool vision_spied, int player_index)
+{
+    bool changed = false;
+
+    if (vision_spied) {
+        if (++m_spiedOnByPlayer[player_index] == 1) {
+            changed = true;
+        }
+    } else if (--m_spiedOnByPlayer[player_index] == 0) {
+        changed = true;
+    }
+
+    if (changed) {
+        unsigned short flags = 0;
+
+        for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+            if (m_spiedOnByPlayer[i] <= 0) {
+                flags &= ~(1 << i);
+            } else {
+                flags |= 1 << i;
+            }
+        }
+
+        m_spiedOnPlayers = flags;
+        Handle_Partition_Cell_Maintenance();
+    }
+}

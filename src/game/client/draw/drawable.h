@@ -253,13 +253,13 @@ public:
         Clear_And_Set_Model_Condition_State(clr, MODELCONDITION_INVALID);
     }
 
-    void Set_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> &set)
+    void Set_Model_Condition_Flags(const BitFlags<MODELCONDITION_COUNT> &set)
     {
         BitFlags<MODELCONDITION_COUNT> b;
         Clear_And_Set_Model_Condition_Flags(b, set);
     }
 
-    void Clear_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> &clr)
+    void Clear_Model_Condition_Flags(const BitFlags<MODELCONDITION_COUNT> &clr)
     {
         BitFlags<MODELCONDITION_COUNT> b;
         Clear_And_Set_Model_Condition_Flags(clr, b);

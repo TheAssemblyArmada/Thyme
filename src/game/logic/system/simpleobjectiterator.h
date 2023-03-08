@@ -27,7 +27,7 @@ public:
 
 class SimpleObjectIterator : public ObjectIterator
 {
-    IMPLEMENT_POOL(SimpleObjectIterator);
+    IMPLEMENT_NAMED_POOL(SimpleObjectIterator, SimpleObjectIteratorPool);
 
 public:
     SimpleObjectIterator();

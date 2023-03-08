@@ -185,6 +185,7 @@ private:
     friend class TeamFactory;
     friend class Team;
     friend class TeamPrototype;
+    friend class Object;
 };
 
 class Team : public MemoryPoolObject, public SnapShot

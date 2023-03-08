@@ -748,6 +748,13 @@ void PartitionData::Remove_From_Dirty_Modules(PartitionData **dirtyModules)
     m_nextDirty = nullptr;
 }
 
+void PartitionData::Make_Dirty(bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, PartitionData, bool>(PICK_ADDRESS(0x0053ACA0, 0x0081D3CE), this, b);
+#endif
+}
+
 // wb: 0x0081B76E
 PartitionCell::~PartitionCell()
 {

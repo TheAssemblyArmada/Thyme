@@ -126,7 +126,7 @@ private:
 
 class StateMachine : public MemoryPoolObject, public SnapShot
 {
-    IMPLEMENT_POOL(StateMachine);
+    IMPLEMENT_NAMED_POOL(StateMachine, StateMachinePool);
 
 public:
 #ifdef GAME_DLL

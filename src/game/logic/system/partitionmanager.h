@@ -151,12 +151,13 @@ private:
 
 class PartitionData : public MemoryPoolObject
 {
-    IMPLEMENT_POOL(PartitionData);
+    IMPLEMENT_NAMED_POOL(PartitionData, PartitionDataPool);
 
 public:
     virtual ~PartitionData() override;
 
     void Remove_From_Dirty_Modules(PartitionData **dirtyModules);
+    void Make_Dirty(bool b);
 
 private:
     Object *m_object;

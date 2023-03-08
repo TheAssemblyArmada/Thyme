@@ -104,6 +104,7 @@
 #include "namekeygenerator.h"
 #include "object.h"
 #include "objectcreationlist.h"
+#include "objectdefectionhelper.h"
 #include "objecttypes.h"
 #include "parabolicease.h"
 #include "particle.h"
@@ -2747,4 +2748,66 @@ void Setup_Hooks()
     Hook_Any(0x00457540, Player::Set_Currently_Selected_AIGroup);
     Hook_Any(0x00457690, Player::Add_AIGroup_To_Current_Selection);
     Hook_Any(0x00457B80, Player::Set_Units_Vision_Spied);
+
+    // objectdefectionhelper.h
+    Hook_Any(0x006F4A40, ObjectDefectionHelper::Start_Defection_Timer);
+
+    // objecthelper.h
+    Hook_Any(0x006F4BB0, ObjectHelper::Sleep_Until);
+
+    // object.h
+    Hook_Any(0x00549450, Object::Is_In_List);
+    Hook_Any(0x00547B20, Object::Is_Locally_Controlled);
+    Hook_Any(0x00549700, Object::Find_Module);
+    Hook_Any(0x00549870, Object::Get_Veterancy_Level);
+    Hook_Any(0x00549A20, Object::Is_Selectable);
+    Hook_Any(0x00549A60, Object::Is_Mass_Selectable);
+    Hook_Any(0x00547520, Object::Set_Model_Condition_State);
+    Hook_Any(0x00547540, Object::Clear_Model_Condition_State);
+    Hook_Any(0x005472F0, Object::Get_Crushable_Level);
+    Hook_Any(0x005472E0, Object::Get_Crusher_Level);
+    Hook_Any(0x00548DF0, Object::On_Collide);
+    Hook_Any(0x005490D0, Object::Get_Object_Exit_Interface);
+    Hook_Any(0x005485A0, Object::Set_Disabled);
+    Hook_Any(0x00548480, Object::Set_Captured);
+    Hook_Method(
+        0x00547720, static_cast<const Weapon *(Object::*)(enum WeaponSlotType *) const>(&Object::Get_Current_Weapon));
+    Hook_Method(0x00547720, static_cast<Weapon *(Object::*)(enum WeaponSlotType *)>(&Object::Get_Current_Weapon));
+    Hook_Any(0x0054D660, Object::Get_Vision_Range);
+    Hook_Any(0x0054D670, Object::Set_Vision_Range);
+    Hook_Any(0x00549090, Object::Is_Inside);
+    Hook_Any(0x00548FD0, Object::Did_Enter);
+    Hook_Any(0x00549030, Object::Did_Exit);
+    Hook_Any(0x005477E0, Object::Get_Able_To_Use_Weapon_Against_Target);
+    Hook_Any(0x0054E7A0, Object::Get_Spawn_Behavior_Interface);
+    Hook_Any(0x00547A20, Object::Set_Producer);
+    Hook_Any(0x005482E0, Object::Estimate_Damage);
+    Hook_Any(0x0054CB60, Object::Set_Weapon_Bonus_Condition);
+    Hook_Any(0x0054D6B0, Object::Set_Shroud_Clearing_Range);
+    Hook_Any(0x0054CB90, Object::Clear_Weapon_Bonus_Condition);
+    Hook_Any(0x0054D680, Object::Get_Shroud_Clearing_Range);
+    Hook_Any(0x00549BB0, Object::Has_Any_Special_Power);
+    Hook_Any(0x00549B70, Object::Has_Special_Power);
+    Hook_Any(0x0054E6D0, Object::Find_Special_Power_Module_Interface);
+    Hook_Any(0x0054E740, Object::Find_Any_Shortcut_Special_Power_Module_Interface);
+    Hook_Any(0x00547420, Object::Has_Any_Weapon);
+    Hook_Any(0x0054F3B0, Object::Leave_Group);
+    Hook_Any(0x005484C0, Object::Is_Faction_Structure);
+    Hook_Any(0x0054E670, Object::Get_Production_Update_Interface);
+    Hook_Any(0x005467D0, Object::Friend_Set_Undetected_Defector);
+    Hook_Any(0x005476C0, Object::Clear_Special_Model_Condition_States);
+    Hook_Any(0x00547580, Object::Clear_Model_Condition_Flags);
+    Hook_Any(0x0054CBD0, Object::Adjust_Model_Condition_For_Weapon_Status);
+    Hook_Any(0x00547600, Object::Clear_And_Set_Model_Condition_Flags);
+    Hook_Any(0x005473F0, Object::Reload_All_Ammo);
+    Hook_Any(0x00549890, Object::Friend_Bind_To_Drawable);
+    Hook_Any(0x00549110, Object::Set_Trigger_Area_Flags_For_Change_In_Position);
+    Hook_Any(0x00546890, Object::Set_Or_Restore_Team);
+    Hook_Any(0x0054C7B0, Object::On_Capture);
+    Hook_Any(0x0054DA50, Object::Do_Status_Damage);
+    Hook_Any(0x0054DA90, Object::Notify_Subdual_Damage);
+    Hook_Any(0x0054DA70, Object::Do_Temp_Weapon_Bonus);
+    Hook_Method(0x00547830, static_cast<void (Object::*)(Object *)>(&Object::Fire_Current_Weapon));
+    Hook_Method(0x005478B0, static_cast<void (Object::*)(const Coord3D *)>(&Object::Fire_Current_Weapon));
+    Hook_Any(0x00547920, Object::Notify_Firing_Tracker_Shot_Fired);
 }

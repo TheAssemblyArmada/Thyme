@@ -59,6 +59,7 @@ public:
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
     NameKeyType Get_Tag_Key() const { return m_tagKey; }
+    void Set_Tag_Key(NameKeyType key) { m_tagKey = key; }
 
 private:
     NameKeyType m_tagKey = NAMEKEY_INVALID; // #BUGFIX Default initialized member.

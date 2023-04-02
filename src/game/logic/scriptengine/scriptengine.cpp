@@ -55,3 +55,14 @@ void ScriptEngine::Notify_Of_Object_Creation_Or_Destruction()
 {
     m_objectCreationDestructionFrame = g_theGameLogic->Get_Frame();
 }
+
+const AttackPriorityInfo *ScriptEngine::Get_Attack_Info(Utf8String const &name)
+{
+    for (int i = 0; i < m_numAttackInfo; i++) {
+        if (m_attackPriorityInfo[i].Get_Name() == name) {
+            return &m_attackPriorityInfo[i];
+        }
+    }
+
+    return &m_attackPriorityInfo[0];
+}

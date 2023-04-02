@@ -26,7 +26,7 @@ typedef void(__cdecl *WindowLayoutCallbackFunc)(WindowLayout *layout, void *user
 
 class WindowLayout : public MemoryPoolObject
 {
-    IMPLEMENT_POOL(WindowLayout);
+    IMPLEMENT_NAMED_POOL(WindowLayout, WindowLayoutPool);
 
 public:
     WindowLayout();

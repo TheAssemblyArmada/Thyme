@@ -23,6 +23,7 @@ enum SleepyUpdatePhase : uint32_t
 {
     SLEEPY_UPDATE_PHASE_1 = 1,
     SLEEPY_UPDATE_PHASE_2 = 2,
+    SLEEPY_UPDATE_PHASE_3 = 3,
 };
 
 enum UpdateSleepTime : uint32_t

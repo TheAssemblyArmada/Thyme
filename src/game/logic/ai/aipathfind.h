@@ -72,7 +72,7 @@ struct ClosestPointOnPathInfo
 
 class PathNode : public MemoryPoolObject
 {
-    IMPLEMENT_POOL(PathNode)
+    IMPLEMENT_NAMED_POOL(PathNode, PathNodePool)
 
 public:
     virtual ~PathNode() override;
@@ -91,7 +91,7 @@ private:
 
 class Path : public MemoryPoolObject, public SnapShot
 {
-    IMPLEMENT_POOL(Path);
+    IMPLEMENT_NAMED_POOL(Path, PathPool);
 
 protected:
     virtual ~Path() override;
@@ -285,6 +285,7 @@ public:
         Coord3D *destination_pos);
 
     void Classify_Object_Footprint(Object *obj, bool insert);
+    void Update_Pos(Object *obj, const Coord3D *pos);
 
     void Remove_Object_From_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, false); }
     void Add_Object_To_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, true); }

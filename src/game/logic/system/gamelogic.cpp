@@ -14,6 +14,7 @@
  */
 #include "gamelogic.h"
 #include "display.h"
+#include "gameclient.h"
 #include "mapobject.h"
 #include "object.h"
 #include "recorder.h"
@@ -306,12 +307,7 @@ void GameLogic::Destroy_Object(Object *obj)
 
 Object *GameLogic::Friend_Create_Object(ThingTemplate const *thing, BitFlags<OBJECT_STATUS_COUNT> &status_bits, Team *team)
 {
-#ifdef GAME_DLL
-    return Call_Method<Object *, GameLogic, ThingTemplate const *, BitFlags<OBJECT_STATUS_COUNT> &, Team *>(
-        PICK_ADDRESS(0x004A7280, 0x007B3034), this, thing, status_bits, team);
-#else
-    return nullptr;
-#endif
+    return new Object(thing, status_bits, team);
 }
 
 bool GameLogic::Is_In_Single_Player_Game()
@@ -319,4 +315,48 @@ bool GameLogic::Is_In_Single_Player_Game()
     return m_gameMode == GAME_SINGLE_PLAYER
         || (g_theRecorder != nullptr && g_theRecorder->Get_Mode() == RECORDERMODETYPE_PLAYBACK
             && g_theRecorder->Get_Org_Game_Mode() == GAME_SINGLE_PLAYER);
+}
+
+void GameLogic::Remove_Object_From_Lookup_Table(Object *obj)
+{
+    if (obj != nullptr) {
+        m_objectLookupTable[obj->Get_ID()] = nullptr;
+    }
+}
+
+void GameLogic::Add_Object_To_Lookup_Table(Object *obj)
+{
+    if (obj != nullptr) {
+        ObjectID id = obj->Get_ID();
+
+        for (;;) {
+            if (id < m_objectLookupTable.size()) {
+                break;
+            }
+
+            m_objectLookupTable.resize(m_objectLookupTable.size() * 2, nullptr);
+        }
+
+        m_objectLookupTable[id] = obj;
+    }
+}
+
+void GameLogic::Register_Object(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, GameLogic, Object *>(PICK_ADDRESS(0x004A7110, 0x007B2F0F), this, obj);
+#endif
+}
+
+void GameLogic::Send_Object_Destroyed(Object *obj)
+{
+    if (g_theGameClient != nullptr) {
+        Drawable *drawable = obj->Get_Drawable();
+
+        if (drawable != nullptr) {
+            g_theGameClient->Destroy_Drawable(drawable);
+        }
+
+        obj->Friend_Bind_To_Drawable(nullptr);
+    }
 }

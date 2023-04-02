@@ -25,6 +25,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/ai
     game/logic/map
     game/logic/object
+    game/logic/object/helper
     game/logic/object/behavior
     game/logic/object/body
     game/logic/object/contain
@@ -270,6 +271,7 @@ set(GAMEENGINE_SRC
     game/logic/object/armor.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/experiencetracker.cpp
+    game/logic/object/firingtracker.cpp
     game/logic/object/locomotor.cpp
     game/logic/object/object.cpp
     game/logic/object/objectcreationlist.cpp
@@ -277,6 +279,14 @@ set(GAMEENGINE_SRC
     game/logic/object/weapon.cpp
     game/logic/object/weaponset.cpp
     game/logic/object/weapontemplateset.cpp
+    game/logic/object/helper/objectdefectionhelper.cpp
+    game/logic/object/helper/objecthelper.cpp
+    game/logic/object/helper/objectrepulsorhelper.cpp
+    game/logic/object/helper/objectsmchelper.cpp
+    game/logic/object/helper/objectweaponstatushelper.cpp
+    game/logic/object/helper/statusdamagehelper.cpp
+    game/logic/object/helper/subdualdamagehelper.cpp
+    game/logic/object/helper/tempweaponbonushelper.cpp
     game/logic/object/update/aiupdate.cpp
     game/logic/object/update/autodepositupdate.cpp
     game/logic/object/update/assistedtargetingupdate.cpp

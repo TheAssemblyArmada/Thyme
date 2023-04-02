@@ -113,14 +113,22 @@ enum GuardTargetType
 {
     TARGET_UNK
 };
+
 enum AIFreeToExitType
 {
     FREE_TO_EXIT_UNK
 };
+
 enum GuardMode
 {
     GUARD_MODE_UNK
 };
+
+enum GuardType
+{
+    GUARD_TYPE_UNK
+};
+
 enum AttitudeType
 {
     AI_SLEEP = -2,
@@ -409,20 +417,51 @@ public:
     }
 
     void Set_Current_Turret(WhichTurretType t) { m_currentTurret = t; }
+    void Set_Attitude(AttitudeType attitude) { m_attitude = attitude; }
+    void Set_Attack_Priority_Info(const AttackPriorityInfo *info) { m_attackInfo = info; }
 
     bool Are_Turrets_Linked() const { return Get_AI_Update_Module_Data()->m_turretsLinked; }
     int Get_Current_Goal_Path_Index() const { return m_currentGoalPathIndex; }
 
 private:
-    unsigned char unk[0x8];
+    unsigned int m_unkWaypoint1;
+    unsigned int m_unkWaypoint2;
     AIStateMachine *m_stateMachine;
-    unsigned char unk2[0x100];
+    unsigned int m_unk1;
+    ObjectID m_currentVictimID;
+    float m_unkSpeed1;
+    CommandSourceType m_lastCommandSource;
+    GuardMode m_guardMode;
+    GuardType m_guardType;
+    GuardTargetType m_guardTargetType;
+    Coord3D m_locationToGuard;
+    ObjectID m_objectToGuard;
+    PolygonTrigger *m_areaToGuard;
+    const AttackPriorityInfo *m_attackInfo;
+    Coord3D m_waypointQueue[MAX_PLAYER_COUNT];
+    int m_waypointCount;
+    int m_waypointIndex;
+    Waypoint *m_completedWaypoint;
     Path *m_path;
-    unsigned char unk3[0x20];
+    ObjectID m_requestedVictimID;
+    Coord3D m_requestedDestination;
+    Coord3D m_unk2;
+    unsigned int m_pathTimestamp;
     ObjectID m_ignoreObstacleID;
-    unsigned char unk4[0x3C];
+    float m_pathExtraDistance;
+    ICoord2D m_pathfindGoalCell;
+    ICoord2D m_pathfindCurCell;
+    unsigned int m_blockedFrames;
+    float m_curMaxBlockedSpeed;
+    float m_unkSpeed2;
+    unsigned int m_ignoreCollisionsTimer;
+    unsigned int m_queueForPathTime;
+    Coord3D m_finalPosition;
+    ObjectID m_unkPathObjId1;
+    ObjectID m_unkPathObjId2;
     int m_currentGoalPathIndex;
-    unsigned char unk5[0x8];
+    ObjectID m_unkObjID1;
+    ObjectID m_unkObjID2;
     LocomotorSet m_locomotorSet;
     Locomotor *m_curLocomotor;
     LocomotorSetType m_curLocomotorSet;
@@ -432,6 +471,26 @@ private:
     WhichTurretType m_currentTurret;
     AttitudeType m_attitude;
     unsigned int m_nextMoodCheckTime;
-    unsigned char unk6[0x16];
+    ObjectID m_unkObjID3;
+    int m_unk3;
+    bool m_doFinalPosition;
+    bool m_waitingForPath;
+    bool m_isAttackPath;
+    bool m_unkRequPath;
+    bool m_isApproachPath;
+    bool m_isSafePath;
+    bool m_unkEndingMove;
+    bool m_unkStartingToMove;
+    bool m_isBlocked;
+    bool m_isBlockedAndStuck;
+    bool m_unkLocoUpgrade;
+    bool m_unkIngoreCollisions;
+    bool m_unkNextMoodCheckTime;
+    bool m_isAiDead;
     bool m_isRecruitable;
+    bool m_executingWaypointQueue;
+    bool m_unkPath;
+    bool m_unk4;
+    bool m_unkWakeup;
+    bool m_unk5;
 };

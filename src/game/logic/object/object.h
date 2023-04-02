@@ -187,6 +187,8 @@ enum CrushSquishTestType
 
 class Object : public Thing, public SnapShot
 {
+    IMPLEMENT_NAMED_POOL(Object, ObjectPool)
+
 public:
     enum
     {
@@ -197,14 +199,14 @@ public:
     {
         MAX_TRIGGER_AREA_INFOS = 5
     };
-    Object(ThingTemplate *tt, BitFlags<OBJECT_STATUS_COUNT> bits, Team *team);
+    Object(const ThingTemplate *tt, BitFlags<OBJECT_STATUS_COUNT> status_bits, Team *team);
     virtual ~Object() override;
 
     virtual float Calculate_Height_Above_Terrain() const override;
-    virtual Object *As_Object_Meth() override;
-    virtual const Object *As_Object_Meth() const override;
+    virtual Object *As_Object_Meth() override { return this; }
+    virtual const Object *As_Object_Meth() const override { return this; }
 
-    virtual void React_To_Transform_Change(const Matrix3D *tm, const Coord3D *pos, float f) override;
+    virtual void React_To_Transform_Change(const Matrix3D *tm, const Coord3D *pos, float angle) override;
     virtual void React_To_Turret(WhichTurretType turret, float angle, float pitch);
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
@@ -253,6 +255,8 @@ public:
     bool Get_Single_Use_Command() const { return m_singleUseCommand; }
     unsigned int Get_Occlusion_Delay_Frame() const { return m_occlusionDelayFrame; }
     FormationID Get_Formation_ID() const { return m_formationID; }
+    PartitionData *Get_Partition_Data() const { return m_partitionData; }
+    unsigned int Get_Contained_By_Frame() const { return m_containedByFrame; }
 
     void Clear_Status(BitFlags<OBJECT_STATUS_COUNT> bits) { return Set_Status(bits, false); }
     bool Clear_Script_Status(ObjectScriptStatusBit bit) { return Set_Script_Status(bit, false); }
@@ -267,14 +271,23 @@ public:
     bool Is_Share_Weapon_Reload_Time() const { return m_weaponSet.Is_Share_Weapon_Reload_Time(); }
     bool Is_Destroyed() const { return m_status.Test(OBJECT_STATUS_DESTROYED); }
     bool Is_Outside_Map() const { return (m_privateStatus & STATUS_OUTSIDE_MAP) != 0; }
+    bool Is_Captured() const { return (m_privateStatus & STATUS_CAPTURED) != 0; }
     bool Is_Disabled() const { return m_disabledStates.Any(); }
     bool Is_Contained() const { return m_containedBy != nullptr; }
+    bool Is_Weapon_Locked() const { return m_weaponSet.Is_Cur_Weapon_Locked(); }
+
+    bool Has_Custom_Indicator_Color() const { return m_customIndicatorColor != 0; }
 
     void Set_Formation_Offset(Coord2D *c) { m_formationOffset = *c; }
     void Set_Formation_ID(FormationID id) { m_formationID = id; }
     void Set_Single_Use_Command() { m_singleUseCommand = true; }
+    void Set_Name(Utf8String &name) { m_name = name; }
+    void Set_Partition_Data(PartitionData *data) { m_partitionData = data; }
+    void Set_Radar_Data(RadarObject *data) { m_radarData = data; }
+    void Set_Construction_Percent(float percent) { m_constructionPercent = percent; }
 
-    RadarObject *friend_getRadarData() { return m_radarData; }
+    RadarObject *Friend_Get_Radar_Data() { return m_radarData; }
+    void Delete() { Delete_Instance(); }
 
     void Release_Weapon_Lock(WeaponLockType type) { m_weaponSet.Release_Weapon_Lock(type); }
 
@@ -396,8 +409,8 @@ public:
     void Clear_Weapon_Bonus_Condition(WeaponBonusConditionType bonus);
     void Clear_Leech_Range_Mode_For_All_Weapons();
 
-    void Do_Status_Damage(ObjectStatusTypes status, float f);
-    void Do_Temp_Weapon_Bonus(WeaponBonusConditionType type, unsigned int i);
+    void Do_Status_Damage(ObjectStatusTypes status, float damage);
+    void Do_Temp_Weapon_Bonus(WeaponBonusConditionType type, unsigned int frame);
     void Do_Special_Power(const SpecialPowerTemplate *t, unsigned int i, bool b);
     void Do_Special_Power_At_Object(const SpecialPowerTemplate *t, Object *obj, unsigned int i, bool b);
     void Do_Special_Power_At_Location(const SpecialPowerTemplate *t, const Coord3D *pos, float f, unsigned int i, bool b);
@@ -478,14 +491,14 @@ public:
     void Restore_Original_Team();
     void Defect(Team *team, unsigned int i);
 
-    bool Reload_All_Ammo(bool now);
+    void Reload_All_Ammo(bool now);
     bool Choose_Best_Weapon_For_Target(const Object *target, WeaponChoiceCriteria criteria, CommandSourceType source);
     void Notify_Firing_Tracker_Shot_Fired(const Weapon *weapon, ObjectID id);
 
     float Estimate_Damage(DamageInfoInput &info) const;
     void Kill(DamageType damage, DeathType death);
     void Score_The_Kill(const Object *victim);
-    void Notify_Subdual_Damage(float f);
+    void Notify_Subdual_Damage(float damage);
     bool Can_Crush_Or_Squish(Object *obj, CrushSquishTestType type);
     void Heal_Completely();
     void Go_Invulnerable(unsigned int i);
@@ -589,7 +602,7 @@ private:
     float m_shroudClearingRange;
     float m_shroudRange;
     BitFlags<DISABLED_TYPE_COUNT> m_disabledStates;
-    unsigned int m_disabledStateFrames[13];
+    unsigned int m_disabledStateFrames[DISABLED_TYPE_COUNT];
     unsigned int m_specialModelConditionSleepFrame;
     ObjectRepulsorHelper *m_objectRepulsorHelper;
     ObjectSMCHelper *m_objectSMCHelper;
@@ -615,7 +628,7 @@ private:
     BitFlags<128> m_objectUpgradesCompleted;
     Team *m_team;
     Utf8String m_originalTeamName;
-    unsigned int m_customIndicatorColor;
+    int m_customIndicatorColor;
     Coord3D m_healthBoxOffset;
     DLINK_TeamMemberList m_dlink_TeamMemberList;
     WeaponSet m_weaponSet;
@@ -632,16 +645,16 @@ private:
     PathfindLayerEnum m_destinationLayer;
     FormationID m_formationID;
     Coord2D m_formationOffset;
-    Utf8String m_cmmandSetStringOverride;
+    Utf8String m_commandSetStringOverride;
     unsigned int m_occlusionDelayFrame;
     bool m_isSelectable;
     bool m_applyBattlePlanBonuses;
 #ifdef GAME_DEBUG_STRUCTS
     bool m_hasDiedAlready;
 #endif
-    char m_scriptStatus;
-    char m_privateStatus;
-    char m_numTriggerAreasActive;
+    unsigned char m_scriptStatus;
+    unsigned char m_privateStatus;
+    signed char m_numTriggerAreasActive;
     bool m_singleUseCommand;
     bool m_receivingDifficultyBonus;
 };

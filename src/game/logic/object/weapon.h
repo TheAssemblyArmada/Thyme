@@ -269,6 +269,11 @@ public:
     AttackType Get_Pre_Attack_Type() const { return m_preAttackType; }
     float Get_Continue_Attack_Range() const { return m_continueAttackRange; }
     float Get_Aim_Delta() const { return m_aimDelta; }
+    unsigned int Get_Auto_Reload_When_Idle() const { return m_autoReloadWhenIdle; }
+    unsigned int Get_Continuous_Fire_Cost_Frames() const { return m_continuousFireCoastFrames; }
+    unsigned int Get_Continuous_Fire_One_Shots_Needed() const { return m_continuousFireOneShotsNeeded; }
+    unsigned int Get_Continuous_Fire_Two_Shots_Needed() const { return m_continuousFireTwoShotsNeeded; }
+    unsigned int Get_Fire_Sound_Loop_Time() const { return m_fireSoundLoopTime; }
 
     ObjectCreationList *Get_Projectile_Detonation_OCL(VeterancyLevel level) const
     {
@@ -496,6 +501,12 @@ public:
     float Get_Continue_Attack_Range() const { return m_template->Get_Continue_Attack_Range(); }
     float Get_Aim_Delta() const { return m_template->Get_Aim_Delta(); }
     int Get_Max_Shot_Count() const { return m_maxShotCount; }
+    unsigned int Get_Auto_Reload_When_Idle() const { return m_template->Get_Auto_Reload_When_Idle(); }
+    unsigned int Get_Continuous_Fire_Cost_Frames() const { return m_template->Get_Continuous_Fire_Cost_Frames(); }
+    unsigned int Get_Continuous_Fire_One_Shots_Needed() const { return m_template->Get_Continuous_Fire_One_Shots_Needed(); }
+    unsigned int Get_Continuous_Fire_Two_Shots_Needed() const { return m_template->Get_Continuous_Fire_Two_Shots_Needed(); }
+    unsigned int Get_Fire_Sound_Loop_Time() const { return m_template->Get_Fire_Sound_Loop_Time(); }
+    const AudioEventRTS *Get_Fire_Sound() const { return m_template->Get_Fire_Sound(); }
 
     unsigned int Get_Ammo_In_Clip() const
     {

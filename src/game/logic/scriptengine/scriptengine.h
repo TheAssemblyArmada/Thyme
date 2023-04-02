@@ -86,6 +86,8 @@ public:
 
     void Reset();
 
+    Utf8String Get_Name() const { return m_name; }
+
 private:
     Utf8String m_name;
     int m_defaultPriority;
@@ -186,6 +188,7 @@ public:
     void Notify_Of_Team_Destruction(Team *team_destroyed);
     void Append_Debug_Message(const Utf8String &message, bool b);
     GameDifficulty Get_Difficulty() { return m_gameDifficulty; }
+    const AttackPriorityInfo *Get_Attack_Info(Utf8String const &name);
 
 private:
     void Init_Action_Templates();

@@ -333,9 +333,9 @@ public:
     float Height() const { return hi.y - lo.y; }
     float Width() const { return hi.x - lo.x; }
     float Depth() const { return hi.z - lo.z; }
-    bool Is_In_Region_No_Z(Coord3D *c) const { return lo.x < c->x && c->x < hi.x && lo.y < c->y && c->y < hi.y; }
+    bool Is_In_Region_No_Z(const Coord3D *c) const { return lo.x < c->x && c->x < hi.x && lo.y < c->y && c->y < hi.y; }
 
-    bool Is_In_Region_With_Z(Coord3D *c) const
+    bool Is_In_Region_With_Z(const Coord3D *c) const
     {
         return lo.x < c->x && c->x < hi.x && lo.y < c->y && c->y < hi.y && lo.z < c->z && c->z < hi.z;
     }

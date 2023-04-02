@@ -21,7 +21,7 @@ class Object;
 
 class ExperienceTracker : public MemoryPoolObject, public SnapShot
 {
-    IMPLEMENT_POOL(ExperienceTracker);
+    IMPLEMENT_NAMED_POOL(ExperienceTracker, ExperienceTrackerPool);
 
 public:
     // zh: 0x0061B620 wb: 0x008A34F0

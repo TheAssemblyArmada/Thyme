@@ -266,3 +266,10 @@ void Pathfinder::Classify_Object_Footprint(Object *obj, bool insert)
     Call_Method<void, Pathfinder, Object *, bool>(PICK_ADDRESS(0x0055FA70, 0x00890D45), this, obj, insert);
 #endif
 }
+
+void Pathfinder::Update_Pos(Object *obj, const Coord3D *pos)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, Object *, const Coord3D *>(PICK_ADDRESS(0x0056D510, 0x0089DFE3), this, obj, pos);
+#endif
+}

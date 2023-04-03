@@ -14,6 +14,7 @@
  */
 #include "gamelogic.h"
 #include "display.h"
+#include "drawable.h"
 #include "gameclient.h"
 #include "mapobject.h"
 #include "object.h"
@@ -359,4 +360,15 @@ void GameLogic::Send_Object_Destroyed(Object *obj)
 
         obj->Friend_Bind_To_Drawable(nullptr);
     }
+}
+
+void GameLogic::Send_Object_Created(Object *obj)
+{
+    Bind_Object_And_Drawable(obj, g_theThingFactory->New_Drawable(obj->Get_Template(), DRAWABLE_STATUS_UNK));
+}
+
+void GameLogic::Bind_Object_And_Drawable(Object *obj, Drawable *d)
+{
+    d->Friend_Bind_To_Object(obj);
+    obj->Friend_Bind_To_Drawable(d);
 }

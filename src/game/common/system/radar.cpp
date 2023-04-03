@@ -34,3 +34,10 @@ void Radar::Add_Object(Object *obj)
     Call_Method<void, Radar, Object *>(PICK_ADDRESS(0x00499D10, 0x00909D5C), this, obj);
 #endif
 }
+
+void Radar::Try_Under_Attack_Event(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Radar, Object *>(PICK_ADDRESS(0x0049AA00, 0x0090AC89), this, obj);
+#endif
+}

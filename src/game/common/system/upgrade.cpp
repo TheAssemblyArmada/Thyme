@@ -48,6 +48,19 @@ UpgradeTemplate *UpgradeCenter::Find_Upgrade(const Utf8String &name)
     return Find_Upgrade_By_Key(g_theNameKeyGenerator->Name_To_Key(name.Str()));
 }
 
+Utf8String Get_Vet_Upgrade_Name(VeterancyLevel level)
+{
+    Utf8String str;
+    str = "Upgrade_Veterancy_";
+    str.Concat(g_veterancyNames[level]);
+    return str;
+}
+
+UpgradeTemplate *UpgradeCenter::Find_Veterancy_Upgrade(VeterancyLevel level)
+{
+    return Find_Upgrade(Get_Vet_Upgrade_Name(level));
+}
+
 UpgradeTemplate *UpgradeCenter::Find_Upgrade_By_Key(NameKeyType key)
 {
     for (UpgradeTemplate *tmplate = m_upgradeList; tmplate != nullptr; tmplate = tmplate->Friend_Get_Next()) {

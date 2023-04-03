@@ -158,6 +158,7 @@ public:
 
     void Remove_From_Dirty_Modules(PartitionData **dirtyModules);
     void Make_Dirty(bool b);
+    ObjectShroudStatus Get_Shrouded_Status(int index);
 
 private:
     Object *m_object;

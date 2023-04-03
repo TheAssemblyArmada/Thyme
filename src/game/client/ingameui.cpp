@@ -17,3 +17,12 @@
 #ifndef GAME_DLL
 InGameUI *g_theInGameUI;
 #endif
+
+void InGameUI::Add_World_Animation(
+    Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise)
+{
+#ifdef GAME_DLL
+    Call_Method<void, InGameUI, Anim2DTemplate *, const Coord3D *, WorldAnimationOptions, float, float>(
+        PICK_ADDRESS(0x00510A10, 0x00812ED9), this, anim, pos, options, time, z_rise);
+#endif
+}

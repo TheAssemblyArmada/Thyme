@@ -45,6 +45,7 @@ public:
 
     void Remove_Object(Object *obj);
     void Add_Object(Object *obj);
+    void Try_Under_Attack_Event(Object *obj);
 
 private:
     enum

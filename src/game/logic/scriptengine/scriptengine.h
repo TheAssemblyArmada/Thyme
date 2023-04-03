@@ -178,6 +178,7 @@ public:
 
     void Set_Global_Difficulty(GameDifficulty diff);
     void Set_Use_Object_Difficulty_Bonus(bool bonus) { m_useObjectDifficultyBonuses = bonus; }
+    bool Get_Use_Object_Difficulty_Bonus() const { return m_useObjectDifficultyBonuses; }
 
     TFade Get_Fade() { return m_fade; }
     float Get_Fade_Value() { return m_curFadeValue; }

@@ -404,7 +404,7 @@ public:
     void Clear_And_Set_Model_Condition_Flags(
         const BitFlags<MODELCONDITION_COUNT> &clr, const BitFlags<MODELCONDITION_COUNT> &set);
     void Clear_Special_Model_Condition_States();
-    void Clear_Disabled(DisabledType type);
+    bool Clear_Disabled(DisabledType type);
     void Clear_Weapon_Set_Flag(WeaponSetType wst);
     void Clear_Weapon_Bonus_Condition(WeaponBonusConditionType bonus);
     void Clear_Leech_Range_Mode_For_All_Weapons();
@@ -432,7 +432,7 @@ public:
     void On_Removed_From(Object *removed);
     void On_Destroy();
     void On_Collide(Object *other, const Coord3D *loc, const Coord3D *normal);
-    void On_Veterancy_Level_Changed(VeterancyLevel v1, VeterancyLevel v2, bool b);
+    void On_Veterancy_Level_Changed(VeterancyLevel old_level, VeterancyLevel new_level, bool play_sound);
     void On_Disabled_Edge(bool edge);
     void On_Capture(Player *o, Player *n);
     void On_Die(DamageInfo *damage);
@@ -470,7 +470,7 @@ public:
     void Unshroud();
 
     void Attempt_Damage(DamageInfo *info);
-    void Attempt_Healing(float f, const Object *obj);
+    void Attempt_Healing(float amount, const Object *obj);
     bool Attempt_Healing_From_Sole_Benefactor(float f, const Object *obj, unsigned int i);
 
     bool Affected_By_Upgrade(const UpgradeTemplate *upgrade) const;

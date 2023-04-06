@@ -16,9 +16,14 @@
 #include "object.h"
 #include "ai.h"
 #include "aipathfind.h"
+#include "audioeventrts.h"
+#include "audiomanager.h"
 #include "behaviormodule.h"
 #include "bodymodule.h"
+#include "colorspace.h"
 #include "controlbar.h"
+#include "damagemodule.h"
+#include "dozeraiupdate.h"
 #include "drawable.h"
 #include "experiencetracker.h"
 #include "firingtracker.h"
@@ -32,12 +37,19 @@
 #include "objectsmchelper.h"
 #include "objectweaponstatushelper.h"
 #include "opencontain.h"
+#include "overchargebehavior.h"
+#include "parkingplacebehavior.h"
 #include "partitionmanager.h"
 #include "playerlist.h"
 #include "polygontrigger.h"
+#include "powerplantupgrade.h"
 #include "radar.h"
+#include "radarupgrade.h"
 #include "scriptengine.h"
+#include "simpleobjectiterator.h"
+#include "spawnbehavior.h"
 #include "specialpower.h"
+#include "squishcollide.h"
 #include "statusdamagehelper.h"
 #include "subdualdamagehelper.h"
 #include "team.h"
@@ -846,30 +858,47 @@ void Object::Load_Post_Process()
 
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 {
-#ifdef GAME_DLL
-    return Call_Method<ObjectShroudStatus, const Object, int>(PICK_ADDRESS(0x00547D60, 0x007D12FB), this, index);
-#else
-    return ObjectShroudStatus(0);
-#endif
+    if (Get_Template()->Is_KindOf(KINDOF_ALWAYS_VISIBLE)) {
+        return SHROUDED_NONE;
+    }
+
+    if (m_partitionData != nullptr) {
+        return m_partitionData->Get_Shrouded_Status(index);
+    }
+
+    return SHROUDED_NONE;
 }
 
 // zh: 0x005479B0 wb: 0x007D0E3D
 
 Relationship Object::Get_Relationship(const Object *that) const
 {
-#ifdef GAME_DLL
-    return Call_Method<Relationship, const Object, const Object *>(PICK_ADDRESS(0x005479B0, 0x007D0E3D), this, that);
-#else
-    return Relationship();
-#endif
+    const Team *team = Get_Team();
+
+    if (team == nullptr || that == nullptr) {
+        return NEUTRAL;
+    }
+
+    if (Is_Undetected_Defector()) {
+        return NEUTRAL;
+    }
+
+    if (that->Is_Undetected_Defector()) {
+        return NEUTRAL;
+    }
+
+    return team->Get_Relationship(that->Get_Team());
 }
 
 Player *Object::Get_Controlling_Player() const
 {
-#ifdef GAME_DLL
-    return Call_Method<Player *, const Object>(PICK_ADDRESS(0x00547A00, 0x007D0EAB), this);
-#endif
-    return nullptr;
+    const Team *team = Get_Team();
+
+    if (team != nullptr) {
+        return team->Get_Controlling_Player();
+    } else {
+        return nullptr;
+    }
 }
 
 bool Object::Is_In_List(Object **list) const
@@ -878,29 +907,124 @@ bool Object::Is_In_List(Object **list) const
 }
 
 // zh: 0x00549BD0 wb: 0x007D370C
-void Object::On_Veterancy_Level_Changed(VeterancyLevel v1, VeterancyLevel v2, bool b)
+void Object::On_Veterancy_Level_Changed(VeterancyLevel old_level, VeterancyLevel new_level, bool play_sound)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, VeterancyLevel, VeterancyLevel, bool>(PICK_ADDRESS(0x00549BD0, 0x007D370C), this, v1, v2, b);
-#endif
+    Update_Upgrade_Modules();
+    UpgradeTemplate *upgrade = g_theUpgradeCenter->Find_Veterancy_Upgrade(new_level);
+
+    if (upgrade != nullptr) {
+        Give_Upgrade(upgrade);
+    }
+
+    BodyModuleInterface *body = Get_Body_Module();
+
+    if (body != nullptr) {
+        body->On_Veterancy_Level_Changed(old_level, new_level, play_sound);
+    }
+
+    bool object_hidden = false;
+
+    if (!Is_Locally_Controlled() && Get_Status(OBJECT_STATUS_STEALTHED) && !Get_Status(OBJECT_STATUS_DETECTED)
+        && !Get_Status(OBJECT_STATUS_DISGUISED)) {
+        object_hidden = true;
+    }
+
+    bool show_level_up = !object_hidden && new_level > old_level && !Is_KindOf(KINDOF_IGNORED_IN_GUI);
+
+    switch (new_level) {
+        case VETERANCY_REGULAR:
+            Clear_Weapon_Set_Flag(WEAPONSET_VETERAN);
+            Clear_Weapon_Set_Flag(WEAPONSET_ELITE);
+            Clear_Weapon_Set_Flag(WEAPONSET_HERO);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_VETERAN);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_ELITE);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_HERO);
+            show_level_up = false;
+            break;
+        case VETERANCY_VETERAN:
+            Set_Weapon_Set_Flag(WEAPONSET_VETERAN);
+            Clear_Weapon_Set_Flag(WEAPONSET_ELITE);
+            Clear_Weapon_Set_Flag(WEAPONSET_HERO);
+            Set_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_VETERAN);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_ELITE);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_HERO);
+            break;
+        case VETERANCY_ELITE:
+            Clear_Weapon_Set_Flag(WEAPONSET_VETERAN);
+            Set_Weapon_Set_Flag(WEAPONSET_ELITE);
+            Clear_Weapon_Set_Flag(WEAPONSET_HERO);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_VETERAN);
+            Set_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_ELITE);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_HERO);
+            break;
+        case VETERANCY_HEROIC:
+            Clear_Weapon_Set_Flag(WEAPONSET_VETERAN);
+            Clear_Weapon_Set_Flag(WEAPONSET_ELITE);
+            Set_Weapon_Set_Flag(WEAPONSET_HERO);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_VETERAN);
+            Clear_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_ELITE);
+            Set_Weapon_Bonus_Condition(WEAPONBONUSCONDITION_HERO);
+            break;
+        default:
+            break;
+    }
+
+    if (show_level_up && g_theGameLogic->Get_Draw_Icon_UI() && play_sound) {
+        if (g_theAnim2DCollection != nullptr) {
+            if (!g_theWriteableGlobalData->m_levelGainAnimName.Is_Empty()) {
+                Anim2DTemplate *anim = g_theAnim2DCollection->Find_Template(g_theWriteableGlobalData->m_levelGainAnimName);
+                Coord3D pos = *Get_Position();
+                pos.Add(&m_healthBoxOffset);
+                g_theInGameUI->Add_World_Animation(anim,
+                    &pos,
+                    WORLD_ANIMATION_UNK,
+                    g_theWriteableGlobalData->m_levelGainAnimTime,
+                    g_theWriteableGlobalData->m_levelGainAnimZRise);
+            }
+        }
+
+        AudioEventRTS audio(g_theAudio->Get_Misc_Audio()->m_unitPromoted);
+        audio.Set_Object_ID(Get_ID());
+        g_theAudio->Add_Audio_Event(&audio);
+    }
 }
 
 int Object::Get_Night_Indicator_Color() const
 {
-#ifdef GAME_DLL
-    return Call_Method<int, const Object>(PICK_ADDRESS(0x00547AF0, 0x007D0FEC), this);
-#else
-    return 0;
-#endif
+    if (m_customIndicatorColor != 0) {
+        return m_customIndicatorColor;
+    }
+
+    const Team *team = Get_Team();
+
+    if (team != nullptr) {
+        Player *player = team->Get_Controlling_Player();
+
+        if (player != nullptr) {
+            return player->Get_Night_Color();
+        }
+    }
+
+    return Make_Color(0, 0, 0, 255);
 }
 
 int Object::Get_Indicator_Color() const
 {
-#ifdef GAME_DLL
-    return Call_Method<int, const Object>(PICK_ADDRESS(0x00547AC0, 0x007D0F89), this);
-#else
-    return 0;
-#endif
+    if (m_customIndicatorColor != 0) {
+        return m_customIndicatorColor;
+    }
+
+    const Team *team = Get_Team();
+
+    if (team != nullptr) {
+        Player *player = team->Get_Controlling_Player();
+
+        if (player != nullptr) {
+            return player->Get_Color();
+        }
+    }
+
+    return Make_Color(0, 0, 0, 255);
 }
 
 bool Object::Is_Locally_Controlled() const
@@ -950,12 +1074,15 @@ bool Object::Get_Health_Box_Dimensions(float &width, float &height) const
 
 bool Object::Get_Ammo_Pip_Showing_Info(int &clip_size, int &ammo_in_clip) const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Object, int &, int &>(
-        PICK_ADDRESS(0x00547760, 0x007D0A7F), this, clip_size, ammo_in_clip);
-#else
-    return false;
-#endif
+    const Weapon *weapon = m_weaponSet.Find_Ammo_Pip_Showing_Weapon();
+
+    if (weapon == nullptr) {
+        return false;
+    }
+
+    clip_size = weapon->Get_Clip_Size();
+    ammo_in_clip = weapon->Get_Ammo_In_Clip();
+    return true;
 }
 
 BehaviorModule *Object::Find_Module(NameKeyType type) const
@@ -968,11 +1095,6 @@ BehaviorModule *Object::Find_Module(NameKeyType type) const
 
     return nullptr;
 }
-
-// #TODO This will cause compile error as soon as DamageModule is properly implemented elsewhere. Delete this then.
-class DamageModule : public BehaviorModule
-{
-};
 
 DamageModule *Object::Find_Damage_Module(NameKeyType type) const
 {
@@ -1009,25 +1131,111 @@ bool Object::Is_Mass_Selectable() const
 
 void Object::Init_Object()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object>(PICK_ADDRESS(0x00545D90, 0x007CF205), this);
-#endif
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        m_weaponSetConditions[i] = -1;
+    }
+
+    g_theGameLogic->Send_Object_Created(this);
+    Update_Upgrade_Modules();
+    Player *player = Get_Controlling_Player();
+
+    if (player != nullptr) {
+        if (!Get_Receiving_Difficulty_Bonus() && g_theScriptEngine->Get_Use_Object_Difficulty_Bonus()) {
+            Set_Receiving_Difficulty_Bonus(true);
+        }
+
+        if (player->Get_Total_Battle_Plan_Count() > 0) {
+            player->Apply_Battle_Plan_Bonuses_For_Object(this);
+        }
+    }
+
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpecialPowerModuleInterface *power = (*module)->Get_Special_Power();
+
+        if (power != nullptr) {
+            const SpecialPowerTemplate *tmplate = power->Get_Special_Power_Template();
+
+            if (tmplate != nullptr) {
+                m_specialPowers.Set(tmplate->Get_Type(), true);
+            }
+        }
+    }
+
+    captainslog_dbgassert(
+        Is_KindOf(KINDOF_PROJECTILE) || (!Is_KindOf(KINDOF_SMALL_MISSILE) && !Is_KindOf(KINDOF_BALLISTIC_MISSILE)),
+        "Missile %s must also be a KindOf = PROJECTILE in addition to being either a SMALL_MISSILE or PROJECTILE_MISSILE ",
+        Get_Template()->Get_Name().Str());
+
+    if (!Is_KindOf(KINDOF_PROJECTILE) && (!Is_KindOf(KINDOF_INERT))) {
+        g_theScriptEngine->Notify_Of_Object_Creation_Or_Destruction();
+        g_theGameLogic->Save_Frame();
+    }
+
+    m_weaponSet.Update_Weapon_Set(this);
+
+    if (Is_KindOf(KINDOF_MINE) || Is_KindOf(KINDOF_BOOBY_TRAP) || Is_KindOf(KINDOF_DEMOTRAP)) {
+        g_thePlayerList->Get_Neutral_Player()->Get_Academy_Stats()->Increment_Traps_Used();
+    }
 }
 
 float Object::Get_Carrier_Deck_Height() const
 {
-#ifdef GAME_DLL
-    return Call_Method<float, const Object>(PICK_ADDRESS(0x0054F3D0, 0x007D96FE), this);
-#else
+    Object *object = g_theGameLogic->Find_Object_By_ID(Get_Producer_ID());
+
+    if (object != nullptr) {
+        for (BehaviorModule **module = object->Get_All_Modules(); *module != nullptr; module++) {
+            ParkingPlaceBehaviorInterface *parking = (*module)->Get_Parking_Place_Behavior_Interface();
+
+            if (parking != nullptr) {
+                return parking->Get_Landing_Deck_Height_Offset();
+            }
+        }
+    }
+
     return 0.0f;
-#endif
 }
 
 void Object::Set_Status(BitFlags<OBJECT_STATUS_COUNT> bits, bool set)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, BitFlags<OBJECT_STATUS_COUNT>, bool>(PICK_ADDRESS(0x00546E20, 0x007D011C), this, bits, set);
-#endif
+    BitFlags<OBJECT_STATUS_COUNT> old_status = m_status;
+
+    if (set) {
+        m_status.Set(bits);
+    } else {
+        m_status.Clear(bits);
+    }
+
+    if (m_status != old_status) {
+        if (set && bits.Test(OBJECT_STATUS_REPULSOR) && m_objectDefectionHelper != nullptr) {
+            m_objectRepulsorHelper->Sleep_Until(g_theGameLogic->Get_Frame() + 60);
+        }
+
+        if (bits.Test(OBJECT_STATUS_STEALTHED) || bits.Test(OBJECT_STATUS_DETECTED) || bits.Test(OBJECT_STATUS_DISGUISED)) {
+            if (Get_Template()->Get_Shroud_Reveal_To_All_Range() > 0.0f) {
+                Handle_Partition_Cell_Maintenance();
+            }
+        }
+
+        if (m_status.Test(OBJECT_STATUS_UNDER_CONSTRUCTION) != bits.Test(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+            SimpleObjectIterator *iter = g_thePartitionManager->Iterate_Potential_Collisions(
+                Get_Position(), Get_Geometry_Info(), Get_Orientation(), false);
+            MemoryPoolObjectHolder holder(iter);
+
+            for (Object *o = iter->First(); o != nullptr; o = iter->Next()) {
+                if (o->Is_KindOf(KINDOF_MINE)) {
+                    if (Get_Relationship(o) != ENEMIES) {
+                        g_theGameLogic->Destroy_Object(o);
+                    } else {
+                        o->Kill(DAMAGE_UNRESISTABLE, DEATH_NORMAL);
+                    }
+                }
+            }
+
+            if (m_partitionData != nullptr) {
+                m_partitionData->Make_Dirty(true);
+            }
+        }
+    }
 }
 
 void Object::Set_Model_Condition_State(ModelConditionFlagType a)
@@ -1046,25 +1254,154 @@ void Object::Clear_Model_Condition_State(ModelConditionFlagType a)
 
 void Object::Attempt_Damage(DamageInfo *info)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, DamageInfo *>(PICK_ADDRESS(0x00547DA0, 0x007D134E), this, info);
-#endif
+    BodyModuleInterface *body = Get_Body_Module();
+
+    if (body != nullptr) {
+        body->Attempt_Damage(info);
+    }
+
+    if (info->m_in.m_shockWaveAmount > 0.0f && info->m_in.m_shockWaveRadius > 0.0f) {
+        PhysicsBehavior *physics = Get_Physics();
+
+        if (physics != nullptr) {
+            if (!Is_Airborne_Target() && !Is_KindOf(KINDOF_PROJECTILE)) {
+                float f1 = GameMath::Min(1.0f, info->m_in.m_shockWavePos.Length() / info->m_in.m_shockWaveRadius);
+                float f2 = (1.0f - info->m_in.m_shockWaveTaperOff) * f1;
+                float f3 = 1.0f - f2;
+
+                Coord3D pos;
+                pos.Set(&info->m_in.m_shockWavePos);
+                pos.Normalize();
+                pos.Scale(f3 * info->m_in.m_shockWaveAmount);
+                pos.z = pos.Length();
+                physics->Apply_Shock(&pos);
+                physics->Apply_Random_Rotation();
+                physics->Set_Stunned(true);
+                Set_Model_Condition_State(MODELCONDITION_STUNNED_FLAILING);
+            }
+        }
+    }
+
+    if (info->m_out.m_actualDamageDealt > 0.0f && info->m_in.m_damageType != DAMAGE_PENALTY
+        && info->m_in.m_damageType != DAMAGE_HEALING) {
+        if (Get_Controlling_Player() != nullptr) {
+            if ((Get_Controlling_Player()->Get_Player_Mask() & info->m_in.m_playerMask) == 0) {
+                if (m_radarData != nullptr) {
+                    if (Get_Controlling_Player() == g_thePlayerList->Get_Local_Player()) {
+                        g_theRadar->Try_Under_Attack_Event(this);
+                    }
+                }
+            }
+        }
+    }
 }
 
-void Object::Clear_Disabled(DisabledType type)
+bool Object::Clear_Disabled(DisabledType type)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, DisabledType>(PICK_ADDRESS(0x005489F0, 0x007D1FE8), this, type);
-#endif
+    if (type < DISABLED_TYPE_COUNT) {
+        if (Get_Disabled_State(type)) {
+            if (type == DISABLED_TYPE_DISABLED_UNDERPOWERED || type == DISABLED_TYPE_DISABLED_EMP
+                || type == DISABLED_TYPE_DISABLED_SUBDUED || type == DISABLED_TYPE_DISABLED_HACKED) {
+                AudioEventRTS audio;
+
+                if ((!Get_Disabled_State(DISABLED_TYPE_DISABLED_UNDERPOWERED) || type == DISABLED_TYPE_DISABLED_UNDERPOWERED)
+                    && (!Get_Disabled_State(DISABLED_TYPE_DISABLED_EMP) || type == DISABLED_TYPE_DISABLED_EMP)
+                    && (!Get_Disabled_State(DISABLED_TYPE_DISABLED_SUBDUED) || type == DISABLED_TYPE_DISABLED_SUBDUED)
+                    && (!Get_Disabled_State(DISABLED_TYPE_DISABLED_HACKED) || type == DISABLED_TYPE_DISABLED_HACKED)) {
+                    if (Is_KindOf(KINDOF_STRUCTURE)) {
+                        audio = g_theAudio->Get_Misc_Audio()->m_buildingReenabled;
+                        audio.Set_Position(Get_Position());
+                        g_theAudio->Add_Audio_Event(&audio);
+                    } else if (Is_KindOf(KINDOF_VEHICLE)) {
+                        audio = g_theAudio->Get_Misc_Audio()->m_vehicleReenabled;
+                        audio.Set_Position(Get_Position());
+                        g_theAudio->Add_Audio_Event(&audio);
+                    }
+                }
+            }
+
+            if (type != DISABLED_TYPE_DISABLED_HELD && Get_Disabled_State(type)) {
+                Pause_All_Special_Powers(false);
+            }
+
+            ContainModuleInterface *contain = Get_Contain();
+
+            if (contain != nullptr) {
+                Object *rider = const_cast<Object *>(contain->Friend_Get_Rider());
+
+                if (rider != nullptr) {
+                    if (m_disabledStateFrames[type] == 0x3FFFFFFF) {
+                        rider->Clear_Disabled(type);
+                    }
+                }
+            }
+
+            if (Is_KindOf(KINDOF_SPAWNS_ARE_THE_WEAPONS)) {
+                SpawnBehaviorInterface *spawn = Get_Spawn_Behavior_Interface();
+
+                if (spawn != nullptr) {
+                    spawn->Order_Slaves_To_Clear_Disabled(type);
+                }
+            }
+
+            m_disabledStateFrames[type] = 0;
+            m_disabledStates.Set(type, false);
+            BitFlags<DISABLED_TYPE_COUNT> flags;
+            flags.Set(DISABLED_TYPE_DISABLED_HELD, true);
+            flags.Set(DISABLED_TYPE_DISABLED_SCRIPT_DISABLED, true);
+            flags.Set(DISABLED_TYPE_DISABLED_UNMANNED, true);
+            BitFlags<DISABLED_TYPE_COUNT> flags2 = Get_Disabled_State_Bits();
+            flags2.Clear_And_Set(flags, DISABLEDMASK_NONE);
+
+            if (!flags2.Count() && m_drawable != nullptr) {
+                m_drawable->Clear_Draw_Bit(Drawable::DRAW_BIT_DISABLED);
+            }
+
+            Check_Disabled_Status();
+
+            if (!Is_Disabled()) {
+                On_Disabled_Edge(false);
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        captainslog_dbgassert(false, "Invalid disabled type value %d specified -- doesn't not exist!", type);
+        return false;
+    }
 }
 
 bool Object::Can_Crush_Or_Squish(Object *obj, CrushSquishTestType type)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Object, Object *, CrushSquishTestType>(PICK_ADDRESS(0x005471D0, 0x007D0486), this, obj, type);
-#else
-    return false;
-#endif
+    if (obj == nullptr) {
+        return false;
+    }
+
+    if (Get_Disabled_State(DISABLED_TYPE_DISABLED_UNMANNED)) {
+        return false;
+    }
+
+    unsigned char level = Get_Crusher_Level();
+
+    if (Get_Relationship(obj) == ALLIES) {
+        return false;
+    }
+
+    if (level == 0) {
+        return false;
+    }
+
+    if (type == TEST_TYPE_1 || type == TEST_TYPE_2) {
+        static NameKeyType key_squish = g_theNameKeyGenerator->Name_To_Key("SquishCollide");
+
+        if (obj->Find_Module(key_squish) != nullptr) {
+            return true;
+        }
+    }
+
+    return (type == TEST_TYPE_0 || type == TEST_TYPE_2) && level > obj->Get_Crushable_Level();
 }
 
 void Object::Defect(Team *team, unsigned int i)
@@ -1188,23 +1525,13 @@ bool Object::Is_Able_To_Attack() const
 
 bool Object::Choose_Best_Weapon_For_Target(const Object *target, WeaponChoiceCriteria criteria, CommandSourceType source)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Object, const Object *, WeaponChoiceCriteria, CommandSourceType>(
-        PICK_ADDRESS(0x00547810, 0x007D0B27), this, target, criteria, source);
-#else
-    return false;
-#endif
+    return m_weaponSet.Choose_Best_Weapon_For_Target(this, target, criteria, source);
 }
 
 CanAttackResult Object::Get_Able_To_Attack_Specific_Object(
     AbleToAttackType type, const Object *obj, CommandSourceType source, WeaponSlotType slot) const
 {
-#ifdef GAME_DLL
-    return Call_Method<CanAttackResult, const Object, AbleToAttackType, const Object *, CommandSourceType, WeaponSlotType>(
-        PICK_ADDRESS(0x005477B0, 0x007D0AC5), this, type, obj, source, slot);
-#else
-    return ATTACK_RESULT_0;
-#endif
+    return m_weaponSet.Get_Able_To_Attack_Specific_Object(type, this, obj, source, slot);
 }
 
 void Object::Set_Team(Team *team)
@@ -1216,9 +1543,7 @@ void Object::Set_Team(Team *team)
 
 void Object::Heal_Completely()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object>(PICK_ADDRESS(0x00548430, 0x007D1800), this);
-#endif
+    Attempt_Healing(999999.0f, nullptr);
 }
 
 float Object::Get_Vision_Range() const
@@ -2021,3 +2346,541 @@ void Object::Notify_Firing_Tracker_Shot_Fired(const Weapon *weapon, ObjectID id)
         m_firingTracker->Shot_Fired(weapon, id);
     }
 }
+
+void Object::Set_Weapon_Set_Flag(WeaponSetType wst)
+{
+    m_curWeaponSetFlags.Set(wst, true);
+    m_weaponSet.Update_Weapon_Set(this);
+
+    if (m_drawable != nullptr) {
+        m_drawable->Set_Model_Condition_State(s_theWeaponSetTypeToModelConditionTypeMap[wst]);
+    }
+}
+
+void Object::Clear_Weapon_Set_Flag(WeaponSetType wst)
+{
+    m_curWeaponSetFlags.Set(wst, false);
+    m_weaponSet.Update_Weapon_Set(this);
+
+    if (m_drawable != nullptr) {
+        m_drawable->Clear_Model_Condition_State(s_theWeaponSetTypeToModelConditionTypeMap[wst]);
+    }
+}
+
+void Object::Give_Upgrade(const UpgradeTemplate *upgrade)
+{
+    if (upgrade != nullptr) {
+        m_objectUpgradesCompleted.Set(upgrade->Get_Upgrade_Mask());
+        Update_Upgrade_Modules();
+    }
+}
+
+void Object::Set_Receiving_Difficulty_Bonus(bool bonus)
+{
+    if (bonus != m_receivingDifficultyBonus) {
+        m_receivingDifficultyBonus = bonus;
+        Get_Controlling_Player()->Friend_Apply_Difficulty_Bonuses_For_Object(this, m_receivingDifficultyBonus);
+    }
+}
+
+void Object::Pause_All_Special_Powers(bool pause)
+{
+    for (BehaviorModule **m = m_allModules; *m != nullptr; m++) {
+        SpecialPowerModuleInterface *power = (*m)->Get_Special_Power();
+
+        if (power != nullptr) {
+            power->Pause_Countdown(pause);
+        }
+    }
+}
+
+void Object::On_Disabled_Edge(bool edge)
+{
+    for (BehaviorModule **m = m_allModules; *m != nullptr; m++) {
+        (*m)->On_Disabled_Edge(edge);
+    }
+
+    DozerAIInterface *dozer;
+
+    if (Get_AI_Update_Interface() != nullptr) {
+        dozer = Get_AI_Update_Interface()->Get_Dozer_AI_Interface();
+    } else {
+        dozer = nullptr;
+    }
+
+    if (edge && dozer != nullptr && dozer->Get_Current_Task() != DOZER_TASK_INVALID) {
+        dozer->Cancel_Task(dozer->Get_Current_Task());
+    }
+
+    Player *player = Get_Controlling_Player();
+
+    if (player != nullptr) {
+        static NameKeyType radar = g_theNameKeyGenerator->Name_To_Key("RadarUpgrade");
+        RadarUpgrade *upgrade = static_cast<RadarUpgrade *>(Find_Module(radar));
+
+        if (upgrade != nullptr && upgrade->Is_Already_Upgraded()) {
+            bool proof = upgrade->Get_Disable_Proof();
+
+            if (edge) {
+                player->Remove_Radar(proof);
+            } else {
+                player->Add_Radar(proof);
+            }
+        }
+    }
+
+    int energy = Get_Template()->Get_Energy_Production();
+
+    if (energy > 0) {
+        static NameKeyType powerPlant = g_theNameKeyGenerator->Name_To_Key("PowerPlantUpgrade");
+        static NameKeyType overCharge = g_theNameKeyGenerator->Name_To_Key("OverchargeBehavior");
+        PowerPlantUpgrade *power = static_cast<PowerPlantUpgrade *>(Find_Module(powerPlant));
+
+        if (power != nullptr && power->Is_Already_Upgraded()) {
+            energy += Get_Template()->Get_Energy_Bonus();
+        }
+
+        OverchargeBehavior *charge = static_cast<OverchargeBehavior *>(Find_Module(overCharge));
+
+        if (charge != nullptr && charge->Is_Overcharge_Active()) {
+            energy += Get_Template()->Get_Energy_Bonus();
+        }
+
+        if (player != nullptr) {
+            player->Get_Energy()->Adjust_Power(energy, !edge);
+        }
+    }
+}
+
+void Object::Check_Disabled_Status()
+{
+    unsigned int frame = g_theGameLogic->Get_Frame();
+
+    for (int i = 0; i < DISABLED_TYPE_COUNT; i++) {
+        if (Get_Disabled_State(static_cast<DisabledType>(i)) && frame >= m_disabledStateFrames[i]) {
+            Clear_Disabled(static_cast<DisabledType>(i));
+            m_disabledStates.Set(i, false);
+        }
+    }
+}
+
+void Object::Attempt_Healing(float amount, const Object *obj)
+{
+    BodyModuleInterface *body = Get_Body_Module();
+
+    if (body != nullptr) {
+        DamageInfo info;
+        info.m_in.m_damageType = DAMAGE_HEALING;
+        info.m_in.m_deathType = DEATH_NONE;
+        ObjectID id;
+
+        if (obj) {
+            id = obj->Get_ID();
+        } else {
+            id = OBJECT_UNK;
+        }
+
+        info.m_in.m_sourceID = id;
+        info.m_in.m_amount = amount;
+        body->Attempt_Healing(&info);
+    }
+}
+
+void Object::On_Removed_From(Object *removed)
+{
+    BitFlags<OBJECT_STATUS_COUNT> flags(
+        BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_MASKED, OBJECT_STATUS_UNSELECTABLE);
+    Clear_Status(flags);
+    m_containedBy = nullptr;
+    m_containedByFrame = 0;
+    Handle_Partition_Cell_Maintenance();
+}
+
+void Object::Set_Geometry_Info(const GeometryInfo &geom)
+{
+    m_geometryInfo = geom;
+
+    if (m_partitionData != nullptr) {
+        g_thePartitionManager->Unregister_Object(this);
+        g_thePartitionManager->Register_Object(this);
+    }
+
+    if (m_drawable != nullptr) {
+        m_drawable->React_To_Geometry_Change();
+    }
+}
+
+void Object::Set_Geometry_Info_Z(float setz)
+{
+    m_geometryInfo.Set_Max_Height_Above_Position(setz);
+
+    if (m_drawable != nullptr) {
+        m_drawable->React_To_Geometry_Change();
+    }
+}
+
+void Object::Set_Temporary_Team(Team *team)
+{
+    Set_Or_Restore_Team(team, false);
+}
+
+void Object::Set_Armor_Set_Flag(ArmorSetType type)
+{
+    m_body->Set_Armor_Set_Flag(type);
+}
+
+void Object::Clear_Armor_Set_Flag(ArmorSetType type)
+{
+    m_body->Clear_Armor_Set_Flag(type);
+}
+
+bool Object::Test_Armor_Set_Flag(ArmorSetType type) const
+{
+    return m_body->Test_Armor_Set_Flag(type);
+}
+
+bool Object::Is_Out_Of_Ammo() const
+{
+    return m_weaponSet.Is_Out_Of_Ammo();
+}
+
+bool Object::Has_Any_Damage_Weapon() const
+{
+    return m_weaponSet.Has_Any_Damage_Weapon();
+}
+
+bool Object::Has_Weapon_To_Deal_Damage_Type(DamageType type) const
+{
+    return m_weaponSet.Has_Weapon_To_Deal_Damage_Type(type);
+}
+
+void Object::Clear_And_Set_Model_Condition_State(ModelConditionFlagType clr, ModelConditionFlagType set)
+{
+    if (m_drawable != nullptr) {
+        m_drawable->Clear_And_Set_Model_Condition_State(clr, set);
+    }
+}
+
+void Object::Set_Model_Condition_Flags(const BitFlags<MODELCONDITION_COUNT> &set)
+{
+    if (m_drawable != nullptr) {
+        m_drawable->Set_Model_Condition_Flags(set);
+    }
+}
+
+Weapon *Object::Find_Waypoint_Following_Capable_Weapon()
+{
+    return m_weaponSet.Find_Waypoint_Following_Capable_Weapon();
+}
+
+bool Object::Is_Neutral_Controlled() const
+{
+    return g_thePlayerList->Get_Neutral_Player() == Get_Controlling_Player();
+}
+
+bool Object::Is_Structure() const
+{
+    return Is_KindOf(KINDOF_STRUCTURE);
+}
+
+bool Object::Is_Non_Faction_Structure() const
+{
+    return Is_Structure() && !Is_Faction_Structure();
+}
+
+void Object::Set_Custom_Indicator_Color(int color)
+{
+    if (m_customIndicatorColor != color) {
+        m_customIndicatorColor = color;
+
+        if (m_drawable != nullptr) {
+            m_drawable->Changed_Team();
+        }
+    }
+}
+
+void Object::Remove_Custom_Indicator_Color()
+{
+    Set_Custom_Indicator_Color(0);
+}
+
+void Object::Set_Destination_Layer(PathfindLayerEnum layer)
+{
+    if (layer != m_destinationLayer) {
+        m_destinationLayer = layer;
+    }
+}
+
+bool Object::Is_Mobile() const
+{
+    return !Is_KindOf(KINDOF_IMMOBILE) && !Is_Disabled();
+}
+
+void Object::On_Partition_Cell_Change()
+{
+    Handle_Partition_Cell_Maintenance();
+}
+
+void Object::Set_Shroud_Range(float range)
+{
+    m_shroudRange = range;
+}
+
+void Object::Set_Selectable(bool selectable)
+{
+    m_isSelectable = selectable;
+
+    if (m_drawable != nullptr) {
+        m_drawable->Set_Selectable(selectable);
+    }
+}
+
+const Utf8String &Object::Get_Command_Set_String() const
+{
+    if (m_commandSetStringOverride.Is_Not_Empty()) {
+        return m_commandSetStringOverride;
+    }
+
+    return Get_Template()->Get_Command_Set_String();
+}
+
+AIGroup *Object::Get_Group()
+{
+    return m_aiGroup;
+}
+
+void Object::Enter_Group(AIGroup *group)
+{
+    Leave_Group();
+    m_aiGroup = group;
+}
+
+#if 0
+void Object::On_Contained_By(Object *contained) {}
+
+int Object::Get_Transport_Slot_Count() const
+{
+    return 0;
+}
+
+void Object::On_Destroy() {}
+
+void Object::Restore_Original_Team() {}
+
+bool Object::Check_And_Detonate_Booby_Trap(Object *obj)
+{
+    return false;
+}
+
+void Object::Topple(const Coord3D dir, float speed, int options) {}
+
+float Object::Get_Largest_Weapon_Range() const
+{
+    return 0.0f;
+}
+
+void Object::Set_Firing_Condition_For_Current_Weapon() const {}
+
+void Object::Set_Special_Model_Condition_State(ModelConditionFlagType type, unsigned int i) {}
+
+void Object::Pre_Fire_Current_Weapon(const Object *target) {}
+
+unsigned int Object::Get_Last_Shot_Fired_Frame() const
+{
+    return 0;
+}
+
+ObjectID Object::Get_Last_Victim_ID() const
+{
+    return OBJECT_UNK;
+}
+
+void Object::Set_Builder(const Object *obj) {}
+
+ObjectID Object::Get_Sole_Healing_Benefactor() const
+{
+    return OBJECT_UNK;
+}
+
+bool Object::Attempt_Healing_From_Sole_Benefactor(float f, const Object *obj, unsigned int i)
+{
+    return false;
+}
+
+void Object::Set_Effectively_Dead(bool dead) {}
+
+bool Object::Is_Hero() const
+{
+    return false;
+}
+
+unsigned int Object::Get_Disabled_Until(DisabledType type) const
+{
+    return 0;
+}
+
+bool Object::Is_Salvage_Crate() const
+{
+    return false;
+}
+
+void Object::Force_Refresh_Sub_Object_Upgrade_Status() {}
+
+void Object::Prepend_To_List(Object **list) {}
+
+void Object::Set_Layer(PathfindLayerEnum layer) {}
+
+void Object::Remove_From_List(Object **list) {}
+
+void Object::Friend_Prepare_For_Map_Boundary_Adjust() {}
+
+void Object::Friend_Notify_Of_New_Map_Boundary() {}
+
+void Object::Calc_Natural_Rally_Point(Coord2D *pt) {}
+
+void Object::Score_The_Kill(const Object *victim) {}
+
+void Object::Mask_Object(bool mask) {}
+
+bool Object::Is_Using_Airborne_Locomotor() const
+{
+    return false;
+}
+
+void Object::Update_Obj_Values_From_Map_Properties(Dict *properties) {}
+
+bool Object::Has_Upgrade(const UpgradeTemplate *upgrade) const
+{
+    return false;
+}
+
+bool Object::Affected_By_Upgrade(const UpgradeTemplate *upgrade) const
+{
+    return false;
+}
+
+void Object::Remove_Upgrade(const UpgradeTemplate *upgrade) {}
+
+void Object::On_Die(DamageInfo *damage) {}
+
+void Object::Handle_Shroud() {}
+
+void Object::Handle_Value_Map() {}
+
+void Object::Handle_Threat_Map() {}
+
+void Object::Add_Value() {}
+
+void Object::Remove_Value() {}
+
+void Object::Add_Threat() {}
+
+void Object::Remove_Threat() {}
+
+void Object::Look() {}
+
+void Object::Unlook() {}
+
+void Object::Shroud() {}
+
+void Object::Unshroud() {}
+
+float Object::Get_Shroud_Range() const
+{
+    return 0.0f;
+}
+
+SpecialPowerModuleInterface *Object::Get_Special_Power_Module(const SpecialPowerTemplate *t) const
+{
+    return nullptr;
+}
+
+void Object::Do_Special_Power(const SpecialPowerTemplate *t, unsigned int i, bool b) {}
+
+void Object::Do_Special_Power_At_Object(const SpecialPowerTemplate *t, Object *obj, unsigned int i, bool b) {}
+
+void Object::Do_Special_Power_At_Location(const SpecialPowerTemplate *t, const Coord3D *pos, float f, unsigned int i, bool b)
+{
+}
+
+void Object::Do_Special_Power_Using_Waypoints(const SpecialPowerTemplate *t, const Waypoint *wp, unsigned int i, bool b) {}
+
+void Object::Do_Command_Button(const CommandButton *button, CommandSourceType type) {}
+
+void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *obj, CommandSourceType type) {}
+
+void Object::Do_Command_Button_At_Position(const CommandButton *button, const Coord3D *pos, CommandSourceType type) {}
+
+void Object::Do_Command_Button_Using_Waypoints(const CommandButton *button, const Waypoint *wp, CommandSourceType type) {}
+
+void Object::Clear_Leech_Range_Mode_For_All_Weapons() {}
+
+DockUpdateInterface *Object::Get_Dock_Update_Interface()
+{
+    return nullptr;
+}
+
+ProjectileUpdateInterface *Object::Get_Projectile_Update_Interface() const
+{
+    return nullptr;
+}
+
+SpecialPowerUpdateInterface *Object::Find_Special_Power_With_Overridable_Destination_Active(SpecialPowerType type) const
+{
+    return nullptr;
+}
+
+SpecialPowerUpdateInterface *Object::Find_Special_Power_With_Overridable_Destination(SpecialPowerType type) const
+{
+    return nullptr;
+}
+
+SpecialAbilityUpdate *Object::Find_Special_Ability_Update(SpecialPowerType type) const
+{
+    return nullptr;
+}
+
+bool Object::Get_Single_Logical_Bone_Position(const char *bone, Coord3D *pos, Matrix3D *tm) const
+{
+    return false;
+}
+
+bool Object::Get_Single_Logical_Bone_Position_On_Turret(
+    WhichTurretType type, const char *bone, Coord3D *pos, Matrix3D *tm) const
+{
+    return false;
+}
+
+int Object::Get_Multi_Logical_Bone_Position(const char *bone, int i, Coord3D *pos, Matrix3D *tm, bool b) const
+{
+    return 0;
+}
+
+bool Object::Can_Produce_Upgrade(const UpgradeTemplate *t)
+{
+    return false;
+}
+
+void Object::Go_Invulnerable(unsigned int i) {}
+
+RadarPriorityType Object::Get_Radar_Priority() const
+{
+    return RADAR_PRIORITY_NOT_ON_RADAR;
+}
+
+CountermeasuresBehaviorInterface *Object::Get_Countermeasures_Behavior_Interface()
+{
+    return nullptr;
+}
+
+const CountermeasuresBehaviorInterface *Object::Get_Countermeasures_Behavior_Interface() const
+{
+    return nullptr;
+}
+
+ObjectID Object::Calculate_Countermeasure_To_Divert_To(const Object &obj)
+{
+    return OBJECT_UNK;
+}
+
+#endif

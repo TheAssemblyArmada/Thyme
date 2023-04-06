@@ -174,7 +174,7 @@ public:
 
     bool Is_Cur_Weapon_Locked() const { return m_curWeaponLocked != NOT_LOCKED; }
     bool Has_Any_Weapon() const { return m_filledWeaponSlotMask != 0; }
-    bool Has_Weapon_To_Deal_Damage_Type(DamageType type) { return m_damageTypes.Test(type); }
+    bool Has_Weapon_To_Deal_Damage_Type(DamageType type) const { return m_damageTypes.Test(type); }
     WeaponSlotType Get_Cur_Weapon_Slot() const { return m_curWeapon; }
     const Weapon *Get_Cur_Weapon() const { return m_weapons[m_curWeapon]; }
     Weapon *Get_Cur_Weapon() { return m_weapons[m_curWeapon]; }

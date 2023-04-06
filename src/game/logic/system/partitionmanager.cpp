@@ -755,6 +755,15 @@ void PartitionData::Make_Dirty(bool b)
 #endif
 }
 
+ObjectShroudStatus PartitionData::Get_Shrouded_Status(int index)
+{
+#ifdef GAME_DLL
+    return Call_Method<ObjectShroudStatus, PartitionData, int>(PICK_ADDRESS(0x00539C50, 0x0081C0C8), this, index);
+#else
+    return SHROUDED_INVALID;
+#endif
+}
+
 // wb: 0x0081B76E
 PartitionCell::~PartitionCell()
 {

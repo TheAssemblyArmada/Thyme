@@ -74,6 +74,8 @@ public:
     virtual void Reset() override;
     virtual void Update() override {}
 
+    UpgradeTemplate *Find_Veterancy_Upgrade(VeterancyLevel level);
+
     UpgradeTemplate *Get_Upgrade_List() { return m_upgradeList; }
     UpgradeTemplate *Find_Upgrade(const Utf8String &name);
     UpgradeTemplate *Find_Upgrade_By_Key(NameKeyType key);

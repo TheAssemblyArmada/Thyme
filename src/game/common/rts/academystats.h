@@ -36,6 +36,7 @@ public:
     void Increment_Mines_Disarmed() { m_minesClearedCount++; }
     void Increment_Used_Control_Groups() { m_controlGroupCount++; }
     void Add_Science_Points_Spent(int points) { m_sciencePointsSpentCount += points; }
+    void Increment_Traps_Used() { m_trapsUsed++; }
 
     virtual void CRC_Snapshot(Xfer *xfer) {}
     virtual void Xfer_Snapshot(Xfer *xfer);

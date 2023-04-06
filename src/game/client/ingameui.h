@@ -64,6 +64,11 @@ struct BuildProgress
     GameWindow *m_control;
 };
 
+enum WorldAnimationOptions
+{
+    WORLD_ANIMATION_UNK = 1,
+};
+
 class InGameUI : public SubsystemInterface, public SnapShot
 {
 public:
@@ -180,6 +185,9 @@ public:
     virtual void Debug_Add_Floating_Text(Utf8String const &text, Coord3D const *pos, int color);
 #endif
     virtual View *Create_View() = 0;
+
+    void Add_World_Animation(
+        Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise);
 
     bool Get_Drawable_Caption_Bold() const { return m_drawableCaptionBold; }
     int Get_Drawable_Caption_Size() const { return m_drawableCaptionPointSize; }

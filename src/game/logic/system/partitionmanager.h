@@ -201,6 +201,7 @@ private:
     float m_radius;
     uint16_t m_playerIndex;
     uint32_t m_frame;
+    friend class Object;
 };
 
 class PartitionManager : public SubsystemInterface, public SnapShot

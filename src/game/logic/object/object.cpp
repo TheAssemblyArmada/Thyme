@@ -18,6 +18,7 @@
 #include "aipathfind.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
+#include "autohealbehavior.h"
 #include "behaviormodule.h"
 #include "bodymodule.h"
 #include "colorspace.h"
@@ -49,12 +50,14 @@
 #include "simpleobjectiterator.h"
 #include "spawnbehavior.h"
 #include "specialpower.h"
+#include "specialpowercompletiondie.h"
 #include "squishcollide.h"
 #include "statusdamagehelper.h"
 #include "subdualdamagehelper.h"
 #include "team.h"
 #include "tempweaponbonushelper.h"
 #include "terrainlogic.h"
+#include "toppleupdate.h"
 #include "updatemodule.h"
 #include "w3ddebugicons.h"
 #include "weaponset.h"
@@ -1368,7 +1371,7 @@ bool Object::Clear_Disabled(DisabledType type)
             return false;
         }
     } else {
-        captainslog_dbgassert(false, "Invalid disabled type value %d specified -- doesn't not exist!", type);
+        captainslog_dbgassert(false, "Invalid disabled type value %d specified -- doesn't exist!", type);
         return false;
     }
 }
@@ -1404,11 +1407,80 @@ bool Object::Can_Crush_Or_Squish(Object *obj, CrushSquishTestType type)
     return (type == TEST_TYPE_0 || type == TEST_TYPE_2) && level > obj->Get_Crushable_Level();
 }
 
-void Object::Defect(Team *team, unsigned int i)
+void Object::Defect(Team *team, unsigned int timer)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, Team *, unsigned int>(PICK_ADDRESS(0x0054EEC0, 0x007D924B), this, team, i);
-#endif
+    if (!Is_Contained()) {
+        Player *player = Get_Controlling_Player();
+
+        if (player != nullptr) {
+            Team *default_team = player->Get_Default_Team();
+
+            if (default_team != team && !Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !Get_Status(OBJECT_STATUS_SOLD)) {
+                ProductionUpdateInterface *production = Get_Production_Update_Interface();
+
+                if (production != nullptr) {
+                    production->Cancel_And_Refund_All_Production();
+                }
+
+                if (Friend_Get_Radar_Data() != nullptr) {
+                    if (team->Get_Controlling_Player()->Is_Playable_Side()) {
+                        if (default_team->Get_Controlling_Player()->Is_Playable_Side()) {
+                            g_theRadar->Try_Infiltration_Event(this);
+                        }
+                    }
+                }
+
+                Friend_Set_Undetected_Defector(timer != 0);
+
+                if (m_objectDefectionHelper != nullptr) {
+                    m_objectDefectionHelper->Start_Defection_Timer(timer, true);
+                }
+
+                Set_Team(team);
+                AIUpdateInterface *update = Get_AI_Update_Interface();
+                Handle_Partition_Cell_Maintenance();
+
+                if (update != nullptr) {
+                    update->AI_Idle(COMMANDSOURCE_AI);
+                }
+
+                AudioEventRTS event(*Get_Template()->Get_Voice_Defect());
+                event.Set_Object_ID(Get_ID());
+                g_theAudio->Add_Audio_Event(&event);
+                Drawable *drawable = Get_Drawable();
+
+                if (drawable != nullptr) {
+                    drawable->Flash_As_Selected(0);
+                    AudioEventRTS event2(g_theAudio->Get_Misc_Audio()->m_defectorTimerTick);
+                    event2.Set_Object_ID(Get_ID());
+                    g_theAudio->Add_Audio_Event(&event2);
+                }
+
+                ContainModuleInterface *contain = Get_Contain();
+
+                if (contain != nullptr && contain->Is_Kick_Out_On_Capture()) {
+                    contain->Remove_All_Contained(true);
+                }
+
+                for (BehaviorModule **module = Get_All_Modules(); *module != nullptr; module++) {
+                    ParkingPlaceBehaviorInterface *parking = (*module)->Get_Parking_Place_Behavior_Interface();
+
+                    if (parking != nullptr) {
+                        parking->Defect_All_Parked_Units(team, timer);
+                        break;
+                    }
+                }
+
+                for (Object *obj = g_theGameLogic->Get_First_Object(); obj != nullptr; obj = obj->Get_Next_Object()) {
+                    if (obj->Is_KindOf(KINDOF_MINE)) {
+                        if (obj->Get_Producer_ID() == Get_ID()) {
+                            obj->Set_Team(team);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 unsigned char Object::Get_Crushable_Level() const
@@ -1423,9 +1495,14 @@ unsigned char Object::Get_Crusher_Level() const
 
 void Object::Kill(DamageType damage, DeathType death)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, DamageType, DeathType>(PICK_ADDRESS(0x00548300, 0x007D1733), this, damage, death);
-#endif
+    DamageInfo info;
+    info.m_in.m_damageType = damage;
+    info.m_in.m_deathType = death;
+    info.m_in.m_sourceID = OBJECT_UNK;
+    info.m_in.m_amount = Get_Body_Module()->Get_Max_Health();
+    info.m_in.m_unk2 = true;
+    Attempt_Damage(&info);
+    captainslog_dbgassert(!info.m_out.m_noEffect, "Attempting to kill an unKillable object (InactiveBody?)");
 }
 
 void Object::On_Collide(Object *other, const Coord3D *loc, const Coord3D *normal)
@@ -1471,11 +1548,103 @@ void Object::Set_Disabled(DisabledType type)
     Set_Disabled_Until(type, 0x3FFFFFFF);
 }
 
-void Object::Set_Disabled_Until(DisabledType type, unsigned int i)
+void Object::Set_Disabled_Until(DisabledType type, unsigned int frame)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, DisabledType, unsigned int>(PICK_ADDRESS(0x005485C0, 0x007D1A3F), this, type, i);
-#endif
+    bool enabled = !Is_Disabled();
+
+    if (type < DISABLED_TYPE_COUNT) {
+        AudioEventRTS event;
+
+        if (type != DISABLED_TYPE_DISABLED_UNMANNED || Is_KindOf(KINDOF_DRONE)) {
+            if ((type == DISABLED_TYPE_DISABLED_UNDERPOWERED || type == DISABLED_TYPE_DISABLED_EMP
+                    || type == DISABLED_TYPE_DISABLED_SUBDUED || type == DISABLED_TYPE_DISABLED_HACKED)
+                && !Get_Disabled_State(DISABLED_TYPE_DISABLED_UNDERPOWERED)
+                && !Get_Disabled_State(DISABLED_TYPE_DISABLED_EMP) && !Get_Disabled_State(DISABLED_TYPE_DISABLED_SUBDUED)
+                && !Get_Disabled_State(DISABLED_TYPE_DISABLED_HACKED)) {
+                if (Is_KindOf(KINDOF_STRUCTURE)) {
+                    event = g_theAudio->Get_Misc_Audio()->m_buildingDisabled;
+                    event.Set_Position(Get_Position());
+                    g_theAudio->Add_Audio_Event(&event);
+                } else if (Is_KindOf(KINDOF_VEHICLE)) {
+                    event = g_theAudio->Get_Misc_Audio()->m_vehicleDisabled;
+                    event.Set_Position(Get_Position());
+                    g_theAudio->Add_Audio_Event(&event);
+                }
+            }
+        } else {
+            event = g_theAudio->Get_Misc_Audio()->m_splatterVehiclePilotsBrain;
+            event.Set_Position(Get_Position());
+            g_theAudio->Add_Audio_Event(&event);
+        }
+
+        if (m_disabledStateFrames[type] != frame) {
+            if (type != DISABLED_TYPE_DISABLED_HELD && !Get_Disabled_State(type)) {
+                Pause_All_Special_Powers(true);
+            }
+
+            m_disabledStateFrames[type] = frame;
+            m_disabledStates.Set(type, g_theGameLogic->Get_Frame() < frame);
+
+            if (m_drawable != nullptr && Is_Disabled() && type != DISABLED_TYPE_DISABLED_HELD
+                && type != DISABLED_TYPE_DISABLED_SCRIPT_DISABLED && type != DISABLED_TYPE_DISABLED_UNMANNED) {
+                m_drawable->Set_Draw_Bit(Drawable::DRAW_BIT_DISABLED);
+            }
+
+            ContainModuleInterface *contain = Get_Contain();
+
+            if (contain != nullptr) {
+                Object *rider = const_cast<Object *>(contain->Friend_Get_Rider());
+
+                if (rider != nullptr) {
+                    rider->Set_Disabled_Until(type, frame);
+                }
+            }
+
+            if (Is_KindOf(KINDOF_SPAWNS_ARE_THE_WEAPONS)) {
+                SpawnBehaviorInterface *spawn = Get_Spawn_Behavior_Interface();
+
+                if (spawn != nullptr) {
+                    spawn->Order_Slaves_Disabled_Until(type, frame);
+                }
+            }
+        }
+
+        if (type == DISABLED_TYPE_DISABLED_UNMANNED && !Is_KindOf(KINDOF_DRONE)) {
+            BitFlags<WEAPONSET_COUNT> flags;
+            flags.Set(WEAPONSET_CARBOMB, true);
+            const WeaponTemplateSet *weapon = Get_Template()->Find_Weapon_Template_Set(flags);
+
+            if (weapon != nullptr && weapon->Test_Weapon_Set_Flag(WEAPONSET_CARBOMB)) {
+                const DamageInfo *damage_info = Get_Body_Module()->Get_Last_Damage_Info();
+                Object *obj = g_theGameLogic->Find_Object_By_ID(damage_info->m_in.m_sourceID);
+
+                if (obj != nullptr) {
+                    obj->Score_The_Kill(this);
+                }
+
+                Kill(DAMAGE_UNRESISTABLE, DEATH_NORMAL);
+            } else {
+                ExperienceTracker *tracker = Get_Experience_Tracker();
+
+                if (tracker != nullptr) {
+                    tracker->Set_Experience_And_Level(0, false);
+                }
+
+                static NameKeyType key_AutoHealBehavior = g_theNameKeyGenerator->Name_To_Key("AutoHealBehavior");
+                AutoHealBehavior *heal = static_cast<AutoHealBehavior *>(Find_Update_Module(key_AutoHealBehavior));
+
+                if (heal != nullptr) {
+                    heal->Undo_Upgrade();
+                }
+            }
+        }
+
+        if (enabled) {
+            On_Disabled_Edge(true);
+        }
+    } else {
+        captainslog_dbgassert(false, "Invalid disabled type value %d specified -- doesn't exist!", type);
+    }
 }
 
 void Object::Set_Captured(bool captured)
@@ -1516,11 +1685,122 @@ Weapon *Object::Get_Current_Weapon(WeaponSlotType *wslot)
 
 bool Object::Is_Able_To_Attack() const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Object>(PICK_ADDRESS(0x0054A0C0, 0x007D3B0D), this);
-#else
-    return false;
-#endif
+    if (Get_Status_Bits().Test(OBJECT_STATUS_NO_ATTACK)) {
+        return false;
+    }
+
+    const Object *contained = Get_Contained_By();
+    captainslog_dbgassert(contained == nullptr || contained->Get_Contain() != nullptr,
+        "A %s thinks they are contained by something with no contain module!",
+        Get_Template()->Get_Name().Str());
+
+    if (contained != nullptr) {
+        if (contained->Get_Contain()) {
+            if (!contained->Get_Contain()->Is_Passenger_Allowed_To_Fire(Get_ID())) {
+                return false;
+            }
+        }
+    }
+
+    if (Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+        return false;
+    }
+
+    if (Get_Status(OBJECT_STATUS_SOLD)) {
+        return false;
+    }
+
+    if (Get_Disabled_State(DISABLED_TYPE_DISABLED_SUBDUED)) {
+        return false;
+    }
+
+    if (Is_KindOf(KINDOF_PORTABLE_STRUCTURE) || Is_KindOf(KINDOF_SPAWNS_ARE_THE_WEAPONS)) {
+        if (Get_Disabled_State(DISABLED_TYPE_DISABLED_HACKED) || Get_Disabled_State(DISABLED_TYPE_DISABLED_EMP)) {
+            return false;
+        }
+
+        if (Is_KindOf(KINDOF_INFANTRY)) {
+            for (BehaviorModule **module = Get_All_Modules(); *module != nullptr; module++) {
+                SlavedUpdateInterface *slaved = (*module)->Get_Slaved_Update_Interface();
+
+                if (slaved != nullptr) {
+                    ObjectID slaver = slaved->Get_Slaver_ID();
+
+                    if (slaver != OBJECT_UNK) {
+                        Object *obj = g_theGameLogic->Find_Object_By_ID(slaver);
+
+                        if (obj != nullptr) {
+                            if (obj->Get_Disabled_State(DISABLED_TYPE_DISABLED_SUBDUED)) {
+                                return false;
+                            }
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+    }
+
+    bool has_turret = false;
+    bool has_weapon = false;
+
+    const AIUpdateInterface *update = Get_AI_Update_Interface();
+
+    if (update != nullptr && !Is_KindOf(KINDOF_CAN_ATTACK)) {
+        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+            if (Get_Weapon_In_Weapon_Slot(static_cast<WeaponSlotType>(i))) {
+                has_weapon = true;
+                float turret_angle;
+                WhichTurretType turret =
+                    update->Get_Which_Turret_For_Weapon_Slot(static_cast<WeaponSlotType>(i), &turret_angle, nullptr);
+
+                if (turret == TURRET_INVALID) {
+                    has_turret = true;
+                    break;
+                }
+
+                if (update->Is_Turret_Enabled(turret)) {
+                    has_turret = true;
+                    break;
+                }
+            }
+        }
+
+        if (has_weapon && !has_turret) {
+            return false;
+        }
+    }
+
+    if (Is_KindOf(KINDOF_CAN_ATTACK)) {
+        return true;
+    }
+
+    if (Get_Status_Bits().Test(OBJECT_STATUS_CAN_ATTACK)) {
+        return true;
+    }
+
+    ContainModuleInterface *contain = Get_Contain();
+
+    if (contain != nullptr) {
+        if (contain->Is_Passenger_Allowed_To_Fire(Get_ID())) {
+            if (contain->Get_Contain_Count()) {
+                return true;
+            }
+        }
+    }
+
+    if (Get_AI_Update_Interface() != nullptr && m_weaponSet.Has_Any_Weapon()) {
+        return true;
+    }
+
+    SpawnBehaviorInterface *spawn = Get_Spawn_Behavior_Interface();
+
+    if (spawn != nullptr && spawn->Can_Any_Slaves_Attack()) {
+        return true;
+    }
+
+    return Get_Template()->Is_Enter_Guard();
 }
 
 bool Object::Choose_Best_Weapon_For_Target(const Object *target, WeaponChoiceCriteria criteria, CommandSourceType source)
@@ -1536,9 +1816,19 @@ CanAttackResult Object::Get_Able_To_Attack_Specific_Object(
 
 void Object::Set_Team(Team *team)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, Team *>(PICK_ADDRESS(0x00546800, 0x007CFB7A), this, team);
-#endif
+    if (team != nullptr) {
+        if (!team->Get_Controlling_Player()->Is_Player_Active()) {
+            team = g_thePlayerList->Get_Neutral_Player()->Get_Default_Team();
+        }
+    }
+
+    Set_Temporary_Team(team);
+
+    if (m_team != nullptr) {
+        m_originalTeamName = m_team->Get_Name();
+    } else {
+        m_originalTeamName = Utf8String::s_emptyString;
+    }
 }
 
 void Object::Heal_Completely()
@@ -1572,9 +1862,9 @@ float Object::Get_Vision_Range() const
 
 void Object::Handle_Partition_Cell_Maintenance()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object>(PICK_ADDRESS(0x0054CD30, 0x007D6DFE), this);
-#endif
+    Handle_Shroud();
+    Handle_Value_Map();
+    Handle_Threat_Map();
 }
 
 bool Object::Is_Inside(const PolygonTrigger *trigger) const
@@ -1658,20 +1948,15 @@ SpawnBehaviorInterface *Object::Get_Spawn_Behavior_Interface() const
 
 bool Object::Has_Countermeasures() const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Object const>(PICK_ADDRESS(0x0054F460, 0x007D981D), this);
-#else
-    return false;
-#endif
+    const CountermeasuresBehaviorInterface *counter = Get_Countermeasures_Behavior_Interface();
+
+    return counter != nullptr && counter->Is_Active();
 }
 
 SpecialPowerCompletionDie *Object::Find_Special_Power_Completion_Die() const
 {
-#ifdef GAME_DLL
-    return Call_Method<SpecialPowerCompletionDie *, Object const>(PICK_ADDRESS(0x0054E8E0, 0x007D8D93), this);
-#else
-    return nullptr;
-#endif
+    static NameKeyType key_SpecialPowerCompletionDie = g_theNameKeyGenerator->Name_To_Key("SpecialPowerCompletionDie");
+    return static_cast<SpecialPowerCompletionDie *>(Find_Module(key_SpecialPowerCompletionDie));
 }
 
 void Object::Set_Producer(const Object *obj)
@@ -1685,9 +1970,13 @@ void Object::Set_Producer(const Object *obj)
 
 void Object::Report_Missile_For_Countermeasures(Object *obj)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object, Object *>(PICK_ADDRESS(0x0054F4A0, 0x007D9855), this, obj);
-#endif
+    for (BehaviorModule **module = Get_All_Modules(); *module != nullptr; module++) {
+        CountermeasuresBehaviorInterface *counter = (*module)->Get_Countermeasures_Behavior_Interface();
+
+        if (counter != nullptr) {
+            counter->Report_Missile_For_Countermeasures(obj);
+        }
+    }
 }
 
 float Object::Estimate_Damage(DamageInfoInput &info) const
@@ -1712,9 +2001,22 @@ int Object::Get_Num_Consecutive_Shots_Fired_At_Target(const Object *target) cons
 
 void Object::Update_Upgrade_Modules()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Object>(PICK_ADDRESS(0x00548E90, 0x007D25F5), this);
-#endif
+    if (!Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION) && !Get_Status(OBJECT_STATUS_DESTROYED)
+        && Get_Controlling_Player() != nullptr) {
+        BitFlags<128> mask = Get_Controlling_Player()->Get_Upgrades_Completed();
+        BitFlags<128> mask2 = Get_Object_Upgrade_Mask();
+        mask.Set(mask2);
+
+        for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+            UpgradeModuleInterface *upgrade = (*module)->Get_Upgrade();
+
+            if (upgrade != nullptr) {
+                if (!upgrade->Is_Already_Upgraded()) {
+                    upgrade->Attempt_Upgrade(mask);
+                }
+            }
+        }
+    }
 }
 
 void Object::Friend_Adjust_Power_For_Player(bool power)
@@ -1868,13 +2170,40 @@ void Object::Leave_Group()
     }
 }
 
-bool Object::Set_Script_Status(ObjectScriptStatusBit bit, bool set)
+void Object::Set_Script_Status(ObjectScriptStatusBit bit, bool set)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Object, ObjectScriptStatusBit, bool>(PICK_ADDRESS(0x00547100, 0x007D0360), this, bit, set);
-#else
-    return false;
-#endif
+    unsigned char old_status = m_scriptStatus;
+
+    if (set) {
+        m_scriptStatus |= bit;
+    } else {
+        m_scriptStatus &= ~bit;
+    }
+
+    if (m_scriptStatus != old_status) {
+        if ((m_scriptStatus & STATUS_ENABLED) != (old_status & STATUS_ENABLED)) {
+            if (m_partitionData) {
+                m_partitionData->Make_Dirty(1);
+            }
+
+            if ((m_scriptStatus & STATUS_ENABLED) != 0) {
+                Set_Disabled(DISABLED_TYPE_DISABLED_SCRIPT_DISABLED);
+            } else {
+                Clear_Disabled(DISABLED_TYPE_DISABLED_SCRIPT_DISABLED);
+            }
+        }
+        if ((m_scriptStatus & STATUS_POWERED) != (old_status & STATUS_POWERED)) {
+            if (m_partitionData) {
+                m_partitionData->Make_Dirty(1);
+            }
+
+            if ((m_scriptStatus & STATUS_POWERED) != 0) {
+                Set_Disabled(DISABLED_TYPE_DISABLED_SCRIPT_UNDERPOWERED);
+            } else {
+                Clear_Disabled(DISABLED_TYPE_DISABLED_SCRIPT_UNDERPOWERED);
+            }
+        }
+    }
 }
 
 bool Object::Is_Faction_Structure() const
@@ -2655,6 +2984,450 @@ void Object::Enter_Group(AIGroup *group)
     m_aiGroup = group;
 }
 
+SpecialPowerModuleInterface *Object::Get_Special_Power_Module(const SpecialPowerTemplate *t) const
+{
+    if (t == nullptr) {
+        return nullptr;
+    }
+
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpecialPowerModuleInterface *power = (*module)->Get_Special_Power();
+
+        if (power && power->Is_Module_For_Power(t)) {
+            return power;
+        }
+    }
+
+    return nullptr;
+}
+
+void Object::Handle_Shroud()
+{
+    Unlook();
+    Unshroud();
+    Shroud();
+    Look();
+}
+
+void Object::Handle_Value_Map()
+{
+    Remove_Value();
+    Add_Value();
+}
+
+void Object::Handle_Threat_Map()
+{
+    Remove_Threat();
+    Add_Threat();
+}
+
+void Object::Add_Value()
+{
+    if (m_valueSighting->Is_Invalid()) {
+        if (Get_Controlling_Player()) {
+            if (!Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION) && !Is_Effectively_Dead()
+                && Get_Shroud_Clearing_Range() > 0.0f) {
+                m_valueSighting->m_where = *Get_Position();
+                m_valueSighting->m_frame = Get_Template()->Get_Build_Cost();
+                m_valueSighting->m_playerIndex = Get_Controlling_Player()->Get_Player_Mask();
+                m_valueSighting->m_radius = Get_Vision_Range();
+                g_thePartitionManager->Do_Value_Affect(m_valueSighting->m_where.x,
+                    m_valueSighting->m_where.y,
+                    m_valueSighting->m_radius,
+                    m_valueSighting->m_frame,
+                    m_valueSighting->m_playerIndex);
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "An Object is adding value, but hasn't removed his previous value.");
+    }
+}
+
+void Object::Remove_Value()
+{
+    if (!m_valueSighting->Is_Invalid()) {
+        g_thePartitionManager->Undo_Value_Affect(m_valueSighting->m_where.x,
+            m_valueSighting->m_where.y,
+            m_valueSighting->m_radius,
+            m_valueSighting->m_frame,
+            m_valueSighting->m_playerIndex);
+        m_valueSighting->Reset();
+    }
+}
+
+void Object::Add_Threat()
+{
+    if (m_threatSighting->Is_Invalid()) {
+        if (Get_Controlling_Player() != nullptr) {
+            if (!Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION) && !Is_Effectively_Dead()
+                && Get_Shroud_Clearing_Range() > 0.0f) {
+                m_threatSighting->m_where = *Get_Position();
+                m_threatSighting->m_frame = Get_Template()->Get_Threat_Value();
+                m_threatSighting->m_playerIndex = Get_Controlling_Player()->Get_Player_Mask();
+                m_threatSighting->m_radius = Get_Vision_Range();
+                g_thePartitionManager->Do_Threat_Affect(m_threatSighting->m_where.x,
+                    m_threatSighting->m_where.y,
+                    m_threatSighting->m_radius,
+                    m_threatSighting->m_frame,
+                    m_threatSighting->m_playerIndex);
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "An Object is adding threat, but hasn't removed his previous value.");
+    }
+}
+
+void Object::Remove_Threat()
+{
+    if (!m_threatSighting->Is_Invalid()) {
+        g_thePartitionManager->Undo_Threat_Affect(m_threatSighting->m_where.x,
+            m_threatSighting->m_where.y,
+            m_threatSighting->m_radius,
+            m_threatSighting->m_frame,
+            m_threatSighting->m_playerIndex);
+        m_threatSighting->Reset();
+    }
+}
+
+void Object::Look()
+{
+    if (m_friendlyLookSighting->Is_Invalid()) {
+        if (Get_Controlling_Player() != nullptr && !Is_Destroyed() && !Is_Effectively_Dead()) {
+            ContainModuleInterface *contain;
+
+            if (Get_Contained_By() != nullptr) {
+                contain = Get_Contained_By()->Get_Contain();
+            } else {
+                contain = nullptr;
+            }
+
+            if (contain == nullptr || contain->Is_Garrisonable()) {
+                float radius = Get_Shroud_Clearing_Range();
+
+                if (radius > 0.0f) {
+                    unsigned short mask = 0;
+                    unsigned short spied_mask;
+
+                    if (Is_KindOf(KINDOF_REVEAL_TO_ALL)) {
+                        spied_mask = -1;
+                    } else {
+                        for (int i = g_thePlayerList->Get_Player_Count() - 1; i >= 0; i--) {
+                            Player *player = g_thePlayerList->Get_Nth_Player(i);
+
+                            if (Get_Controlling_Player()->Get_Relationship(player->Get_Default_Team()) == ALLIES) {
+                                mask |= player->Get_Player_Mask();
+                            }
+                        }
+
+                        spied_mask = m_spiedOnPlayers | mask;
+                    }
+
+                    Coord3D pos = *Get_Position();
+                    g_thePartitionManager->Do_Shroud_Reveal(pos.x, pos.y, radius, spied_mask);
+                    m_friendlyLookSighting->m_where = pos;
+                    m_friendlyLookSighting->m_playerIndex = spied_mask;
+                    m_friendlyLookSighting->m_radius = Get_Shroud_Clearing_Range();
+                }
+
+                float range = Get_Template()->Get_Shroud_Reveal_To_All_Range();
+
+                if (range > 0.0f && !Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION)
+                    && (!Get_Status(OBJECT_STATUS_STEALTHED) || Get_Status(OBJECT_STATUS_DETECTED)
+                        || Get_Status(OBJECT_STATUS_DISGUISED))) {
+                    Coord3D pos = *Get_Position();
+                    unsigned short mask =
+                        g_thePlayerList->Get_Players_With_Relationship(Get_Controlling_Player()->Get_Player_Mask(),
+                            PLAYER_RELATIONSHIP_FLAGS_ENEMIES | PLAYER_RELATIONSHIP_FLAGS_NEUTRALS);
+                    g_thePartitionManager->Do_Shroud_Reveal(pos.x, pos.y, range, mask);
+                    m_allLookSighting->m_where = pos;
+                    m_allLookSighting->m_playerIndex = mask;
+                    m_allLookSighting->m_radius = range;
+                }
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "An Object is looking, but hasn't unlooked the last one.");
+    }
+}
+
+void Object::Unlook()
+{
+    if (!m_friendlyLookSighting->Is_Invalid()) {
+        g_thePartitionManager->Queue_Undo_Shroud_Reveal(m_friendlyLookSighting->m_where.x,
+            m_friendlyLookSighting->m_where.y,
+            m_friendlyLookSighting->m_radius,
+            m_friendlyLookSighting->m_playerIndex);
+        m_friendlyLookSighting->Reset();
+
+        if (!m_allLookSighting->Is_Invalid()) {
+            g_thePartitionManager->Queue_Undo_Shroud_Reveal(m_allLookSighting->m_where.x,
+                m_allLookSighting->m_where.y,
+                m_allLookSighting->m_radius,
+                m_allLookSighting->m_playerIndex);
+            m_allLookSighting->Reset();
+        }
+    }
+}
+
+void Object::Shroud()
+{
+    if (m_shroudSighting->Is_Invalid()) {
+        if (Get_Controlling_Player() != nullptr) {
+            if (!Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION) && !Is_Effectively_Dead()
+                && Get_Shroud_Range() > 0.0f) {
+                unsigned short mask;
+
+                for (int i = g_thePlayerList->Get_Player_Count() - 1; i >= 0; i--) {
+                    Player *player = g_thePlayerList->Get_Nth_Player(i);
+
+                    if (Get_Controlling_Player()->Get_Relationship(player->Get_Default_Team()) == ALLIES) {
+                        mask |= player->Get_Player_Mask();
+                    }
+                }
+
+                Coord3D pos = *Get_Position();
+                g_thePartitionManager->Do_Shroud_Cover(pos.x, pos.y, Get_Shroud_Range(), mask);
+                m_shroudSighting->m_where = pos;
+                m_shroudSighting->m_playerIndex = mask;
+                m_shroudSighting->m_radius = Get_Shroud_Range();
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "An Object is shrouding, but hasn't unshrouded the last one.");
+    }
+}
+
+void Object::Unshroud()
+{
+    if (!m_shroudSighting->Is_Invalid()) {
+        g_thePartitionManager->Undo_Shroud_Cover(m_shroudSighting->m_where.x,
+            m_shroudSighting->m_where.y,
+            m_shroudSighting->m_radius,
+            m_shroudSighting->m_playerIndex);
+        m_shroudSighting->Reset();
+    }
+}
+
+float Object::Get_Shroud_Range() const
+{
+#ifdef GAME_DEBUG_STRUCTS
+    if (g_theWriteableGlobalData->m_debugVisibility) {
+        Vector3 v(m_shroudRange, 0.0f, 0.0f);
+
+        for (int i = 0; i < g_theWriteableGlobalData->m_debugVisibilityTileCount; i++) {
+            float f1 = i * 1.0f / g_theWriteableGlobalData->m_debugVisibilityTileCount;
+            float angle = (f1 + f1) * GAMEMATH_PI;
+            v.Rotate_Z(angle);
+            Coord3D pos;
+            pos.x = v.X + Get_Position()->x;
+            pos.y = v.Y + Get_Position()->y;
+            pos.z = v.Z + Get_Position()->z;
+            Add_Icon(&pos,
+                g_theWriteableGlobalData->m_debugVisibilityTileWidth,
+                g_theWriteableGlobalData->m_debugVisibilityTileDuration,
+                g_theWriteableGlobalData->m_debugVisibilityTileTargettableColor);
+        }
+    }
+#endif
+    return m_shroudRange;
+}
+
+CountermeasuresBehaviorInterface *Object::Get_Countermeasures_Behavior_Interface()
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        CountermeasuresBehaviorInterface *behavior = (*module)->Get_Countermeasures_Behavior_Interface();
+
+        if (behavior != nullptr) {
+            return behavior;
+        }
+    }
+
+    return nullptr;
+}
+
+const CountermeasuresBehaviorInterface *Object::Get_Countermeasures_Behavior_Interface() const
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        const CountermeasuresBehaviorInterface *behavior = (*module)->Get_Countermeasures_Behavior_Interface();
+
+        if (behavior != nullptr) {
+            return behavior;
+        }
+    }
+
+    return nullptr;
+}
+
+void Object::Score_The_Kill(const Object *victim)
+{
+    Player *victim_player = victim->Get_Controlling_Player();
+
+    if (victim_player->Is_Playable_Side() && !victim->Is_KindOf(KINDOF_IGNORED_IN_GUI)) {
+        Player *player = Get_Controlling_Player();
+
+        if (victim_player != nullptr) {
+            victim_player->Get_Score_Keeper()->Add_Object_Lost(victim);
+        }
+
+        if (this->Get_Relationship(victim) == ENEMIES && player != victim_player) {
+            if (player != nullptr) {
+                player->Get_Score_Keeper()->Add_Object_Destroyed(victim);
+                player->Add_Skill_Points_For_Kill(this, victim);
+                player->Do_Bounty_For_Kill(this, victim);
+            }
+
+            if (m_experienceTracker != nullptr && m_experienceTracker->Is_Accepting_Experience_Points()
+                && !Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+                Get_Experience_Tracker()->Add_Experience_Points(
+                    victim->Get_Experience_Tracker()->Get_Experience_Value(this), true);
+            }
+        }
+    }
+}
+
+void Object::Topple(const Coord3D *dir, float speed, int options)
+{
+    static NameKeyType key_ToppleUpdate = g_theNameKeyGenerator->Name_To_Key("ToppleUpdate");
+    ToppleUpdate *topple = static_cast<ToppleUpdate *>(Find_Module(key_ToppleUpdate));
+
+    if (topple != nullptr) {
+        if (topple->Is_Able_To_Be_Toppled()) {
+            topple->Apply_Toppling_Force(dir, speed, options);
+        }
+    }
+}
+
+void Object::On_Destroy()
+{
+    if (m_containedBy != nullptr && m_containedBy->Get_Contain() != nullptr) {
+        m_containedBy->Get_Contain()->Remove_From_Contain(this, false);
+    }
+
+    for (BehaviorModule **m = m_allModules; *m != nullptr; m++) {
+        (*m)->On_Delete();
+    }
+
+    Handle_Partition_Cell_Maintenance();
+}
+
+float Object::Get_Largest_Weapon_Range() const
+{
+    float range = -1.0f;
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        const Weapon *weapon = Get_Weapon_In_Weapon_Slot(static_cast<WeaponSlotType>(i));
+
+        if (weapon != nullptr) {
+            float attack_range = weapon->Get_Attack_Range(this);
+
+            if (attack_range > range) {
+                range = attack_range;
+            }
+        }
+    }
+
+    return range;
+}
+
+void Object::Set_Firing_Condition_For_Current_Weapon() const
+{
+    if (m_drawable != nullptr) {
+        WeaponSlotType slot = m_weaponSet.Get_Cur_Weapon_Slot();
+        BitFlags<MODELCONDITION_COUNT> flags = WeaponSet::Get_Model_Condition_For_Weapon_Slot(slot, WSF_FIRING);
+        m_drawable->Clear_And_Set_Model_Condition_Flags(s_allWeaponFireFlags[slot], flags);
+    }
+}
+
+void Object::Set_Special_Model_Condition_State(ModelConditionFlagType type, unsigned int i)
+{
+    Clear_Special_Model_Condition_States();
+    Set_Model_Condition_State(type);
+
+    if (i == 0) {
+        i = 1;
+    }
+
+    m_specialModelConditionSleepFrame = i + g_theGameLogic->Get_Frame();
+    m_objectSMCHelper->Sleep_Until(m_specialModelConditionSleepFrame);
+}
+
+void Object::Pre_Fire_Current_Weapon(const Object *target)
+{
+    Weapon *weapon = m_weaponSet.Get_Cur_Weapon();
+
+    if (weapon != nullptr) {
+        if (g_theGameLogic->Get_Frame() + 1 >= weapon->Get_Next_Shot()) {
+            weapon->Pre_Fire_Weapon(this, target);
+            Friend_Set_Undetected_Defector(false);
+        }
+    }
+}
+
+ObjectID Object::Get_Last_Victim_ID() const
+{
+    if (m_firingTracker != nullptr) {
+        return m_firingTracker->Get_Victim_ID();
+    } else {
+        return OBJECT_UNK;
+    }
+}
+
+void Object::Set_Builder(const Object *obj)
+{
+    if (obj != nullptr) {
+        m_builderID = obj->Get_ID();
+    } else {
+        m_builderID = OBJECT_UNK;
+    }
+}
+
+ObjectID Object::Get_Sole_Healing_Benefactor() const
+{
+    if (g_theGameLogic->Get_Frame() <= m_soleHealingEndFrame) {
+        return m_soleHealingBenefactor;
+    } else {
+        return OBJECT_UNK;
+    }
+}
+
+void Object::Prepend_To_List(Object **list)
+{
+    captainslog_dbgassert(!Is_In_List(list), "obj is already in a list");
+    m_prev = nullptr;
+    m_next = *list;
+
+    if (*list != nullptr) {
+        (*list)->m_prev = this;
+    }
+
+    *list = this;
+}
+
+void Object::Remove_From_List(Object **list)
+{
+    if (m_next != nullptr) {
+        m_next->m_prev = m_prev;
+    }
+
+    if (m_prev != nullptr) {
+        m_prev->m_next = m_next;
+    } else {
+        *list = m_next;
+    }
+
+    m_prev = nullptr;
+    m_next = nullptr;
+}
+
+bool Object::Has_Upgrade(const UpgradeTemplate *upgrade) const
+{
+    return m_objectUpgradesCompleted.Test_For_All(upgrade->Get_Upgrade_Mask());
+}
+
+void Object::Clear_Leech_Range_Mode_For_All_Weapons()
+{
+    m_weaponSet.Clear_Leech_Range_Mode_For_All_Weapons();
+}
+
 #if 0
 void Object::On_Contained_By(Object *contained) {}
 
@@ -2663,8 +3436,6 @@ int Object::Get_Transport_Slot_Count() const
     return 0;
 }
 
-void Object::On_Destroy() {}
-
 void Object::Restore_Original_Team() {}
 
 bool Object::Check_And_Detonate_Booby_Trap(Object *obj)
@@ -2672,34 +3443,9 @@ bool Object::Check_And_Detonate_Booby_Trap(Object *obj)
     return false;
 }
 
-void Object::Topple(const Coord3D dir, float speed, int options) {}
-
-float Object::Get_Largest_Weapon_Range() const
-{
-    return 0.0f;
-}
-
-void Object::Set_Firing_Condition_For_Current_Weapon() const {}
-
-void Object::Set_Special_Model_Condition_State(ModelConditionFlagType type, unsigned int i) {}
-
-void Object::Pre_Fire_Current_Weapon(const Object *target) {}
-
 unsigned int Object::Get_Last_Shot_Fired_Frame() const
 {
     return 0;
-}
-
-ObjectID Object::Get_Last_Victim_ID() const
-{
-    return OBJECT_UNK;
-}
-
-void Object::Set_Builder(const Object *obj) {}
-
-ObjectID Object::Get_Sole_Healing_Benefactor() const
-{
-    return OBJECT_UNK;
 }
 
 bool Object::Attempt_Healing_From_Sole_Benefactor(float f, const Object *obj, unsigned int i)
@@ -2726,19 +3472,13 @@ bool Object::Is_Salvage_Crate() const
 
 void Object::Force_Refresh_Sub_Object_Upgrade_Status() {}
 
-void Object::Prepend_To_List(Object **list) {}
-
 void Object::Set_Layer(PathfindLayerEnum layer) {}
-
-void Object::Remove_From_List(Object **list) {}
 
 void Object::Friend_Prepare_For_Map_Boundary_Adjust() {}
 
 void Object::Friend_Notify_Of_New_Map_Boundary() {}
 
 void Object::Calc_Natural_Rally_Point(Coord2D *pt) {}
-
-void Object::Score_The_Kill(const Object *victim) {}
 
 void Object::Mask_Object(bool mask) {}
 
@@ -2749,11 +3489,6 @@ bool Object::Is_Using_Airborne_Locomotor() const
 
 void Object::Update_Obj_Values_From_Map_Properties(Dict *properties) {}
 
-bool Object::Has_Upgrade(const UpgradeTemplate *upgrade) const
-{
-    return false;
-}
-
 bool Object::Affected_By_Upgrade(const UpgradeTemplate *upgrade) const
 {
     return false;
@@ -2762,38 +3497,6 @@ bool Object::Affected_By_Upgrade(const UpgradeTemplate *upgrade) const
 void Object::Remove_Upgrade(const UpgradeTemplate *upgrade) {}
 
 void Object::On_Die(DamageInfo *damage) {}
-
-void Object::Handle_Shroud() {}
-
-void Object::Handle_Value_Map() {}
-
-void Object::Handle_Threat_Map() {}
-
-void Object::Add_Value() {}
-
-void Object::Remove_Value() {}
-
-void Object::Add_Threat() {}
-
-void Object::Remove_Threat() {}
-
-void Object::Look() {}
-
-void Object::Unlook() {}
-
-void Object::Shroud() {}
-
-void Object::Unshroud() {}
-
-float Object::Get_Shroud_Range() const
-{
-    return 0.0f;
-}
-
-SpecialPowerModuleInterface *Object::Get_Special_Power_Module(const SpecialPowerTemplate *t) const
-{
-    return nullptr;
-}
 
 void Object::Do_Special_Power(const SpecialPowerTemplate *t, unsigned int i, bool b) {}
 
@@ -2812,8 +3515,6 @@ void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *ob
 void Object::Do_Command_Button_At_Position(const CommandButton *button, const Coord3D *pos, CommandSourceType type) {}
 
 void Object::Do_Command_Button_Using_Waypoints(const CommandButton *button, const Waypoint *wp, CommandSourceType type) {}
-
-void Object::Clear_Leech_Range_Mode_For_All_Weapons() {}
 
 DockUpdateInterface *Object::Get_Dock_Update_Interface()
 {
@@ -2866,16 +3567,6 @@ void Object::Go_Invulnerable(unsigned int i) {}
 RadarPriorityType Object::Get_Radar_Priority() const
 {
     return RADAR_PRIORITY_NOT_ON_RADAR;
-}
-
-CountermeasuresBehaviorInterface *Object::Get_Countermeasures_Behavior_Interface()
-{
-    return nullptr;
-}
-
-const CountermeasuresBehaviorInterface *Object::Get_Countermeasures_Behavior_Interface() const
-{
-    return nullptr;
 }
 
 ObjectID Object::Calculate_Countermeasure_To_Divert_To(const Object &obj)

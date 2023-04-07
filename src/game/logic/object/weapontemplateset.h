@@ -54,7 +54,7 @@ public:
     WeaponTemplateSet() : m_type(nullptr) { Clear(); }
     void Clear();
     bool Has_Any_Weapons() const;
-    bool Test_Weapon_Set_Flag(WeaponSetType set);
+    bool Test_Weapon_Set_Flag(WeaponSetType set) const;
     void Parse_Weapon_Template_Set(INI *ini, const ThingTemplate *type);
 
     static void Parse_Weapon(INI *ini, void *formal, void *store, const void *user_data);

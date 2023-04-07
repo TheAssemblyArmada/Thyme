@@ -17,6 +17,7 @@
 #include "color.h"
 #include "coord.h"
 #include "gametype.h"
+#include "scriptparam.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
 
@@ -46,6 +47,8 @@ public:
     void Remove_Object(Object *obj);
     void Add_Object(Object *obj);
     void Try_Under_Attack_Event(Object *obj);
+    void Try_Infiltration_Event(Object *obj);
+    void Try_Event(RadarEventType event, const Coord3D *pos);
 
 private:
     enum

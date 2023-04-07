@@ -41,3 +41,17 @@ void Radar::Try_Under_Attack_Event(Object *obj)
     Call_Method<void, Radar, Object *>(PICK_ADDRESS(0x0049AA00, 0x0090AC89), this, obj);
 #endif
 }
+
+void Radar::Try_Event(RadarEventType event, const Coord3D *pos)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Radar, RadarEventType, const Coord3D *>(PICK_ADDRESS(0x0049AE70, 0x0090B0F5), this, event, pos);
+#endif
+}
+
+void Radar::Try_Infiltration_Event(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Radar, Object *>(PICK_ADDRESS(0x0049AD70, 0x0090AFF1), this, obj);
+#endif
+}

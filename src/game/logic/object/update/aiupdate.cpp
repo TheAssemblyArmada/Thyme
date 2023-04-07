@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "aiupdate.h"
+#include "gamelogic.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -202,4 +203,17 @@ bool AIUpdateInterface::Is_Aircraft_That_Adjusts_Destination() const
     }
 
     return false;
+}
+
+bool AIUpdateInterface::Is_Turret_Enabled(WhichTurretType tur) const
+{
+    return m_turretAI[tur] != nullptr && m_turretAI[tur]->Is_Enabled();
+}
+
+void AIUpdateInterface::Transfer_Attack(ObjectID old_victim_id, ObjectID new_victim_id)
+{
+#ifdef GAME_DLL
+    Call_Method<void, AIUpdateInterface, ObjectID, ObjectID>(
+        PICK_ADDRESS(0x005D5BC0, 0x007FB3A1), this, old_victim_id, new_victim_id);
+#endif
 }

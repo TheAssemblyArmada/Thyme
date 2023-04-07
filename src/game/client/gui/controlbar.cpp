@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "controlbar.h"
+#include "gamelogic.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -56,4 +57,49 @@ void ControlBar::On_Player_Science_Purchase_Points_Changed(const Player *player)
 #ifdef GAME_DLL
     Call_Method<void, ControlBar, const Player *>(PICK_ADDRESS(0x0045EB90, 0x001056F2), this, player);
 #endif
+}
+
+const CommandSet *ControlBar::Find_Command_Set(const Utf8String &name)
+{
+#ifdef GAME_DLL
+    return Call_Method<const CommandSet *, ControlBar, const Utf8String &>(PICK_ADDRESS(0x0045F770, 0x0072E236), this, name);
+#else
+    return nullptr;
+#endif
+}
+
+bool CommandButton::Is_Valid_Object_Target(const Object *obj1, const Object *obj2)
+{
+    if (obj1 == nullptr || obj2 == nullptr) {
+        return false;
+    }
+
+    return Is_Valid_Relationship_Target(obj1->Get_Relationship(obj2));
+}
+
+bool CommandButton::Is_Valid_Relationship_Target(Relationship r)
+{
+    unsigned int options = 0;
+
+    if (r) {
+        if (r == ALLIES) {
+            options = 4;
+        } else if (r == NEUTRAL) {
+            options = 2;
+        }
+    } else {
+        options = 1;
+    }
+
+    return (options & m_options) != 0;
+}
+
+const CommandButton *CommandSet::Get_Command_Button(int button)
+{
+    const CommandButton *c;
+    if (g_theGameLogic != nullptr && g_theGameLogic->Find_Control_Bar_Override(m_name, button, c)) {
+        return c;
+    }
+
+    return m_command[button];
 }

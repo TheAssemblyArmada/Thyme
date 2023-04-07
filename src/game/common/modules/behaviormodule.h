@@ -27,7 +27,6 @@ class BridgeTowerBehaviorInterface;
 class CaveInterface;
 class CollideModuleInterface;
 class ContainModuleInterface;
-class CountermeasuresBehaviorInterface;
 class DamageModuleInterface;
 class DestroyModuleInterface;
 class DieModuleInterface;
@@ -40,7 +39,6 @@ class PowerPlantUpdateInterface;
 class ProductionEntry;
 class RailedTransportDockUpdateInterface;
 class RebuildHoleBehaviorInterface;
-class SlavedUpdateInterface;
 class SlowDeathBehaviorInterface;
 class SpawnBehaviorInterface;
 class SpecialPowerUpdateInterface;
@@ -58,6 +56,25 @@ class AudioEventRTS;
 enum ProductionID
 {
     PRODUCTION_UNK,
+};
+
+class SlavedUpdateInterface
+{
+public:
+    virtual ObjectID Get_Slaver_ID() const = 0;
+    virtual void On_Enslave(const Object *slaver) = 0;
+    virtual void On_Slaver_Die(const DamageInfo *info) = 0;
+    virtual void On_Slaver_Damage(const DamageInfo *info) = 0;
+    virtual bool Is_Self_Tasking() const = 0;
+};
+
+class CountermeasuresBehaviorInterface
+{
+public:
+    virtual void Report_Missile_For_Countermeasures(Object *obj) = 0;
+    virtual ObjectID Calculate_Countermeasure_To_Divert_To(const Object &obj) = 0;
+    virtual void Reload_Countermeasures() = 0;
+    virtual bool Is_Active() const = 0;
 };
 
 class ProductionUpdateInterface

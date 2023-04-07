@@ -46,6 +46,8 @@ public:
     bool Has_Die_Frame() const { return m_dieFrame != 0; }
     Object *Get_Target_Object() const { return g_theGameLogic->Find_Object_By_ID(m_targetID); }
 
+    void Detonate();
+
 private:
     ObjectID m_targetID;
     unsigned int m_dieFrame;

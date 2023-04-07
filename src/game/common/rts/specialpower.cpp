@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "specialpower.h"
+#include "player.h"
 
 #ifndef GAME_DLL
 SpecialPowerStore *g_theSpecialPowerStore;
@@ -38,6 +39,27 @@ void SpecialPowerStore::Reset()
             ++it;
         }
     }
+}
+
+bool SpecialPowerStore::Can_Use_Special_Power(Object *obj, const SpecialPowerTemplate *special_power_template)
+{
+    if (obj == nullptr || special_power_template == nullptr) {
+        return false;
+    }
+
+    if (obj->Get_Special_Power_Module(special_power_template) == nullptr) {
+        return false;
+    }
+
+    ScienceType science = special_power_template->Get_Required_Science();
+
+    if (science != SCIENCE_INVALID) {
+        if (!obj->Get_Controlling_Player()->Has_Science(science)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 const SpecialPowerTemplate *SpecialPowerTemplate::Get_FO() const

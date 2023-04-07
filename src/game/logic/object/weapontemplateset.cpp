@@ -77,7 +77,7 @@ bool WeaponTemplateSet::Has_Any_Weapons() const
  *
  * 0x00606190
  */
-bool WeaponTemplateSet::Test_Weapon_Set_Flag(WeaponSetType set)
+bool WeaponTemplateSet::Test_Weapon_Set_Flag(WeaponSetType set) const
 {
     return m_conditions.Test(set);
 }

@@ -372,3 +372,10 @@ void GameLogic::Bind_Object_And_Drawable(Object *obj, Drawable *d)
     d->Friend_Bind_To_Object(obj);
     obj->Friend_Bind_To_Drawable(d);
 }
+
+void GameLogic::Deselect_Object(Object *obj, unsigned short i, bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, GameLogic, Object *, unsigned short, bool>(PICK_ADDRESS(0x004A6890, 0x007B1C07), this, obj, i, b);
+#endif
+}

@@ -259,7 +259,7 @@ public:
     unsigned int Get_Contained_By_Frame() const { return m_containedByFrame; }
 
     void Clear_Status(BitFlags<OBJECT_STATUS_COUNT> bits) { return Set_Status(bits, false); }
-    bool Clear_Script_Status(ObjectScriptStatusBit bit) { return Set_Script_Status(bit, false); }
+    void Clear_Script_Status(ObjectScriptStatusBit bit) { Set_Script_Status(bit, false); }
 
     BehaviorModule *Find_Module(NameKeyType type) const;
     DamageModule *Find_Damage_Module(NameKeyType type) const;
@@ -355,7 +355,7 @@ public:
     void Set_Temporary_Team(Team *team);
     void Set_Or_Restore_Team(Team *team, bool b);
     void Set_Status(BitFlags<OBJECT_STATUS_COUNT> bits, bool set);
-    bool Set_Script_Status(ObjectScriptStatusBit bit, bool set);
+    void Set_Script_Status(ObjectScriptStatusBit bit, bool set);
     void Set_Armor_Set_Flag(ArmorSetType type);
     void Set_Firing_Condition_For_Current_Weapon() const;
     void Set_Model_Condition_State(ModelConditionFlagType a);
@@ -368,7 +368,7 @@ public:
     void Set_Captured(bool captured);
     void Set_Receiving_Difficulty_Bonus(bool bonus);
     void Set_Disabled(DisabledType type);
-    void Set_Disabled_Until(DisabledType type, unsigned int i);
+    void Set_Disabled_Until(DisabledType type, unsigned int frame);
     void Set_Trigger_Area_Flags_For_Change_In_Position();
     void Set_Layer(PathfindLayerEnum layer);
     void Set_Destination_Layer(PathfindLayerEnum layer);
@@ -489,7 +489,7 @@ public:
     void Leave_Group();
 
     void Restore_Original_Team();
-    void Defect(Team *team, unsigned int i);
+    void Defect(Team *team, unsigned int timer);
 
     void Reload_All_Ammo(bool now);
     bool Choose_Best_Weapon_For_Target(const Object *target, WeaponChoiceCriteria criteria, CommandSourceType source);
@@ -507,7 +507,7 @@ public:
     void Check_Disabled_Status();
 
     void Init_Object();
-    void Topple(const Coord3D dir, float speed, int options);
+    void Topple(const Coord3D *dir, float speed, int options);
     bool Test_Armor_Set_Flag(ArmorSetType type) const;
     void Remove_Custom_Indicator_Color();
     void Pause_All_Special_Powers(bool pause);

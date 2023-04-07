@@ -33,6 +33,7 @@ public:
     bool Get_Shared_Synced_Timer() const { return Get_FO()->m_sharedSyncedTimer; }
     unsigned int Get_ID() const { return Get_FO()->m_id; }
     unsigned int Get_Reload_Time() const { return Get_FO()->m_reloadTime; }
+    ScienceType Get_Required_Science() const { return m_requiredScience; }
 
 private:
     Utf8String m_name;
@@ -60,6 +61,8 @@ public:
     virtual void Init() override {}
     virtual void Reset() override;
     virtual void Update() override {}
+
+    bool Can_Use_Special_Power(Object *obj, const SpecialPowerTemplate *special_power_template);
 
 private:
     std::vector<SpecialPowerTemplate *> m_specialPowerTemplates;

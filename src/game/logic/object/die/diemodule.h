@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Special Power Completion Die
+ * @brief Die Module
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,26 +14,24 @@
  */
 #pragma once
 #include "always.h"
-#include "diemodule.h"
+#include "behaviormodule.h"
 
-class SpecialPowerCompletionDie : public DieModule
+class DieModuleInterface
 {
-    IMPLEMENT_POOL(SpecialPowerCompletionDie)
+public:
+    virtual void On_Die(DamageInfo *damage_info) = 0;
+};
+
+class DieModule : public BehaviorModule, public DieModuleInterface
+{
+    IMPLEMENT_ABSTRACT_POOL(DieModule)
 
 public:
-    virtual ~SpecialPowerCompletionDie() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    virtual ~DieModule() override;
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    virtual void On_Die(DamageInfo *damage_info) override;
-
-    void Notify_Script_Engine();
-    void Set_Creator(ObjectID id);
-
-private:
-    ObjectID m_creatorID;
-    bool m_creatorSet;
+    virtual DieModuleInterface *Get_Die() override;
 };

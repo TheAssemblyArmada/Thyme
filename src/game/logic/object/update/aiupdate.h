@@ -222,6 +222,44 @@ public:
         params.m_pos = *pos;
         AI_Do_Command(&params);
     }
+
+    void AI_Attack_Position(const Coord3D *pos, int max_shots_to_fire, CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_ATTACK_POSITION, cmd_source);
+        params.m_pos = *pos;
+        params.m_intValue = max_shots_to_fire;
+        AI_Do_Command(&params);
+    }
+
+    void AI_Hack_Internet(CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_HACK_INTERNET, cmd_source);
+        AI_Do_Command(&params);
+    }
+
+    void AI_Combat_Drop(Object *obj, const Coord3D *pos, CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_COMBAT_DROP, cmd_source);
+        params.m_obj = obj;
+        params.m_pos = *pos;
+        AI_Do_Command(&params);
+    }
+
+    void AI_Attack_Object(Object *victim, int max_shots_to_fire, CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_ATTACK_OBJECT, cmd_source);
+        params.m_obj = victim;
+        params.m_intValue = max_shots_to_fire;
+        AI_Do_Command(&params);
+    }
+
+    void AI_Attack_Move_To_Position(const Coord3D *pos, int max_shots_to_fire, CommandSourceType cmd_source)
+    {
+        AICommandParms params(AICMD_ATTACKMOVE_TO_POSITION, cmd_source);
+        params.m_pos = *pos;
+        params.m_intValue = max_shots_to_fire;
+        AI_Do_Command(&params);
+    }
 };
 
 class AIUpdateModuleData : public UpdateModuleData
@@ -389,6 +427,7 @@ public:
     Object *Get_Next_Mood_Target(bool called_by_ai, bool called_during_idle);
     void Reset_Next_Mood_Check_Time();
     bool Is_Weapon_Slot_On_Turret_And_Aiming_At_Target(WeaponSlotType wslot, const Object *victim) const;
+    void Transfer_Attack(ObjectID old_victim_id, ObjectID new_victim_id);
 
     bool Has_Locomotor_For_Surface(LocomotorSurfaceType t);
     int Friend_Get_Waypoint_Goal_Path_Size() const;
@@ -397,6 +436,7 @@ public:
     const Coord3D *Get_Goal_Position() const;
     WhichTurretType Get_Which_Turret_For_Weapon_Slot(WeaponSlotType wslot, float *turret_angle, float *turret_pitch) const;
     bool Is_Aircraft_That_Adjusts_Destination() const;
+    bool Is_Turret_Enabled(WhichTurretType tur) const;
 
     const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
     Locomotor *Get_Cur_Locomotor() { return m_curLocomotor; }
@@ -419,6 +459,7 @@ public:
     void Set_Current_Turret(WhichTurretType t) { m_currentTurret = t; }
     void Set_Attitude(AttitudeType attitude) { m_attitude = attitude; }
     void Set_Attack_Priority_Info(const AttackPriorityInfo *info) { m_attackInfo = info; }
+    void Set_Is_Recruitable(bool is) { m_isRecruitable = is; }
 
     bool Are_Turrets_Linked() const { return Get_AI_Update_Module_Data()->m_turretsLinked; }
     int Get_Current_Goal_Path_Index() const { return m_currentGoalPathIndex; }

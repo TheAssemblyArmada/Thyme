@@ -283,7 +283,9 @@ set(GAMEENGINE_SRC
     game/logic/object/weapon.cpp
     game/logic/object/weaponset.cpp
     game/logic/object/weapontemplateset.cpp
+    game/logic/object/behavior/autohealbehavior.cpp
     game/logic/object/behavior/overchargebehavior.cpp
+    game/logic/object/behavior/rebuildholebehavior.cpp
     game/logic/object/collide/collidemodule.cpp
     game/logic/object/collide/squishcollide.cpp
     game/logic/object/helper/objectdefectionhelper.cpp
@@ -300,12 +302,16 @@ set(GAMEENGINE_SRC
     game/logic/object/update/laserupdate.cpp
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp
+    game/logic/object/update/specialabilityupdate.cpp
+    game/logic/object/update/stickybombupdate.cpp
     game/logic/object/update/swayclientupdate.cpp
+    game/logic/object/update/toppleupdate.cpp
     game/logic/object/update/aiupdate/dozeraiupdate.cpp
     game/logic/object/upgrade/powerplantupgrade.cpp
     game/logic/object/upgrade/radarupgrade.cpp
     game/logic/object/upgrade/upgrademodule.cpp
     game/logic/object/damage/damagemodule.cpp
+    game/logic/object/die/diemodule.cpp
     game/logic/object/die/specialpowercompletiondie.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp

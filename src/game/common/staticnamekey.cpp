@@ -99,6 +99,34 @@ StaticNameKey g_skirmishDifficultyKey("skirmishDifficulty");
 StaticNameKey g_playerColorKey("playerColor");
 StaticNameKey g_playerNightColorKey("playerNightColor");
 StaticNameKey g_playerStartMoneyKey("playerStartMoney");
+StaticNameKey g_objectNameKey("objectNameKey");
+StaticNameKey g_objectMaxHPs("objectMaxHPs");
+StaticNameKey g_objectInitialHealth("objectInitialHealth");
+StaticNameKey g_objectVeterancy("objectVeterancy");
+StaticNameKey g_objectAggressiveness("objectAggressiveness");
+StaticNameKey g_objectRecruitableAI("objectRecruitableAI");
+StaticNameKey g_objectSelectable("objectSelectable");
+StaticNameKey g_objectStopppingDistance("objectStopppingDistance");
+StaticNameKey g_objectEnabled("objectEnabled");
+StaticNameKey g_objectPowered("objectPowered");
+StaticNameKey g_objectIndestructible("objectIndestructible");
+StaticNameKey g_objectUnsellable("objectUnsellable");
+StaticNameKey g_objectTargetable("objectTargetable");
+StaticNameKey g_objectVisualRange("objectVisualRange");
+StaticNameKey g_objectShroudClearingDistance("objectShroudClearingDistance");
+StaticNameKey g_objectGrantUpgrade("objectGrantUpgrade");
+StaticNameKey g_objectTime("objectTime");
+StaticNameKey g_objectWeather("objectWeather");
+StaticNameKey g_objectSoundAmbientEnabled("objectSoundAmbientEnabled");
+StaticNameKey g_objectSoundAmbient("objectSoundAmbient");
+StaticNameKey g_objectSoundAmbientCustomzied("objectSoundAmbientCustomzied");
+StaticNameKey g_objectSoundAmbientLooping("objectSoundAmbientLooping");
+StaticNameKey g_objectSoundAmbientLoopCount("objectSoundAmbientLoopCount");
+StaticNameKey g_objectSoundAmbientMinVolume("objectSoundAmbientMinVolume");
+StaticNameKey g_objectSoundAmbientVolume("objectSoundAmbientVolume");
+StaticNameKey g_objectSoundAmbientMinRange("objectSoundAmbientMinRange");
+StaticNameKey g_objectSoundAmbientMaxRange("objectSoundAmbientMaxRange");
+StaticNameKey g_objectSoundAmbientPriority("objectSoundAmbientPriority");
 
 NameKeyType StaticNameKey::Key()
 {

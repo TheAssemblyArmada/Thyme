@@ -273,3 +273,10 @@ void Pathfinder::Update_Pos(Object *obj, const Coord3D *pos)
     Call_Method<void, Pathfinder, Object *, const Coord3D *>(PICK_ADDRESS(0x0056D510, 0x0089DFE3), this, obj, pos);
 #endif
 }
+
+void Pathfinder::Remove_Pos(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, Object *>(PICK_ADDRESS(0x0056DA30, 0x0089E389), this, obj);
+#endif
+}

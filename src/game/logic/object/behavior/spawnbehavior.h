@@ -31,7 +31,7 @@ public:
         AbleToAttackType type, const Object *target, const Coord3D *location, CommandSourceType source) = 0;
     virtual bool Can_Any_Slaves_Attack() = 0;
     virtual void Order_Slaves_To_Go_Idle(CommandSourceType source) = 0;
-    virtual void Order_Slaves_Disabled_Until(DisabledType type, unsigned int frale) = 0;
+    virtual void Order_Slaves_Disabled_Until(DisabledType type, unsigned int frame) = 0;
     virtual void Order_Slaves_To_Clear_Disabled(DisabledType type) = 0;
     virtual void Give_Slaves_Stealth_Upgrade(bool stealth) = 0;
     virtual bool Are_All_Slaves_Stealthed() const = 0;

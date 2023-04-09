@@ -47,6 +47,7 @@ public:
     BitFlags<128> Get_Upgrade_Mask() const { return m_upgradeMask; }
     Utf8String Get_Name() const { return m_name; }
     NameKeyType Get_Name_Key() const { return m_nameKey; }
+    UpgradeType Get_Type() const { return m_type; }
 
 private:
     UpgradeType m_type;

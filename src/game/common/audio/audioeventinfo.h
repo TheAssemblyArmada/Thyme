@@ -136,6 +136,7 @@ private:
     static const FieldParse s_audioEventParseTable[];
     friend class AudioEventRTS;
     friend class Drawable;
+    friend class Object;
 };
 
 class DynamicAudioEventInfo : public AudioEventInfo

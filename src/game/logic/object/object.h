@@ -285,6 +285,7 @@ public:
     void Set_Partition_Data(PartitionData *data) { m_partitionData = data; }
     void Set_Radar_Data(RadarObject *data) { m_radarData = data; }
     void Set_Construction_Percent(float percent) { m_constructionPercent = percent; }
+    void Set_Weapon_Lock(WeaponSlotType wslot, WeaponLockType lock) { m_weaponSet.Set_Weapon_Lock(wslot, lock); }
 
     RadarObject *Friend_Get_Radar_Data() { return m_radarData; }
     void Delete() { Delete_Instance(); }
@@ -333,7 +334,7 @@ public:
     bool Get_Single_Logical_Bone_Position(const char *bone, Coord3D *pos, Matrix3D *tm) const;
     bool Get_Single_Logical_Bone_Position_On_Turret(
         WhichTurretType type, const char *bone, Coord3D *pos, Matrix3D *tm) const;
-    int Get_Multi_Logical_Bone_Position(const char *bone, int i, Coord3D *pos, Matrix3D *tm, bool b) const;
+    int Get_Multi_Logical_Bone_Position(const char *bone, int max_count, Coord3D *pos, Matrix3D *tm, bool world_space) const;
     const Utf8String &Get_Command_Set_String() const;
     RadarPriorityType Get_Radar_Priority() const;
     AIGroup *Get_Group();
@@ -411,10 +412,16 @@ public:
 
     void Do_Status_Damage(ObjectStatusTypes status, float damage);
     void Do_Temp_Weapon_Bonus(WeaponBonusConditionType type, unsigned int frame);
-    void Do_Special_Power(const SpecialPowerTemplate *t, unsigned int i, bool b);
-    void Do_Special_Power_At_Object(const SpecialPowerTemplate *t, Object *obj, unsigned int i, bool b);
-    void Do_Special_Power_At_Location(const SpecialPowerTemplate *t, const Coord3D *pos, float f, unsigned int i, bool b);
-    void Do_Special_Power_Using_Waypoints(const SpecialPowerTemplate *t, const Waypoint *wp, unsigned int i, bool b);
+    void Do_Special_Power(const SpecialPowerTemplate *special_power_template, unsigned int options, bool force_usable);
+    void Do_Special_Power_At_Object(
+        const SpecialPowerTemplate *special_power_template, Object *obj, unsigned int options, bool force_usable);
+    void Do_Special_Power_At_Location(const SpecialPowerTemplate *special_power_template,
+        const Coord3D *loc,
+        float f,
+        unsigned int options,
+        bool force_usable);
+    void Do_Special_Power_Using_Waypoints(
+        const SpecialPowerTemplate *special_power_template, const Waypoint *wp, unsigned int options, bool force_usable);
     void Do_Command_Button(const CommandButton *button, CommandSourceType type);
     void Do_Command_Button_At_Object(const CommandButton *button, Object *obj, CommandSourceType type);
     void Do_Command_Button_At_Position(const CommandButton *button, const Coord3D *pos, CommandSourceType type);
@@ -471,14 +478,14 @@ public:
 
     void Attempt_Damage(DamageInfo *info);
     void Attempt_Healing(float amount, const Object *obj);
-    bool Attempt_Healing_From_Sole_Benefactor(float f, const Object *obj, unsigned int i);
+    bool Attempt_Healing_From_Sole_Benefactor(float amount, const Object *obj, unsigned int frame);
 
     bool Affected_By_Upgrade(const UpgradeTemplate *upgrade) const;
     void Update_Upgrade_Modules();
     void Force_Refresh_Sub_Object_Upgrade_Status();
     void Give_Upgrade(const UpgradeTemplate *upgrade);
     void Remove_Upgrade(const UpgradeTemplate *upgrade);
-    bool Can_Produce_Upgrade(const UpgradeTemplate *t);
+    bool Can_Produce_Upgrade(const UpgradeTemplate *upgrade);
 
     void Adjust_Model_Condition_For_Weapon_Status();
 
@@ -501,7 +508,7 @@ public:
     void Notify_Subdual_Damage(float damage);
     bool Can_Crush_Or_Squish(Object *obj, CrushSquishTestType type);
     void Heal_Completely();
-    void Go_Invulnerable(unsigned int i);
+    void Go_Invulnerable(unsigned int timer);
 
     bool Check_And_Detonate_Booby_Trap(Object *obj);
     void Check_Disabled_Status();

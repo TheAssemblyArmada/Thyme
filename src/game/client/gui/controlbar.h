@@ -26,15 +26,15 @@ class CommandSet : public Overridable
     IMPLEMENT_POOL(CommandSet)
 
 public:
-    virtual ~CommandSet() override;
-    const CommandButton *Get_Command_Button(int button);
-
-private:
     enum
     {
         MAX_COMMAND_BUTTONS = 18,
     };
 
+    virtual ~CommandSet() override;
+    const CommandButton *Get_Command_Button(int button) const;
+
+private:
     Utf8String m_name;
     const CommandButton *m_command[MAX_COMMAND_BUTTONS];
     CommandSet *m_nextCommandSet;
@@ -103,10 +103,10 @@ public:
     int Get_Max_Shots_To_Fire() const { return m_maxShotsToFire; }
     const Utf8String &Get_Name() const { return m_name; }
     const UpgradeTemplate *Get_Upgrade_Template() const { return m_upgradeTemplate; }
-    Override<ThingTemplate> Get_Template() { return m_thingTemplate; }
+    Override<ThingTemplate> Get_Template() const { return m_thingTemplate; }
 
-    bool Is_Valid_Object_Target(const Object *obj1, const Object *obj2);
-    bool Is_Valid_Relationship_Target(Relationship r);
+    bool Is_Valid_Object_Target(const Object *obj1, const Object *obj2) const;
+    bool Is_Valid_Relationship_Target(Relationship r) const;
 
 private:
     Utf8String m_name;

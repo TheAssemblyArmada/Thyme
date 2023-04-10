@@ -21,11 +21,13 @@
 #include "autohealbehavior.h"
 #include "behaviormodule.h"
 #include "bodymodule.h"
+#include "buildassistant.h"
 #include "colorspace.h"
 #include "controlbar.h"
 #include "damagemodule.h"
 #include "dozeraiupdate.h"
 #include "drawable.h"
+#include "eva.h"
 #include "experiencetracker.h"
 #include "firingtracker.h"
 #include "gameclient.h"
@@ -46,13 +48,17 @@
 #include "powerplantupgrade.h"
 #include "radar.h"
 #include "radarupgrade.h"
+#include "rebuildholebehavior.h"
 #include "scriptengine.h"
 #include "simpleobjectiterator.h"
 #include "spawnbehavior.h"
+#include "specialabilityupdate.h"
 #include "specialpower.h"
 #include "specialpowercompletiondie.h"
 #include "squishcollide.h"
+#include "staticnamekey.h"
 #include "statusdamagehelper.h"
+#include "stickybombupdate.h"
 #include "subdualdamagehelper.h"
 #include "team.h"
 #include "tempweaponbonushelper.h"
@@ -2008,11 +2014,11 @@ void Object::Update_Upgrade_Modules()
         mask.Set(mask2);
 
         for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
-            UpgradeModuleInterface *upgrade = (*module)->Get_Upgrade();
+            UpgradeModuleInterface *interface = (*module)->Get_Upgrade();
 
-            if (upgrade != nullptr) {
-                if (!upgrade->Is_Already_Upgraded()) {
-                    upgrade->Attempt_Upgrade(mask);
+            if (interface != nullptr) {
+                if (!interface->Is_Already_Upgraded()) {
+                    interface->Attempt_Upgrade(mask);
                 }
             }
         }
@@ -3428,150 +3434,1261 @@ void Object::Clear_Leech_Range_Mode_For_All_Weapons()
     m_weaponSet.Clear_Leech_Range_Mode_For_All_Weapons();
 }
 
-#if 0
-void Object::On_Contained_By(Object *contained) {}
+void Object::Update_Obj_Values_From_Map_Properties(Dict *properties)
+{
+    Utf8String string_param;
+    bool bool_param = false;
+    int int_param = 0;
+    float float_param = 0.0f;
+    bool exists;
+    string_param = properties->Get_AsciiString(g_objectNameKey, &exists);
+
+    if (exists) {
+        Set_Name(string_param);
+    }
+
+    int_param = properties->Get_Int(g_objectMaxHPs, &exists);
+
+    if (exists && int_param >= 0) {
+        BodyModuleInterface *body = Get_Body_Module();
+
+        if (body != nullptr) {
+            body->Set_Max_Health(int_param, MAX_HEALTH_SAME_CURRENTHEALTH);
+        }
+    }
+
+    int_param = properties->Get_Int(g_objectInitialHealth, &exists);
+
+    if (exists) {
+        BodyModuleInterface *body = Get_Body_Module();
+
+        if (body != nullptr) {
+            body->Set_Initial_Health(int_param);
+        }
+    }
+
+    int_param = properties->Get_Int(g_objectVeterancy, &exists);
+
+    if (exists && m_experienceTracker != nullptr && m_experienceTracker->Is_Trainable()) {
+        m_experienceTracker->Set_Veterency_Level(static_cast<VeterancyLevel>(int_param), true);
+    }
+
+    int_param = properties->Get_Int(g_objectAggressiveness, &exists);
+
+    if (exists) {
+        AIUpdateInterface *update = Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            update->Set_Attitude(static_cast<AttitudeType>(int_param));
+        }
+    }
+
+    bool_param = properties->Get_Bool(g_objectRecruitableAI, &exists);
+
+    if (exists && Get_AI_Update_Interface() != nullptr) {
+        Get_AI_Update_Interface()->Set_Is_Recruitable(bool_param);
+    }
+
+    bool_param = properties->Get_Bool(g_objectSelectable, &exists);
+
+    if (exists) {
+        if (bool_param != Is_Selectable()) {
+            Set_Selectable(bool_param);
+        }
+    }
+
+    float_param = properties->Get_Real(g_objectStoppingDistance, &exists);
+
+    if (exists && float_param >= 0.5f) {
+        if (Get_AI_Update_Interface()) {
+            if (Get_AI_Update_Interface()->Get_Cur_Locomotor()) {
+                Get_AI_Update_Interface()->Get_Cur_Locomotor()->Set_Close_Enough_Dist(float_param);
+            }
+        }
+    }
+
+    bool_param = properties->Get_Bool(g_objectEnabled, &exists);
+
+    if (exists) {
+        Set_Script_Status(STATUS_ENABLED, !bool_param);
+    }
+
+    bool_param = properties->Get_Bool(g_objectPowered, &exists);
+
+    if (exists) {
+        Set_Script_Status(STATUS_POWERED, !bool_param);
+    }
+
+    bool_param = properties->Get_Bool(g_objectIndestructible, &exists);
+
+    if (exists) {
+        BodyModuleInterface *body = Get_Body_Module();
+
+        if (body != nullptr) {
+            body->Set_Indestructible(bool_param);
+        }
+    }
+
+    bool_param = properties->Get_Bool(g_objectUnsellable, &exists);
+
+    if (exists) {
+        Set_Script_Status(STATUS_UNSELLABLE, bool_param);
+    }
+
+    bool_param = properties->Get_Bool(g_objectTargetable, &exists);
+
+    if (exists) {
+        Set_Script_Status(STATUS_TARGETABLE, bool_param);
+    }
+
+    int_param = properties->Get_Int(g_objectVisualRange, &exists);
+
+    if (exists) {
+        if (int_param < 0) {
+            int_param = 0;
+        }
+
+        m_visionRange = int_param;
+    }
+
+    int_param = properties->Get_Int(g_objectShroudClearingDistance, &exists);
+
+    if (exists) {
+        if (int_param < 0) {
+            int_param = 0;
+        }
+
+        m_shroudClearingRange = int_param;
+    }
+
+    int key = 0;
+
+    do {
+        Utf8String str;
+        str.Format("%s%d", g_theNameKeyGenerator->Key_To_Name(g_objectGrantUpgrade).Str(), key);
+        string_param = properties->Get_AsciiString(g_theNameKeyGenerator->Name_To_Key(str.Str()), &exists);
+
+        if (exists) {
+            UpgradeTemplate *upgrade = g_theUpgradeCenter->Find_Upgrade(string_param);
+
+            if (upgrade != nullptr) {
+                Give_Upgrade(upgrade);
+            }
+        } else {
+            string_param.Clear();
+        }
+
+        key++;
+    } while (!string_param.Is_Empty());
+
+    Drawable *drawable = Get_Drawable();
+
+    if (drawable != nullptr) {
+        int_param = properties->Get_Int(g_objectTime, &exists);
+
+        if (exists) {
+            if (int_param == 1) {
+                drawable->Clear_Model_Condition_State(MODELCONDITION_NIGHT);
+            } else if (int_param == 2) {
+                drawable->Set_Model_Condition_State(MODELCONDITION_NIGHT);
+            }
+        }
+
+        int_param = properties->Get_Int(g_objectWeather, &exists);
+
+        if (exists) {
+            if (int_param == 1) {
+                drawable->Clear_Model_Condition_State(MODELCONDITION_SNOW);
+            } else if (int_param == 2) {
+                drawable->Set_Model_Condition_State(MODELCONDITION_SNOW);
+            }
+        }
+
+        bool ambient_enabled_exists;
+        bool ambient_enabled = properties->Get_Bool(g_objectSoundAmbientEnabled, &ambient_enabled_exists);
+        DynamicAudioEventInfo *info = nullptr;
+        bool info_ok = false;
+        string_param = properties->Get_AsciiString(g_objectSoundAmbient, &exists);
+
+        if (exists) {
+            if (string_param.Is_Empty()) {
+                drawable->Set_Custom_Sound_Ambient_Off();
+                ambient_enabled_exists = true;
+                ambient_enabled = false;
+            } else {
+                AudioEventInfo *found_info = g_theAudio->Find_Audio_Event_Info(string_param);
+                captainslog_dbgassert(
+                    found_info != nullptr, "Cannot find customized ambient sound '%s'", string_param.Str());
+
+                if (found_info != nullptr) {
+                    info = new DynamicAudioEventInfo(*found_info);
+                    info_ok = true;
+                }
+            }
+        }
+
+        if (!exists || !string_param.Is_Empty()) {
+            bool_param = properties->Get_Bool(g_objectSoundAmbientCustomized, &exists);
+
+            if (exists && bool_param) {
+                if (info == nullptr) {
+                    const AudioEventInfo *base_info = drawable->Get_Base_Sound_Ambient_Info();
+                    captainslog_dbgassert(base_info != nullptr, "Get_Base_Sound_Ambient_Info() return NULL");
+
+                    if (base_info != nullptr) {
+                        info = new DynamicAudioEventInfo(*base_info);
+                    }
+                }
+
+                if (info != nullptr) {
+                    bool_param = properties->Get_Bool(g_objectSoundAmbientLooping, &exists);
+
+                    if (exists) {
+                        info->Override_Loop_Flag(bool_param);
+                        info_ok = true;
+                    }
+
+                    int_param = properties->Get_Int(g_objectSoundAmbientLoopCount, &exists);
+
+                    if (exists && (info->m_control & 1) != 0) {
+                        info->Override_Loop_Count(int_param);
+                        info_ok = true;
+                    }
+
+                    float_param = properties->Get_Real(g_objectSoundAmbientMinVolume, &exists);
+
+                    if (exists) {
+                        info->Override_Min_Volume(float_param);
+                        info_ok = true;
+                    }
+
+                    float_param = properties->Get_Real(g_objectSoundAmbientVolume, &exists);
+
+                    if (exists) {
+                        info->Override_Volume(float_param);
+                        info_ok = true;
+                    }
+
+                    float_param = properties->Get_Real(g_objectSoundAmbientMinRange, &exists);
+
+                    if (exists) {
+                        info->Override_Min_Range(float_param);
+                        info_ok = true;
+                    }
+
+                    float_param = properties->Get_Real(g_objectSoundAmbientMaxRange, &exists);
+
+                    if (exists) {
+                        info->Override_Max_Range(float_param);
+                        info_ok = true;
+                    }
+
+                    int_param = properties->Get_Int(g_objectSoundAmbientPriority, &exists);
+
+                    if (exists) {
+                        info->Override_Priority(int_param);
+                        info_ok = true;
+                    }
+                }
+            }
+        }
+
+        if (!ambient_enabled_exists) {
+            if (info != nullptr) {
+                ambient_enabled = info->Is_Looping();
+                ambient_enabled_exists = true;
+            } else {
+                const AudioEventInfo *base_info = drawable->Get_Base_Sound_Ambient_Info();
+
+                if (base_info != nullptr) {
+                    ambient_enabled = base_info->Is_Looping();
+                    ambient_enabled_exists = true;
+                }
+            }
+        }
+
+        if (ambient_enabled_exists && !ambient_enabled) {
+            drawable->Enable_Ambient_Sound_From_Script(false);
+        }
+
+        if (info_ok && info != nullptr) {
+            drawable->Mangle_Custom_Audio_Name(info);
+            g_theAudio->Add_Audio_Event_Info(info);
+            drawable->Set_Custom_Sound_Ambient_Info(info);
+            info = nullptr;
+        }
+
+        if (info != nullptr) {
+            info->Delete_Instance();
+            info = nullptr;
+        }
+
+        if (ambient_enabled_exists && ambient_enabled && !drawable->Get_Ambient_Sound_From_Script_Enabled()) {
+            drawable->Enable_Ambient_Sound_From_Script(true);
+        }
+    }
+}
+
+void Object::On_Contained_By(Object *contained)
+{
+    Set_Status(BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_UNSELECTABLE), true);
+
+    if (contained != nullptr && contained->Get_Contain() != nullptr
+        && contained->Get_Contain()->Is_Enclosing_Container_For(this)) {
+        Set_Status(BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_MASKED), true);
+    } else {
+        Clear_Status(BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_MASKED));
+    }
+
+    m_containedBy = contained;
+    m_containedByFrame = g_theGameLogic->Get_Frame();
+    Handle_Partition_Cell_Maintenance();
+}
 
 int Object::Get_Transport_Slot_Count() const
 {
-    return 0;
+    int count = Get_Template()->Get_Raw_Transport_Slot_Count();
+    ContainModuleInterface *contain = Get_Contain();
+
+    if (contain != nullptr) {
+        if (contain->Is_Special_Zero_Slot_Container()) {
+            count = 0;
+            const std::list<Object *> *items = contain->Get_Contained_Items_List();
+
+            for (auto it = items->begin(); it != items->end(); it++) {
+                count += (*it)->Get_Transport_Slot_Count();
+            }
+        }
+    }
+
+    return count;
 }
 
-void Object::Restore_Original_Team() {}
+void Object::Restore_Original_Team()
+{
+    if (m_team != nullptr && !m_originalTeamName.Is_Empty()) {
+        Team *team = g_theTeamFactory->Find_Team(m_originalTeamName);
+
+        if (team != nullptr) {
+            if (m_team == team) {
+                captainslog_dbgassert(
+                    false, "Object appears to still be on its original team, so why are we attempting to restore it?");
+            } else {
+                Set_Team(team);
+            }
+        } else {
+            captainslog_dbgassert(
+                false, "Object original team (%s) could not be found or created!", m_originalTeamName.Str());
+        }
+    }
+}
 
 bool Object::Check_And_Detonate_Booby_Trap(Object *obj)
 {
-    return false;
+    if (!Get_Status(OBJECT_STATUS_BOOBY_TRAPPED)) {
+        return false;
+    }
+
+    BitFlags<KINDOF_COUNT> flags(BitFlags<KINDOF_COUNT>::kInit, KINDOF_BOOBY_TRAP);
+    PartitionFilterAcceptByKindOf filter1(flags, KINDOFMASK_NONE);
+    PartitionFilterSameMapStatus filter2(this);
+    PartitionFilter *filters[] = { &filter1, &filter2, nullptr };
+
+    SimpleObjectIterator *iter = g_thePartitionManager->Iterate_Objects_In_Range(Get_Position(),
+        Get_Geometry_Info().Get_Bounding_Circle_Radius() + 25.0f,
+        FROM_CENTER_2D,
+        filters,
+        ITER_SORTED_NEAR_TO_FAR);
+    MemoryPoolObjectHolder holder(iter);
+
+    Object *bomb_obj = nullptr;
+
+    for (Object *o = iter->First(); o != nullptr; o = iter->Next()) {
+        if (o->Get_Producer_ID() == Get_ID()) {
+            bomb_obj = o;
+            break;
+        }
+    }
+
+    if (bomb_obj == nullptr) {
+        return false;
+    }
+
+    static NameKeyType key_StickyBombUpdate = g_theNameKeyGenerator->Name_To_Key("StickyBombUpdate");
+
+    StickyBombUpdate *bomb = static_cast<StickyBombUpdate *>(bomb_obj->Find_Update_Module(key_StickyBombUpdate));
+
+    if (bomb == nullptr
+        || obj != nullptr && bomb_obj->Get_Controlling_Player()->Get_Relationship(obj->Get_Team()) == ALLIES) {
+        return false;
+    } else {
+        bomb->Detonate();
+        return true;
+    }
 }
 
 unsigned int Object::Get_Last_Shot_Fired_Frame() const
 {
-    return 0;
+    unsigned int frame = 0;
+
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        const Weapon *weapon = Get_Weapon_In_Weapon_Slot(static_cast<WeaponSlotType>(i));
+
+        if (weapon != nullptr) {
+            float last_fire_frame = weapon->Get_Last_Fire_Frame();
+
+            if (last_fire_frame > frame) {
+                frame = last_fire_frame;
+            }
+        }
+    }
+
+    return frame;
 }
 
-bool Object::Attempt_Healing_From_Sole_Benefactor(float f, const Object *obj, unsigned int i)
+bool Object::Attempt_Healing_From_Sole_Benefactor(float amount, const Object *obj, unsigned int frame)
 {
-    return false;
+    if (obj == nullptr) {
+        return false;
+    }
+
+    if (g_theGameLogic->Get_Frame() <= m_soleHealingEndFrame && m_soleHealingBenefactor != obj->Get_ID()) {
+        return false;
+    }
+
+    m_soleHealingBenefactor = obj->Get_ID();
+    m_soleHealingEndFrame = frame + g_theGameLogic->Get_Frame();
+    BodyModuleInterface *body = Get_Body_Module();
+
+    if (body != nullptr) {
+        DamageInfo info;
+        info.m_in.m_damageType = DAMAGE_HEALING;
+        info.m_in.m_deathType = DEATH_NONE;
+        info.m_in.m_sourceID = obj->Get_ID();
+        info.m_in.m_amount = amount;
+        body->Attempt_Healing(&info);
+    }
+
+    return true;
 }
 
-void Object::Set_Effectively_Dead(bool dead) {}
+void Object::Set_Effectively_Dead(bool dead)
+{
+    if (dead) {
+        m_privateStatus |= STATUS_EFFECTIVELY_DEAD;
+    } else {
+        m_privateStatus &= ~STATUS_EFFECTIVELY_DEAD;
+    }
+
+    if (dead) {
+        if (m_radarData != nullptr) {
+            g_theRadar->Remove_Object(this);
+        }
+    }
+}
+
+void Local_Is_Hero(Object *obj, void *ptr)
+{
+    if (obj != nullptr) {
+        if (obj->Is_KindOf(KINDOF_HERO)) {
+            *static_cast<bool *>(ptr) = true;
+        }
+    }
+}
 
 bool Object::Is_Hero() const
 {
-    return false;
+    ContainModuleInterface *contain = Get_Contain();
+    bool hero = false;
+
+    if (contain != nullptr) {
+        contain->Iterate_Contained(Local_Is_Hero, &hero, false);
+    }
+
+    return hero || Is_KindOf(KINDOF_HERO);
 }
 
 unsigned int Object::Get_Disabled_Until(DisabledType type) const
 {
-    return 0;
+    if (type == 0xFFFF) {
+        unsigned int frame = 0;
+
+        for (int i = 0; i < DISABLED_TYPE_COUNT; i++) {
+            if (m_disabledStates.Test(i) && m_disabledStateFrames[i] > frame) {
+                frame = m_disabledStateFrames[i];
+            }
+        }
+
+        return frame;
+    } else if (m_disabledStates.Test(type)) {
+        return m_disabledStateFrames[type];
+    } else {
+        return 0;
+    }
 }
 
 bool Object::Is_Salvage_Crate() const
 {
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        CollideModuleInterface *collide = (*module)->Get_Collide();
+
+        if (collide != nullptr && collide->Is_Salvage_Crate_Collide()) {
+            return true;
+        }
+    }
+
     return false;
 }
 
-void Object::Force_Refresh_Sub_Object_Upgrade_Status() {}
+void Object::Force_Refresh_Sub_Object_Upgrade_Status()
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        UpgradeModuleInterface *interface = (*module)->Get_Upgrade();
 
-void Object::Set_Layer(PathfindLayerEnum layer) {}
+        if (interface != nullptr) {
+            if (interface->Is_Sub_Objects_Upgrade()) {
+                interface->Force_Refresh_Upgrade();
+            }
+        }
+    }
+}
 
-void Object::Friend_Prepare_For_Map_Boundary_Adjust() {}
+void Object::Set_Layer(PathfindLayerEnum layer)
+{
+    if (layer != m_layer) {
+        g_theAI->Get_Pathfinder()->Remove_Pos(this);
+        m_layer = layer;
+        g_theAI->Get_Pathfinder()->Update_Pos(this, Get_Position());
+    }
+}
 
-void Object::Friend_Notify_Of_New_Map_Boundary() {}
+void Object::Friend_Prepare_For_Map_Boundary_Adjust()
+{
+    g_theRadar->Remove_Object(this);
+    g_thePartitionManager->Unregister_Object(this);
+    m_friendlyLookSighting->Reset();
+    m_allLookSighting->Reset();
+    m_shroudSighting->Reset();
+    m_threatSighting->Reset();
+    m_valueSighting->Reset();
+}
 
-void Object::Calc_Natural_Rally_Point(Coord2D *pt) {}
+void Object::Friend_Notify_Of_New_Map_Boundary()
+{
+    g_thePartitionManager->Register_Object(this);
+    g_theRadar->Add_Object(this);
+    g_theAI->Get_Pathfinder()->Add_Object_To_Pathfind_Map(this);
+    Handle_Partition_Cell_Maintenance();
 
-void Object::Mask_Object(bool mask) {}
+    Region3D extent;
+    g_theTerrainLogic->Get_Extent(&extent);
+
+    if (extent.Is_In_Region_No_Z(Get_Position())) {
+        m_privateStatus &= ~STATUS_OUTSIDE_MAP;
+    } else {
+        m_privateStatus |= STATUS_OUTSIDE_MAP;
+    }
+}
+
+void Object::Calc_Natural_Rally_Point(Coord2D *pt)
+{
+    const Matrix3D *tm = Get_Transform_Matrix();
+    Vector3 v;
+    v.Set(0.0f, 0.0f, 0.0f);
+    Matrix3D::Transform_Vector(*tm, v, &v);
+    pt->x = v.X;
+    pt->y = v.Y;
+}
+
+void Object::Mask_Object(bool mask)
+{
+    Set_Status(BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_MASKED), mask);
+
+    if (mask) {
+        g_theGameLogic->Deselect_Object(this, ~Get_Controlling_Player()->Get_Player_Mask(), true);
+    }
+}
 
 bool Object::Is_Using_Airborne_Locomotor() const
 {
+    if (m_ai != nullptr) {
+        if (m_ai->Get_Cur_Locomotor() != nullptr) {
+            if ((m_ai->Get_Cur_Locomotor()->Get_Legal_Surfaces() & LOCOMOTOR_SURFACE_AIR) != 0) {
+                return true;
+            }
+        }
+    }
+
     return false;
 }
-
-void Object::Update_Obj_Values_From_Map_Properties(Dict *properties) {}
 
 bool Object::Affected_By_Upgrade(const UpgradeTemplate *upgrade) const
 {
+    BitFlags<128> mask = Get_Controlling_Player()->Get_Upgrades_Completed();
+    mask.Set(Get_Object_Upgrade_Mask());
+    mask.Set(upgrade->Get_Upgrade_Mask());
+
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        UpgradeModuleInterface *interface = (*module)->Get_Upgrade();
+
+        if (interface != nullptr && interface->Would_Upgrade(mask)) {
+            return true;
+        }
+    }
+
     return false;
 }
 
-void Object::Remove_Upgrade(const UpgradeTemplate *upgrade) {}
-
-void Object::On_Die(DamageInfo *damage) {}
-
-void Object::Do_Special_Power(const SpecialPowerTemplate *t, unsigned int i, bool b) {}
-
-void Object::Do_Special_Power_At_Object(const SpecialPowerTemplate *t, Object *obj, unsigned int i, bool b) {}
-
-void Object::Do_Special_Power_At_Location(const SpecialPowerTemplate *t, const Coord3D *pos, float f, unsigned int i, bool b)
+void Object::Remove_Upgrade(const UpgradeTemplate *upgrade)
 {
+    m_objectUpgradesCompleted.Clear(upgrade->Get_Upgrade_Mask());
+
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        UpgradeModuleInterface *interface = (*module)->Get_Upgrade();
+
+        if (interface != nullptr) {
+            interface->Reset_Upgrade(upgrade->Get_Upgrade_Mask());
+        }
+    }
 }
 
-void Object::Do_Special_Power_Using_Waypoints(const SpecialPowerTemplate *t, const Waypoint *wp, unsigned int i, bool b) {}
+void Object::On_Die(DamageInfo *damage)
+{
+    Check_And_Detonate_Booby_Trap(nullptr);
+#ifdef GAME_DEBUG_STRUCTS
+    captainslog_dbgassert(!m_hasDiedAlready, "Object::onDie has been called multiple times. This is invalid.");
+    m_hasDiedAlready = true;
+#endif
+    bool source = damage->m_in.m_sourceID == Get_ID();
 
-void Object::Do_Command_Button(const CommandButton *button, CommandSourceType type) {}
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        DieModuleInterface *die = (*module)->Get_Die();
 
-void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *obj, CommandSourceType type) {}
+        if (die != nullptr) {
+            die->On_Die(damage);
+        }
+    }
 
-void Object::Do_Command_Button_At_Position(const CommandButton *button, const Coord3D *pos, CommandSourceType type) {}
+    if (m_radarData != nullptr) {
+        g_theRadar->Remove_Object(this);
+    }
 
-void Object::Do_Command_Button_Using_Waypoints(const CommandButton *button, const Waypoint *wp, CommandSourceType type) {}
+    Drawable *drawable = Get_Drawable();
+
+    if (drawable != nullptr) {
+        drawable->Set_Terrain_Decal_Fade_Target(0.0f, -0.03f);
+    }
+
+    Object *obj = g_theGameLogic->Find_Object_By_ID(Get_Producer_ID());
+
+    if (obj != nullptr) {
+        SpawnBehaviorInterface *spawn = obj->Get_Spawn_Behavior_Interface();
+
+        if (spawn != nullptr) {
+            spawn->On_Spawn_Death(Get_ID(), damage);
+        }
+    }
+
+    Handle_Partition_Cell_Maintenance();
+
+    if (m_team != nullptr) {
+        m_team->Notify_Team_Of_Object_Death();
+    }
+
+    if (Is_Locally_Controlled() && !source) {
+        if (Is_KindOf(KINDOF_STRUCTURE) && Is_KindOf(KINDOF_MP_COUNT_FOR_VICTORY)) {
+            g_theEva->Set_Should_Play(EVA_MESSAGE_BUILDINGLOST);
+        } else if (Is_KindOf(KINDOF_INFANTRY) || Is_KindOf(KINDOF_VEHICLE)) {
+            g_theEva->Set_Should_Play(EVA_MESSAGE_UNITLOST);
+            g_theRadar->Try_Event(RADAR_EVENT_UNIT_LOST, Get_Position());
+        }
+    }
+
+    if (Get_Controlling_Player() != nullptr) {
+        g_theInGameUI->Remove_Idle_Worker(this, Get_Controlling_Player()->Get_Player_Index());
+    }
+
+    if (Get_Status(OBJECT_STATUS_RECONSTRUCTING)) {
+        Object *producer = g_theGameLogic->Find_Object_By_ID(Get_Producer_ID());
+        if (producer != nullptr) {
+            RebuildHoleBehaviorInterface *hole =
+                RebuildHoleBehavior::Get_Rebuild_Hole_Behavior_Interface_From_Object(producer);
+            captainslog_dbgassert(hole != nullptr, "Object::onDie() -  No Rebuild Hole Behavior interface on hole");
+
+            if (hole != nullptr) {
+                hole->Start_Rebuild_Process(Get_Template(), Get_ID());
+            }
+
+            for (Object *o = g_theGameLogic->Get_First_Object(); o != nullptr; o = o->Get_Next_Object()) {
+                AIUpdateInterface *update = Get_AI_Update_Interface();
+
+                if (update != nullptr) {
+                    update->Transfer_Attack(Get_ID(), producer->Get_ID());
+                }
+            }
+        }
+    }
+}
+
+void Object::Do_Special_Power(const SpecialPowerTemplate *special_power_template, unsigned int options, bool force_usable)
+{
+    if (!Is_Disabled() && (force_usable || g_theSpecialPowerStore->Can_Use_Special_Power(this, special_power_template))) {
+        SpecialPowerModuleInterface *power = Get_Special_Power_Module(special_power_template);
+
+        if (power != nullptr) {
+            power->Do_Special_Power(options);
+        }
+    }
+}
+
+void Object::Do_Special_Power_At_Object(
+    const SpecialPowerTemplate *special_power_template, Object *obj, unsigned int options, bool force_usable)
+{
+    if (!Is_Disabled() && (force_usable || g_theSpecialPowerStore->Can_Use_Special_Power(this, special_power_template))) {
+        SpecialPowerModuleInterface *power = Get_Special_Power_Module(special_power_template);
+
+        if (power != nullptr) {
+            power->Do_Special_Power_At_Object(obj, options);
+        }
+    }
+}
+
+void Object::Do_Special_Power_At_Location(
+    const SpecialPowerTemplate *special_power_template, const Coord3D *loc, float f, unsigned int options, bool force_usable)
+{
+    if (!Is_Disabled() && (force_usable || g_theSpecialPowerStore->Can_Use_Special_Power(this, special_power_template))) {
+        SpecialPowerModuleInterface *power = Get_Special_Power_Module(special_power_template);
+
+        if (power != nullptr) {
+            power->Do_Special_Power_At_Location(loc, f, options);
+        }
+    }
+}
+
+void Object::Do_Special_Power_Using_Waypoints(
+    const SpecialPowerTemplate *special_power_template, const Waypoint *wp, unsigned int options, bool force_usable)
+{
+    if (!Is_Disabled() && (force_usable || g_theSpecialPowerStore->Can_Use_Special_Power(this, special_power_template))) {
+        SpecialPowerModuleInterface *power = Get_Special_Power_Module(special_power_template);
+
+        if (power != nullptr) {
+            power->Do_Special_Power_Using_Waypoints(wp, options);
+        }
+    }
+}
+
+void Object::Do_Command_Button(const CommandButton *button, CommandSourceType type)
+{
+    if (!Is_Disabled()) {
+        AIUpdateInterface *update = Get_AI_Update_Interface();
+
+        if (button != nullptr) {
+            switch (button->Get_Command()) {
+                case GUI_COMMAND_DOZER_CONSTRUCT:
+                case GUI_COMMAND_UNIT_BUILD: {
+                    const ThingTemplate *tmplate = *button->Get_Template();
+                    ProductionUpdateInterface *production = Get_Production_Update_Interface();
+
+                    if (production == nullptr && tmplate == nullptr) {
+                        goto l1;
+                    }
+
+                    production->Queue_Create_Unit(tmplate, production->Request_Unique_Unit_ID());
+                    break;
+                }
+                case GUI_COMMAND_PLAYER_UPGRADE:
+                case GUI_COMMAND_OBJECT_UPGRADE: {
+                    const UpgradeTemplate *upgrade = button->Get_Upgrade_Template();
+                    captainslog_dbgassert(upgrade != nullptr, "Undefined upgrade '%s' in player upgrade command", "UNKNOWN");
+
+                    if (upgrade == nullptr
+                        || upgrade->Get_Type() == UPGRADE_TYPE_OBJECT
+                            && (Has_Upgrade(upgrade) || !Affected_By_Upgrade(upgrade))) {
+                        goto l1;
+                    }
+
+                    ProductionUpdateInterface *production = Get_Production_Update_Interface();
+
+                    if (production == nullptr) {
+                        goto l1;
+                    }
+
+                    production->Queue_Upgrade(upgrade);
+                    break;
+                }
+                case GUI_COMMAND_STOP: {
+                    if (update == nullptr) {
+                        goto l1;
+                    }
+
+                    update->AI_Idle(type);
+                    break;
+                }
+                case GUI_COMMAND_SELL: {
+                    g_theBuildAssistant->Sell_Object(this);
+                    break;
+                }
+                case GUI_COMMAND_FIRE_WEAPON: {
+                    if (update == nullptr) {
+                        goto l1;
+                    }
+
+                    if ((button->Get_Options() & 7) != 0 || (button->Get_Options() & 0x20) != 0) {
+                        captainslog_dbgassert(false,
+                            "WARNING: Script doCommandButton for button %s cannot fire weapon with NO POSITION. Skipping.",
+                            button->Get_Name().Str());
+                    } else {
+                        Set_Weapon_Lock(button->Get_Weapon_Slot(), LOCKED_LEVEL_1);
+                        update->AI_Attack_Position(nullptr, button->Get_Max_Shots_To_Fire(), type);
+                    }
+
+                    break;
+                }
+                case GUI_COMMAND_SPECIAL_POWER: {
+                    if (button->Get_Special_Power() == nullptr) {
+                        goto l1;
+                    }
+
+                    Do_Special_Power(
+                        button->Get_Special_Power(), button->Get_Options() | 0x40000, type == COMMANDSOURCE_SCRIPT);
+                    break;
+                }
+                case GUI_COMMAND_HACK_INTERNET: {
+                    if (update == nullptr) {
+                        goto l1;
+                    }
+
+                    update->AI_Hack_Internet(type);
+                    break;
+                }
+                case GUI_COMMAND_SWITCH_WEAPON: {
+                    Set_Weapon_Lock(button->Get_Weapon_Slot(), LOCKED_LEVEL_2);
+                    break;
+                }
+                default: {
+                l1:
+                    captainslog_dbgassert(false,
+                        "WARNING: Script doCommandButton for button %s not implemented. Doing nothing.",
+                        button->Get_Name().Str());
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *obj, CommandSourceType type)
+{
+    if (!Is_Disabled()) {
+        AIUpdateInterface *update = Get_AI_Update_Interface();
+
+        if (button != nullptr) {
+            switch (button->Get_Command()) {
+                case GUI_COMMAND_STOP: {
+                    if (update != nullptr) {
+                        update->AI_Idle(type);
+                    }
+
+                    break;
+                }
+
+                case GUI_COMMAND_FIRE_WEAPON: {
+                    if (update == nullptr) {
+                        goto l1;
+                    }
+
+                    if ((button->Get_Options() & 7) != 0) {
+                        if (obj == nullptr || !button->Is_Valid_Object_Target(this, obj)) {
+                            goto l1;
+                        }
+
+                        Set_Weapon_Lock(button->Get_Weapon_Slot(), LOCKED_LEVEL_1);
+
+                        if ((button->Get_Options() & 0x1000) != 0) {
+                            update->AI_Attack_Position(Get_Position(), button->Get_Max_Shots_To_Fire(), type);
+                        } else {
+                            update->AI_Attack_Object(obj, button->Get_Max_Shots_To_Fire(), type);
+                        }
+                    } else {
+                        captainslog_dbgassert(false,
+                            "WARNING: Script doCommandButtonAtObject for button %s cannot fire weapon at AN OBJECT. "
+                            "Skipping.",
+                            button->Get_Name().Str());
+                    }
+
+                    break;
+                }
+                case GUI_COMMAND_SPECIAL_POWER: {
+                    if (button->Get_Special_Power()) {
+                        obj->Do_Special_Power_At_Object(
+                            button->Get_Special_Power(), obj, button->Get_Options() | 0x40000, type == COMMANDSOURCE_SCRIPT);
+                    }
+
+                    break;
+                }
+                case GUI_COMMAND_COMBATDROP: {
+                    if (update != nullptr) {
+                        update->AI_Combat_Drop(obj, Get_Position(), type);
+                    }
+
+                    break;
+                }
+                case GUI_COMMAND_HIJACK_VEHICLE:
+                case GUI_COMMAND_CONVERT_TO_CARBOMB:
+                case GUI_COMMAND_SABOTAGE_BUILDING: {
+                    if (update != nullptr) {
+                        update->AI_Enter(obj, type);
+                    }
+
+                    break;
+                }
+                default: {
+                l1:
+                    captainslog_dbgassert(false,
+                        "WARNING: Script doCommandButtonAtObject for button %s not implemented. Doing nothing.",
+                        button->Get_Name().Str());
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Object::Do_Command_Button_At_Position(const CommandButton *button, const Coord3D *pos, CommandSourceType type)
+{
+    if (!Is_Disabled()) {
+        AIUpdateInterface *update = Get_AI_Update_Interface();
+
+        if (button != nullptr) {
+            switch (button->Get_Command()) {
+                case GUI_COMMAND_DOZER_CONSTRUCT: {
+                    g_theBuildAssistant->Build_Object_Now(
+                        this, *button->Get_Template(), pos, 0.0f, Get_Controlling_Player());
+                    break;
+                }
+                case GUI_COMMAND_ATTACK_MOVE: {
+                    if (update == nullptr) {
+                        goto l1;
+                    }
+
+                    update->AI_Attack_Move_To_Position(pos, button->Get_Max_Shots_To_Fire(), type);
+                    break;
+                }
+                case GUI_COMMAND_STOP: {
+                    if (update == nullptr) {
+                        goto l1;
+                    }
+
+                    update->AI_Idle(type);
+                    break;
+                }
+                case GUI_COMMAND_FIRE_WEAPON: {
+                    if (update == nullptr) {
+                        goto l1;
+                    }
+
+                    if ((button->Get_Options() & 0x20) != 0) {
+                        if (pos == nullptr) {
+                            goto l1;
+                        }
+
+                        Set_Weapon_Lock(button->Get_Weapon_Slot(), LOCKED_LEVEL_1);
+                        update->AI_Attack_Position(pos, button->Get_Max_Shots_To_Fire(), type);
+                    } else {
+                        captainslog_dbgassert(false,
+                            "WARNING: Script doCommandButtonAtPosition for button %s cannot fire weapon at A POSITION. "
+                            "Skipping.",
+                            button->Get_Name().Str());
+                    }
+
+                    break;
+                }
+                case GUI_COMMAND_SPECIAL_POWER: {
+                    if (button->Get_Special_Power() == nullptr) {
+                        goto l1;
+                    }
+
+                    Do_Special_Power_At_Location(button->Get_Special_Power(),
+                        pos,
+                        -100.0f,
+                        button->Get_Options() | 0x40000,
+                        type == COMMANDSOURCE_SCRIPT);
+                    break;
+                }
+                default: {
+                l1:
+                    captainslog_dbgassert(false,
+                        "WARNING: Script doCommandButtonAtPosition for button %s not implemented. Doing nothing.",
+                        button->Get_Name().Str());
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Object::Do_Command_Button_Using_Waypoints(const CommandButton *button, const Waypoint *wp, CommandSourceType type)
+{
+    if (!Is_Disabled() && button == nullptr) {
+        if ((button->Get_Options() & 0x400000) != 0) {
+            if (button->Get_Command() == GUI_COMMAND_SPECIAL_POWER && button->Get_Special_Power() != nullptr) {
+                Do_Special_Power_Using_Waypoints(
+                    button->Get_Special_Power(), wp, button->Get_Options() | 0x40000, type == COMMANDSOURCE_SCRIPT);
+            } else {
+                captainslog_dbgassert(false,
+                    "WARNING: Script doCommandButtonUsingWaypoints for button %s not implemented. Doing nothing.",
+                    button->Get_Name().Str());
+            }
+        } else {
+            captainslog_dbgassert(false,
+                "WARNING: Script doCommandButtonUsingWaypoints for button %s lacks CAN_USE_WAYPOINTS option. Doing nothing.",
+                button->Get_Name().Str());
+        }
+    }
+}
 
 DockUpdateInterface *Object::Get_Dock_Update_Interface()
 {
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        DockUpdateInterface *dock = (*module)->Get_Dock_Update_Interface();
+
+        if (dock != nullptr) {
+            return dock;
+        }
+    }
+
     return nullptr;
 }
 
 ProjectileUpdateInterface *Object::Get_Projectile_Update_Interface() const
 {
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        ProjectileUpdateInterface *projectile = (*module)->Get_Projectile_Update_Interface();
+
+        if (projectile != nullptr) {
+            return projectile;
+        }
+    }
+
     return nullptr;
 }
 
 SpecialPowerUpdateInterface *Object::Find_Special_Power_With_Overridable_Destination_Active(SpecialPowerType type) const
 {
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpecialPowerUpdateInterface *power = (*module)->Get_Special_Power_Update_Interface();
+
+        if (power != nullptr && power->Does_Special_Power_Have_Overridable_Destination_Active()) {
+            return power;
+        }
+    }
+
     return nullptr;
 }
 
 SpecialPowerUpdateInterface *Object::Find_Special_Power_With_Overridable_Destination(SpecialPowerType type) const
 {
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpecialPowerUpdateInterface *power = (*module)->Get_Special_Power_Update_Interface();
+
+        if (power != nullptr && power->Does_Special_Power_Have_Overridable_Destination()) {
+            return power;
+        }
+    }
+
     return nullptr;
 }
 
 SpecialAbilityUpdate *Object::Find_Special_Ability_Update(SpecialPowerType type) const
 {
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        SpecialPowerUpdateInterface *power = (*module)->Get_Special_Power_Update_Interface();
+
+        if (power != nullptr && power->Is_Special_Ability() && static_cast<SpecialAbilityUpdate *>(power)) {
+            return static_cast<SpecialAbilityUpdate *>(power);
+        }
+    }
+
     return nullptr;
 }
 
 bool Object::Get_Single_Logical_Bone_Position(const char *bone, Coord3D *pos, Matrix3D *tm) const
 {
-    return false;
+    if (m_drawable != nullptr && m_drawable->Get_Pristine_Bone_Positions(bone, 0, pos, tm, 1) == 1) {
+        Convert_Bone_Pos_To_World_Pos(pos, tm, pos, tm);
+        return true;
+    } else {
+        if (pos != nullptr) {
+            *pos = *Get_Position();
+        }
+
+        if (tm != nullptr) {
+            *tm = *Get_Transform_Matrix();
+        }
+
+        return false;
+    }
 }
 
 bool Object::Get_Single_Logical_Bone_Position_On_Turret(
     WhichTurretType type, const char *bone, Coord3D *pos, Matrix3D *tm) const
 {
+    if (Get_Drawable() == nullptr || Get_AI_Update_Interface() == nullptr) {
+        return false;
+    }
+
+    Coord3D launch_offset;
+    Get_Drawable()->Get_Projectile_Launch_Offset(WEAPONSLOT_PRIMARY, 1, nullptr, type, &launch_offset, nullptr);
+    Coord3D bone_pos;
+
+    if (Get_Drawable()->Get_Pristine_Bone_Positions(bone, 0, &bone_pos, nullptr, 1) != 1) {
+        return false;
+    }
+
+    float turret_angle;
+    Get_AI_Update_Interface()->Get_Turret_Rot_And_Pitch(type, &turret_angle, nullptr);
+
+    Matrix3D bone_tm(true);
+    bone_tm.Translate(Vector3(bone_pos.x, bone_pos.y, bone_pos.z));
+
+    Matrix3D turret_tm(true);
+    turret_tm.Translate(launch_offset.x, launch_offset.y, launch_offset.z);
+    turret_tm.In_Place_Pre_Rotate_Z(turret_angle);
+
+    turret_tm.Translate(-launch_offset.x, -launch_offset.y, -launch_offset.z);
+
+    Matrix3D turret_bone_tm;
+    turret_bone_tm.Mul(turret_tm, bone_tm);
+
+    Matrix3D world_turret_bone_tm;
+    Convert_Bone_Pos_To_World_Pos(nullptr, &turret_bone_tm, nullptr, &world_turret_bone_tm);
+    Vector3 world_bone_pos = world_turret_bone_tm.Get_Translation();
+
+    if (pos != nullptr) {
+        pos->x = world_bone_pos.X;
+        pos->y = world_bone_pos.Y;
+        pos->z = world_bone_pos.Z;
+    }
+
+    if (tm != nullptr) {
+        *tm = world_turret_bone_tm;
+    }
+
+    return true;
+}
+
+int Object::Get_Multi_Logical_Bone_Position(
+    const char *bone, int max_count, Coord3D *pos, Matrix3D *tm, bool world_space) const
+{
+    if (m_drawable == nullptr) {
+        return 0;
+    }
+
+    int count = m_drawable->Get_Pristine_Bone_Positions(bone, 1, pos, tm, max_count);
+
+    if (count <= 0) {
+        return 0;
+    }
+
+    if (world_space) {
+        for (int j = 0; j < count; j++) {
+            Matrix3D *m;
+
+            if (tm != nullptr) {
+                m = &tm[j];
+            } else {
+                m = nullptr;
+            }
+
+            Coord3D *p;
+
+            if (pos != nullptr) {
+                p = &pos[j];
+            } else {
+                p = nullptr;
+            }
+
+            Matrix3D *m2;
+
+            if (tm != nullptr) {
+                m2 = &tm[j];
+            } else {
+                m2 = nullptr;
+            }
+
+            Coord3D *p2;
+
+            if (pos != nullptr) {
+                p2 = &pos[j];
+            } else {
+                p2 = nullptr;
+            }
+
+            m_drawable->Convert_Bone_Pos_To_World_Pos(p2, m2, p, m);
+        }
+    }
+
+    return count;
+}
+
+bool Object::Can_Produce_Upgrade(const UpgradeTemplate *upgrade)
+{
+    const CommandSet *set = g_theControlBar->Find_Command_Set(Get_Command_Set_String());
+
+    for (int i = 0; i < CommandSet::MAX_COMMAND_BUTTONS; i++) {
+        const CommandButton *button = set->Get_Command_Button(i);
+
+        if (button != nullptr && button->Get_Upgrade_Template() != nullptr && button->Get_Upgrade_Template() == upgrade) {
+            return true;
+        }
+    }
+
     return false;
 }
 
-int Object::Get_Multi_Logical_Bone_Position(const char *bone, int i, Coord3D *pos, Matrix3D *tm, bool b) const
+void Object::Go_Invulnerable(unsigned int timer)
 {
-    return 0;
-}
+    Friend_Set_Undetected_Defector(timer != 0);
 
-bool Object::Can_Produce_Upgrade(const UpgradeTemplate *t)
-{
-    return false;
+    if (m_objectDefectionHelper != nullptr) {
+        m_objectDefectionHelper->Start_Defection_Timer(timer, false);
+    }
 }
-
-void Object::Go_Invulnerable(unsigned int i) {}
 
 RadarPriorityType Object::Get_Radar_Priority() const
 {
-    return RADAR_PRIORITY_NOT_ON_RADAR;
+    RadarPriorityType priority = Get_Template()->Get_Radar_Priority();
+
+    if (priority == RADAR_PRIORITY_NOT_ON_RADAR) {
+        ContainModuleInterface *contain = Get_Contain();
+
+        if (contain && contain->Is_Garrisonable()) {
+            priority = RADAR_PRIORITY_UNIT;
+        }
+
+        if (Is_KindOf(KINDOF_CAPTURABLE)) {
+            priority = RADAR_PRIORITY_UNIT;
+        }
+    }
+
+    if (Get_Status(OBJECT_STATUS_IS_CARBOMB)) {
+        return RADAR_PRIORITY_BOMB;
+    }
+
+    return priority;
 }
 
 ObjectID Object::Calculate_Countermeasure_To_Divert_To(const Object &obj)
 {
+    if (Get_AI_Update_Interface() != nullptr) {
+        for (BehaviorModule **module = obj.Get_All_Modules(); *module != nullptr; module++) {
+            CountermeasuresBehaviorInterface *interface = (*module)->Get_Countermeasures_Behavior_Interface();
+
+            if (interface != nullptr) {
+                return interface->Calculate_Countermeasure_To_Divert_To(obj);
+            }
+        }
+    }
+
     return OBJECT_UNK;
 }
-
-#endif

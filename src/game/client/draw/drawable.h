@@ -203,6 +203,7 @@ public:
     void Set_Remain_Visible_Frames(unsigned int frames) { m_remainVisibleFrames = frames; }
     unsigned int Get_Remain_Visible_Frames() const { return m_remainVisibleFrames; }
     bool Is_Fully_Obscured_By_Shroud() const { return m_fullyObscuredByShroud; }
+    bool Get_Ambient_Sound_From_Script_Enabled() const { return m_ambientSoundFromScriptEnabled; }
 
     bool Get_Draws_In_Mirror() const
     {

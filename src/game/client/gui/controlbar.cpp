@@ -68,7 +68,7 @@ const CommandSet *ControlBar::Find_Command_Set(const Utf8String &name)
 #endif
 }
 
-bool CommandButton::Is_Valid_Object_Target(const Object *obj1, const Object *obj2)
+bool CommandButton::Is_Valid_Object_Target(const Object *obj1, const Object *obj2) const
 {
     if (obj1 == nullptr || obj2 == nullptr) {
         return false;
@@ -77,7 +77,7 @@ bool CommandButton::Is_Valid_Object_Target(const Object *obj1, const Object *obj
     return Is_Valid_Relationship_Target(obj1->Get_Relationship(obj2));
 }
 
-bool CommandButton::Is_Valid_Relationship_Target(Relationship r)
+bool CommandButton::Is_Valid_Relationship_Target(Relationship r) const
 {
     unsigned int options = 0;
 
@@ -94,7 +94,7 @@ bool CommandButton::Is_Valid_Relationship_Target(Relationship r)
     return (options & m_options) != 0;
 }
 
-const CommandButton *CommandSet::Get_Command_Button(int button)
+const CommandButton *CommandSet::Get_Command_Button(int button) const
 {
     const CommandButton *c;
     if (g_theGameLogic != nullptr && g_theGameLogic->Find_Control_Bar_Override(m_name, button, c)) {

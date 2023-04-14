@@ -15,33 +15,37 @@
 #pragma once
 #include "always.h"
 #include "object.h"
+#include "specialpowerupdatemodule.h"
 
-enum CommandOption
+class SpecialAbilityUpdate : public SpecialPowerUpdateModule
 {
-    COMMAND_OPTION_UNK,
-};
+    IMPLEMENT_POOL(SpecialAbilityUpdate)
 
-class SpecialPowerUpdateInterface
-{
-    virtual bool Does_Special_Power_Update_Pass_Science_Test() const = 0;
-    virtual ScienceType Get_Extra_Required_Science() const = 0;
+public:
+    virtual ~SpecialAbilityUpdate() override;
+    virtual NameKeyType Get_Module_Name_Key() const override;
+
+    virtual void CRC_Snapshot(Xfer *xfer) override;
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override;
+
+    virtual SpecialPowerUpdateInterface *Get_Special_Power_Update_Interface() override;
+
+    virtual UpdateSleepTime Update() override;
+
     virtual void Initiate_Intent_To_Do_Special_Power(const SpecialPowerTemplate *special_power_template,
         const Object *target_obj,
         const Coord3D *target_pos,
         const Waypoint *waypoint,
-        unsigned int options) = 0;
-    virtual bool Is_Special_Ability() const = 0;
-    virtual bool Is_Special_Power() const = 0;
-    virtual bool Is_Active() const = 0;
-    virtual CommandOption Get_Command_Option() const = 0;
-    virtual bool Does_Special_Power_Have_Overridable_Destination_Active() const = 0;
-    virtual bool Does_Special_Power_Have_Overridable_Destination() const = 0;
-    virtual void Set_Special_Power_Overridable_Destination(const Coord3D *destination) = 0;
-    virtual bool Is_Power_Currently_In_Use(const CommandButton *button) const = 0;
-};
+        unsigned int options) override;
+    virtual bool Is_Special_Ability() const override;
+    virtual bool Is_Special_Power() const override;
+    virtual bool Is_Active() const override;
+    virtual CommandOption Get_Command_Option() const override;
+    virtual bool Does_Special_Power_Have_Overridable_Destination_Active() const override;
+    virtual bool Does_Special_Power_Have_Overridable_Destination() const override;
+    virtual void Set_Special_Power_Overridable_Destination(const Coord3D *destination) override;
+    virtual bool Is_Power_Currently_In_Use(const CommandButton *button) const override;
 
-class SpecialAbilityUpdate
-{
-public:
     SpecialPowerType Get_Special_Power_Type() const;
 };

@@ -303,6 +303,7 @@ set(GAMEENGINE_SRC
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp
     game/logic/object/update/specialabilityupdate.cpp
+    game/logic/object/update/specialpowerupdatemodule.cpp
     game/logic/object/update/stickybombupdate.cpp
     game/logic/object/update/swayclientupdate.cpp
     game/logic/object/update/toppleupdate.cpp

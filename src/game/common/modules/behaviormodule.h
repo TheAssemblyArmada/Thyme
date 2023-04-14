@@ -82,7 +82,7 @@ class ProductionUpdateInterface
 public:
     virtual CanMakeType Can_Queue_Create_Unit(const ThingTemplate *unit_type) const = 0;
     virtual CanMakeType Can_Queue_Upgrade(const UpgradeTemplate *upgrade) const = 0;
-    virtual unsigned int Request_Unique_Unit_ID() = 0;
+    virtual ProductionID Request_Unique_Unit_ID() = 0;
     virtual bool Queue_Upgrade(const UpgradeTemplate *upgrade) = 0;
     virtual void Cancel_Upgrade(const UpgradeTemplate *upgrade) = 0;
     virtual bool Is_Upgrade_In_Queue(const UpgradeTemplate *upgrade) const = 0;

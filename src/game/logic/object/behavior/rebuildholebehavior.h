@@ -28,5 +28,5 @@ public:
 class RebuildHoleBehavior
 {
 public:
-    RebuildHoleBehaviorInterface *Get_Rebuild_Hole_Behavior_Interface_From_Object(Object *obj);
+    static RebuildHoleBehaviorInterface *Get_Rebuild_Hole_Behavior_Interface_From_Object(Object *obj);
 };

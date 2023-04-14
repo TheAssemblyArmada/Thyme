@@ -82,10 +82,10 @@ void AIUpdateModuleData::Parse_Turret(INI *ini, void *formal, void *store, const
     *data = d;
 }
 
-bool AIUpdateInterface::Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch)
+bool AIUpdateInterface::Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch) const
 {
 #ifdef GAME_DLL
-    return Call_Method<bool, AIUpdateInterface, WhichTurretType, float *, float *>(
+    return Call_Method<bool, const AIUpdateInterface, WhichTurretType, float *, float *>(
         PICK_ADDRESS(0x005D13F0, 0x007F4BCB), this, tur, turret_angle, turret_pitch);
 #else
     return false;

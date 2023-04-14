@@ -422,7 +422,7 @@ public:
     virtual void AI_Do_Command(AICommandParms const *params) override;
 
     float Get_Cur_Locomotor_Speed() const;
-    bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch);
+    bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch) const;
     unsigned int Get_Mood_Matrix_Action_Adjustment(MoodMatrixAction action) const;
     Object *Get_Next_Mood_Target(bool called_by_ai, bool called_during_idle);
     void Reset_Next_Mood_Check_Time();

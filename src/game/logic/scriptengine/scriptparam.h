@@ -45,6 +45,10 @@ enum RadarEventType
     RADAR_EVENT_INFORMATION,
     RADAR_EVENT_UNK,
     RADAR_EVENT_INFILTRATION,
+    RADAR_EVENT_UNK2,
+    RADAR_EVENT_UNK3,
+    RADAR_EVENT_UNK4,
+    RADAR_EVENT_UNIT_LOST,
 };
 
 class Parameter : public MemoryPoolObject

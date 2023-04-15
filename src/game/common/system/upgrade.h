@@ -48,6 +48,7 @@ public:
     Utf8String Get_Name() const { return m_name; }
     NameKeyType Get_Name_Key() const { return m_nameKey; }
     UpgradeType Get_Type() const { return m_type; }
+    AcademyClassificationType Get_Academy_Classify() const { return m_academyClassify; }
 
 private:
     UpgradeType m_type;

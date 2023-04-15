@@ -2890,7 +2890,6 @@ void Setup_Hooks()
     Hook_Any(0x00549520, Object::Remove_From_List);
     Hook_Any(0x0054C4C0, Object::Has_Upgrade);
     Hook_Any(0x0054E660, Object::Clear_Leech_Range_Mode_For_All_Weapons);
-    
     Hook_Any(0x0054A4D0, Object::Update_Obj_Values_From_Map_Properties);
     Hook_Any(0x00546270, Object::On_Contained_By);
     Hook_Any(0x00546520, Object::Get_Transport_Slot_Count);
@@ -2925,4 +2924,11 @@ void Setup_Hooks()
     Hook_Any(0x0054F2C0, Object::Go_Invulnerable);
     Hook_Any(0x0054F300, Object::Get_Radar_Priority);
     Hook_Any(0x0054F4E0, Object::Calculate_Countermeasure_To_Divert_To);
+
+    // academystats.h
+    Hook_Any(0x00575650, AcademyStats::Record_Production);
+    Hook_Any(0x005757C0, AcademyStats::Record_Upgrade);
+    Hook_Any(0x005757F0, AcademyStats::Record_Special_Power_Used);
+    Hook_Any(0x00575810, AcademyStats::Record_Income);
+    Hook_Any(0x00576B70, AcademyStats::Calculate_Academy_Advice);
 }

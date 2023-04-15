@@ -34,6 +34,7 @@ public:
     unsigned int Get_ID() const { return Get_FO()->m_id; }
     unsigned int Get_Reload_Time() const { return Get_FO()->m_reloadTime; }
     ScienceType Get_Required_Science() const { return m_requiredScience; }
+    AcademyClassificationType Get_Academy_Classify() const { return m_academyClassify; }
 
 private:
     Utf8String m_name;

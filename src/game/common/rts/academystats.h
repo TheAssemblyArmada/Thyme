@@ -15,10 +15,14 @@
 #pragma once
 #include "always.h"
 #include "snapshot.h"
+#include "unicodestring.h"
 
 class Player;
 class CommandSet;
 class ThingTemplate;
+class Object;
+class UpgradeTemplate;
+class SpecialPowerTemplate;
 
 enum AcademyClassificationType
 {
@@ -27,31 +31,70 @@ enum AcademyClassificationType
     ACT_SUPERPOWER,
 };
 
+struct AcademyAdviceInfo
+{
+    enum
+    {
+        MAX_ACADEMY_ADVICE = 1
+    };
+
+    Utf16String m_adviceString[MAX_ACADEMY_ADVICE];
+    int m_adviceCount;
+};
+
 class AcademyStats : public SnapShot
 {
 public:
-    void Init(const Player *player);
-    void Update();
-    void Record_Income();
-    void Increment_Mines_Disarmed() { m_minesClearedCount++; }
-    void Increment_Used_Control_Groups() { m_controlGroupCount++; }
-    void Add_Science_Points_Spent(int points) { m_sciencePointsSpentCount += points; }
-    void Increment_Traps_Used() { m_trapsUsed++; }
+    AcademyStats() {}
+    ~AcademyStats() {}
 
     virtual void CRC_Snapshot(Xfer *xfer) {}
     virtual void Xfer_Snapshot(Xfer *xfer);
     virtual void Load_Post_Process() {}
 
+    void Init(const Player *player);
+    void Update();
+    void Record_Income();
+    void Record_Production(const Object *produced, const Object *producer);
+    void Record_Upgrade(const UpgradeTemplate *upgrade, bool is_grant);
+    void Record_Special_Power_Used(const SpecialPowerTemplate *power);
+    void Evaluate_Tier_1_Advice(AcademyAdviceInfo *info, int count);
+    void Evaluate_Tier_2_Advice(AcademyAdviceInfo *info, int count);
+    void Evaluate_Tier_3_Advice(AcademyAdviceInfo *info, int count);
+    bool Calculate_Academy_Advice(AcademyAdviceInfo *info);
+
+    void Increment_Mines_Disarmed() { m_minesClearedCount++; }
+    void Increment_Used_Control_Groups() { m_controlGroupCount++; }
+    void Increment_Traps_Used() { m_trapsUsed++; }
+    void Increment_Double_Click_Moves_Used() { m_usedDoubleClickMove++; }
+    void Increment_Cleared_Building_Count() { m_clearedBuildingCount++; }
+    void Increment_Garrison_Count() { m_garrisonCount++; }
+    void Increment_Tunnel_Count() { m_tunnelCount++; }
+    void Increment_Firestorm_Count() { m_firestormCount++; }
+    void Increment_Captured_Structure_Count() { m_capturedStructureCount++; }
+    void Increment_Disguised_Unit_Count() { m_disguisedUnitCount++; }
+    void Increment_Picked_Up_Salvage_Count() { m_pickedUpSalvageCount++; }
+    void Increment_Killed_Pilot_Count() { m_killedPilotCount++; }
+    void Increment_Drag_Select_Count() { m_dragSelectCount++; }
+
+    void Add_Science_Points_Spent(int points) { m_sciencePointsSpentCount += points; }
+    void Picked_Strategy_Plan() { m_pickedStrategyPlan = true; }
+    void Set_Needs_Update(bool update) { m_needsUpdate = update; }
+
+    unsigned int Get_Traps_Used() const { return m_trapsUsed; }
+    unsigned int Get_Killed_Pilot_Count() const { return m_killedPilotCount; }
+    bool Needs_Update() const { return m_needsUpdate; }
+
 private:
-    Player *m_player;
-    unsigned int m_lastUupdateFrame;
+    const Player *m_player;
+    unsigned int m_lastUpdateFrame;
     bool m_needsUpdate;
     CommandSet *m_commandSet;
     bool m_skipCalc;
-    ThingTemplate *m_commandCenterTemplate;
+    const ThingTemplate *m_commandCenterTemplate;
     bool m_buildSupplyCenterOnTime;
     unsigned int m_supplyCenterCount;
-    ThingTemplate *m_supplyCenterTemplate;
+    const ThingTemplate *m_supplyCenterTemplate;
     unsigned int m_money;
     bool m_hasBuiltRadar;
     unsigned int m_dozerCount;

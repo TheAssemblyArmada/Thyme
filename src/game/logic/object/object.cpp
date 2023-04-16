@@ -68,6 +68,8 @@
 #include "w3ddebugicons.h"
 #include "weaponset.h"
 
+BitFlags<OBJECT_STATUS_COUNT> OBJECT_STATUS_MASK_NONE;
+
 template<>
 const char *BitFlags<SPECIAL_POWER_COUNT>::s_bitNamesList[] = { "SPECIAL_INVALID",
     "SPECIAL_DAISY_CUTTER",

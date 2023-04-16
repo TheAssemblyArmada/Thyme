@@ -534,6 +534,7 @@ AI *&g_theAI = Make_Global<AI *>(PICK_ADDRESS(0x00A2BBF4, 0x00E27E24));
 // terrainlogic.cpp
 #include "terrainlogic.h"
 TerrainLogic *&g_theTerrainLogic = Make_Global<TerrainLogic *>(PICK_ADDRESS(0x00A2B680, 0x00E23AE8));
+WaterHandle &m_gridWaterHandle = Make_Global<WaterHandle>(PICK_ADDRESS(0x00A2B67C, 0x00E23AE4));
 
 // assetmgr.cpp
 #include "assetmgr.h"
@@ -770,3 +771,7 @@ GameInfo *&g_theGameInfo = Make_Global<GameInfo *>(PICK_ADDRESS(0x00A2C2B8, 0x04
 // eva.cpp
 class Eva;
 Eva *&g_theEva = Make_Global<Eva *>(PICK_ADDRESS(0x00A2C090, 0x04CA9C28));
+
+// ghostobject.cpp
+class GhostObjectManager;
+GhostObjectManager *&g_theGhostObjectManager = Make_Global<GhostObjectManager *>(PICK_ADDRESS(0x00A2C280, 0x04CA8CD8));

@@ -62,6 +62,7 @@ public:
     Utf8String Get_Bridge_Model_Name_Really_Damaged() { return m_bridgeModelNameReallyDamaged; }
     Utf8String Get_Texture_Broken() { return m_textureBroken; }
     Utf8String Get_Bridge_Model_Name_Broken() { return m_bridgeModelNameBroken; }
+    Utf8String Get_Tower_Object_Name(BridgeTowerType type) { return m_towerObjectName[type]; }
 
     void Set_Name(Utf8String name) { m_name = name; }
     void Set_Damaged_OCL(int dmg, int effect, Utf8String name) { m_damagedTransitionOCL[dmg][effect] = name; }

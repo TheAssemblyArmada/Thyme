@@ -40,8 +40,6 @@
 #include "thingfactory.h"
 #include "weaponset.h"
 
-BitFlags<OBJECT_STATUS_COUNT> OBJECT_STATUS_MASK_NONE;
-
 void Do_FX_Pos(FXList const *list,
     const Coord3D *primary,
     const Matrix3D *primary_mtx,

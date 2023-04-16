@@ -287,9 +287,14 @@ public:
     void Classify_Object_Footprint(Object *obj, bool insert);
     void Update_Pos(Object *obj, const Coord3D *pos);
     void Remove_Pos(Object *obj);
+    void Change_Bridge_State(PathfindLayerEnum layer, bool b);
+    PathfindLayerEnum Add_Bridge(Bridge *bridge);
+    bool Is_Point_On_Wall(const Coord3D *point);
+    void Force_Map_Recalculation();
 
     void Remove_Object_From_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, false); }
     void Add_Object_To_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, true); }
+    float Get_Wall_Height() const { return m_wallHeight; }
 
 private:
     PathfindCell *m_mapPointer; // not 100% confirmed

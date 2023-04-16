@@ -89,6 +89,9 @@ public:
     Bridge *Get_Next() { return m_next; }
     void Set_Layer(PathfindLayerEnum layer) { m_layer = layer; }
     PathfindLayerEnum Get_Layer() { return m_layer; }
+    Region2D Get_Bounds() { return m_bounds; }
+    Utf8String Get_Name() { return m_templateName; }
+    void Set_Object_ID(ObjectID id) { m_bridgeInfo.bridge_object_id = id; }
 
 private:
     Bridge *m_next;
@@ -115,10 +118,22 @@ public:
         bool bidirectional);
 
     void Set_Next(Waypoint *waypoint) { m_next = waypoint; }
-    void Set_Link(int link, Waypoint *waypoint) { m_links[link] = waypoint; }
+    void Set_Link(Waypoint *waypoint)
+    {
+        if (m_numLinks < MAX_LINKS) {
+            m_links[m_numLinks++] = waypoint;
+        }
+    }
     Waypoint *Get_Next() const { return m_next; }
     int Get_Num_Links() const { return m_numLinks; }
-    Waypoint *Get_Link(int link) const { return m_links[link]; }
+    Waypoint *Get_Link(int link) const
+    {
+        if (link > MAX_LINKS) {
+            return nullptr;
+        } else {
+            return m_links[link];
+        }
+    }
     Utf8String Get_Name() const { return m_name; }
     WaypointID Get_ID() const { return m_id; }
     const Coord3D *Get_Location() const { return &m_location; }
@@ -154,6 +169,12 @@ public:
     PolygonTrigger *m_polygon;
 };
 
+struct ShroudStatusStoreRestore
+{
+    std::vector<unsigned char> status[MAX_PLAYER_COUNT];
+    int width;
+};
+
 class TerrainLogic : public SnapShot, public SubsystemInterface
 {
 public:
@@ -172,13 +193,13 @@ public:
     virtual void New_Map(bool b);
     virtual float Get_Ground_Height(float x, float y, Coord3D *n) const;
     virtual float Get_Layer_Height(float x, float y, PathfindLayerEnum layer, Coord3D *n, bool b) const;
-    virtual void Get_Extent(Region3D *extent) const;
-    virtual void Get_Extent_Including_Border(Region3D *extent) const;
-    virtual void Get_Maximum_Pathfind_Extent(Region3D *extent) const;
+    virtual void Get_Extent(Region3D *extent) const { captainslog_dbgassert(false, "not implemented"); }
+    virtual void Get_Extent_Including_Border(Region3D *extent) const { captainslog_dbgassert(false, "not implemented"); }
+    virtual void Get_Maximum_Pathfind_Extent(Region3D *extent) const { captainslog_dbgassert(false, "not implemented"); }
     virtual Coord3D Find_Closest_Edge_Point(const Coord3D *pos) const;
     virtual Coord3D Find_Farthest_Edge_Point(const Coord3D *pos) const;
     virtual bool Is_Clear_Line_Of_Sight(const Coord3D &pos1, const Coord3D &pos2) const;
-    virtual Utf8String Get_Source_Filename();
+    virtual Utf8String Get_Source_Filename() { return m_filenameString; }
     virtual PathfindLayerEnum Align_On_Terrain(float angle, const Coord3D &pos, bool stick_to_ground, Matrix3D &mtx);
     virtual bool Is_Underwater(float x, float y, float *waterz, float *groundz);
     virtual bool Is_Cliff_Cell(float x, float y) const;
@@ -188,13 +209,13 @@ public:
     virtual void Set_Water_Height(const WaterHandle *water, float height, float damage_amount, bool force_pathfind_update);
     virtual void Change_Water_Height_Over_Time(
         const WaterHandle *water, float final_height, float transition_time_in_seconds, float damage_amount);
-    virtual Waypoint *Get_First_Waypoint();
+    virtual Waypoint *Get_First_Waypoint() { return m_waypointListHead; }
     virtual Waypoint *Get_Waypoint_By_Name(Utf8String name);
     virtual Waypoint *Get_Waypoint_By_ID(WaypointID id);
     virtual Waypoint *Get_Closest_Waypoint_On_Path(const Coord3D *pos, Utf8String label);
     virtual bool Is_Purpose_Of_Path(Waypoint *way, Utf8String label);
     virtual PolygonTrigger *Get_Trigger_Area_By_Name(Utf8String name);
-    virtual Bridge *Get_First_Bridge() const;
+    virtual Bridge *Get_First_Bridge() const { return m_bridgeListHead; }
     virtual Bridge *Find_Bridge_At(const Coord3D *loc) const;
     virtual Bridge *Find_Bridge_Layer_At(const Coord3D *loc, PathfindLayerEnum layer, bool b) const;
     virtual bool Object_Interacts_With_Bridge_Layer(Object *obj, int layer, bool b) const;
@@ -221,10 +242,16 @@ public:
     PathfindLayerEnum Get_Layer_For_Destination(const Coord3D *pos);
     PathfindLayerEnum Get_Highest_Layer_For_Destination(const Coord3D *pos, bool b);
 
+    bool Have_Bridge_Damage_States_Changed() { return m_bridgeDamageStatesChanged; }
+
     static bool Parse_Waypoint_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *user_data);
 
 protected:
+#ifdef GAME_DLL
+    static WaterHandle &m_gridWaterHandle;
+#else
     static WaterHandle m_gridWaterHandle;
+#endif
 
     enum
     {
@@ -233,7 +260,7 @@ protected:
 
     struct DynamicWaterEntry
     {
-        void *water_table;
+        const WaterHandle *water_table;
         float change_per_frame;
         float target_height;
         float damage_amount;
@@ -259,3 +286,5 @@ extern TerrainLogic *&g_theTerrainLogic;
 #else
 extern TerrainLogic *g_theTerrainLogic;
 #endif
+
+bool Line_In_Region(const Coord2D *p1, const Coord2D *p2, const Region2D *clip_region);

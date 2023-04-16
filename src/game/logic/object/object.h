@@ -665,3 +665,5 @@ private:
     bool m_singleUseCommand;
     bool m_receivingDifficultyBonus;
 };
+
+extern BitFlags<OBJECT_STATUS_COUNT> OBJECT_STATUS_MASK_NONE;

@@ -150,6 +150,7 @@
 #include "targa.h"
 #include "team.h"
 #include "teamsinfo.h"
+#include "terrainlogic.h"
 #include "terraintex.h"
 #include "texproject.h"
 #include "texture.h"
@@ -2931,4 +2932,37 @@ void Setup_Hooks()
     Hook_Any(0x005757F0, AcademyStats::Record_Special_Power_Used);
     Hook_Any(0x00575810, AcademyStats::Record_Income);
     Hook_Any(0x00576B70, AcademyStats::Calculate_Academy_Advice);
+
+    // terrainlogic.h
+    Hook_Any(0x0044A650, TerrainLogic::Add_Waypoint);
+    Hook_Any(0x0044AC20, TerrainLogic::Add_Bridge_To_Logic);
+    Hook_Any(0x0044AD70, TerrainLogic::Add_Landmark_Bridge_To_Logic);
+    Hook_Any(0x004485C0, Bridge::Is_Point_On_Bridge);
+    Hook_Any(0x00448A30, Line_In_Region);
+    Hook_Any(0x00448E50, Bridge::Is_Cell_On_End);
+    Hook_Any(0x00448FE0, Bridge::Is_Cell_On_Side);
+    Hook_Any(0x00449260, Bridge::Is_Cell_Entry_Point);
+    Hook_Any(0x0044BBC0, TerrainLogic::Pick_Bridge);
+    Hook_Any(0x0044B9C0, TerrainLogic::Update_Bridge_Damage_States);
+    Hook_Any(0x00449A80, Bridge::Get_Bridge_Height);
+    Hook_Any(0x0044B540, TerrainLogic::Find_Bridge_At);
+    Hook_Any(0x0044B580, TerrainLogic::Find_Bridge_Layer_At);
+    Hook_Any(0x0044BC40, TerrainLogic::Delete_Bridge);
+    Hook_Any(0x0044B9F0, TerrainLogic::Is_Bridge_Repaired);
+    Hook_Any(0x0044BA30, TerrainLogic::Is_Bridge_Broken);
+    Hook_Any(0x0044B7C0, TerrainLogic::Object_Interacts_With_Bridge_Layer);
+    Hook_Any(0x00744EF8, TerrainLogic::Object_Interacts_With_Bridge_End);
+    Hook_Any(0x0044B6B0, TerrainLogic::Get_Highest_Layer_For_Destination);
+    Hook_Any(0x0044A610, TerrainLogic::Parse_Waypoint_Data_Chunk);
+    Hook_Any(0x00449E30, TerrainLogic::Reset);
+    Hook_Any(0x0044A9D0, TerrainLogic::Get_Ground_Height);
+    Hook_Any(0x0044A9F0, TerrainLogic::Get_Layer_Height);
+    Hook_Any(0x0044AE20, TerrainLogic::Get_Waypoint_By_Name);
+    Hook_Any(0x0044AF60, TerrainLogic::Get_Waypoint_By_ID);
+    Hook_Any(0x0044AF80, TerrainLogic::Get_Closest_Waypoint_On_Path);
+    Hook_Any(0x0044B1A0, TerrainLogic::Is_Purpose_Of_Path);
+    Hook_Any(0x0044E070, TerrainLogic::Xfer_Snapshot);
+    Hook_Any(0x0044E1B0, TerrainLogic::Load_Post_Process);
+    Hook_Any(0x0044C9D0, TerrainLogic::Set_Active_Boundary);
+    Hook_Any(0x0044A920, TerrainLogic::Add_Waypoint_Link);
 }

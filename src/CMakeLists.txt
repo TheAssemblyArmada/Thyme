@@ -276,6 +276,7 @@ set(GAMEENGINE_SRC
     game/logic/object/armortemplateset.cpp
     game/logic/object/experiencetracker.cpp
     game/logic/object/firingtracker.cpp
+    game/logic/object/ghostobject.cpp
     game/logic/object/locomotor.cpp
     game/logic/object/object.cpp
     game/logic/object/objectcreationlist.cpp
@@ -284,6 +285,8 @@ set(GAMEENGINE_SRC
     game/logic/object/weaponset.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/object/behavior/autohealbehavior.cpp
+    game/logic/object/behavior/bridgebehavior.cpp
+    game/logic/object/behavior/bridgetowerbehavior.cpp
     game/logic/object/behavior/overchargebehavior.cpp
     game/logic/object/behavior/rebuildholebehavior.cpp
     game/logic/object/collide/collidemodule.cpp

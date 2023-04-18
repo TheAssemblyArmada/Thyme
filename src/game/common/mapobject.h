@@ -16,6 +16,7 @@
 #include "asciistring.h"
 #include "coord.h"
 #include "dict.h"
+#include "terrainlogic.h"
 #include "terrainroads.h"
 
 class ThingTemplate;
@@ -89,9 +90,9 @@ public:
     static void Fast_Assign_All_Unique_IDs();
     void Set_Thing_Template(const ThingTemplate *thing);
     void Set_Name(Utf8String name);
-    int Get_Waypoint_ID();
+    WaypointID Get_Waypoint_ID();
     Utf8String Get_Waypoint_Name();
-    void Set_Waypoint_ID(int i);
+    void Set_Waypoint_ID(WaypointID i);
     void Set_Waypoint_Name(Utf8String n);
     static int Count_Map_Objects_With_Owner(const Utf8String &n);
     const ThingTemplate *Get_Thing_Template();

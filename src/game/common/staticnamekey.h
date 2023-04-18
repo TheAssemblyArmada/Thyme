@@ -170,3 +170,7 @@ extern StaticNameKey g_objectSoundAmbientVolume;
 extern StaticNameKey g_objectSoundAmbientMinRange;
 extern StaticNameKey g_objectSoundAmbientMaxRange;
 extern StaticNameKey g_objectSoundAmbientPriority;
+extern StaticNameKey g_waypointPathLabel1;
+extern StaticNameKey g_waypointPathLabel2;
+extern StaticNameKey g_waypointPathLabel3;
+extern StaticNameKey g_waypointPathBiDirectional;

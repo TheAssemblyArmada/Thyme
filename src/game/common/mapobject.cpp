@@ -18,7 +18,6 @@
 #include "rendobj.h"
 #include "sideslist.h"
 #include "staticnamekey.h"
-#include "terrainroads.h"
 #include "thingtemplate.h"
 #include <deque>
 #ifndef GAME_DLL
@@ -260,9 +259,9 @@ void MapObject::Set_Name(Utf8String name)
     m_objectName = name;
 }
 
-int MapObject::Get_Waypoint_ID()
+WaypointID MapObject::Get_Waypoint_ID()
 {
-    return Get_Properties()->Get_Int(g_waypointIDKey);
+    return static_cast<WaypointID>(Get_Properties()->Get_Int(g_waypointIDKey));
 }
 
 Utf8String MapObject::Get_Waypoint_Name()
@@ -270,7 +269,7 @@ Utf8String MapObject::Get_Waypoint_Name()
     return Get_Properties()->Get_AsciiString(g_waypointNameKey);
 }
 
-void MapObject::Set_Waypoint_ID(int i)
+void MapObject::Set_Waypoint_ID(WaypointID i)
 {
     Get_Properties()->Set_Int(g_waypointIDKey, i);
 }

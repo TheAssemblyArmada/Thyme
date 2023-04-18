@@ -280,3 +280,35 @@ void Pathfinder::Remove_Pos(Object *obj)
     Call_Method<void, Pathfinder, Object *>(PICK_ADDRESS(0x0056DA30, 0x0089E389), this, obj);
 #endif
 }
+
+void Pathfinder::Change_Bridge_State(PathfindLayerEnum layer, bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, PathfindLayerEnum, bool>(PICK_ADDRESS(0x0056C970, 0x0089D713), this, layer, b);
+#endif
+}
+
+PathfindLayerEnum Pathfinder::Add_Bridge(Bridge *bridge)
+{
+#ifdef GAME_DLL
+    return Call_Method<PathfindLayerEnum, Pathfinder, Bridge *>(PICK_ADDRESS(0x0055F580, 0x008908BE), this, bridge);
+#else
+    return LAYER_INVALID;
+#endif
+}
+
+bool Pathfinder::Is_Point_On_Wall(const Coord3D *point)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Pathfinder, const Coord3D *>(PICK_ADDRESS(0x0055F450, 0x00890845), this, point);
+#else
+    return false;
+#endif
+}
+
+void Pathfinder::Force_Map_Recalculation()
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder>(PICK_ADDRESS(0x00560E90, 0x00892519), this);
+#endif
+}

@@ -127,6 +127,10 @@ StaticNameKey g_objectSoundAmbientVolume("objectSoundAmbientVolume");
 StaticNameKey g_objectSoundAmbientMinRange("objectSoundAmbientMinRange");
 StaticNameKey g_objectSoundAmbientMaxRange("objectSoundAmbientMaxRange");
 StaticNameKey g_objectSoundAmbientPriority("objectSoundAmbientPriority");
+StaticNameKey g_waypointPathLabel1("waypointPathLabel1");
+StaticNameKey g_waypointPathLabel2("waypointPathLabel2");
+StaticNameKey g_waypointPathLabel3("waypointPathLabel3");
+StaticNameKey g_waypointPathBiDirectional("waypointPathBiDirectional");
 
 NameKeyType StaticNameKey::Key()
 {

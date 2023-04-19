@@ -1217,7 +1217,7 @@ void Object::Set_Status(BitFlags<OBJECT_STATUS_COUNT> bits, bool set)
     }
 
     if (m_status != old_status) {
-        if (set && bits.Test(OBJECT_STATUS_REPULSOR) && m_objectDefectionHelper != nullptr) {
+        if (set && bits.Test(OBJECT_STATUS_REPULSOR) && m_objectRepulsorHelper != nullptr) {
             m_objectRepulsorHelper->Sleep_Until(g_theGameLogic->Get_Frame() + 60);
         }
 

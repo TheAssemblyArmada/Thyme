@@ -1217,7 +1217,7 @@ void Object::Set_Status(BitFlags<OBJECT_STATUS_COUNT> bits, bool set)
     }
 
     if (m_status != old_status) {
-        if (set && bits.Test(OBJECT_STATUS_REPULSOR) && m_objectDefectionHelper != nullptr) {
+        if (set && bits.Test(OBJECT_STATUS_REPULSOR) && m_objectRepulsorHelper != nullptr) {
             m_objectRepulsorHelper->Sleep_Until(g_theGameLogic->Get_Frame() + 60);
         }
 
@@ -4322,7 +4322,7 @@ void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *ob
                 }
                 case GUI_COMMAND_SPECIAL_POWER: {
                     if (button->Get_Special_Power()) {
-                        obj->Do_Special_Power_At_Object(
+                        Do_Special_Power_At_Object(
                             button->Get_Special_Power(), obj, button->Get_Options() | 0x40000, type == COMMANDSOURCE_SCRIPT);
                     }
 

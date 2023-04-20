@@ -534,7 +534,7 @@ AI *&g_theAI = Make_Global<AI *>(PICK_ADDRESS(0x00A2BBF4, 0x00E27E24));
 // terrainlogic.cpp
 #include "terrainlogic.h"
 TerrainLogic *&g_theTerrainLogic = Make_Global<TerrainLogic *>(PICK_ADDRESS(0x00A2B680, 0x00E23AE8));
-WaterHandle &m_gridWaterHandle = Make_Global<WaterHandle>(PICK_ADDRESS(0x00A2B67C, 0x00E23AE4));
+WaterHandle &TerrainLogic::m_gridWaterHandle = Make_Global<WaterHandle>(PICK_ADDRESS(0x00A2B67C, 0x00E23AE4));
 
 // assetmgr.cpp
 #include "assetmgr.h"

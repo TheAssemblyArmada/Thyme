@@ -18,19 +18,24 @@
 #include "bodymodule.h"
 #include "bridgebehavior.h"
 #include "bridgetowerbehavior.h"
+#include "cachedfileinputstream.h"
 #include "damage.h"
 #include "gamelogic.h"
 #include "ghostobject.h"
+#include "globaldata.h"
 #include "mapobject.h"
 #include "object.h"
 #include "plane.h"
 #include "polygontrigger.h"
 #include "radar.h"
+#include "simpleobjectiterator.h"
 #include "staticnamekey.h"
 #include "terrainroads.h"
+#include "terrainvisual.h"
 #include "thingfactory.h"
 #include "tri.h"
 #include "view.h"
+#include "worldheightmap.h"
 
 #ifndef GAME_DLL
 TerrainLogic *g_theTerrainLogic = nullptr;
@@ -813,6 +818,31 @@ float Bridge::Get_Bridge_Height(const Coord3D *loc, Coord3D *n)
     return k * z;
 }
 
+TerrainLogic::TerrainLogic() :
+    m_mapData(nullptr),
+    m_mapDX(0),
+    m_mapDY(0),
+    m_activeBoundary(0),
+    m_waypointListHead(nullptr),
+    m_bridgeListHead(nullptr),
+    m_bridgeDamageStatesChanged(false),
+    m_waterGridEnabled(false),
+    m_numWaterToUpdate(0)
+{
+    for (int i = 0; i < MAX_DYNAMIC_WATER; i++) {
+        m_waterToUpdate[i].water_table = nullptr;
+        m_waterToUpdate[i].change_per_frame = 0.0f;
+        m_waterToUpdate[i].target_height = 0.0f;
+        m_waterToUpdate[i].damage_amount = 0.0f;
+        m_waterToUpdate[i].current_height = 0.0f;
+    }
+}
+
+TerrainLogic::~TerrainLogic()
+{
+    Reset();
+}
+
 void TerrainLogic::Init() {}
 
 void TerrainLogic::Reset()
@@ -1413,6 +1443,862 @@ void TerrainLogic::Load_Post_Process()
 
         if (g_theGameLogic->Find_Object_By_ID(bridge->Peek_Bridge_Info()->bridge_object_id) == nullptr) {
             Delete_Bridge(bridge);
+        }
+    }
+}
+
+bool TerrainLogic::Load_Map(Utf8String filename, bool query)
+{
+    if (filename.Is_Empty()) {
+        return false;
+    }
+
+    m_filenameString = filename;
+
+    for (MapObject *obj = MapObject::Get_First_Map_Object(); obj != nullptr; obj = obj->Get_Next()) {
+        if (obj->Is_Waypoint()) {
+            Add_Waypoint(obj);
+        }
+    }
+
+    CachedFileInputStream stream;
+
+    if (stream.Open(m_filenameString)) {
+        stream.Absolute_Seek(0);
+        DataChunkInput input(&stream);
+
+        if (input.Is_Valid_File()) {
+            input.Register_Parser("WaypointsList", Utf8String::s_emptyString, Parse_Waypoint_Data_Chunk, nullptr);
+
+            if (!input.Parse(this)) {
+                captainslog_dbgassert(false, "Unable to read waypoint info.");
+                return false;
+            }
+        }
+    }
+
+    if (!query) {
+        g_theTerrainVisual->Load(Get_Source_Filename());
+    }
+
+    return true;
+}
+
+void TerrainLogic::New_Map(bool b)
+{
+    for (Waypoint *wp = m_waypointListHead; wp != nullptr; wp = wp->Get_Next()) {
+        const Coord3D *loc = wp->Get_Location();
+        wp->Set_Height(Get_Ground_Height(loc->x, loc->y, nullptr));
+    }
+
+    Enable_Water_Grid(Get_Waypoint_By_Name("WaveGuide1") != nullptr);
+}
+
+void TerrainLogic::Enable_Water_Grid(bool enable)
+{
+    m_waterGridEnabled = enable;
+
+    if (!enable) {
+        g_theTerrainVisual->Enable_Water_Grid(enable);
+        return;
+    }
+
+    int index = -1;
+    for (int i = 0; i < 4; i++) {
+        if (!g_theWriteableGlobalData->m_mapName.Compare_No_Case(
+                g_theWriteableGlobalData->m_vertexWaterAvailableMaps[i].Str())) {
+            index = i;
+        }
+
+        Utf8String mapfile;
+        Utf8String vertexwaterfile;
+        const char *filename = strrchr(g_theWriteableGlobalData->m_mapName.Str(), '\\');
+
+        if (filename != nullptr) {
+            mapfile.Set(filename);
+        } else {
+            mapfile = g_theWriteableGlobalData->m_mapName;
+        }
+
+        filename = strrchr(g_theWriteableGlobalData->m_vertexWaterAvailableMaps[i].Str(), '\\');
+
+        if (filename != nullptr) {
+            vertexwaterfile.Set(filename);
+        } else {
+            vertexwaterfile = g_theWriteableGlobalData->m_mapName;
+        }
+
+        if (!mapfile.Compare_No_Case(vertexwaterfile.Str())) {
+            index = i;
+            break;
+        }
+    }
+
+    if (index != -1) {
+        g_theTerrainVisual->Set_Water_Grid_Height_Clamps(nullptr,
+            g_theWriteableGlobalData->m_vertexWaterHeightClampLow[index],
+            g_theWriteableGlobalData->m_vertexWaterHeightClampHigh[index]);
+        g_theTerrainVisual->Set_Water_Transform(nullptr);
+        g_theTerrainVisual->Set_Water_Grid_Resolution(nullptr,
+            g_theWriteableGlobalData->m_vertexWaterXGridCells[index],
+            g_theWriteableGlobalData->m_vertexWaterYGridCells[index],
+            g_theWriteableGlobalData->m_vertexWaterGridSize[index]);
+        g_theTerrainVisual->Set_Water_Attenuation_Factors(nullptr,
+            g_theWriteableGlobalData->m_vertexWaterAttenuationA[index],
+            g_theWriteableGlobalData->m_vertexWaterAttenuationB[index],
+            g_theWriteableGlobalData->m_vertexWaterAttenuationC[index],
+            g_theWriteableGlobalData->m_vertexWaterAttenuationRange[index]);
+        g_theTerrainVisual->Enable_Water_Grid(enable);
+        return;
+    }
+
+    captainslog_dbgassert(false,
+        "!!!!!! Deformable water won't work because there was no group of vertex water data defined in GameData.INI for "
+        "this map name '%s' !!!!!! (C. Day)",
+        g_theWriteableGlobalData->m_mapName.Str());
+}
+
+Coord3D TerrainLogic::Find_Closest_Edge_Point(const Coord3D *pos) const
+{
+    Region3D region;
+    Get_Extent(&region);
+    float points[4];
+    points[0] = GameMath::Fabs(pos->y - region.lo.y);
+    points[1] = GameMath::Fabs(pos->x - region.hi.x);
+    points[2] = GameMath::Fabs(pos->y - region.hi.y);
+    points[3] = GameMath::Fabs(pos->x - region.lo.x);
+    float min = points[0];
+    int index = 0;
+
+    for (int i = 1; i < 4; i++) {
+        if (points[i] < min) {
+            min = points[i];
+            index = i;
+        }
+    }
+
+    Coord3D c;
+    c.x = pos->x;
+    c.y = pos->y;
+
+    if (index == 0) {
+        c.y = region.lo.y;
+        c.z = Get_Ground_Height(c.x, region.lo.y, nullptr);
+    } else if (index == 1) {
+        c.x = region.hi.x;
+        c.z = Get_Ground_Height(region.hi.x, c.y, nullptr);
+    } else if (index == 2) {
+        c.y = region.hi.y;
+        c.z = Get_Ground_Height(c.x, region.hi.y, nullptr);
+    } else if (index == 3) {
+        c.x = region.lo.x;
+        c.z = Get_Ground_Height(region.lo.x, c.y, nullptr);
+    }
+
+    return c;
+}
+
+Coord3D TerrainLogic::Find_Farthest_Edge_Point(const Coord3D *pos) const
+{
+    Region3D region;
+    Get_Extent(&region);
+    Coord3D c;
+
+    if (region.Width() / 2.0f <= pos->x) {
+        c.x = region.lo.x;
+    } else {
+        c.x = region.hi.x;
+    }
+
+    if (region.Height() / 2.0f <= pos->y) {
+        c.y = region.lo.y;
+    } else {
+        c.y = region.hi.y;
+    }
+
+    c.z = Get_Ground_Height(c.x, c.y, nullptr);
+    return c;
+}
+
+void Make_Align_To_Normal_Matrix(float angle, const Coord3D &pos, const Coord3D &n, Matrix3D &tm)
+{
+    Coord3D axis = n;
+    Coord3D rotated_axis;
+    rotated_axis.x = GameMath::Cos(angle);
+    rotated_axis.y = GameMath::Sin(angle);
+    rotated_axis.z = 0.0f;
+
+    if (axis.z != 0.0f) {
+        rotated_axis.z = -(rotated_axis.x * axis.x + rotated_axis.y * axis.y) / axis.z;
+        rotated_axis.Normalize();
+    }
+
+    captainslog_dbgassert(
+        GameMath::Fabs(rotated_axis.x * axis.x + rotated_axis.y * axis.y + rotated_axis.z * axis.z) < 0.0001f,
+        "dot is not zero (%f)",
+        GameMath::Fabs(rotated_axis.x * axis.x + rotated_axis.y * axis.y + rotated_axis.z * axis.z));
+    Coord3D perpendicular_axis;
+    Coord3D::Cross_Product(&axis, &rotated_axis, &perpendicular_axis);
+    perpendicular_axis.Normalize();
+    tm.Set(rotated_axis.x,
+        perpendicular_axis.x,
+        axis.x,
+        pos.x,
+        rotated_axis.y,
+        perpendicular_axis.y,
+        axis.y,
+        pos.y,
+        rotated_axis.z,
+        perpendicular_axis.z,
+        axis.z,
+        pos.z);
+}
+
+PathfindLayerEnum TerrainLogic::Align_On_Terrain(float angle, const Coord3D &pos, bool stick_to_ground, Matrix3D &mtx)
+{
+    PathfindLayerEnum layer = Get_Layer_For_Destination(&pos);
+    Coord3D c;
+    float height = Get_Layer_Height(pos.x, pos.y, layer, &c, true);
+
+    if (layer != LAYER_GROUND) {
+        height += 2.5f;
+    }
+
+    Make_Align_To_Normal_Matrix(angle, pos, c, mtx);
+
+    if (stick_to_ground) {
+        mtx.Set_Z_Translation(height);
+    }
+
+    return layer;
+}
+
+bool TerrainLogic::Is_Underwater(float x, float y, float *waterz, float *groundz)
+{
+    const WaterHandle *handle = Get_Water_Handle(x, y);
+
+    if (handle != nullptr) {
+        float water_height = 0.0f;
+
+        if (handle == &m_gridWaterHandle) {
+            g_theTerrainVisual->Get_Water_Grid_Height(x, y, &water_height);
+        } else {
+            water_height = Get_Water_Height(handle);
+        }
+
+        if (waterz != nullptr) {
+            *waterz = water_height;
+        }
+
+        float ground_height = Get_Ground_Height(x, y, nullptr);
+
+        if (groundz != nullptr) {
+            *groundz = ground_height;
+        }
+
+        return ground_height < water_height;
+    } else {
+        if (groundz != nullptr) {
+            *groundz = Get_Ground_Height(x, y, nullptr);
+        }
+
+        return false;
+    }
+}
+
+PathfindLayerEnum TerrainLogic::Get_Layer_For_Destination(const Coord3D *pos)
+{
+    Bridge *bridge = Get_First_Bridge();
+    PathfindLayerEnum layer = LAYER_GROUND;
+    float height = GameMath::Fabs(pos->z - Get_Ground_Height(pos->x, pos->y, nullptr));
+    if (g_theAI->Get_Pathfinder()->Get_Wall_Height() / 2.0f < height) {
+        if (g_theAI->Get_Pathfinder()->Is_Point_On_Wall(pos)) {
+            float wall_height = GameMath::Fabs(pos->z - g_theAI->Get_Pathfinder()->Get_Wall_Height());
+
+            if (wall_height < height) {
+                layer = LAYER_WALLS;
+                height = wall_height;
+            }
+        }
+    }
+
+    while (bridge != nullptr) {
+        if (bridge->Is_Point_On_Bridge(pos)) {
+            float bridge_height = GameMath::Fabs(pos->z - bridge->Get_Bridge_Height(pos, nullptr));
+
+            if (bridge_height < height) {
+                layer = bridge->Get_Layer();
+                height = bridge_height;
+            }
+        }
+
+        bridge = bridge->Get_Next();
+    }
+
+    return layer;
+}
+
+const WaterHandle *TerrainLogic::Get_Water_Handle(float x, float y)
+{
+    const WaterHandle *handle = nullptr;
+    float z = 0.0f;
+    ICoord3D point;
+    point.x = GameMath::Fast_To_Int_Floor(x + 0.5f);
+    point.y = GameMath::Fast_To_Int_Floor(y + 0.5f);
+    point.z = 0.0f;
+
+    for (PolygonTrigger *trigger = PolygonTrigger::Get_First_Polygon_Trigger(); trigger != nullptr;
+         trigger = trigger->Get_Next()) {
+        if (trigger->Is_Water_Area() && trigger->Point_In_Trigger(point) && trigger->Get_Point(0)->z >= z) {
+            z = trigger->Get_Point(0)->z;
+            handle = trigger->Get_Water_Handle();
+        }
+    }
+
+    float height;
+
+    if (g_theTerrainVisual->Get_Water_Grid_Height(x, y, &height) && height >= z) {
+        return &m_gridWaterHandle;
+    }
+
+    return handle;
+}
+
+const WaterHandle *TerrainLogic::Get_Water_Handle_By_Name(Utf8String name)
+{
+    if (!name.Compare("Water Grid")) {
+        return &m_gridWaterHandle;
+    } else {
+        for (PolygonTrigger *trigger = PolygonTrigger::Get_First_Polygon_Trigger(); trigger != nullptr;
+             trigger = trigger->Get_Next()) {
+            if (!trigger->Get_Trigger_Name().Compare(name) && trigger->Is_Water_Area()) {
+                return trigger->Get_Water_Handle();
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+float TerrainLogic::Get_Water_Height(const WaterHandle *water)
+{
+    if (water == nullptr) {
+        return 0.0f;
+    }
+
+    if (water == &m_gridWaterHandle) {
+        captainslog_dbgassert(
+            false, "TerrainLogic::Get_Water_Height( WaterHandle *water ) - water is a grid handle, cannot make this query");
+        return 0.0f;
+    } else {
+        captainslog_dbgassert(water->m_polygon != nullptr, "Get_Water_Height: polygon trigger in water handle is NULL");
+        return water->m_polygon->Get_Point(0)->z;
+    }
+}
+
+void TerrainLogic::Set_Water_Height(const WaterHandle *water, float height, float damage_amount, bool force_pathfind_update)
+{
+    if (water != nullptr) {
+        float z = 0.0f;
+
+        if (water == &m_gridWaterHandle) {
+            Matrix3D tm;
+            g_theTerrainVisual->Get_Water_Transform(water, &tm);
+            z = tm.Get_Z_Translation();
+            tm.Set_Z_Translation(height);
+            g_theTerrainVisual->Set_Water_Transform(&tm);
+        } else {
+            z = Get_Water_Height(water);
+            int count = water->m_polygon->Get_Num_Points();
+
+            for (int i = 0; i < count; i++) {
+                ICoord3D point = *water->m_polygon->Get_Point(i);
+                point.z = height;
+                water->m_polygon->Set_Point(point, i);
+            }
+
+            height = Get_Water_Height(water);
+        }
+
+        Region3D region;
+        Find_Axis_Aligned_Bounding_Rect(water, &region);
+
+        if (force_pathfind_update || z != height) {
+            g_theAI->Get_Pathfinder()->Force_Map_Recalculation();
+        }
+
+        if (damage_amount > 0.0f && height > z) {
+            Coord3D pos;
+            pos.x = region.Width() / 2.0f + region.lo.x;
+            pos.y = region.Height() / 2.0f + region.lo.y;
+            pos.z = 0.0f;
+            float f = GameMath::Sqrt(region.Height() * region.Height() + region.Width() * region.Width());
+            SimpleObjectIterator *iter =
+                g_thePartitionManager->Iterate_Objects_In_Range(&pos, f, FROM_CENTER_2D, nullptr, ITER_FASTEST);
+            MemoryPoolObjectHolder holder(iter);
+
+            for (Object *obj = iter->First(); obj != nullptr; obj = iter->Next()) {
+                const Coord3D *c = obj->Get_Position();
+                if (Is_Underwater(c->x, c->y, nullptr, nullptr)) {
+                    DamageInfo info;
+                    info.m_in.m_damageType = DAMAGE_WATER;
+                    info.m_in.m_deathType = DEATH_NORMAL;
+                    info.m_in.m_sourceID = OBJECT_UNK;
+                    info.m_in.m_amount = damage_amount;
+                    obj->Attempt_Damage(&info);
+                }
+            }
+        }
+    }
+}
+
+void TerrainLogic::Find_Axis_Aligned_Bounding_Rect(const WaterHandle *water, Region3D *region)
+{
+    if (water != nullptr && region != nullptr) {
+        Region3D extent;
+        Get_Extent(&extent);
+        region->lo.x = extent.hi.x + 99999.898f;
+        region->lo.y = extent.hi.y + 99999.898f;
+        region->hi.x = extent.lo.x - 99999.898f;
+        region->hi.y = extent.lo.y - 99999.898f;
+
+        if (water == &m_gridWaterHandle) {
+            float grid_cells_x;
+            float grid_cells_y;
+            float cell_size;
+            g_theTerrainVisual->Get_Water_Grid_Resolution(water, &grid_cells_x, &grid_cells_y, &cell_size);
+            ICoord3D points[4];
+            points[0].x = 0;
+            points[0].y = 0;
+            points[1].x = grid_cells_x * cell_size;
+            points[1].y = 0;
+            points[2].x = points[1].x;
+            points[2].y = grid_cells_y * cell_size;
+            points[3].x = 0;
+            points[3].y = points[2].y;
+            Vector3 tp;
+            Matrix3D tm;
+            g_theTerrainVisual->Get_Water_Transform(water, &tm);
+
+            for (int i = 0; i < 4; i++) {
+                tp.Set(points[i].x, points[i].y, points[i].z);
+                Matrix3D::Transform_Vector(tm, tp, &tp);
+
+                if (tp.X < region->lo.x) {
+                    region->lo.x = tp.X;
+                }
+
+                if (tp.X > region->hi.x) {
+                    region->hi.x = tp.X;
+                }
+
+                if (tp.Y < region->lo.y) {
+                    region->lo.y = tp.Y;
+                }
+
+                if (tp.Y > region->hi.y) {
+                    region->hi.y = tp.Y;
+                }
+            }
+        } else {
+            int count = water->m_polygon->Get_Num_Points();
+
+            for (int i = 0; i < count; i++) {
+                ICoord3D *point = water->m_polygon->Get_Point(i);
+
+                if (point->x < region->lo.x) {
+                    region->lo.x = point->x;
+                }
+                if (point->x > region->hi.x) {
+                    region->hi.x = point->x;
+                }
+                if (point->y < region->lo.y) {
+                    region->lo.y = point->y;
+                }
+                if (point->y > region->hi.y) {
+                    region->hi.y = point->y;
+                }
+                if (point->z < region->lo.z) {
+                    region->lo.z = point->z;
+                }
+                if (point->z > region->hi.z) {
+                    region->hi.z = point->z;
+                }
+            }
+        }
+    }
+}
+
+void TerrainLogic::Change_Water_Height_Over_Time(
+    const WaterHandle *water, float final_height, float transition_time_in_seconds, float damage_amount)
+{
+    if (m_numWaterToUpdate < MAX_DYNAMIC_WATER) {
+        if (water != nullptr) {
+            for (int i = 0; i < m_numWaterToUpdate; i++) {
+                if (m_waterToUpdate[i].water_table == water) {
+                    m_numWaterToUpdate--;
+                    m_waterToUpdate[i] = m_waterToUpdate[m_numWaterToUpdate];
+                    i--;
+                }
+            }
+
+            float height = Get_Water_Height(water);
+            m_waterToUpdate[m_numWaterToUpdate].water_table = water;
+            m_waterToUpdate[m_numWaterToUpdate].change_per_frame =
+                (final_height - height) / (30.0f * transition_time_in_seconds);
+            m_waterToUpdate[m_numWaterToUpdate].target_height = final_height;
+            m_waterToUpdate[m_numWaterToUpdate].damage_amount = damage_amount;
+            m_waterToUpdate[m_numWaterToUpdate].current_height = height;
+            m_numWaterToUpdate++;
+        }
+    } else {
+        captainslog_dbgassert(false, "Only '%d' simultaneous water table changes are supported", MAX_DYNAMIC_WATER);
+    }
+}
+
+PolygonTrigger *TerrainLogic::Get_Trigger_Area_By_Name(Utf8String name)
+{
+    for (PolygonTrigger *trigger = PolygonTrigger::Get_First_Polygon_Trigger(); trigger != nullptr;
+         trigger = trigger->Get_Next()) {
+        if (name == trigger->Get_Trigger_Name()) {
+            return trigger;
+        }
+    }
+
+    return nullptr;
+}
+
+void TerrainLogic::Flatten_Terrain(Object *obj)
+{
+    if (!obj->Get_Geometry_Info().Is_Small()) {
+        const Coord3D *pos = obj->Get_Position();
+        GeometryType geometry_type = obj->Get_Geometry_Info().Get_Type();
+
+        if (geometry_type >= GEOMETRY_SPHERE) {
+            if (geometry_type <= GEOMETRY_CYLINDER) {
+                float major_radius = obj->Get_Geometry_Info().Get_Major_Radius();
+                float major_radius_square = GameMath::Square(major_radius);
+                int x_min = GameMath::Fast_To_Int_Floor((pos->x - major_radius) / 10.0f);
+                int y_min = GameMath::Fast_To_Int_Floor((pos->y - major_radius) / 10.0f);
+                int x_max = GameMath::Fast_To_Int_Floor((pos->x + major_radius) / 10.0f);
+                int y_max = GameMath::Fast_To_Int_Floor((pos->y + major_radius) / 10.0f);
+                float ground_height_sum = 0.0f;
+                int ground_height_sample_count = 0;
+
+                for (int x = x_min; x <= x_max; x++) {
+                    for (int y = 0; y <= y_max; y++) {
+                        Vector3 v(x * 10.0f, y * 10.0f, 0.0f);
+                        bool inside = false;
+
+                        if (GameMath::Square(v.X - pos->x) + GameMath::Square(v.Y - pos->y) < major_radius_square) {
+                            inside = true;
+                        }
+
+                        if (inside) {
+                            ground_height_sum += g_theTerrainLogic->Get_Ground_Height(v.X, v.Y, nullptr);
+                            ground_height_sample_count++;
+                        }
+                    }
+                }
+
+                if (ground_height_sample_count != 0) {
+                    int flattened_ground_height = GameMath::Fast_To_Int_Floor(
+                        (ground_height_sum / ground_height_sample_count) / HEIGHTMAP_SCALE + 0.5f);
+
+                    for (int x = x_min; x <= x_max; x++) {
+                        for (int y = 0; y <= y_max; y++) {
+                            Vector3 v(x * 10.0f, y * 10.0f, 0.0f);
+                            bool inside = false;
+
+                            if (GameMath::Square(v.X - pos->x) + GameMath::Square(v.Y - pos->y) < major_radius_square) {
+                                inside = true;
+                            }
+
+                            if (inside) {
+                                ICoord2D c;
+
+                                c.x = x;
+                                c.y = y;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x - 1;
+                                c.y = y;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x + 1;
+                                c.y = y;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x;
+                                c.y = y - 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x;
+                                c.y = y + 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x - 1;
+                                c.y = y - 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x + 1;
+                                c.y = y + 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x + 1;
+                                c.y = y - 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x - 1;
+                                c.y = y + 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+                            }
+                        }
+                    }
+                }
+            } else if (geometry_type == GEOMETRY_BOX) {
+                float orientation = obj->Get_Orientation();
+                float major_radius = obj->Get_Geometry_Info().Get_Major_Radius();
+                float minor_radius = obj->Get_Geometry_Info().Get_Minor_Radius();
+                float cos = GameMath::Cos(orientation);
+                float sin = GameMath::Sin(orientation);
+
+                Vector3 v1(pos->x - major_radius * cos - minor_radius * sin,
+                    minor_radius * cos + pos->y - major_radius * sin,
+                    0.0f);
+                Vector3 v2(major_radius * cos + pos->x - minor_radius * sin,
+                    minor_radius * cos + pos->y + major_radius * sin,
+                    0.0f);
+                Vector3 v3(major_radius * cos + pos->x + minor_radius * sin,
+                    pos->y - minor_radius * cos + major_radius * sin,
+                    0.0f);
+                Vector3 v4(pos->x - major_radius * cos + minor_radius * sin,
+                    pos->y - minor_radius * cos - major_radius * sin,
+                    0.0f);
+
+                float min_x = v1.X;
+
+                if (v1.X > v2.X) {
+                    min_x = v2.X;
+                }
+
+                if (min_x > v3.X) {
+                    min_x = v3.X;
+                }
+
+                if (min_x > v4.X) {
+                    min_x = v4.X;
+                }
+
+                float max_x = v1.X;
+
+                if (v1.X < v2.X) {
+                    max_x = v2.X;
+                }
+                if (max_x < v3.X) {
+                    max_x = v3.X;
+                }
+                if (max_x < v4.X) {
+                    max_x = v4.X;
+                }
+
+                float min_y = v1.Y;
+
+                if (v1.Y > v2.Y) {
+                    min_y = v2.Y;
+                }
+
+                if (min_y > v3.Y) {
+                    min_y = v3.Y;
+                }
+
+                if (min_y > v4.Y) {
+                    min_y = v4.Y;
+                }
+
+                float max_y = v1.Y;
+
+                if (v1.Y < v2.Y) {
+                    max_y = v2.Y;
+                }
+
+                if (max_y < v3.Y) {
+                    max_y = v3.Y;
+                }
+
+                if (max_y < v4.Y) {
+                    max_y = v4.Y;
+                }
+
+                int x_min = GameMath::Fast_To_Int_Floor(min_x / 10.0f);
+                int y_min = GameMath::Fast_To_Int_Floor(min_y / 10.0f);
+                int x_max = GameMath::Fast_To_Int_Floor(max_x / 10.0f);
+                int y_max = GameMath::Fast_To_Int_Floor(max_y / 10.0f);
+                float ground_height_sum = 0.0f;
+                int ground_height_sample_count = 0;
+
+                for (int x = x_min; x <= x_max; x++) {
+                    for (int y = 0; y <= y_max; y++) {
+                        Vector3 v(x * 10.0f, y * 10.0f, 0.0f);
+                        unsigned char flags;
+                        bool inside = Point_In_Triangle_2D(v1, v2, v4, v, 0, 1, flags);
+
+                        if (Point_In_Triangle_2D(v2, v3, v4, v, 0, 1, flags)) {
+                            inside = true;
+                        }
+
+                        if (inside) {
+                            ground_height_sum += g_theTerrainLogic->Get_Ground_Height(v.X, v.Y, nullptr);
+                            ground_height_sample_count++;
+                        }
+                    }
+                }
+
+                if (ground_height_sample_count != 0) {
+                    int flattened_ground_height = GameMath::Fast_To_Int_Floor(
+                        (ground_height_sum / ground_height_sample_count) / HEIGHTMAP_SCALE + 0.5f);
+                    int height2 = GameMath::Fast_To_Int_Floor(
+                        g_theTerrainLogic->Get_Ground_Height(pos->x, pos->y, nullptr) / HEIGHTMAP_SCALE);
+
+                    if (flattened_ground_height > height2) {
+                        flattened_ground_height = height2;
+                    }
+
+                    for (int x = x_min; x <= x_max; x++) {
+                        for (int y = 0; y <= y_max; y++) {
+                            Vector3 v(x * 10.0f, y * 10.0f, 0.0f);
+                            unsigned char flags;
+                            bool inside = Point_In_Triangle_2D(v1, v2, v4, v, 0, 1, flags);
+
+                            if (Point_In_Triangle_2D(v2, v3, v4, v, 0, 1, flags)) {
+                                inside = true;
+                            }
+
+                            if (inside) {
+                                ICoord2D c;
+
+                                c.x = x;
+                                c.y = y;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x - 1;
+                                c.y = y;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x + 1;
+                                c.y = y;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x;
+                                c.y = y - 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x;
+                                c.y = y + 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x - 1;
+                                c.y = y - 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x + 1;
+                                c.y = y + 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x + 1;
+                                c.y = y - 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+
+                                c.x = x - 1;
+                                c.y = y + 1;
+                                g_theTerrainVisual->Set_Raw_Map_Height(&c, flattened_ground_height);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void TerrainLogic::Create_Crater_In_Terrain(Object *obj)
+{
+    if (!obj->Get_Geometry_Info().Is_Small()) {
+        const Coord3D *pos = obj->Get_Position();
+        float major_radius = obj->Get_Geometry_Info().Get_Major_Radius();
+
+        if (major_radius > 0.0f) {
+            int x_min = GameMath::Fast_To_Int_Floor((pos->x - major_radius) / 10.0f);
+            int y_min = GameMath::Fast_To_Int_Floor((pos->y - major_radius) / 10.0f);
+            int x_max = GameMath::Fast_To_Int_Floor((pos->x + major_radius) / 10.0f);
+            int y_max = GameMath::Fast_To_Int_Floor((pos->y + major_radius) / 10.0f);
+
+            for (int x = x_min; x <= x_max; x++) {
+                for (int y = 0; y <= y_max; y++) {
+                    float crater_radius = GameMath::Sqrt(GameMath::Square(x * 10.0f) + GameMath::Square(y * 10.0f));
+
+                    if (crater_radius < major_radius) {
+                        ICoord2D c;
+                        c.x = x;
+                        c.y = y;
+                        float crater_depth = (1.0f - crater_radius / major_radius) * major_radius;
+                        float new_height;
+
+                        if (g_theTerrainVisual->Get_Raw_Map_Height(&c) - crater_depth >= 1.0f) {
+                            new_height = g_theTerrainVisual->Get_Raw_Map_Height(&c) - crater_depth;
+                        } else {
+                            new_height = 1.0f;
+                        }
+
+                        g_theTerrainVisual->Set_Raw_Map_Height(&c, new_height);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void TerrainLogic::Update()
+{
+    m_bridgeDamageStatesChanged = false;
+
+    if (m_numWaterToUpdate != 0) {
+        bool do_damage = g_theGameLogic->Get_Frame() % 30 == 0;
+
+        for (int i = m_numWaterToUpdate - 1; i >= 0; i--) {
+            const WaterHandle *water_table = m_waterToUpdate[i].water_table;
+            float change_per_frame = m_waterToUpdate[i].change_per_frame;
+            float target_height = m_waterToUpdate[i].target_height;
+            float damage_amount = m_waterToUpdate[i].damage_amount;
+            float current_height = m_waterToUpdate[i].current_height;
+
+            bool update_pathfind = false;
+
+            if (change_per_frame <= 0.0f) {
+                if (current_height + change_per_frame <= target_height) {
+                    update_pathfind = true;
+                }
+            } else if (current_height + change_per_frame >= target_height) {
+                update_pathfind = true;
+            }
+
+            if (update_pathfind) {
+                Set_Water_Height(water_table, target_height, damage_amount, true);
+
+                for (int j = i; j < m_numWaterToUpdate; j++) {
+                    m_waterToUpdate[i] = m_waterToUpdate[j];
+                }
+
+                m_numWaterToUpdate--;
+            } else {
+                if (!do_damage) {
+                    damage_amount = 0.0f;
+                }
+
+                float new_height = current_height + change_per_frame;
+                m_waterToUpdate[i].current_height = new_height;
+                Set_Water_Height(water_table, new_height, damage_amount, false);
+            }
         }
     }
 }

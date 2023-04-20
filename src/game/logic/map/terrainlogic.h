@@ -288,3 +288,4 @@ extern TerrainLogic *g_theTerrainLogic;
 #endif
 
 bool Line_In_Region(const Coord2D *p1, const Coord2D *p2, const Region2D *clip_region);
+void Make_Align_To_Normal_Matrix(float angle, const Coord3D &pos, const Coord3D &n, Matrix3D &tm);

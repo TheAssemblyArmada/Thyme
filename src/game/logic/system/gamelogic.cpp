@@ -19,10 +19,10 @@
 #include "mapobject.h"
 #include "object.h"
 #include "recorder.h"
+#include "terrainlogic.h"
 #include "thingfactory.h"
 #include "updatemodule.h"
 #include "xfer.h"
-
 #ifndef GAME_DLL
 GameLogic *g_theGameLogic;
 #endif
@@ -378,4 +378,9 @@ void GameLogic::Deselect_Object(Object *obj, unsigned short i, bool b)
 #ifdef GAME_DLL
     Call_Method<void, GameLogic, Object *, unsigned short, bool>(PICK_ADDRESS(0x004A6890, 0x007B1C07), this, obj, i, b);
 #endif
+}
+
+TerrainLogic *GameLogic::Create_Terrain_Logic()
+{
+    return new TerrainLogic();
 }

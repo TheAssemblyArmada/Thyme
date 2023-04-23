@@ -35,7 +35,7 @@ public:
     virtual float Get_Layer_Height(float x, float y, PathfindLayerEnum layer, Coord3D *n, bool b) const override;
     virtual void Get_Extent(Region3D *extent) const override;
     virtual void Get_Extent_Including_Border(Region3D *extent) const override;
-    virtual void Get_Maximum_Pathfind_Extent(Region3D *extent) const;
+    virtual void Get_Maximum_Pathfind_Extent(Region3D *extent) const override;
     virtual bool Is_Clear_Line_Of_Sight(const Coord3D &pos1, const Coord3D &pos2) const override;
     virtual bool Is_Cliff_Cell(float x, float y) const override;
 

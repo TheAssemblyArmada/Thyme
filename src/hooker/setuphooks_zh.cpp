@@ -177,6 +177,7 @@
 #include "w3dfilesystem.h"
 #include "w3dgameclient.h"
 #include "w3dgamefont.h"
+#include "w3dgamelogic.h"
 #include "w3dmodeldraw.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
@@ -1498,6 +1499,7 @@ void Setup_Hooks()
     Hook_Any(0x004A7C00, GameLogic::Set_Control_Bar_Override);
     Hook_Any(0x004A7DA0, GameLogic::Find_Control_Bar_Override);
     Hook_Any(0x004A7FA0, GameLogic::Add_TOC_Entry);
+    Hook_Any(0x004A7B50, GameLogic::Create_Terrain_Logic);
 
     // shadermanager.h
     Hook_Any(0x0074DF20, W3DShaderManager::Init);
@@ -2965,4 +2967,11 @@ void Setup_Hooks()
     Hook_Any(0x0044E1B0, TerrainLogic::Load_Post_Process);
     Hook_Any(0x0044C9D0, TerrainLogic::Set_Active_Boundary);
     Hook_Any(0x0044A920, TerrainLogic::Add_Waypoint_Link);
+    Hook_Any(0x0044AA10, Make_Align_To_Normal_Matrix);
+    Hook_Any(0x0044B5E0, TerrainLogic::Get_Layer_For_Destination);
+    Hook_Any(0x0044CB90, TerrainLogic::Flatten_Terrain);
+    Hook_Any(0x0044DE20, TerrainLogic::Create_Crater_In_Terrain);
+
+    // w3dgamelogic.h
+    Hook_Any(0x00741E50, W3DGameLogic::Create_Terrain_Logic);
 }

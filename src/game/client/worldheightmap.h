@@ -292,6 +292,7 @@ protected:
     int m_drawWidthX;
     int m_drawHeightY;
     friend class W3DTreeBuffer;
+    friend class W3DTerrainLogic;
 };
 
 extern const float HEIGHTMAP_SCALE;

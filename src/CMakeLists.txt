@@ -362,6 +362,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3ddisplay.cpp
     platform/w3dengine/client/w3dgameclient.cpp
     platform/w3dengine/client/w3dgamelogic.cpp
+    platform/w3dengine/client/w3dghostobject.cpp
     platform/w3dengine/client/w3dpoly.cpp
     platform/w3dengine/client/w3dparticlesys.cpp
     platform/w3dengine/client/w3dpropbuffer.cpp

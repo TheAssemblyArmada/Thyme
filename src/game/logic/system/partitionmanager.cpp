@@ -835,3 +835,9 @@ bool PartitionFilterAcceptByKindOf::Allow(Object *obj)
 {
     return obj->Is_KindOf_Multi(m_mustBeSet, m_mustBeClear);
 }
+
+void PartitionData::Friend_Set_Previous_Shrouded_Status(int index, ObjectShroudStatus status)
+{
+    m_previousShroudedness[index] = status;
+    m_everSeen[index] = status != SHROUDED_UNK4;
+}

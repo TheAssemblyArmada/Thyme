@@ -1500,6 +1500,7 @@ void Setup_Hooks()
     Hook_Any(0x004A7DA0, GameLogic::Find_Control_Bar_Override);
     Hook_Any(0x004A7FA0, GameLogic::Add_TOC_Entry);
     Hook_Any(0x004A7B50, GameLogic::Create_Terrain_Logic);
+    Hook_Any(0x004A7AF0, GameLogic::Create_Ghost_Object_Manager);
 
     // shadermanager.h
     Hook_Any(0x0074DF20, W3DShaderManager::Init);
@@ -2974,4 +2975,5 @@ void Setup_Hooks()
 
     // w3dgamelogic.h
     Hook_Any(0x00741E50, W3DGameLogic::Create_Terrain_Logic);
+    Hook_Any(0x00741EB0, W3DGameLogic::Create_Ghost_Object_Manager);
 }

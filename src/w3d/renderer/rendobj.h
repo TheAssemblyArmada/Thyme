@@ -327,6 +327,7 @@ public:
     bool Is_Transform_Identity_No_Validity_Check() const;
     RenderObjClass *Get_Container() const { return m_container; }
     void Set_House_Color(uint32_t color) { m_houseColor = color; }
+    uint32_t Get_House_Color() const { return m_houseColor; }
 
     void Set_Sub_Object_Transforms_Dirty(bool onoff)
     {
@@ -384,7 +385,7 @@ protected:
     mutable unsigned long m_bits;
     Matrix3D m_transform;
     float m_objectScale;
-    int m_houseColor;
+    uint32_t m_houseColor;
     mutable SphereClass m_cachedBoundingSphere;
     mutable AABoxClass m_cachedBoundingBox;
     float m_nativeScreenSize;

@@ -16,6 +16,7 @@
 #include "display.h"
 #include "drawable.h"
 #include "gameclient.h"
+#include "ghostobject.h"
 #include "mapobject.h"
 #include "object.h"
 #include "recorder.h"
@@ -383,4 +384,9 @@ void GameLogic::Deselect_Object(Object *obj, unsigned short i, bool b)
 TerrainLogic *GameLogic::Create_Terrain_Logic()
 {
     return new TerrainLogic();
+}
+
+GhostObjectManager *GameLogic::Create_Ghost_Object_Manager()
+{
+    return new GhostObjectManager();
 }

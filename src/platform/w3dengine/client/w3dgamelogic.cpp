@@ -13,9 +13,15 @@
  *            LICENSE
  */
 #include "w3dgamelogic.h"
+#include "w3dghostobject.h"
 #include "w3dterrainlogic.h"
 
 TerrainLogic *W3DGameLogic::Create_Terrain_Logic()
 {
     return new W3DTerrainLogic();
+}
+
+GhostObjectManager *W3DGameLogic::Create_Ghost_Object_Manager()
+{
+    return new W3DGhostObjectManager();
 }

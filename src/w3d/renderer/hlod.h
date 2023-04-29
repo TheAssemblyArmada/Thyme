@@ -338,4 +338,5 @@ public:
 
     void Free();
     void Add_Lod_Model(int lod, RenderObjClass *robj, int bone_index);
+    friend class W3DRenderObjectSnapshot;
 };

@@ -399,7 +399,7 @@ public:
     void Set_Model_State(ModelConditionInfo const *new_state);
     void Stop_Client_Particle_Systems();
 
-    RenderObjClass *Get_Render_Object() { return m_renderObject; }
+    RenderObjClass *Get_Render_Object() const { return m_renderObject; }
     bool Get_Fully_Obscured_By_Shroud() const { return m_fullyObscuredByShroud; }
     const W3DModelDrawModuleData *Get_W3D_Model_Draw_Module_Data() const
     {

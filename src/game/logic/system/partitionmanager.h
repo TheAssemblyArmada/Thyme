@@ -159,6 +159,9 @@ public:
     void Remove_From_Dirty_Modules(PartitionData **dirtyModules);
     void Make_Dirty(bool b);
     ObjectShroudStatus Get_Shrouded_Status(int index);
+    ObjectShroudStatus Get_Previous_Shrouded_Status(int index) { return m_previousShroudedness[index]; }
+    void Friend_Set_Previous_Shrouded_Status(int index, ObjectShroudStatus status);
+    void Set_Ghost_Object(GhostObject *obj) { m_ghostObject = obj; }
 
 private:
     Object *m_object;

@@ -4330,7 +4330,7 @@ void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *ob
                 }
                 case GUI_COMMAND_COMBATDROP: {
                     if (update != nullptr) {
-                        update->AI_Combat_Drop(obj, Get_Position(), type);
+                        update->AI_Combat_Drop(obj, *Get_Position(), type);
                     }
 
                     break;

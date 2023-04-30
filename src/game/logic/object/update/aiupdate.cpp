@@ -17,6 +17,7 @@
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
+#include "stealthupdate.h"
 #include "turretai.h"
 
 AICommandParms::AICommandParms(AICommandType cmd, CommandSourceType cmd_source) :
@@ -133,6 +134,12 @@ void AIUpdateInterface::Reset_Next_Mood_Check_Time()
 #endif
 }
 
+void AIUpdateInterface::Set_Next_Mood_Check_Time(unsigned int time)
+{
+    m_nextMoodCheckTime = time;
+    m_unkNextMoodCheckTime = false;
+}
+
 AIStateType AIUpdateInterface::Get_AI_State_Type() const
 {
     return static_cast<AIStateType>(Get_State_Machine()->Get_Current_State_ID());
@@ -216,4 +223,11 @@ void AIUpdateInterface::Transfer_Attack(ObjectID old_victim_id, ObjectID new_vic
     Call_Method<void, AIUpdateInterface, ObjectID, ObjectID>(
         PICK_ADDRESS(0x005D5BC0, 0x007FB3A1), this, old_victim_id, new_victim_id);
 #endif
+}
+
+bool AIUpdateInterface::Can_Auto_Acquire_While_Stealthed() const
+{
+    return Get_Object() != nullptr && Get_Object()->Get_Stealth_Update() != nullptr
+        && Get_Object()->Get_Stealth_Update()->Get_Granted_By_Special_Power()
+        || (Get_AI_Update_Module_Data()->m_autoAcquireEnemiesWhenIdle & 2) != 0;
 }

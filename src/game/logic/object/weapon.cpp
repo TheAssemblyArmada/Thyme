@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "weapon.h"
+#include "ai.h"
 #include "aipathfind.h"
 #include "aiupdate.h"
 #include "assistedtargetingupdate.h"

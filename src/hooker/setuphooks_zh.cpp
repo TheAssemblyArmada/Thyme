@@ -17,6 +17,7 @@
 #endif
 
 #include "aabtree.h"
+#include "ai.h"
 #include "aipathfind.h"
 #include "aiupdate.h"
 #include "anim2d.h"

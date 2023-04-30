@@ -17,3 +17,5 @@
 #include "coord.h"
 
 bool Clip_Line_2D(ICoord2D *p1, ICoord2D *p2, ICoord2D *c1, ICoord2D *c2, IRegion2D *clip_region);
+bool Coord_3D_Inside_Rect_2D(const Coord3D *input_point, const Coord2D *tl, const Coord2D *br);
+void Scale_Rect_2D(Coord2D *tl, Coord2D *br, float scale_factor);

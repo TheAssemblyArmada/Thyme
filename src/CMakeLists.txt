@@ -265,6 +265,7 @@ set(GAMEENGINE_SRC
     game/common/thing/thingfactory.cpp
     game/common/thing/thingtemplate.cpp
     game/logic/ai/ai.cpp
+    game/logic/ai/aigroup.cpp
     game/logic/ai/aipathfind.cpp
     game/logic/ai/aiplayer.cpp
     game/logic/ai/aistates.cpp
@@ -332,6 +333,7 @@ set(GAMEENGINE_SRC
     game/logic/system/cavesystem.cpp
     game/logic/system/cratesystem.cpp
     game/logic/system/partitionmanager.cpp
+    game/logic/system/simpleobjectiterator.cpp
     game/network/framemetrics.cpp
     game/network/gameinfo.cpp
     game/network/gameresultsthread.cpp

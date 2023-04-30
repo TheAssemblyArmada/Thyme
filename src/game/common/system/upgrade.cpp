@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "upgrade.h"
+#include "ingameui.h"
+#include "player.h"
 
 #ifndef GAME_DLL
 UpgradeCenter *g_theUpgradeCenter;
@@ -82,4 +84,21 @@ void Upgrade::Xfer_Snapshot(Xfer *xfer)
     unsigned char version = 1;
     xfer->xferVersion(&version, 1);
     xfer->xferUser(&m_status, sizeof(m_status));
+}
+
+bool UpgradeCenter::Can_Afford_Upgrade(Player *player, const UpgradeTemplate *upgrade, bool show_message)
+{
+    if (player == nullptr || upgrade == nullptr) {
+        return false;
+    }
+
+    if (player->Get_Money()->Count_Money() >= upgrade->Calc_Cost_To_Build(player)) {
+        return true;
+    }
+
+    if (show_message) {
+        g_theInGameUI->Message("GUI:NotEnoughMoneyToUpgrade");
+    }
+
+    return false;
 }

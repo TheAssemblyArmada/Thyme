@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "locomotor.h"
+#include "ai.h"
 #include "aipathfind.h"
 #include "bodymodule.h"
 #include "gamelogic.h"

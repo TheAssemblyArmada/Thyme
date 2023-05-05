@@ -69,8 +69,10 @@ public:
     }
 
     float Get_Friendly_Opacity() const { return Get_Stealth_Update_Module_Data()->m_friendlyOpacityMin; }
+    bool Get_Granted_By_Special_Power() const { return Get_Stealth_Update_Module_Data()->m_grantedBySpecialPower; }
     bool Has_Disguised_Template() const { return m_disguisedTemplate != nullptr; }
     int Get_Player_Index() const { return m_playerIndex; }
+    unsigned int Get_Stealth_Delay() const { return Get_Stealth_Update_Module_Data()->m_stealthDelay; }
 
 private:
     unsigned int m_framesTillStealthAllowed;

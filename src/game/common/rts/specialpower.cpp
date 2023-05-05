@@ -66,3 +66,14 @@ const SpecialPowerTemplate *SpecialPowerTemplate::Get_FO() const
 {
     return static_cast<const SpecialPowerTemplate *>(Friend_Get_Final_Override());
 }
+
+const SpecialPowerTemplate *SpecialPowerStore::Find_Special_Power_Template_By_ID(unsigned int id)
+{
+    for (size_t i = 0; i < m_specialPowerTemplates.size(); i++) {
+        if (m_specialPowerTemplates[i]->Get_ID() == id) {
+            return m_specialPowerTemplates[i];
+        }
+    }
+
+    return nullptr;
+}

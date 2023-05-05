@@ -15,12 +15,14 @@
 #pragma once
 #include "always.h"
 #include "mempoolobj.h"
+#include "partitionmanager.h"
 class Object;
 
 class ObjectIterator : public MemoryPoolObject
 {
 public:
-    virtual ~ObjectIterator() override;
+    ObjectIterator() {}
+    virtual ~ObjectIterator() override {}
     virtual Object *First() = 0;
     virtual Object *Next() = 0;
 };
@@ -29,12 +31,30 @@ class SimpleObjectIterator : public ObjectIterator
 {
     IMPLEMENT_NAMED_POOL(SimpleObjectIterator, SimpleObjectIteratorPool);
 
+    struct Clump : public MemoryPoolObject
+    {
+        Clump();
+        ~Clump() {}
+        IMPLEMENT_NAMED_POOL(Clump, SimpleObjectIteratorClumpPool);
+        Clump *m_nextClump;
+        Object *m_obj;
+        float m_numeric;
+    };
+
 public:
     SimpleObjectIterator();
 
     virtual ~SimpleObjectIterator() override;
-    virtual Object *First() override;
-    virtual Object *Next() override;
+    virtual Object *First() override { return First_With_Numeric(nullptr); }
+    virtual Object *Next() override { return Next_With_Numeric(nullptr); }
+
+    void Insert(Object *obj, float numeric);
+    void Make_Empty();
+    void Sort(IterOrderType iter);
+    static float Sort_Near_To_Far(Clump *a, Clump *b);
+    static float Sort_Far_To_Near(Clump *a, Clump *b);
+    static float Sort_Cheap_To_Expensive(Clump *a, Clump *b);
+    static float Sort_Expensive_To_Cheap(Clump *a, Clump *b);
 
     void Reset() { m_curClump = m_firstClump; }
 
@@ -66,16 +86,8 @@ public:
     }
 
 private:
-    struct Clump : public MemoryPoolObject
-    {
-        Clump();
-        IMPLEMENT_NAMED_POOL(Clump, "SimpleObjectIteratorClumpPool");
-        Clump *m_nextClump;
-        Object *m_obj;
-        float m_numeric;
-    };
-
     Clump *m_firstClump;
     Clump *m_curClump;
     int m_clumpCount;
+    static float (*s_theClumpCompareProcs[5])(Clump *, Clump *);
 };

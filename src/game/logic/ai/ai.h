@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief
+ * @brief AI
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -13,8 +13,12 @@
  *            LICENSE
  */
 #pragma once
+#include "always.h"
+#include "aigroup.h"
+#include "aiupdate.h"
 #include "gametype.h"
 #include "mempoolobj.h"
+#include "object.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
 #include <list>
@@ -25,24 +29,6 @@ class INI;
 class Object;
 class PartitionFilter;
 class Pathfinder;
-
-class AIGroup
-{
-public:
-    void Add(Object *obj);
-    void Remove(Object *obj);
-    const std::vector<ObjectID> &Get_All_IDs() const;
-};
-
-enum FormationID : int32_t
-{
-    FORMATION_UNK,
-};
-
-enum GroupID : int32_t
-{
-    GROUP_UNK,
-};
 
 class SkillSet
 {

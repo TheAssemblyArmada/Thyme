@@ -64,6 +64,7 @@ public:
     virtual void Update() override {}
 
     bool Can_Use_Special_Power(Object *obj, const SpecialPowerTemplate *special_power_template);
+    const SpecialPowerTemplate *Find_Special_Power_Template_By_ID(unsigned int id);
 
 private:
     std::vector<SpecialPowerTemplate *> m_specialPowerTemplates;

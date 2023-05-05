@@ -50,6 +50,8 @@ public:
     UpgradeType Get_Type() const { return m_type; }
     AcademyClassificationType Get_Academy_Classify() const { return m_academyClassify; }
 
+    int Calc_Cost_To_Build(Player *player) const { return m_cost; }
+
 private:
     UpgradeType m_type;
     Utf8String m_name;
@@ -81,6 +83,7 @@ public:
     UpgradeTemplate *Get_Upgrade_List() { return m_upgradeList; }
     UpgradeTemplate *Find_Upgrade(const Utf8String &name);
     UpgradeTemplate *Find_Upgrade_By_Key(NameKeyType key);
+    bool Can_Afford_Upgrade(Player *player, const UpgradeTemplate *upgrade, bool show_message);
 
 private:
     UpgradeTemplate *m_upgradeList;

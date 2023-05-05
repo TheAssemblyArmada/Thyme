@@ -151,3 +151,19 @@ bool Clip_Line_2D(ICoord2D *p1, ICoord2D *p2, ICoord2D *c1, ICoord2D *c2, IRegio
     return x0 >= x_min && x0 <= x_max && y0 >= y_min && y0 <= y_max && x1 >= x_min && x1 <= x_max && y1 >= y_min
         && y1 <= y_max;
 }
+
+bool Coord_3D_Inside_Rect_2D(const Coord3D *input_point, const Coord2D *tl, const Coord2D *br)
+{
+    return input_point->x >= tl->x && input_point->x <= br->x && input_point->y >= tl->y && input_point->y <= br->y;
+}
+
+void Scale_Rect_2D(Coord2D *tl, Coord2D *br, float scale_factor)
+{
+    float delta = scale_factor - 1.0f;
+    float x = (br->x - tl->x) * delta * 0.5f;
+    float y = (br->y - tl->y) * delta * 0.5f;
+    tl->x = tl->x - x;
+    tl->y = tl->y - y;
+    br->x = x + br->x;
+    br->y = y + br->y;
+}

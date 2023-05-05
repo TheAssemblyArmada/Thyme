@@ -16,7 +16,6 @@
 #pragma once
 
 #include "always.h"
-#include "ai.h"
 #include "armortemplateset.h"
 #include "bitflags.h"
 #include "disabledtypes.h"
@@ -72,6 +71,16 @@ class TempWeaponBonusHelper;
 class UpdateModule;
 class UpgradeTemplate;
 class Waypoint;
+
+enum FormationID : int32_t
+{
+    FORMATION_UNK,
+};
+
+enum GroupID : int32_t
+{
+    GROUP_UNK,
+};
 
 struct TTriggerInfo
 {

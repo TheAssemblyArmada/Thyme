@@ -77,6 +77,10 @@ class PathNode : public MemoryPoolObject
 public:
     virtual ~PathNode() override;
 
+    const Coord3D *Get_Position() const { return &m_pos; }
+
+    PathNode *Get_Next_Optimized(Coord2D *pos, float *length);
+
 private:
     int m_optimizedLink; // not 100% confirmed
     PathNode *m_nextOpti; // confirmed
@@ -102,9 +106,11 @@ public:
     virtual void Load_Post_Process() override;
 
     void Get_Point_Pos(Coord3D *pos) const { *pos = m_closestPoint.m_pos; }
+    PathNode *Get_First_Node() const { return m_path; }
+    PathNode *Get_Last_Node() const { return m_pathTail; }
 
 private:
-    PathNode *m_pathHead; // confirmed
+    PathNode *m_path; // confirmed
     PathNode *m_pathTail; // confirmed
     bool m_isOptimized; // confirmed
     bool m_blockedByAlly; // confirmed
@@ -283,6 +289,16 @@ public:
         const Coord3D *target_pos,
         const Weapon *weapon,
         Coord3D *destination_pos);
+    bool Adjust_Desination(Object *obj, const LocomotorSet &locomotor_set, Coord3D *dest, const Coord3D *unk);
+    void Update_Goal(Object *obj, const Coord3D *new_goal_pos, PathfindLayerEnum layer);
+    void Remove_Goal(Object *obj);
+    bool Is_Line_Passable(const Object *obj,
+        int i,
+        PathfindLayerEnum layer,
+        const Coord3D *start_world,
+        const Coord3D *end_world,
+        bool b1,
+        bool b2);
 
     void Classify_Object_Footprint(Object *obj, bool insert);
     void Update_Pos(Object *obj, const Coord3D *pos);
@@ -291,6 +307,7 @@ public:
     PathfindLayerEnum Add_Bridge(Bridge *bridge);
     bool Is_Point_On_Wall(const Coord3D *point);
     void Force_Map_Recalculation();
+    Path *Find_Ground_Path(const Coord3D *point, const Coord3D *point2, int i, bool b);
 
     void Remove_Object_From_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, false); }
     void Add_Object_To_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, true); }

@@ -312,3 +312,74 @@ void Pathfinder::Force_Map_Recalculation()
     Call_Method<void, Pathfinder>(PICK_ADDRESS(0x00560E90, 0x00892519), this);
 #endif
 }
+
+bool Pathfinder::Adjust_Desination(Object *obj, const LocomotorSet &locomotor_set, Coord3D *dest, const Coord3D *unk)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Pathfinder, Object *, const LocomotorSet &, Coord3D *, const Coord3D *>(
+        PICK_ADDRESS(0x00562AF0, 0x008938DC), this, obj, locomotor_set, dest, unk);
+#else
+    return false;
+#endif
+}
+
+void Pathfinder::Update_Goal(Object *obj, const Coord3D *new_goal_pos, PathfindLayerEnum layer)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, Object *, const Coord3D *, PathfindLayerEnum>(
+        PICK_ADDRESS(0x0056CAD0, 0x0089D85D), this, obj, new_goal_pos, layer);
+#endif
+}
+
+void Pathfinder::Remove_Goal(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, Object *>(PICK_ADDRESS(0x0056D280, 0x0089DDE6), this, obj);
+#endif
+}
+
+bool Pathfinder::Is_Line_Passable(const Object *obj,
+    int i,
+    PathfindLayerEnum layer,
+    const Coord3D *start_world,
+    const Coord3D *end_world,
+    bool b1,
+    bool b2)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool,
+        Pathfinder,
+        const Object *,
+        int,
+        PathfindLayerEnum,
+        const Coord3D *,
+        const Coord3D *,
+        bool,
+        bool>(PICK_ADDRESS(0x0056C6E0, 0x0089D66B), this, obj, i, layer, start_world, end_world, b1, b2);
+#else
+    return false;
+#endif
+}
+
+Path *Pathfinder::Find_Ground_Path(const Coord3D *point, const Coord3D *point2, int i, bool b)
+{
+#ifdef GAME_DLL
+    return Call_Method<Path *, Pathfinder, const Coord3D *, const Coord3D *, int, bool>(
+        PICK_ADDRESS(0x00566980, 0x008974D1), this, point, point2, i, b);
+#else
+    return nullptr;
+#endif
+}
+
+PathNode *PathNode::Get_Next_Optimized(Coord2D *pos, float *length)
+{
+    if (pos != nullptr) {
+        *pos = m_optimizedPos;
+    }
+
+    if (length != nullptr) {
+        *length = m_optimizedLength;
+    }
+
+    return m_nextOpti;
+}

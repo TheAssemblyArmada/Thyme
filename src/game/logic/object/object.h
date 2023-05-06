@@ -77,11 +77,6 @@ enum FormationID : int32_t
     FORMATION_UNK,
 };
 
-enum GroupID : int32_t
-{
-    GROUP_UNK,
-};
-
 struct TTriggerInfo
 {
     PolygonTrigger *polygon_trigger;
@@ -294,7 +289,7 @@ public:
     void Set_Partition_Data(PartitionData *data) { m_partitionData = data; }
     void Set_Radar_Data(RadarObject *data) { m_radarData = data; }
     void Set_Construction_Percent(float percent) { m_constructionPercent = percent; }
-    void Set_Weapon_Lock(WeaponSlotType wslot, WeaponLockType lock) { m_weaponSet.Set_Weapon_Lock(wslot, lock); }
+    bool Set_Weapon_Lock(WeaponSlotType wslot, WeaponLockType lock) { return m_weaponSet.Set_Weapon_Lock(wslot, lock); }
 
     RadarObject *Friend_Get_Radar_Data() { return m_radarData; }
     void Delete() { Delete_Instance(); }

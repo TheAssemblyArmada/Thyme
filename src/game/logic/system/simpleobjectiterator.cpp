@@ -62,6 +62,7 @@ void SimpleObjectIterator::Sort(IterOrderType iter)
             for (int i = 1;; i *= 2) {
                 Clump *clump = m_firstClump;
                 Clump *clump2 = nullptr;
+                m_firstClump = nullptr;
                 int count = 0;
 
                 while (clump != nullptr) {
@@ -79,44 +80,40 @@ void SimpleObjectIterator::Sort(IterOrderType iter)
                     }
 
                     int sub_count = clump3 != nullptr ? i : 0;
-                    captainslog_dbgassert(sub_count + to_do_count < 0, "uhoh");
+                    captainslog_dbgassert(sub_count + to_do_count >= 0, "uhoh");
 
                     while (sub_count + to_do_count > 0) {
                         Clump *clump4;
 
-                        captainslog_dbgassert(sub_count + to_do_count < 0, "uhoh");
+                        captainslog_dbgassert(sub_count + to_do_count >= 0, "uhoh");
 
-                        if (sub_count != 0) {
-                            if (to_do_count != 0) {
-                                if (sort(clump, clump3) > 0.0f) {
-                                    captainslog_dbgassert(sub_count > 0, "hmm, expected nonzero subCount");
-                                    clump4 = clump3;
-                                    clump3 = clump3->m_nextClump;
-                                    sub_count--;
-                                } else {
-                                    captainslog_dbgassert(to_do_count > 0, "hmm, expected nonzero to_do_count");
-                                    clump4 = clump;
-                                    clump = clump->m_nextClump;
-                                    to_do_count--;
-                                }
-                            } else {
-                                captainslog_dbgassert(sub_count > 0, "hmm, expected nonzero subCount");
-                                clump4 = clump3;
-                                clump3 = clump3->m_nextClump;
-                                sub_count--;
-                            }
-                        } else {
+                        if (sub_count == 0) {
                             captainslog_dbgassert(to_do_count > 0, "hmm, expected nonzero to_do_count");
                             clump4 = clump;
                             clump = clump->m_nextClump;
                             to_do_count--;
+                        } else if (to_do_count == 0) {
+                            captainslog_dbgassert(sub_count > 0, "hmm, expected nonzero subCount");
+                            clump4 = clump3;
+                            clump3 = clump3->m_nextClump;
+                            sub_count--;
+                        } else if (sort(clump, clump3) <= 0.0f) {
+                            captainslog_dbgassert(to_do_count > 0, "hmm, expected nonzero to_do_count");
+                            clump4 = clump;
+                            clump = clump->m_nextClump;
+                            to_do_count--;
+                        } else {
+                            captainslog_dbgassert(sub_count > 0, "hmm, expected nonzero subCount");
+                            clump4 = clump3;
+                            clump3 = clump3->m_nextClump;
+                            sub_count--;
                         }
 
-                        if (clump3 != nullptr) {
+                        if (clump3 == nullptr) {
                             sub_count = 0;
                         }
 
-                        if (clump != nullptr) {
+                        if (clump == nullptr) {
                             to_do_count = 0;
                         }
 

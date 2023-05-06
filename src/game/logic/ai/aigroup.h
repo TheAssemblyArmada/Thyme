@@ -34,7 +34,7 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    GroupID Get_ID();
+    int Get_ID();
     float Get_Speed();
     const std::vector<ObjectID> &Get_All_IDs() const;
     bool Get_Center(Coord3D *center);
@@ -44,19 +44,19 @@ public:
     Object *Get_Special_Power_Source_Object(unsigned int special_power_id);
     Object *Get_Command_Button_Source_Object(GUICommand command_type);
 
-    void Is_Member(Object *obj);
+    bool Is_Member(Object *obj);
     bool Is_Empty();
     bool Is_Idle() const;
     bool Is_Busy() const;
-    bool Is_Group_Ai_Dead() const;
+    bool Is_Group_AI_Dead() const;
 
     void Set_Attitude(AttitudeType tude);
     void Set_Mine_Clearing_Detail(bool set);
-    void Set_Weapon_Lock_For_Group(WeaponSlotType wslot, WeaponLockType wlock);
-    void Set_Weapon_Set_Flag(WeaponSlotType wst);
+    bool Set_Weapon_Lock_For_Group(WeaponSlotType wslot, WeaponLockType wlock);
+    void Set_Weapon_Set_Flag(WeaponSetType wst);
 
     void Add(Object *obj);
-    void Remove(Object *obj);
+    bool Remove(Object *obj);
     void Recompute();
     bool Contains_Any_Objects_Not_Owned_By_Player(const Player *player);
     bool Remove_Any_Objects_Not_Owned_By_Player(const Player *player);
@@ -69,9 +69,9 @@ public:
     void Release_Weapon_Lock_For_Group(WeaponLockType wlock);
     void Queue_Upgrade(UpgradeTemplate *upgrade);
 
-    void Group_Move_To_Position(const Coord3D *pos, bool b, CommandSourceType cmd_source);
+    void Group_Move_To_Position(const Coord3D *pos, bool append, CommandSourceType cmd_source);
     void Group_Scatter(CommandSourceType cmd_source);
-    void Group_Tighten_To_Position(const Coord3D *pos, bool b, CommandSourceType cmd_source);
+    void Group_Tighten_To_Position(const Coord3D *target_pos, bool append, CommandSourceType cmd_source);
     void Group_Follow_Waypoint_Path(const Waypoint *way, CommandSourceType cmd_source);
     void Group_Follow_Waypoint_Path_Exact(const Waypoint *way, CommandSourceType cmd_source);
     void Group_Move_To_And_Evacuate(const Coord3D *pos, CommandSourceType cmd_source);
@@ -93,7 +93,7 @@ public:
     void Group_Dock(Object *obj, CommandSourceType cmd_source);
     void Group_Exit(Object *object_to_exit, CommandSourceType cmd_source);
     void Group_Evacuate(CommandSourceType cmd_source);
-    void Group_Execute_RailedTransport(CommandSourceType cmd_source);
+    void Group_Execute_Railed_Transport(CommandSourceType cmd_source);
     void Group_Go_Prone(const DamageInfo *damage_info, CommandSourceType cmd_source);
     void Group_Guard_Position(const Coord3D *pos, GuardMode mode, CommandSourceType cmd_source);
     void Group_Guard_Object(Object *obj_to_guard, GuardMode mode, CommandSourceType cmd_source);
@@ -101,14 +101,14 @@ public:
     void Group_Attack_Area(const PolygonTrigger *area_to_guard, CommandSourceType cmd_source);
     void Group_Hack_Internet(CommandSourceType cmd_source);
     void Group_Create_Formation(CommandSourceType cmd_source);
-    void Group_Do_Special_Power(unsigned int special_power_id, unsigned int i);
+    void Group_Do_Special_Power(unsigned int special_power_id, unsigned int options);
     void Group_Do_Special_Power_At_Location(
-        unsigned int special_power_id, const Coord3D *location, float f, const Object *object_in_way, unsigned int i);
-    void Group_Do_Special_Power_At_Object(unsigned int special_power_id, Object *target, unsigned int i);
+        unsigned int special_power_id, const Coord3D *location, float f, const Object *object_in_way, unsigned int options);
+    void Group_Do_Special_Power_At_Object(unsigned int special_power_id, Object *target, unsigned int options);
     void Group_Cheer(CommandSourceType cmd_source);
     void Group_Sell(CommandSourceType cmd_source);
     void Group_Toggle_Overcharge(CommandSourceType cmd_source);
-    void Group_Combat_Drop(Object *obj, const Coord3D &, CommandSourceType cmd_source);
+    void Group_Combat_Drop(Object *obj, const Coord3D &pos, CommandSourceType cmd_source);
     void Group_Do_Command_Button(const CommandButton *button, CommandSourceType cmd_source);
     void Group_Do_Command_Button_At_Position(const CommandButton *button, const Coord3D *pos, CommandSourceType cmd_source);
     void Group_Do_Command_Button_Using_Waypoints(
@@ -120,6 +120,11 @@ public:
 
     void Set_Dirty() { m_dirty = true; }
 
+    void Group_Force_Attack_Object(Object *victim, int max_shots_to_fire, CommandSourceType cmd_source)
+    {
+        Group_Attack_Object_Private(true, victim, max_shots_to_fire, cmd_source);
+    }
+
     void Group_Attack_Object(Object *victim, int max_shots_to_fire, CommandSourceType cmd_source)
     {
         Group_Attack_Object_Private(false, victim, max_shots_to_fire, cmd_source);
@@ -130,7 +135,7 @@ private:
     unsigned int m_memberListSize;
     float m_speed;
     bool m_dirty;
-    GroupID m_id;
+    unsigned int m_id;
     Path *m_groundPath;
-    std::vector<ObjectID> m_lastRequestedIDList;
+    mutable std::vector<ObjectID> m_lastRequestedIDList;
 };

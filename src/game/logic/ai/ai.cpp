@@ -18,6 +18,7 @@
 #include "hooker.h"
 #endif
 #include "xfer.h"
+#include <algorithm>
 
 AISideInfo::AISideInfo() :
     m_resourceGatherersEasy(0), m_resourceGatherersNormal(1), m_resourceGatherersHard(2), m_next(nullptr)
@@ -166,3 +167,36 @@ void AI::Xfer_Snapshot(Xfer *xfer)
 #ifndef GAME_DLL
 AI *g_theAI = nullptr;
 #endif
+
+AIGroup *AI::Create_Group()
+{
+    AIGroup *group = new AIGroup();
+    m_groupList.push_back(group);
+    return group;
+}
+
+void AI::Destroy_Group(AIGroup *group)
+{
+    auto it = std::find(m_groupList.begin(), m_groupList.end(), group);
+
+    if (!(it == m_groupList.end())) {
+        captainslog_dbgassert(group != nullptr, "A NULL group made its way into the AIGroup list..");
+        m_groupList.erase(it);
+    }
+}
+
+AIGroup *AI::Find_Group(int id)
+{
+    for (auto it = m_groupList.begin(); it != m_groupList.end(); it++) {
+        if ((*it)->Get_ID() == id) {
+            return *it;
+        }
+    }
+
+    return nullptr;
+}
+
+int AI::Get_Next_Formation_ID()
+{
+    return ++m_formationID;
+}

@@ -313,7 +313,7 @@ void Pathfinder::Force_Map_Recalculation()
 #endif
 }
 
-bool Pathfinder::Adjust_Desination(Object *obj, const LocomotorSet &locomotor_set, Coord3D *dest, const Coord3D *unk)
+bool Pathfinder::Adjust_Destination(Object *obj, const LocomotorSet &locomotor_set, Coord3D *dest, const Coord3D *unk)
 {
 #ifdef GAME_DLL
     return Call_Method<bool, Pathfinder, Object *, const LocomotorSet &, Coord3D *, const Coord3D *>(

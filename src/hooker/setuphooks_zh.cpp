@@ -18,6 +18,7 @@
 
 #include "aabtree.h"
 #include "ai.h"
+#include "aigroup.h"
 #include "aipathfind.h"
 #include "aiupdate.h"
 #include "anim2d.h"
@@ -2977,4 +2978,73 @@ void Setup_Hooks()
     // w3dgamelogic.h
     Hook_Any(0x00741E50, W3DGameLogic::Create_Terrain_Logic);
     Hook_Any(0x00741EB0, W3DGameLogic::Create_Ghost_Object_Manager);
+
+    // ai.h
+    Hook_Any(0x004AB060, AI::Create_Group);
+    Hook_Any(0x004AB150, AI::Destroy_Group);
+    Hook_Any(0x004AB1C0, AI::Get_Next_Formation_ID);
+
+    // aigroup.h
+    Hook_Any(0x0054FAC0, AIGroup::Get_All_IDs);
+    Hook_Any(0x0054FB40, AIGroup::Get_Speed);
+    Hook_Any(0x0054FB60, AIGroup::Add);
+    Hook_Any(0x0054FBF0, AIGroup::Remove);
+    Hook_Any(0x0054FC70, AIGroup::Remove_Any_Objects_Not_Owned_By_Player);
+    Hook_Any(0x0054FCC0, AIGroup::Get_Center);
+    Hook_Any(0x0054FD90, AIGroup::Get_Min_Max_And_Center);
+    Hook_Any(0x0054FEE0, AIGroup::Recompute);
+    Hook_Any(0x0054FFE0, AIGroup::Is_Empty);
+    Hook_Any(0x0054FFF0, AIGroup::Compute_Individual_Destination);
+    Hook_Any(0x00550150, AIGroup::Friend_Compute_Ground_Path);
+    Hook_Any(0x00550450, AIGroup::Friend_Move_Infantry_To_Pos);
+    Hook_Any(0x00551640, AIGroup::Friend_Move_Formation_To_Pos);
+    Hook_Any(0x00551C30, AIGroup::Friend_Move_Vehicle_To_Pos);
+    Hook_Any(0x00552D00, AIGroup::Group_Move_To_Position);
+    Hook_Any(0x005533A0, AIGroup::Group_Scatter);
+    Hook_Any(0x00553730, AIGroup::Group_Tighten_To_Position);
+    Hook_Any(0x00553B30, AIGroup::Group_Follow_Waypoint_Path);
+    Hook_Any(0x00553C40, AIGroup::Group_Follow_Waypoint_Path_Exact);
+    Hook_Any(0x00553E30, AIGroup::Group_Follow_Waypoint_Path_As_Team);
+    Hook_Any(0x00553F40, AIGroup::Group_Follow_Waypoint_Path_As_Team_Exact);
+    Hook_Any(0x00554080, AIGroup::Group_Idle);
+    Hook_Any(0x005541B0, AIGroup::Group_Attack_Object_Private);
+    Hook_Any(0x00554680, AIGroup::Group_Attack_Team);
+    Hook_Any(0x005546D0, AIGroup::Group_Attack_Position);
+    Hook_Any(0x00554820, AIGroup::Group_Attack_Move_To_Position);
+    Hook_Any(0x00554880, AIGroup::Group_Hunt);
+    Hook_Any(0x005548C0, AIGroup::Group_Repair);
+    Hook_Any(0x005549D0, AIGroup::Group_Resume_Construction);
+    Hook_Any(0x00554AE0, AIGroup::Group_Get_Healed);
+    Hook_Any(0x00554BF0, AIGroup::Group_Get_Repaired);
+    Hook_Any(0x00554D00, AIGroup::Group_Enter);
+    Hook_Any(0x00554D40, AIGroup::Group_Dock);
+    Hook_Any(0x00554E50, AIGroup::Group_Evacuate);
+    Hook_Any(0x00554F30, AIGroup::Group_Execute_Railed_Transport);
+    Hook_Any(0x00555180, AIGroup::Group_Guard_Position);
+    Hook_Any(0x005551D0, AIGroup::Group_Guard_Object);
+    Hook_Any(0x005552F0, AIGroup::Group_Guard_Area);
+    Hook_Any(0x00555410, AIGroup::Group_Attack_Area);
+    Hook_Any(0x00555450, AIGroup::Group_Hack_Internet);
+    Hook_Any(0x00555490, AIGroup::Group_Create_Formation);
+    Hook_Any(0x00555570, AIGroup::Group_Do_Special_Power);
+    Hook_Any(0x00555650, AIGroup::Group_Do_Special_Power_At_Location);
+    Hook_Any(0x00555740, AIGroup::Group_Do_Special_Power_At_Object);
+    Hook_Any(0x00555830, AIGroup::Group_Cheer);
+    Hook_Any(0x00555860, AIGroup::Group_Sell);
+    Hook_Any(0x00555890, AIGroup::Group_Toggle_Overcharge);
+    Hook_Any(0x005558E0, AIGroup::Group_Combat_Drop);
+    Hook_Any(0x00555930, AIGroup::Group_Do_Command_Button);
+    Hook_Any(0x00555960, AIGroup::Group_Do_Command_Button_At_Position);
+    Hook_Any(0x005559A0, AIGroup::Group_Do_Command_Button_At_Object);
+    Hook_Any(0x005559E0, AIGroup::Set_Attitude);
+    Hook_Any(0x00555A20, AIGroup::Set_Mine_Clearing_Detail);
+    Hook_Any(0x00555A60, AIGroup::Set_Weapon_Lock_For_Group);
+    Hook_Any(0x00555AC0, AIGroup::Release_Weapon_Lock_For_Group);
+    Hook_Any(0x00555AF0, AIGroup::Queue_Upgrade);
+    Hook_Any(0x00555B80, AIGroup::Is_Busy);
+    Hook_Any(0x00555BD0, AIGroup::Is_Group_AI_Dead);
+    Hook_Any(0x00555C00, AIGroup::Get_Special_Power_Source_Object);
+    Hook_Any(0x00555C50, AIGroup::Get_Command_Button_Source_Object);
+    Hook_Any(0x00555CC0, AIGroup::Group_Set_Emoticon);
+    Hook_Any(0x00555D00, AIGroup::Group_Override_Special_Power_Destination);
 }

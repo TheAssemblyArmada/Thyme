@@ -15,55 +15,15 @@
 #pragma once
 
 #include "always.h"
-#include "asciistring.h"
-#include "audiomanager.h"
-#include "mutex.h"
-#include "rtsutils.h"
-#include <miles.h>
+#include "audiofilecache.h"
 
-#ifdef THYME_USE_STLPORT
-#include <hash_map>
-#else
-#include <unordered_map>
-#endif
-
-class AudioEventInfo;
-class AudioEventRTS;
-
-struct OpenAudioFile
-{
-    AILSOUNDINFO info;
-    AudioDataHandle wave_data;
-    int ref_count;
-    int data_size;
-    bool miles_allocated;
-    const AudioEventInfo *audio_event_info;
-};
-
-#ifdef THYME_USE_STLPORT
-typedef std::hash_map<const Utf8String, OpenAudioFile, rts::hash<Utf8String>, std::equal_to<Utf8String>> audiocachemap_t;
-#else
-typedef std::unordered_map<const Utf8String, OpenAudioFile, rts::hash<Utf8String>, std::equal_to<Utf8String>>
-    audiocachemap_t;
-#endif
-
-class MilesAudioFileCache
+class MilesAudioFileCache : public Thyme::AudioFileCache
 {
     ALLOW_HOOKING
 public:
-    MilesAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
-    virtual ~MilesAudioFileCache();
-    AudioDataHandle Open_File(const AudioEventRTS *file);
-    void Close_File(AudioDataHandle file);
-    void Set_Max_Size(unsigned size);
+    ~MilesAudioFileCache();
 
-private:
-    bool Free_Space_For_Sample(const OpenAudioFile &file);
-    void Release_Open_Audio(OpenAudioFile *file);
-
-private:
-    audiocachemap_t m_cacheMap;
-    unsigned m_currentSize;
-    unsigned m_maxSize;
-    SimpleMutexClass m_mutex;
+protected:
+    void Release_Open_Audio(OpenAudioFile *open_audio) override;
+    bool Load_File(File *file, OpenAudioFile &open_audio) override;
 };

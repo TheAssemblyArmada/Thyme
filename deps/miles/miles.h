@@ -133,6 +133,9 @@ int32_t __stdcall AIL_stream_loop_count(HSTREAM stream);
 int32_t __stdcall AIL_3D_sample_playback_rate(H3DSAMPLE sample);
 void __stdcall AIL_set_3D_sample_playback_rate(H3DSAMPLE sample, int32_t playback_rate);
 
+#define WAVE_FORMAT_PCM         1
+#define WAVE_FORMAT_IMA_ADPCM   0x0011
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

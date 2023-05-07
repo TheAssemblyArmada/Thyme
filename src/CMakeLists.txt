@@ -356,6 +356,7 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/audio/audiofilecache.cpp
     platform/w3dengine/client/w3dbibbuffer.cpp
     platform/w3dengine/client/w3dbridgebuffer.cpp
     platform/w3dengine/client/w3ddebugdisplay.cpp

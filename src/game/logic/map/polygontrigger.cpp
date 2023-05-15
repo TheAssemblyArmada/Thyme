@@ -39,7 +39,7 @@ PolygonTrigger::PolygonTrigger(int initial_allocation) :
     m_isShownInLayer(true),
     m_isSelected(false),
     m_bounds{},
-    m_radius(0),
+    m_radius(0.0f),
     m_boundsNeedsUpdate(false)
 {
     if (initial_allocation < 2) {
@@ -104,10 +104,10 @@ void PolygonTrigger::Reallocate()
 
 void PolygonTrigger::Update_Bounds() const
 {
-    m_bounds.lo.y = 8388592;
-    m_bounds.lo.x = 8388592;
-    m_bounds.hi.y = -8388592;
-    m_bounds.hi.x = -8388592;
+    m_bounds.lo.y = 0x7FFFF0;
+    m_bounds.lo.x = 0x7FFFF0;
+    m_bounds.hi.y = -0x7FFFF0;
+    m_bounds.hi.x = -0x7FFFF0;
 
     for (int i = 0; i < m_numPoints; i++) {
         if (m_points[i].x < m_bounds.lo.x) {
@@ -128,9 +128,12 @@ void PolygonTrigger::Update_Bounds() const
     }
 
     m_boundsNeedsUpdate = false;
-    float x = (float)(m_bounds.hi.x - m_bounds.lo.x) / 2.0f;
-    float y = (float)(m_bounds.lo.y + m_bounds.hi.y) / 2.0f;
-    m_radius = GameMath::Sqrt(x * x + y * y);
+
+    // #BUGFIX Corrected h to use correct value for Pythagoras theorem.
+    const float w = m_bounds.Width();
+    const float h = m_bounds.Height();
+    const float d = GameMath::Sqrt(w * w + h * h);
+    m_radius = d / 2.0f;
 }
 
 void PolygonTrigger::Add_Point(ICoord3D const &point)
@@ -206,8 +209,8 @@ void PolygonTrigger::Get_Center_Point(Coord3D *pOutCoord) const
             Update_Bounds();
         }
 
-        pOutCoord->x = (float)(m_bounds.hi.x + m_bounds.lo.x) / 2.0f;
-        pOutCoord->y = (float)(m_bounds.hi.y + m_bounds.lo.y) / 2.0f;
+        pOutCoord->x = (m_bounds.hi.x + m_bounds.lo.x) / 2.0f;
+        pOutCoord->y = (m_bounds.hi.y + m_bounds.lo.y) / 2.0f;
         pOutCoord->z = g_theTerrainLogic->Get_Ground_Height(pOutCoord->x, pOutCoord->y, nullptr);
     }
 }

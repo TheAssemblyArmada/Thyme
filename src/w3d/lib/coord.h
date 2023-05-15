@@ -304,8 +304,8 @@ public:
 class Region2D
 {
 public:
-    float Height() const { return hi.y - lo.y; }
     float Width() const { return hi.x - lo.x; }
+    float Height() const { return hi.y - lo.y; }
 
     Coord2D lo;
     Coord2D hi;
@@ -314,8 +314,8 @@ public:
 class IRegion2D
 {
 public:
-    int Height() const { return hi.y - lo.y; }
     int Width() const { return hi.x - lo.x; }
+    int Height() const { return hi.y - lo.y; }
 
     ICoord2D lo;
     ICoord2D hi;
@@ -330,8 +330,8 @@ public:
         hi.Zero();
     }
 
-    float Height() const { return hi.y - lo.y; }
     float Width() const { return hi.x - lo.x; }
+    float Height() const { return hi.y - lo.y; }
     float Depth() const { return hi.z - lo.z; }
     bool Is_In_Region_No_Z(const Coord3D *c) const { return lo.x < c->x && c->x < hi.x && lo.y < c->y && c->y < hi.y; }
 

@@ -29,8 +29,9 @@
 class ParticleSystemInfo : public SnapShot
 {
     friend class ParticleSystemManager;
+    friend class ParticleSystemsDialog;
 
-protected:
+public:
     enum
     {
         KEYFRAME_COUNT = 8,
@@ -44,6 +45,7 @@ protected:
         EMISSION_VELOCITY_HEMISPHERICAL,
         EMISSION_VELOCITY_CYLINDRICAL,
         EMISSION_VELOCITY_OUTWARD,
+        EMISSION_VELOCITY_COUNT,
     };
 
     union EmissionVelocityUnion
@@ -86,6 +88,7 @@ protected:
         EMISSION_VOLUME_BOX,
         EMISSION_VOLUME_SPHERE,
         EMISSION_VOLUME_CYLINDER,
+        EMISSION_VOLUME_COUNT,
     };
 
     union EmissionVolumeUnion
@@ -130,6 +133,7 @@ protected:
         PARTICLE_SHADER_ALPHA,
         PARTICLE_SHADER_ALPHA_TEST,
         PARTICLE_SHADER_MULTIPLY,
+        PARTICLE_SHADER_COUNT,
     };
 
     enum ParticleType : int32_t
@@ -140,6 +144,7 @@ protected:
         PARTICLE_TYPE_STREAK,
         PARTICLE_TYPE_VOLUME_PARTICLE,
         PARTICLE_TYPE_SMUDGE,
+        PARTICLE_TYPE_COUNT,
     };
 
     struct RandomKeyframe

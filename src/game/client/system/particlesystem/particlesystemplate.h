@@ -26,6 +26,10 @@ struct FieldParse;
 class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInfo
 {
     friend class ParticleSystem;
+
+    // These friend classes are for the particle system editor plugin.
+    friend class ParticleSystemsDialog;
+
     IMPLEMENT_NAMED_POOL(ParticleSystemTemplate, ParticleSystemTemplatePool);
 
 protected:

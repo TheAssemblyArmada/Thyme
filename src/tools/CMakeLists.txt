@@ -2,6 +2,7 @@
 if(wxWidgets_FOUND)
     include(TargetExports)
     add_subdirectory(debugwindow)
+    add_subdirectory(particleed)
 endif()
 
 # These tools are built against the Win32 api.

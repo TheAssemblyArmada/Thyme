@@ -1317,7 +1317,9 @@ bool BaseHeightMapRenderObjClass::Is_Clear_Line_Of_Sight(const Coord3D &pos1, co
     int y_extent = height_map->Get_Y_Extent();
 
     // Iterate over the height map to check for obstructions
-    for (int i = 0; i < major_extent && current_x_pos >= 0 && current_y_pos >= 0 && current_x_pos < x_extent - 1 && current_y_pos < y_extent - 1; i++) {
+    for (int i = 0; i < major_extent && current_x_pos >= 0 && current_y_pos >= 0 && current_x_pos < x_extent - 1
+         && current_y_pos < y_extent - 1;
+         i++) {
         int map_index = x_extent * current_y_pos + current_x_pos;
         float max_height_1;
 

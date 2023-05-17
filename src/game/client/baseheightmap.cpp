@@ -1233,122 +1233,139 @@ void BaseHeightMapRenderObjClass::Init_Dest_Alpha_LUT()
     }
 }
 
+/**
+ * Checks if there is a clear line of sight between two positions on the height map.
+ *
+ * @param pos1 The starting position.
+ * @param pos2 The ending position.
+ * @return True if there is a clear line of sight, false otherwise.
+ */
 bool BaseHeightMapRenderObjClass::Is_Clear_Line_Of_Sight(const Coord3D &pos1, const Coord3D &pos2) const
 {
+    // Check if the height map is valid
     if (m_map == nullptr) {
         return false;
     }
 
-    WorldHeightMap *map;
+    WorldHeightMap *height_map;
 
+    // Get the appropriate height map based on the terrain visual
     if (g_theTerrainVisual != nullptr) {
-        map = g_theTerrainVisual->Get_Logic_Height_Map();
+        height_map = g_theTerrainVisual->Get_Logic_Height_Map();
     } else {
-        map = m_map;
+        height_map = m_map;
     }
 
-    int border = map->Border_Size();
+    int border = height_map->Border_Size();
     int x1 = border + GameMath::Fast_To_Int_Floor(0.1f * pos1.x);
     int y1 = border + GameMath::Fast_To_Int_Floor(0.1f * pos1.y);
     int x2 = border + GameMath::Fast_To_Int_Floor(0.1f * pos2.x);
     int y2 = border + GameMath::Fast_To_Int_Floor(0.1f * pos2.y);
     int x_dist = abs(x2 - x1);
     int y_dist = abs(y2 - y1);
-    int x_pos = x1;
-    int i2 = y1;
-    int i3;
-    int i4;
+    int current_x_pos = x1;
+    int current_y_pos = y1;
+    int x_increment_1;
+    int x_increment_2;
 
+    // Determine the increments based on the direction of the line
     if (x2 < x1) {
-        i3 = -1;
-        i4 = -1;
+        x_increment_1 = -1;
+        x_increment_2 = -1;
     } else {
-        i3 = 1;
-        i4 = 1;
+        x_increment_1 = 1;
+        x_increment_2 = 1;
     }
 
-    int i5;
-    int i6;
+    int y_increment_1;
+    int y_increment_2;
 
     if (y2 < y1) {
-        i5 = -1;
-        i6 = -1;
+        y_increment_1 = -1;
+        y_increment_2 = -1;
     } else {
-        i5 = 1;
-        i6 = 1;
+        y_increment_1 = 1;
+        y_increment_2 = 1;
     }
 
-    int i7;
-    int i8;
-    int i9;
-    int i10;
+    int major_distance;
+    int minor_distance;
+    int minor_extent;
+    int major_extent;
 
+    // Adjust the variables for steeper lines
     if (x_dist < y_dist) {
-        i4 = 0;
-        i5 = 0;
-        i7 = y_dist;
-        i8 = y_dist / 2;
-        i9 = x_dist;
-        i10 = y_dist;
+        x_increment_2 = 0;
+        y_increment_1 = 0;
+        major_distance = y_dist;
+        minor_distance = y_dist / 2;
+        minor_extent = x_dist;
+        major_extent = y_dist;
     } else {
-        i3 = 0;
-        i6 = 0;
-        i7 = x_dist;
-        i8 = x_dist / 2;
-        i9 = y_dist;
-        i10 = x_dist;
+        x_increment_1 = 0;
+        y_increment_2 = 0;
+        major_distance = x_dist;
+        minor_distance = x_dist / 2;
+        minor_extent = y_dist;
+        major_extent = x_dist;
     }
 
-    float z = pos1.z;
-    float z2 = (pos2.z - z) * (1.0f / i10);
-    unsigned char *data = map->Get_Data_Ptr();
-    int x_extent = map->Get_X_Extent();
-    int y_extent = map->Get_Y_Extent();
+    float current_height = pos1.z;
+    float height_increment = (pos2.z - current_height) * (1.0f / major_extent);
+    unsigned char *height_data = height_map->Get_Data_Ptr();
+    int x_extent = height_map->Get_X_Extent();
+    int y_extent = height_map->Get_Y_Extent();
 
-    for (int y_pos = 0; y_pos < i10 && x_pos >= 0 && i2 >= 0 && x_pos < x_extent - 1 && i2 < y_extent - 1; y_pos++) {
-        int i11 = x_extent * i2 + x_pos;
-        float f1;
+    // Iterate over the height map to check for obstructions
+    for (int i = 0; i < major_extent && current_x_pos >= 0 && current_y_pos >= 0 && current_x_pos < x_extent - 1 && current_y_pos < y_extent - 1; i++) {
+        int map_index = x_extent * current_y_pos + current_x_pos;
+        float max_height_1;
 
-        if (data[i11 + 1] >= data[i11]) {
-            f1 = data[i11 + 1];
+        // Find the maximum value among neighboring height map data (current, right, down, and diagonal)
+        if (height_data[map_index + 1] >= height_data[map_index]) {
+            max_height_1 = height_data[map_index + 1];
         } else {
-            f1 = data[i11];
+            max_height_1 = height_data[map_index];
         }
 
-        float f2;
+        float max_height_2;
 
-        if (data[x_extent + i11] >= f1) {
-            f2 = data[x_extent + i11];
+        if (height_data[x_extent + map_index] >= max_height_1) {
+            max_height_2 = height_data[x_extent + map_index];
         } else {
-            f2 = f1;
+            max_height_2 = max_height_1;
         }
 
-        float f3;
+        float max_height_3;
 
-        if (data[x_extent + 1 + i11] >= f2) {
-            f3 = data[x_extent + 1 + i11];
+        if (height_data[x_extent + 1 + map_index] >= max_height_2) {
+            max_height_3 = height_data[x_extent + 1 + map_index];
         } else {
-            f3 = f2;
+            max_height_3 = max_height_2;
         }
 
-        if (z + 0.5f < f3 * HEIGHTMAP_SCALE) {
+        // Check if there is an obstruction in the line of sight
+        if (current_height + 0.5f < max_height_3 * HEIGHTMAP_SCALE) {
             return false;
         }
 
-        if (Get_Max_Height() <= z && z2 > 0.0f) {
+        // Check if the viewer is looking upwards and the maximum height is reached
+        if (Get_Max_Height() <= current_height && height_increment > 0.0f) {
             return true;
         }
 
-        z = z + z2;
-        i8 += i9;
+        // Update the height and increment variables
+        current_height = current_height + height_increment;
+        minor_distance += minor_extent;
 
-        if (i8 >= i7) {
-            i8 -= i7;
-            x_pos += i3;
-            i2 += i5;
+        // Adjust positions based on the increments
+        if (minor_distance >= major_distance) {
+            minor_distance -= major_distance;
+            current_x_pos += x_increment_1;
+            current_y_pos += y_increment_1;
         }
-        x_pos += i4;
-        i2 += i6;
+        current_x_pos += x_increment_2;
+        current_y_pos += y_increment_2;
     }
 
     return true;

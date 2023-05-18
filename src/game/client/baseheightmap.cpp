@@ -1357,7 +1357,7 @@ bool BaseHeightMapRenderObjClass::Is_Clear_Line_Of_Sight(const Coord3D &pos1, co
         }
 
         // Update the height and increment variables
-        current_height = current_height + height_increment;
+        current_height += height_increment;
         minor_distance += minor_extent;
 
         // Adjust positions based on the increments

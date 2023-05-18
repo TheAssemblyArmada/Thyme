@@ -355,21 +355,21 @@ int AlphaEdgeTextureClass::Update(WorldHeightMap *ht_map)
                 data[3] = 128;
             }
 
-            for (int i = 0; i < ht_map->m_numEdgeTiles; i++) {
-                TileData *tile = ht_map->Get_Edge_Tile(i);
+            for (int j = 0; j < ht_map->m_numEdgeTiles; j++) {
+                TileData *tile = ht_map->Get_Edge_Tile(j);
 
                 if (tile) {
                     int x = tile->m_tileLocationInTexture.x;
                     int y = tile->m_tileLocationInTexture.y;
 
                     if (x > 0) {
-                        for (int j = 0; j < width; j++) {
-                            TileData *tile2 = ht_map->Get_Edge_Tile(i);
+                        for (int k = 0; k < width; k++) {
+                            TileData *tile2 = ht_map->Get_Edge_Tile(k);
                             unsigned char *data = tile2->Get_RGB_Data_For_Width(width);
-                            unsigned char *data2 = &data[width * 4 * (width - 1 - j)];
-                            unsigned char *data3 = (unsigned char *)rect.pBits + 4 * desc.Width * (j + y) + 4 * x;
+                            unsigned char *data2 = &data[width * 4 * (width - 1 - k)];
+                            unsigned char *data3 = (unsigned char *)rect.pBits + 4 * desc.Width * (k + y) + 4 * x;
 
-                            for (int k = 0; k < width; k++) {
+                            for (int l = 0; l < width; l++) {
                                 *data3 = *data2;
                                 data3[1] = data2[1];
                                 data3[2] = data2[2];

@@ -52,8 +52,8 @@ MeshClass::MeshClass() :
     m_opacityOverride(1.0f),
     m_baseVertexOffset(0),
     m_nextVisibleSkin(nullptr),
-    m_isDisabledByDebugger(false),
-    m_meshDebugId(g_meshDebugIdCount++)
+    m_meshDebugId(g_meshDebugIdCount++),
+    m_isDisabledByDebugger(false)
 {
 }
 
@@ -67,8 +67,8 @@ MeshClass::MeshClass(const MeshClass &that) :
     m_opacityOverride(1.0f),
     m_baseVertexOffset(that.m_baseVertexOffset),
     m_nextVisibleSkin(nullptr),
-    m_isDisabledByDebugger(false),
-    m_meshDebugId(g_meshDebugIdCount++)
+    m_meshDebugId(g_meshDebugIdCount++),
+    m_isDisabledByDebugger(false)
 {
     MeshModelClass *model = const_cast<MeshModelClass *>(that.m_model);
     Ref_Ptr_Set(m_model, model);

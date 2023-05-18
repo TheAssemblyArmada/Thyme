@@ -31,18 +31,18 @@ END_MESSAGE_MAP()
 
 CSceneLightDialog::CSceneLightDialog(CWnd *pParentWnd) :
     CDialog(IDD_SCENELIGHT, pParentWnd),
-    m_flags(LIGHTING_DIFFUSE),
-    m_farAttenStart(0.0f),
-    m_farAttenEnd(0.0f),
-    m_distance(0.0f),
-    m_intensity(0.0f),
-    m_attenuation(1),
     m_diffuseRed(0),
     m_diffuseGreen(0),
     m_diffuseBlue(0),
     m_specularRed(0),
     m_specularGreen(0),
-    m_specularBlue(0)
+    m_specularBlue(0),
+    m_flags(LIGHTING_DIFFUSE),
+    m_farAttenStart(0.0f),
+    m_farAttenEnd(0.0f),
+    m_distance(0.0f),
+    m_intensity(0.0f),
+    m_attenuation(1)
 {
 }
 

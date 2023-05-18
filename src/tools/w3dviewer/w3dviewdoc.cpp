@@ -54,6 +54,7 @@ CW3DViewDoc::CW3DViewDoc() :
     m_docCamera(nullptr),
     m_fogColor(0.5f, 0.5f, 0.5f),
     m_frameCount(0.0f),
+    m_time(0.0f),
     m_blendFrames(TRUE),
     m_animateCamera(false),
     m_resetCamera(true),
@@ -61,8 +62,7 @@ CW3DViewDoc::CW3DViewDoc() :
     m_useManualFov(false),
     m_useManualClipPlanes(false),
     m_initialized(false),
-    m_fogEnabled(false),
-    m_time(0.0f)
+    m_fogEnabled(false)
 {
     m_animateCamera = theApp.GetProfileInt("Config", "AnimateCamera", 0) == 1;
     m_resetCamera = theApp.GetProfileInt("Config", "ResetCamera", 1) == 1;
@@ -707,10 +707,10 @@ void CW3DViewDoc::UpdateAnimation(float tm)
                         m[2].Z = 0.0f;
                         m[2].W = 0.0f;
                         tm = tm * m;
-                        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
+                        CMainFrame *frame2 = static_cast<CMainFrame *>(AfxGetMainWnd());
 
-                        if (frame != nullptr) {
-                            CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
+                        if (frame2 != nullptr) {
+                            CGraphicView *view = static_cast<CGraphicView *>(frame2->m_splitter.GetPane(0, 1));
 
                             if (view != nullptr) {
                                 view->m_camera->Set_Transform(tm);
@@ -787,10 +787,10 @@ void CW3DViewDoc::OnStep(int step)
                         m[2].Z = 0.0f;
                         m[2].W = 0.0f;
                         tm = tm * m;
-                        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
+                        CMainFrame *frame2 = static_cast<CMainFrame *>(AfxGetMainWnd());
 
-                        if (frame != nullptr) {
-                            CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
+                        if (frame2 != nullptr) {
+                            CGraphicView *view = static_cast<CGraphicView *>(frame2->m_splitter.GetPane(0, 1));
 
                             if (view != nullptr) {
                                 view->m_camera->Set_Transform(tm);

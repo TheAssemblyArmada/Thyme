@@ -616,13 +616,13 @@ W3DBridgeBuffer::~W3DBridgeBuffer()
 }
 
 W3DBridgeBuffer::W3DBridgeBuffer() :
-    m_initialized(false),
-    m_vertexMaterial(nullptr),
     m_vertexBridge(nullptr),
     m_indexBridge(nullptr),
+    m_vertexMaterial(nullptr),
     m_bridgeTexture(nullptr),
     m_curNumBridgeVertices(0),
-    m_curNumBridgeIndices(0)
+    m_curNumBridgeIndices(0),
+    m_initialized(false)
 {
     Clear_All_Bridges();
     Allocate_Bridge_Buffers();

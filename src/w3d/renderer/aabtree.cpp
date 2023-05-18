@@ -400,9 +400,9 @@ bool AABTreeClass::Cast_AABox_To_Polys(CullNodeStruct *node, AABoxCollisionTestC
 
         int polyhit = -1;
         int poly0 = node->Get_Poly0();
-        int polycount = node->Get_Poly_Count();
+        int polycount2 = node->Get_Poly_Count();
 
-        for (int poly_counter = 0; poly_counter < polycount; poly_counter++) {
+        for (int poly_counter = 0; poly_counter < polycount2; poly_counter++) {
             int poly_index = m_polyIndices[poly0 + poly_counter];
             tri.V[0] = &(loc[polyverts[poly_index][0]]);
             tri.V[1] = &(loc[polyverts[poly_index][1]]);

@@ -35,8 +35,8 @@ W3DDebrisDraw::W3DDebrisDraw(Thing *thing, ModuleData const *module_data) :
     m_fxFinal(nullptr),
     m_state(INITIAL),
     m_frames(0),
-    m_shadow(nullptr),
-    m_finalStop(false)
+    m_finalStop(false),
+    m_shadow(nullptr)
 {
     for (int i = 0; i < STATECOUNT; i++) {
         m_anims[i] = nullptr;

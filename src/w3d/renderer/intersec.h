@@ -64,13 +64,13 @@ public:
     IntersectionResultClass m_result;
 
     IntersectionClass() :
-        m_convexTest(false),
-        m_result(),
         // bugfix, init all members
         m_screenX(0),
         m_screenY(0),
         m_interpolateNormal(false),
-        m_maxDistance(GAMEMATH_FLOAT_MAX)
+        m_convexTest(false),
+        m_maxDistance(GAMEMATH_FLOAT_MAX),
+        m_result()
     {
         m_rayLocation = &s_rayLocation;
         m_rayDirection = &s_rayDirection;

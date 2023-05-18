@@ -57,7 +57,7 @@ Chunk cubemodel = { -1, -1,
 
 void validate_chunk(ChunkLoadClass &cload, const Chunk &chunk, int depth = 1)
 {
-    int idx = 0;
+    unsigned int idx = 0;
     while (cload.Open_Chunk()) {
         if (chunk.subchunks.size() <= idx) {
             ASSERT_TRUE(chunk.subchunks.size() > idx) << "Missing chunk: " << cload.Cur_Chunk_ID();

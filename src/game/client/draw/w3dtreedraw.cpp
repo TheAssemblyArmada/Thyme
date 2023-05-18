@@ -24,15 +24,15 @@ W3DTreeDrawModuleData::W3DTreeDrawModuleData() :
     m_darkeningFactor(0.0f),
     m_toppleFX(nullptr),
     m_bounceFX(nullptr),
-    m_killWhenFinishedToppling(true),
-    m_doTopple(false),
-    m_doShadow(false),
     m_initialVelocityPercent(0.2f),
     m_initialAccelPercent(0.01f),
     m_bounceVelocityPercent(0.3f),
     m_minimumToppleSpeed(0.5f),
+    m_killWhenFinishedToppling(true),
+    m_doTopple(false),
     m_sinkTime(300),
-    m_sinkDistance(20.0f)
+    m_sinkDistance(20.0f),
+    m_doShadow(false)
 {
 }
 

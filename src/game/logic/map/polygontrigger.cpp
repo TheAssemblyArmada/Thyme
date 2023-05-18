@@ -32,15 +32,15 @@ PolygonTrigger::PolygonTrigger(int initial_allocation) :
     m_points(nullptr),
     m_numPoints(0),
     m_sizePoints(0),
+    m_bounds{},
+    m_radius(0),
     m_riverStart(0),
+    m_boundsNeedsUpdate(false),
     m_exportWithScripts(false),
     m_isWaterArea(false),
     m_isRiver(false),
     m_isShownInLayer(true),
-    m_isSelected(false),
-    m_bounds{},
-    m_radius(0),
-    m_boundsNeedsUpdate(false)
+    m_isSelected(false)
 {
     if (initial_allocation < 2) {
         initial_allocation = 2;

@@ -1197,8 +1197,8 @@ void RTS3DScene::Flush_Occluded_Objects(RenderInfoClass &rinfo)
         for (int i = 0; i < m_flaggedOccludedCount; i++) {
             RenderObjClass *robj = m_occludedObjectsBuffer[i];
             DrawableInfo *info = static_cast<DrawableInfo *>(robj->Get_User_Data());
-            int index = info->drawable->Get_Object()->Get_Controlling_Player()->Get_Player_Index();
-            rinfo.Push_Material_Pass(m_occludedMatPassesPerPlayer[index]);
+            int player_index = info->drawable->Get_Object()->Get_Controlling_Player()->Get_Player_Index();
+            rinfo.Push_Material_Pass(m_occludedMatPassesPerPlayer[player_index]);
             robj->Render(rinfo);
             rinfo.Pop_Material_Pass();
         }

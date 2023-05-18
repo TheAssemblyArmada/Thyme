@@ -38,16 +38,16 @@ CameraClass::CameraClass(const CameraClass &src) :
     m_projection(src.m_projection),
     m_viewport(src.m_viewport),
     m_viewPlane(src.m_viewPlane),
+    m_aspectRatio(src.m_aspectRatio),
     m_zNear(src.m_zNear),
     m_zFar(src.m_zFar),
+    m_zBufferMin(src.m_zBufferMin),
+    m_zBufferMax(src.m_zBufferMax),
     m_frustumValid(src.m_frustumValid),
     m_frustum(src.m_frustum),
     m_nearClipBBox(src.m_nearClipBBox),
     m_projectionTransform(src.m_projectionTransform),
-    m_cameraInvTransform(src.m_cameraInvTransform),
-    m_aspectRatio(src.m_aspectRatio),
-    m_zBufferMin(src.m_zBufferMin),
-    m_zBufferMax(src.m_zBufferMax)
+    m_cameraInvTransform(src.m_cameraInvTransform)
 {
     m_frustumValid = false;
 }

@@ -51,7 +51,7 @@ class MilesAudioFileCache
 {
     ALLOW_HOOKING
 public:
-    MilesAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
+    MilesAudioFileCache() : m_currentSize(0), m_maxSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~MilesAudioFileCache();
     AudioDataHandle Open_File(const AudioEventRTS *file);
     void Close_File(AudioDataHandle file);

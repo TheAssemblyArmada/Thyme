@@ -415,6 +415,7 @@ W3DTerrainBackground::~W3DTerrainBackground()
 }
 
 W3DTerrainBackground::W3DTerrainBackground() :
+    // BUGFIX init all members
     m_cullResult(CULL_RES_INVALID),
     m_vertexBuffer(nullptr),
     m_maxVertex(0),
@@ -424,15 +425,14 @@ W3DTerrainBackground::W3DTerrainBackground() :
     m_texture16(nullptr),
     m_texture32(nullptr),
     m_state(1),
-    m_allocated(false),
-    // BUGFIX init all members
     m_curNumTerrainVertices(0),
     m_curNumTerrainIndices(0),
     m_x(0),
     m_y(0),
     m_pixelsPerCell(0),
     m_map(nullptr),
-    m_unk1(false)
+    m_unk1(false),
+    m_allocated(false)
 {
 }
 

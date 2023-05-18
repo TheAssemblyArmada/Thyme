@@ -55,14 +55,14 @@ void MouseThreadClass::Thread_Function()
 
 W3DMouse::W3DMouse() :
     m_currentD3DCursor(MouseCursor::CURSOR_NONE),
-    m_currentW3DCursor(MouseCursor::CURSOR_NONE),
-    m_currentPolyCursor(MouseCursor::CURSOR_NONE),
+    m_D3DCursorSurfaceCount(0),
     unk4(0),
     unk5(0),
-    m_D3DCursorSurfaceCount(0),
-    m_camera(nullptr),
+    unk7(0.001f),
     m_setWinCursor(false),
-    unk7(0.001f)
+    m_camera(nullptr),
+    m_currentW3DCursor(MouseCursor::CURSOR_NONE),
+    m_currentPolyCursor(MouseCursor::CURSOR_NONE)
 {
     memset(s_W3DMouseAssets1, 0, sizeof(s_W3DMouseAssets1));
     memset(s_W3DMouseAssets2, 0, sizeof(s_W3DMouseAssets2));

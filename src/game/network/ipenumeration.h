@@ -22,7 +22,7 @@ class EnumeratedIP : public MemoryPoolObject
     IMPLEMENT_POOL(EnumeratedIP)
 
 public:
-    EnumeratedIP() : m_next(nullptr), m_IP(0) {}
+    EnumeratedIP() : m_IP(0), m_next(nullptr) {}
     virtual ~EnumeratedIP() override {}
 
     Utf8String Get_IP_String() { return m_IPstring; }

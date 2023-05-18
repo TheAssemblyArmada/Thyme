@@ -1136,20 +1136,20 @@ void HLodClass::Update_Obj_Space_Bounding_Volumes()
         robj->Release_Ref();
 
         for (int i = 1; i < Get_Num_Sub_Objects(); i++) {
-            RenderObjClass *robj = Get_Sub_Object(i);
+            RenderObjClass *robj2 = Get_Sub_Object(i);
 
-            captainslog_assert(robj);
+            captainslog_assert(robj2);
 
-            Matrix3D transform2 = m_htree->Get_Transform(Get_Sub_Object_Bone_Index(robj));
+            Matrix3D transform2 = m_htree->Get_Transform(Get_Sub_Object_Bone_Index(robj2));
             SphereClass sphere;
-            robj->Get_Obj_Space_Bounding_Sphere(sphere);
+            robj2->Get_Obj_Space_Bounding_Sphere(sphere);
             sphere.Transform(transform2);
             obj_sphere.Add_Sphere(sphere);
             AABoxClass box;
-            robj->Get_Obj_Space_Bounding_Box(box);
+            robj2->Get_Obj_Space_Bounding_Box(box);
             box.Transform(transform2);
             new_box.Add_Box(box);
-            robj->Release_Ref();
+            robj2->Release_Ref();
         }
 
         m_objSphere = obj_sphere;

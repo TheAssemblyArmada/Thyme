@@ -208,13 +208,13 @@ StateMachine::StateMachine(Object *owner, Utf8String name) :
     m_owner(owner),
     m_sleepTill(0),
     m_defaultStateID(INVALID_STATE_ID),
-    m_defaultStateInited(false),
     m_currentState(nullptr),
-    m_locked(false)
+    m_locked(false),
+    m_defaultStateInited(false)
 #ifdef GAME_DEBUG_STRUCTS
     ,
-    m_name(name),
     m_debugOutput(false),
+    m_name(name),
     m_lockedString(nullptr)
 #endif
 {

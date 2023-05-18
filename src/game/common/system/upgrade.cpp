@@ -92,7 +92,7 @@ bool UpgradeCenter::Can_Afford_Upgrade(Player *player, const UpgradeTemplate *up
         return false;
     }
 
-    if (player->Get_Money()->Count_Money() >= upgrade->Calc_Cost_To_Build(player)) {
+    if (player->Get_Money()->Count_Money() >= static_cast<unsigned int>(upgrade->Calc_Cost_To_Build(player))) {
         return true;
     }
 

@@ -28,8 +28,8 @@ END_MESSAGE_MAP()
 
 EmitterSizePropPageClass::EmitterSizePropPageClass() :
     CPropertyPage(IDD_EMITTERSIZE),
-    m_isValid(true),
     m_instanceList(nullptr),
+    m_isValid(true),
     m_sizeBar(nullptr),
     m_lifetime(0.0f),
     m_scale(0.0f)

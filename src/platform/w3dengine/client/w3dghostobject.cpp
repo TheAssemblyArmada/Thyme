@@ -60,7 +60,7 @@ void Disable_UV_Animations(RenderObjClass *robj)
 }
 
 W3DRenderObjectSnapshot::W3DRenderObjectSnapshot(RenderObjClass *robj, DrawableInfo *info, bool copy_render_obj) :
-    m_next(nullptr), m_renderObj(nullptr)
+    m_renderObj(nullptr), m_next(nullptr)
 {
     Update(robj, info, copy_render_obj);
 }

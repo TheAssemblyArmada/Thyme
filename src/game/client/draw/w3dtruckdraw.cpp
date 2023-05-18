@@ -61,6 +61,7 @@ void W3DTruckDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 
 W3DTruckDraw::W3DTruckDraw(Thing *thing, ModuleData const *module_data) :
     W3DModelDraw(thing, module_data),
+    // BUGFIX: Init all members
     m_effectsInitialized(false),
     m_wasAirborne(false),
     m_isPowersliding(false),
@@ -81,13 +82,12 @@ W3DTruckDraw::W3DTruckDraw(Thing *thing, ModuleData const *module_data) :
     m_midRearRightTireBone(0),
     m_midMidLeftTireBone(0),
     m_midMidRightTireBone(0),
-    m_prevRenderObj(nullptr),
-    // BUGFIX: Init all members
     m_cabBone(0),
     m_cabRotation(0.0f),
     m_trailerBone(0),
     m_trailerRotation(0.0f),
-    m_numBones(0)
+    m_numBones(0),
+    m_prevRenderObj(nullptr)
 {
     m_landingSound = *thing->Get_Template()->Get_Per_Unit_Sound("TruckLandingSound");
     m_powerslideSound = *thing->Get_Template()->Get_Per_Unit_Sound("TruckPowerslideSound");

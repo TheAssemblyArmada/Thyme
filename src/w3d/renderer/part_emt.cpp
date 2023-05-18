@@ -66,9 +66,9 @@ ParticleEmitterClass::ParticleEmitterClass(float emit_rate,
     m_particlesLeft(max_particles),
     m_maxParticles(max_particles),
     m_isComplete(false),
-    m_removeOnComplete(s_defaultRemoveOnComplete),
     m_nameString(nullptr),
     m_userString(nullptr),
+    m_removeOnComplete(s_defaultRemoveOnComplete),
     m_isInScene(false),
     m_groupID(0),
     m_buffer(nullptr),
@@ -113,7 +113,7 @@ ParticleEmitterClass::ParticleEmitterClass(float emit_rate,
     m_nameString = strdup("ParticleEmitter");
 }
 
-ParticleEmitterClass::ParticleEmitterClass(const ParticleEmitterClass &src) : m_isInScene(false), RenderObjClass(src)
+ParticleEmitterClass::ParticleEmitterClass(const ParticleEmitterClass &src) : RenderObjClass(src), m_isInScene(false)
 {
     m_emitRate = src.m_emitRate;
     m_burstSize = src.m_burstSize;

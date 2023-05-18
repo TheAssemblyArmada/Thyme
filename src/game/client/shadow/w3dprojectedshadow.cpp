@@ -94,7 +94,7 @@ struct SHADOW_DECAL_VERTEX
 };
 
 // BUGFIX init all members
-W3DShadowTexture::W3DShadowTexture() : m_texture(nullptr), m_name{}
+W3DShadowTexture::W3DShadowTexture() : m_texture(nullptr)
 {
     m_lastLightPosition.Set(0.0f, 0.0f, 0.0f);
     m_lastObjectOrientation.Make_Identity();
@@ -427,13 +427,13 @@ W3DProjectedShadow::~W3DProjectedShadow()
 W3DProjectedShadowManager::W3DProjectedShadowManager() :
     m_shadowList(nullptr),
     m_decalList(nullptr),
-    m_numDecalShadows(0),
-    m_numProjectionShadows(0),
-    m_W3DShadowTextureManager(nullptr),
+    m_dynamicRenderTarget(nullptr),
+    m_renderTargetHasAlpha(false),
     m_shadowCamera(nullptr),
     m_shadowContext(nullptr),
-    m_dynamicRenderTarget(nullptr),
-    m_renderTargetHasAlpha(false)
+    m_W3DShadowTextureManager(nullptr),
+    m_numDecalShadows(0),
+    m_numProjectionShadows(0)
 {
 }
 

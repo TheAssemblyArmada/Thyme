@@ -53,9 +53,9 @@ PhysicsBehaviorModuleData::PhysicsBehaviorModuleData() :
     m_zFriction(0.8f),
     m_aerodynamicCoeff(0.0f),
     m_centerOfMassOffset(0),
+    m_killWhenRestingOnGround(false),
     m_allowBouncing(false),
     m_allowCollideForce(true),
-    m_killWhenRestingOnGround(false),
     m_minFallHeightForDamage(Height_To_Speed(40.0f)),
     m_fallHeightDamageFactor(1.0f),
     m_pitchRollYawFactor(2.0f),
@@ -96,21 +96,21 @@ void PhysicsBehaviorModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 
 PhysicsBehavior::PhysicsBehavior(Thing *thing, const ModuleData *module_data) :
     UpdateModule(thing, module_data),
-    m_velMag(0.0f),
     m_yawRate(0.0f),
     m_rollRate(0.0f),
     m_pitchRate(0.0f),
-    m_mass(Get_Physics_Behavior_Module_Data()->m_mass),
-    m_motiveForceApplied(0),
+    m_bounceSound(nullptr),
+    m_ignoreCollisionsWith(OBJECT_UNK),
     m_flags(0),
-    m_extraBounciness(0.0f),
-    m_extraFriction(0.0f),
+    m_mass(Get_Physics_Behavior_Module_Data()->m_mass),
     m_currentOverlap(OBJECT_UNK),
     m_previousOverlap(OBJECT_UNK),
     m_collided(OBJECT_UNK),
-    m_ignoreCollisionsWith(OBJECT_UNK),
+    m_motiveForceApplied(0),
+    m_extraBounciness(0.0f),
+    m_extraFriction(0.0f),
     m_projectileUpdateInterface(nullptr),
-    m_bounceSound(nullptr)
+    m_velMag(0.0f)
 {
     m_accel.Zero();
     m_prevAccel = m_accel;

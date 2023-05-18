@@ -163,7 +163,7 @@ int Device = -1;
 int BPP = -1;
 
 CMainFrame::CMainFrame() :
-    m_currentType(ASSET_TYPE_NONE), m_animationToolbarVisible(true), m_initialized(false), m_subMenu(nullptr), m_windowRect{}
+    m_currentType(ASSET_TYPE_NONE), m_animationToolbarVisible(true), m_windowRect{}, m_subMenu(nullptr), m_initialized(false)
 {
 }
 

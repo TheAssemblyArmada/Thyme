@@ -477,10 +477,10 @@ TeamTemplateInfo::TeamTemplateInfo(Dict *d) : m_numUnitsInfo(0)
     m_executesActionsOnCreate = d->Get_Bool(g_teamExecutesActionsOnCreateKey, &exists);
 
     for (int i = 0; i < ARRAY_SIZE(m_genericScripts); i++) {
-        Utf8String str;
+        Utf8String str2;
         Utf8String name = g_theNameKeyGenerator->Key_To_Name(g_teamGenericScriptHookKey);
-        str.Format("%s%d", name.Str(), i);
-        m_genericScripts[i] = d->Get_AsciiString(Name_To_Key(str.Str()), &exists);
+        str2.Format("%s%d", name.Str(), i);
+        m_genericScripts[i] = d->Get_AsciiString(Name_To_Key(str2.Str()), &exists);
 
         if (!exists) {
             m_genericScripts[i].Clear();
@@ -664,9 +664,9 @@ Team::Team(TeamPrototype *proto, unsigned int id) :
     m_wasIdle(false),
     m_destroyThreshold(0),
     m_curUnits(0),
+    m_currentWaypoint(nullptr),
     m_canRecruit(false),
-    m_availableForRecruitment(false),
-    m_currentWaypoint(nullptr)
+    m_availableForRecruitment(false)
 {
     m_created = false;
     m_targetObjectID = OBJECT_UNK;
@@ -1100,7 +1100,7 @@ bool TeamPrototype::Evaluate_Production_Condition()
     }
 
     if (m_productionConditionScript != nullptr) {
-        if (g_theGameLogic->Get_Frame() < m_productionConditionScript->Get_UnkInt2()) {
+        if (g_theGameLogic->Get_Frame() < static_cast<unsigned int>(m_productionConditionScript->Get_UnkInt2())) {
             return false;
         } else {
             int interval = m_productionConditionScript->Get_Evaluation_Interval();
@@ -2007,9 +2007,9 @@ void Team::Delete_Team(bool ignore_dead)
             it.Advance();
         }
 
-        for (auto it = list.begin(); it != list.end(); it++) {
-            if ((*it)->Get_Contain() != nullptr) {
-                (*it)->Get_Contain()->Remove_All_Contained(false);
+        for (auto it2 = list.begin(); it2 != list.end(); it2++) {
+            if ((*it2)->Get_Contain() != nullptr) {
+                (*it2)->Get_Contain()->Remove_All_Contained(false);
             }
         }
     }
@@ -2143,9 +2143,9 @@ void Team::Evacuate_Team()
         it.Advance();
     }
 
-    for (auto it = list.begin(); it != list.end(); it++) {
-        if ((*it)->Get_Contain() != nullptr) {
-            (*it)->Get_Contain()->Remove_All_Contained(false);
+    for (auto it2 = list.begin(); it2 != list.end(); it2++) {
+        if ((*it2)->Get_Contain() != nullptr) {
+            (*it2)->Get_Contain()->Remove_All_Contained(false);
         }
     }
 
@@ -2176,8 +2176,8 @@ void Team::Kill_Team()
         it.Advance();
     }
 
-    for (auto it = list.begin(); it != list.end(); it++) {
-        Object *obj = (*it);
+    for (auto it2 = list.begin(); it2 != list.end(); it2++) {
+        Object *obj = (*it2);
 
         if (obj->Is_KindOf(KINDOF_TECH_BUILDING)) {
             obj->Set_Team(g_thePlayerList->Get_Neutral_Player()->Get_Default_Team());

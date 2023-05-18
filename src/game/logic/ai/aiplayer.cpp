@@ -38,15 +38,15 @@ AIPlayer::AIPlayer(Player *p) :
     m_buildDelay(0),
     m_teamDelay(0),
     m_skillsetSelector(INVALID_SKILLSET_SELECTION),
+    m_baseRadius(0.0f),
     m_dozerID(OBJECT_UNK),
     m_structureRepairCount(0),
     m_dozerQueued(false),
+    m_dozerRepairing(false),
+    m_bridgeRepairTimer(0),
     m_supplySourceFrame(0),
     m_supplySourceID(OBJECT_UNK),
-    m_supplyCenterID(OBJECT_UNK),
-    m_baseRadius(0.0f),
-    m_dozerRepairing(false),
-    m_bridgeRepairTimer(0)
+    m_supplyCenterID(OBJECT_UNK)
 {
     m_frameLastBuildingBuilt = g_theGameLogic->Get_Frame();
     p->Set_Can_Build_Units(false);

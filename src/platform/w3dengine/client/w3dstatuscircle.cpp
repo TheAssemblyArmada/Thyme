@@ -25,12 +25,12 @@ int W3DStatusCircle::g_diffuse = 0xFF;
 bool W3DStatusCircle::g_needUpdate;
 
 W3DStatusCircle::W3DStatusCircle() :
+    // BUGFIX: Init m_numTriangles
+    m_numTriangles(0),
     m_indexBuffer(nullptr),
     m_vertexMaterialClass(nullptr),
     m_vertexBufferCircle(nullptr),
-    m_vertexBufferScreen(nullptr),
-    // BUGFIX: Init m_numTriangles
-    m_numTriangles(0)
+    m_vertexBufferScreen(nullptr)
 {
 }
 

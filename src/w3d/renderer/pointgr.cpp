@@ -79,9 +79,9 @@ PointGroupClass::PointGroupClass() :
     m_pointCount(0),
     m_frameRowColumnCountLog2(0),
     m_texture(nullptr),
-    m_flags(0),
     m_shader(ShaderClass::s_presetAdditiveSpriteShader),
     m_pointMode(TRIS),
+    m_flags(0),
     m_defaultPointSize(0.0f),
     m_defaultPointColor(1.0f, 1.0f, 1.0f),
     m_defaultPointAlpha(1.0f),
@@ -677,11 +677,11 @@ void PointGroupClass::Render_Volume_Particle(RenderInfoClass &rinfo, int unk)
                     unsigned char *vb = reinterpret_cast<unsigned char *>(Lock.Get_Formatted_Vertex_Array());
                     const FVFInfoClass &fvfinfo = point_verts.FVF_Info();
 
-                    for (int i = current; i < current + delta; i++) {
-                        *reinterpret_cast<Vector3 *>(vb + fvfinfo.Get_Location_Offset()) = g_vertexLoc[i];
+                    for (int j = current; j < current + delta; j++) {
+                        *reinterpret_cast<Vector3 *>(vb + fvfinfo.Get_Location_Offset()) = g_vertexLoc[j];
 
                         if (current_diffuse != nullptr) {
-                            unsigned color = DX8Wrapper::Convert_Color_Clamp(g_vertexDiffuse[i]);
+                            unsigned color = DX8Wrapper::Convert_Color_Clamp(g_vertexDiffuse[j]);
                             *reinterpret_cast<unsigned int *>(vb + fvfinfo.Get_Diffuse_Offset()) = color;
                         } else {
                             *reinterpret_cast<unsigned int *>(vb + fvfinfo.Get_Diffuse_Offset()) =
@@ -691,7 +691,7 @@ void PointGroupClass::Render_Volume_Particle(RenderInfoClass &rinfo, int unk)
                                     m_defaultPointAlpha));
                         }
 
-                        *reinterpret_cast<Vector2 *>(vb + fvfinfo.Get_Tex_Offset(0)) = g_vertexUV[i];
+                        *reinterpret_cast<Vector2 *>(vb + fvfinfo.Get_Tex_Offset(0)) = g_vertexUV[j];
                         vb += fvfinfo.Get_FVF_Size();
                     }
                 }
@@ -1008,22 +1008,22 @@ void PointGroupClass::Update_Arrays(Vector3 *point_loc,
 
         if (m_pointMode != QUADS) {
             Vector2 *uv_ptr = s_triVertexUVFrameTable[m_frameRowColumnCountLog2];
-            int vert = 0;
+            int vert_idx = 0;
             for (int i = 0; i < active_points; i++) {
                 int uv_idx = (point_frame[i] & frame_mask) * 3;
-                vertex_uv[vert++] = uv_ptr[uv_idx + 0];
-                vertex_uv[vert++] = uv_ptr[uv_idx + 1];
-                vertex_uv[vert++] = uv_ptr[uv_idx + 2];
+                vertex_uv[vert_idx++] = uv_ptr[uv_idx + 0];
+                vertex_uv[vert_idx++] = uv_ptr[uv_idx + 1];
+                vertex_uv[vert_idx++] = uv_ptr[uv_idx + 2];
             }
         } else {
             Vector2 *uv_ptr = s_quadVertexUVFrameTable[m_frameRowColumnCountLog2];
-            int vert = 0;
+            int vert_idx = 0;
             for (int i = 0; i < active_points; i++) {
                 int uv_idx = (point_frame[i] & frame_mask) * 4;
-                vertex_uv[vert++] = uv_ptr[uv_idx + 0];
-                vertex_uv[vert++] = uv_ptr[uv_idx + 1];
-                vertex_uv[vert++] = uv_ptr[uv_idx + 2];
-                vertex_uv[vert++] = uv_ptr[uv_idx + 3];
+                vertex_uv[vert_idx++] = uv_ptr[uv_idx + 0];
+                vertex_uv[vert_idx++] = uv_ptr[uv_idx + 1];
+                vertex_uv[vert_idx++] = uv_ptr[uv_idx + 2];
+                vertex_uv[vert_idx++] = uv_ptr[uv_idx + 3];
             }
         }
     } else {
@@ -1031,20 +1031,20 @@ void PointGroupClass::Update_Arrays(Vector3 *point_loc,
 
         if (m_pointMode != QUADS) {
             Vector2 *uv_ptr = s_triVertexUVFrameTable[m_frameRowColumnCountLog2] + ((m_defaultPointFrame & frame_mask) * 3);
-            int vert = 0;
+            int vert_idx = 0;
             for (int i = 0; i < active_points; i++) {
-                vertex_uv[vert++] = uv_ptr[0];
-                vertex_uv[vert++] = uv_ptr[1];
-                vertex_uv[vert++] = uv_ptr[2];
+                vertex_uv[vert_idx++] = uv_ptr[0];
+                vertex_uv[vert_idx++] = uv_ptr[1];
+                vertex_uv[vert_idx++] = uv_ptr[2];
             }
         } else {
             Vector2 *uv_ptr = s_quadVertexUVFrameTable[m_frameRowColumnCountLog2] + ((m_defaultPointFrame & frame_mask) * 4);
-            int vert = 0;
+            int vert_idx = 0;
             for (int i = 0; i < active_points; i++) {
-                vertex_uv[vert++] = uv_ptr[0];
-                vertex_uv[vert++] = uv_ptr[1];
-                vertex_uv[vert++] = uv_ptr[2];
-                vertex_uv[vert++] = uv_ptr[3];
+                vertex_uv[vert_idx++] = uv_ptr[0];
+                vertex_uv[vert_idx++] = uv_ptr[1];
+                vertex_uv[vert_idx++] = uv_ptr[2];
+                vertex_uv[vert_idx++] = uv_ptr[3];
             }
         }
     }

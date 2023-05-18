@@ -1110,31 +1110,31 @@ void Drawable::Draw_UI_Text()
 
 Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
     Thing(thing_template),
-    m_status(status),
-    m_nextDrawable(nullptr),
-    m_prevDrawable(nullptr),
-    m_customSoundAmbientInfo(nullptr),
-    m_flashColor(0),
-    m_selected(false),
-    m_expirationDate(0),
-    m_lastConstructDisplayed(-1.0f),
-    m_ambientSound(nullptr),
-    m_ambientSoundEnabled(true),
-    m_ambientSoundFromScriptEnabled(true),
-    m_terrainDecalFadeTarget1(0.0f),
-    m_terrainDecalFadeTarget2(0.0f),
-    m_terrainDecalOpacity(0.0f),
+    m_terrainDecal(TERRAIN_DECAL_8),
     m_opacity(1.0f),
     m_effectiveOpacity1(1.0f),
     m_effectiveOpacity2(1.0f),
-    m_terrainDecal(TERRAIN_DECAL_8),
+    m_terrainDecalFadeTarget1(0.0f),
+    m_terrainDecalFadeTarget2(0.0f),
+    m_terrainDecalOpacity(0.0f),
+    m_nextDrawable(nullptr),
+    m_prevDrawable(nullptr),
+    m_customSoundAmbientInfo(nullptr),
+    m_status(status),
     m_fadingMode(FADING_MODE_OFF),
     m_curFadeFrame(0),
     m_timeToFade(0),
     m_remainVisibleFrames(0),
+    m_drawableLocoInfo(nullptr),
+    m_ambientSound(nullptr),
     m_stealthLook(STEALTHLOOK_NONE),
+    m_flashColor(0),
     m_flashTime(0),
-    m_drawableLocoInfo(nullptr)
+    m_lastConstructDisplayed(-1.0f),
+    m_expirationDate(0),
+    m_selected(false),
+    m_ambientSoundEnabled(true),
+    m_ambientSoundFromScriptEnabled(true)
 {
     g_theGameClient->Register_Drawable(this);
     m_constructDisplayString = g_theDisplayStringManager->New_Display_String();
@@ -1297,13 +1297,13 @@ void Drawable::Start_Ambient_Sound(BodyDamageType damage, TimeOfDayType tod, boo
             play = true;
         } else if (damage != BODY_PRISTINE) {
             if (damage != BODY_RUBBLE) {
-                const AudioEventRTS *sound = Get_Ambient_Sound_By_Damage(BODY_PRISTINE);
-                if (sound->Get_Event_Name().Is_Not_Empty()) {
+                const AudioEventRTS *sound2 = Get_Ambient_Sound_By_Damage(BODY_PRISTINE);
+                if (sound2->Get_Event_Name().Is_Not_Empty()) {
                     if (!m_ambientSound) {
                         m_ambientSound = new DynamicAudioEventRTS();
                     }
 
-                    m_ambientSound->m_event = *sound;
+                    m_ambientSound->m_event = *sound2;
                     play = true;
                 }
             }

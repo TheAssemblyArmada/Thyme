@@ -196,7 +196,7 @@ private:
     W3DProjectedShadow *m_shadowList;
     W3DProjectedShadow *m_decalList;
     TextureClass *m_dynamicRenderTarget;
-    char m_renderTargetHasAlpha;
+    bool m_renderTargetHasAlpha;
     CameraClass *m_shadowCamera;
     LightEnvironmentClass m_shadowLightEnv;
     SpecialRenderInfoClass *m_shadowContext;

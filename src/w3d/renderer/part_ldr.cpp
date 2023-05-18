@@ -34,9 +34,9 @@ const char *s_emitterTypeNames[EMITTER_TYPEID_COUNT] = { "Default" };
 
 ParticleEmitterDefClass::ParticleEmitterDefClass() :
     m_pName(nullptr),
-    m_version(0L),
     m_pUserString(nullptr),
     m_iUserType(EMITTER_TYPEID_DEFAULT),
+    m_version(0L),
     m_shader(0x8441B),
     m_initialOrientationRandom(0),
     m_pCreationVolume(nullptr),
@@ -57,9 +57,9 @@ ParticleEmitterDefClass::ParticleEmitterDefClass() :
 
 ParticleEmitterDefClass::ParticleEmitterDefClass(const ParticleEmitterDefClass &src) :
     m_pName(nullptr),
-    m_version(0L),
     m_pUserString(nullptr),
     m_iUserType(EMITTER_TYPEID_DEFAULT),
+    m_version(0L),
     m_shader(0x8441B),
     m_initialOrientationRandom(src.m_initialOrientationRandom),
     m_pCreationVolume(nullptr),
@@ -719,11 +719,11 @@ W3DErrorType ParticleEmitterDefClass::Read_Rotation_Keyframes(ChunkLoadClass &ch
     }
 
     for (unsigned int i = 0; (i < header.KeyframeCount) && (ret_val == W3D_ERROR_OK); i++) {
-        W3dEmitterRotationKeyframeStruct key;
+        W3dEmitterRotationKeyframeStruct key2;
 
-        if (chunk_load.Read(&key, sizeof(key)) == sizeof(key)) {
-            m_rotationKeyframes.KeyTimes[i] = key.Time;
-            m_rotationKeyframes.Values[i] = key.Rotation;
+        if (chunk_load.Read(&key2, sizeof(key2)) == sizeof(key2)) {
+            m_rotationKeyframes.KeyTimes[i] = key2.Time;
+            m_rotationKeyframes.Values[i] = key2.Rotation;
         } else {
             m_rotationKeyframes.KeyTimes[i] = 0.0f;
             m_rotationKeyframes.Values[i] = 0.0f;
@@ -758,14 +758,14 @@ W3DErrorType ParticleEmitterDefClass::Read_Frame_Keyframes(ChunkLoadClass &chunk
     }
 
     for (unsigned int i = 0; (i < header.KeyframeCount) && (ret_val == W3D_ERROR_OK); i++) {
-        W3dEmitterFrameKeyframeStruct key;
+        W3dEmitterFrameKeyframeStruct key2;
 
-        if (chunk_load.Read(&key, sizeof(key)) != sizeof(key)) {
+        if (chunk_load.Read(&key2, sizeof(key2)) != sizeof(key2)) {
             ret_val = W3D_ERROR_LOAD_FAILED;
         }
 
-        m_frameKeyframes.KeyTimes[i] = key.Time;
-        m_frameKeyframes.Values[i] = key.Frame;
+        m_frameKeyframes.KeyTimes[i] = key2.Time;
+        m_frameKeyframes.Values[i] = key2.Frame;
     }
 
     return ret_val;
@@ -795,14 +795,14 @@ W3DErrorType ParticleEmitterDefClass::Read_Blur_Time_Keyframes(ChunkLoadClass &c
     }
 
     for (unsigned int i = 0; (i < header.KeyframeCount) && (ret_val == W3D_ERROR_OK); i++) {
-        W3dEmitterBlurTimeKeyframeStruct key;
+        W3dEmitterBlurTimeKeyframeStruct key2;
 
-        if (chunk_load.Read(&key, sizeof(key)) != sizeof(key)) {
+        if (chunk_load.Read(&key2, sizeof(key2)) != sizeof(key2)) {
             ret_val = W3D_ERROR_LOAD_FAILED;
         }
 
-        m_blurTimeKeyframes.KeyTimes[i] = key.Time;
-        m_blurTimeKeyframes.Values[i] = key.BlurTime;
+        m_blurTimeKeyframes.KeyTimes[i] = key2.Time;
+        m_blurTimeKeyframes.Values[i] = key2.BlurTime;
     }
 
     return ret_val;

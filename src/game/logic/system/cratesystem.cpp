@@ -25,7 +25,7 @@ CrateSystem::CrateSystem()
 
 CrateSystem::~CrateSystem()
 {
-    for (int i = 0; i < m_crateTemplateVector.size(); i++) {
+    for (size_t i = 0; i < m_crateTemplateVector.size(); i++) {
         CrateTemplate *tmplate = m_crateTemplateVector[i];
 
         if (tmplate != nullptr) {

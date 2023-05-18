@@ -95,16 +95,16 @@ EnumeratedIP *IPEnumeration::Get_Addresses()
                         enumip->Set_Next(m_IPlist);
                         m_IPlist = enumip;
                     } else {
-                        EnumeratedIP *i;
+                        EnumeratedIP *enum_ip;
 
-                        for (i = m_IPlist; i->Get_Next() != nullptr; i = i->Get_Next()) {
-                            if (i->Get_Next()->Get_IP() >= enumip->Get_IP()) {
+                        for (enum_ip = m_IPlist; enum_ip->Get_Next() != nullptr; enum_ip = enum_ip->Get_Next()) {
+                            if (enum_ip->Get_Next()->Get_IP() >= enumip->Get_IP()) {
                                 break;
                             }
                         }
 
-                        enumip->Set_Next(i->Get_Next());
-                        i->Set_Next(enumip);
+                        enumip->Set_Next(enum_ip->Get_Next());
+                        enum_ip->Set_Next(enumip);
                     }
                 }
             }

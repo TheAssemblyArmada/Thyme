@@ -395,9 +395,9 @@ void DX8MeshRendererClass::Register_Mesh_Type(MeshModelClass *mmc)
             container.Next();
         }
 
-        DX8SkinFVFCategoryContainer *skin = new DX8SkinFVFCategoryContainer(sorting);
-        m_textureCategoryContainerListSkin->Add_Tail(skin);
-        skin->Add_Mesh(mmc);
+        DX8SkinFVFCategoryContainer *skin_fvf = new DX8SkinFVFCategoryContainer(sorting);
+        m_textureCategoryContainerListSkin->Add_Tail(skin_fvf);
+        skin_fvf->Add_Mesh(mmc);
     } else {
         captainslog_assert(g_registeredMeshList.Contains(mmc) == false);
         if (!g_registeredMeshList.Contains(mmc)) {

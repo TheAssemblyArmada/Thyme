@@ -65,17 +65,17 @@ CGraphicView::CGraphicView() :
     m_objCenter(0.0f, 0.0f, 0.0f),
     m_leftButtonDown(FALSE),
     m_rightButtonDown(FALSE),
+    m_isWindowed(TRUE),
     m_renderingDisabled(0),
+    m_radius(0.0f),
     m_lastCountUpdate(0),
     m_plusXCamera(FALSE),
     m_time(0),
-    m_objectRotationFlags(0),
-    m_lightRotationFlags(0),
-    m_cameraRotateConstraints(ROTATE_NONE),
-    m_isWindowed(TRUE),
     m_animationSpeed(1.0f),
     m_animationState(ANIMATION_NONE),
-    m_radius(0.0f)
+    m_objectRotationFlags(0),
+    m_lightRotationFlags(0),
+    m_cameraRotateConstraints(ROTATE_NONE)
 {
     m_isWindowed = atoi(theApp.GetProfileString("Config", "Windowed", "1"));
 }
@@ -1078,12 +1078,12 @@ void CGraphicView::SetCameraDirection(CameraDirection direction)
         CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
         if (frame != nullptr) {
-            CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
-            tm = document->m_docCamera->Get_Transform();
-            document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
+            CW3DViewDoc *document2 = static_cast<CW3DViewDoc *>(m_pDocument);
+            tm = document2->m_docCamera->Get_Transform();
+            document2->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
 
-            if (document->m_model != nullptr) {
-                frame->UpdatePolyCount(document->m_model->Get_Num_Polys());
+            if (document2->m_model != nullptr) {
+                frame->UpdatePolyCount(document2->m_model->Get_Num_Polys());
             }
 
             frame->UpdateCameraDistance(m_radius);

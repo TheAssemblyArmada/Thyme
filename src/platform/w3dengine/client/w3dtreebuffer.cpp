@@ -359,10 +359,10 @@ int W3DTreeBuffer::Add_Tree_Type(const W3DTreeDrawModuleData *module)
 }
 
 W3DTreeBuffer::W3DTreeBuffer() :
-    m_initialized(false),
-    m_treeTexture(nullptr),
-    m_dwTreeVertexShader(0),
     m_dwTreePixelShader(0),
+    m_dwTreeVertexShader(0),
+    m_treeTexture(nullptr),
+    m_initialized(false),
     m_swayVersion(-1),
     m_decalShadow(nullptr)
 {

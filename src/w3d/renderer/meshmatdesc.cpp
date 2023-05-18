@@ -725,45 +725,45 @@ void MeshMatDescClass::Post_Load_Process(bool lighting_enabled, MeshModelClass *
 
         if ((m_DCGSource[pass] != VertexMaterialClass::MATERIAL) && (m_colorArray[0] != nullptr)) {
             unsigned int *diffuse_array = m_colorArray[0]->Get_Array();
-            Vector3 mtl_diffuse;
-            float mtl_opacity = 1.0f;
+            Vector3 mtl_diffuse2;
+            float mtl_opacity2 = 1.0f;
 
-            VertexMaterialClass *prev_mtl = nullptr;
-            VertexMaterialClass *mtl = Peek_Material(0, pass);
+            VertexMaterialClass *prev_mtl2 = nullptr;
+            VertexMaterialClass *mtl2 = Peek_Material(0, pass);
 
             for (int vidx = 0; vidx < m_vertexCount; vidx++) {
-                mtl = Peek_Material(vidx, pass);
+                mtl2 = Peek_Material(vidx, pass);
 
-                if (mtl != prev_mtl) {
-                    prev_mtl = mtl;
-                    mtl->Get_Diffuse(&mtl_diffuse);
-                    mtl_opacity = mtl->Get_Opacity();
+                if (mtl2 != prev_mtl2) {
+                    prev_mtl2 = mtl2;
+                    mtl2->Get_Diffuse(&mtl_diffuse2);
+                    mtl_opacity2 = mtl2->Get_Opacity();
                 }
 
                 if (diffuse_used && !ambient_used && !emissive_used) {
                     Vector4 diffuse = DX8Wrapper::Convert_Color(diffuse_array[vidx]);
-                    diffuse.X *= mtl_diffuse.X;
-                    diffuse.Y *= mtl_diffuse.Y;
-                    diffuse.Z *= mtl_diffuse.Z;
-                    diffuse.W *= mtl_opacity;
+                    diffuse.X *= mtl_diffuse2.X;
+                    diffuse.Y *= mtl_diffuse2.Y;
+                    diffuse.Z *= mtl_diffuse2.Z;
+                    diffuse.W *= mtl_opacity2;
                     diffuse_array[vidx] = DX8Wrapper::Convert_Color(diffuse);
 
-                    mtl->Set_Ambient_Color_Source(VertexMaterialClass::MATERIAL);
-                    mtl->Set_Diffuse_Color_Source(VertexMaterialClass::COLOR1);
-                    mtl->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
+                    mtl2->Set_Ambient_Color_Source(VertexMaterialClass::MATERIAL);
+                    mtl2->Set_Diffuse_Color_Source(VertexMaterialClass::COLOR1);
+                    mtl2->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
                 }
 
                 if (diffuse_used && ambient_used && !emissive_used) {
                     Vector4 diffuse = DX8Wrapper::Convert_Color(diffuse_array[vidx]);
-                    diffuse.X *= mtl_diffuse.X;
-                    diffuse.Y *= mtl_diffuse.Y;
-                    diffuse.Z *= mtl_diffuse.Z;
-                    diffuse.W *= mtl_opacity;
+                    diffuse.X *= mtl_diffuse2.X;
+                    diffuse.Y *= mtl_diffuse2.Y;
+                    diffuse.Z *= mtl_diffuse2.Z;
+                    diffuse.W *= mtl_opacity2;
                     diffuse_array[vidx] = DX8Wrapper::Convert_Color(diffuse);
 
-                    mtl->Set_Ambient_Color_Source(VertexMaterialClass::COLOR1);
-                    mtl->Set_Diffuse_Color_Source(VertexMaterialClass::COLOR1);
-                    mtl->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
+                    mtl2->Set_Ambient_Color_Source(VertexMaterialClass::COLOR1);
+                    mtl2->Set_Diffuse_Color_Source(VertexMaterialClass::COLOR1);
+                    mtl2->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
                 }
 
                 if (!diffuse_used && ambient_used && !emissive_used) {
@@ -771,12 +771,12 @@ void MeshMatDescClass::Post_Load_Process(bool lighting_enabled, MeshModelClass *
                     diffuse.X *= mtl_ambient.X;
                     diffuse.Y *= mtl_ambient.Y;
                     diffuse.Z *= mtl_ambient.Z;
-                    diffuse.W *= mtl_opacity;
+                    diffuse.W *= mtl_opacity2;
                     diffuse_array[vidx] = DX8Wrapper::Convert_Color(diffuse);
 
-                    mtl->Set_Ambient_Color_Source(VertexMaterialClass::COLOR1);
-                    mtl->Set_Diffuse_Color_Source(VertexMaterialClass::MATERIAL);
-                    mtl->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
+                    mtl2->Set_Ambient_Color_Source(VertexMaterialClass::COLOR1);
+                    mtl2->Set_Diffuse_Color_Source(VertexMaterialClass::MATERIAL);
+                    mtl2->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
                 }
 
                 if (!diffuse_used && !ambient_used && emissive_used) {
@@ -784,12 +784,12 @@ void MeshMatDescClass::Post_Load_Process(bool lighting_enabled, MeshModelClass *
                     diffuse.X *= mtl_emissive.X;
                     diffuse.Y *= mtl_emissive.Y;
                     diffuse.Z *= mtl_emissive.Z;
-                    diffuse.W *= mtl_opacity;
+                    diffuse.W *= mtl_opacity2;
                     diffuse_array[vidx] = DX8Wrapper::Convert_Color(diffuse);
 
-                    mtl->Set_Ambient_Color_Source(VertexMaterialClass::MATERIAL);
-                    mtl->Set_Diffuse_Color_Source(VertexMaterialClass::COLOR1);
-                    mtl->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
+                    mtl2->Set_Ambient_Color_Source(VertexMaterialClass::MATERIAL);
+                    mtl2->Set_Diffuse_Color_Source(VertexMaterialClass::COLOR1);
+                    mtl2->Set_Emissive_Color_Source(VertexMaterialClass::MATERIAL);
                 } else {
                     if (m_passCount != 1) {
                         set_lighting_to_false = false;
@@ -859,17 +859,17 @@ void MeshMatDescClass::Post_Load_Process(bool lighting_enabled, MeshModelClass *
             }
 
             if ((m_DCGSource[pass] != VertexMaterialClass::MATERIAL) && (m_colorArray[0] != nullptr)) {
-                VertexMaterialClass *prev_mtl = nullptr;
-                VertexMaterialClass *mtl = Peek_Material(0, pass);
+                VertexMaterialClass *prev_mtl2 = nullptr;
+                VertexMaterialClass *mtl2 = Peek_Material(0, pass);
 
                 for (int vidx = 0; vidx < m_vertexCount; vidx++) {
-                    mtl = Peek_Material(vidx, pass);
+                    mtl2 = Peek_Material(vidx, pass);
 
-                    if (mtl != prev_mtl) {
-                        prev_mtl = mtl;
+                    if (mtl2 != prev_mtl2) {
+                        prev_mtl2 = mtl2;
 
                         if (!diffuse_used && !ambient_used && emissive_used) {
-                            mtl->Set_Lighting(false);
+                            mtl2->Set_Lighting(false);
                         }
                     }
                 }

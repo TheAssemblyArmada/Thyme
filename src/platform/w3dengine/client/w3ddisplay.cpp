@@ -89,7 +89,7 @@ static int g_theW3DFrameLengthInMsec = 33;
 
 // 0x0073C3C0
 W3DDisplay::W3DDisplay() :
-    m_initialized(false), m_2DRender(0), m_isClippedEnabled(false), m_clipRegion({ { 0, 0 }, { 0, 0 } })
+    m_initialized(false), m_2DRender(0), m_clipRegion({ { 0, 0 }, { 0, 0 } }), m_isClippedEnabled(false)
 {
     s_assetManager = nullptr;
     s_3DScene = nullptr;
@@ -1917,15 +1917,15 @@ void W3DDisplay::Gather_Debug_Stats()
         }
 
         if (drawable) {
-            const Object *object = drawable->Get_Object();
+            const Object *drawable_object = drawable->Get_Object();
             Utf8String str4;
             str4.Set("No-Name");
 
-            if (object) {
-                Utf8String name = object->Get_Name();
+            if (drawable_object) {
+                Utf8String name = drawable_object->Get_Name();
 
                 if (!name.Is_Empty()) {
-                    str4 = object->Get_Name();
+                    str4 = drawable_object->Get_Name();
                 }
             }
 
@@ -1937,7 +1937,7 @@ void W3DDisplay::Gather_Debug_Stats()
                 drawable->Get_Position()->z);
 
             // #BUGFIX Test object before getting physics.
-            const PhysicsBehavior *phys = object ? object->Get_Physics() : nullptr;
+            const PhysicsBehavior *phys = drawable_object ? drawable_object->Get_Physics() : nullptr;
 
             PhysicsTurningType turn;
             if (phys) {
@@ -2163,6 +2163,8 @@ void Reset_D3D_Device(bool restore_assets)
                         true,
                         true,
                         true);
+
+#if 0 // disable some code that is impossible to be triggered for Thyme since we aren't compatible with Windows 9x
                     OSVERSIONINFOA VersionInformation;
 
                     if (GetVersionEx(&VersionInformation)) {
@@ -2170,6 +2172,7 @@ void Reset_D3D_Device(bool restore_assets)
                             W3D::Invalidate_Textures();
                         }
                     }
+#endif
                 } else {
                     W3D::Set_Render_Device(W3D::Get_Render_Device(),
                         g_theDisplay->Get_Width(),

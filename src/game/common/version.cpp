@@ -26,8 +26,8 @@ Version::Version() :
     m_localBuildNum(0),
     m_branch("somewhere"),
     m_commitHash("someone"),
-    m_buildDate(),
     m_buildTime(),
+    m_buildDate(),
     m_useFullVersion(false)
 {
 }

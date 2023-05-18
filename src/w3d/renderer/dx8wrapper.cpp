@@ -1537,10 +1537,10 @@ void DX8Wrapper::Apply_Render_State_Changes()
             s_renderState.shader.Apply();
         }
 
-        unsigned mask = TEXTURE0_CHANGED;
+        unsigned mask2 = TEXTURE0_CHANGED;
 
-        for (unsigned i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++, mask <<= 1) {
-            if (s_renderStateChanged & mask) {
+        for (unsigned i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++, mask2 <<= 1) {
+            if (s_renderStateChanged & mask2) {
                 if (s_renderState.Textures[i]) {
                     s_renderState.Textures[i]->Apply(i);
                 } else {

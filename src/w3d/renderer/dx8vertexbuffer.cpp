@@ -241,7 +241,7 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
 }
 
 DynamicVBAccessClass::DynamicVBAccessClass(unsigned int t, unsigned int fvf, unsigned short vertex_count_) :
-    m_type(t), m_fvfInfo(g_dynamicFVFInfo), m_vertexCount(vertex_count_), m_vertexBuffer(nullptr)
+    m_fvfInfo(g_dynamicFVFInfo), m_type(t), m_vertexCount(vertex_count_), m_vertexBuffer(nullptr)
 {
     captainslog_assert(fvf == dynamic_fvf_type);
     captainslog_assert(

@@ -43,7 +43,7 @@ WaterHandle TerrainLogic::m_gridWaterHandle;
 #endif
 
 BridgeInfo::BridgeInfo() :
-    bridge_width(0.0f), bridge_index(0), cur_damage_state(BODY_PRISTINE), is_destroyed(false), bridge_object_id(OBJECT_UNK)
+    bridge_width(0.0f), bridge_index(0), cur_damage_state(BODY_PRISTINE), bridge_object_id(OBJECT_UNK), is_destroyed(false)
 {
     from.Zero();
     to.Zero();

@@ -682,6 +682,7 @@ TurretAI::TurretAI(Object *owner, const TurretAIData *data, WhichTurretType tur)
     m_unkFrame1(0),
     m_victimInitialTeam(nullptr),
     m_targetType(TARGET_TYPE_NONE),
+    m_unkFrame2(-1),
     m_sleepUntil(0),
     m_playRotSound(false),
     m_playPitchSound(false),
@@ -690,8 +691,7 @@ TurretAI::TurretAI(Object *owner, const TurretAIData *data, WhichTurretType tur)
     m_enabled(!data->m_initiallyDisabled),
     m_firesWhileTurning(data->m_firesWhileTurning),
     m_attackForced(false),
-    m_hasMoodTarget(false),
-    m_unkFrame2(-1)
+    m_hasMoodTarget(false)
 {
     captainslog_relassert(m_data != nullptr, CODE_06, "TurretAI MUST have ModuleData");
     captainslog_relassert(m_data->m_turretWeaponSlots != 0, CODE_06, "TurretAI MUST specify controlled weapon slots!");
@@ -865,7 +865,7 @@ UpdateSleepTime TurretAI::Update_Turret_AI()
         }
 
         if (type > 0) {
-            if (type < time) {
+            if (static_cast<UpdateSleepTime>(type) < time) {
                 time = static_cast<UpdateSleepTime>(type);
             }
         } else {

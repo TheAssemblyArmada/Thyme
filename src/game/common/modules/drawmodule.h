@@ -28,7 +28,7 @@ class OBBoxClass;
 class DebugDrawStats
 {
 public:
-    DebugDrawStats() : m_extraDrawCalls(0), m_skins(0), m_bones(0), m_sortMeshes(0), m_drawCalls(0) {}
+    DebugDrawStats() : m_drawCalls(0), m_sortMeshes(0), m_skins(0), m_bones(0), m_extraDrawCalls(0) {}
     int Get_Draw_Calls() const { return m_drawCalls; }
     int Get_Bones() const { return m_bones; }
     int Get_Skins() const { return m_skins; }

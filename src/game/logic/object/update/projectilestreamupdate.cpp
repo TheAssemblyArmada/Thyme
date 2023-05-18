@@ -18,9 +18,9 @@
 
 ProjectileStreamUpdate::ProjectileStreamUpdate(Thing *thing, ModuleData const *module_data) :
     UpdateModule(thing, module_data),
-    m_owningObject(OBJECT_UNK),
     m_nextFreeIndex(0),
     m_firstValidIndex(0),
+    m_owningObject(OBJECT_UNK),
     m_targetID(OBJECT_UNK)
 {
     m_targetPos.Zero();

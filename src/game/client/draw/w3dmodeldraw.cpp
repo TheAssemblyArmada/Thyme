@@ -604,17 +604,17 @@ void ModelConditionInfo::Clear()
 
 W3DModelDrawModuleData::W3DModelDrawModuleData() :
     m_stateCount(-1),
+    m_projectileBoneFeedbackEnabledSlots(false),
+    m_initialRecoil(2.0f),
+    m_maxRecoil(3.0f),
+    m_recoilDamping(0.4f),
+    m_recoilSettle(0.065f),
     m_minLodRequired(STATLOD_LOW),
     m_okToChangeModelColor(false),
     m_animationsRequirePower(true),
     m_attachToDrawableBoneOffsetSet(false),
     m_timeAndWeatherFlags(false),
     m_particlesAttachedToAnimatedBones(false),
-    m_projectileBoneFeedbackEnabledSlots(false),
-    m_initialRecoil(2.0f),
-    m_maxRecoil(3.0f),
-    m_recoilDamping(0.4f),
-    m_recoilSettle(0.065f),
     m_recievesDynamicLights(true)
 {
 }
@@ -1182,21 +1182,21 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
 
 W3DModelDraw::W3DModelDraw(Thing *thing, ModuleData const *module_data) :
     DrawModule(thing, module_data),
-    m_animMode(RenderObjClass::ANIM_MODE_LOOP),
-    m_isDaytime(true),
-    m_pauseAnimation(false),
     m_curState(nullptr),
-    m_hexColor(0),
-    m_renderObject(nullptr),
-    m_shadow(nullptr),
-    m_hidden(true),
-    m_decalShadow(nullptr),
-    m_trackRenderObject(nullptr),
-    m_whichAnimInCurState(-1),
     m_nextState(nullptr),
     m_loopDuration(-1),
+    m_hexColor(0),
+    m_whichAnimInCurState(-1),
     m_recalcBones(false),
-    m_fullyObscuredByShroud(false)
+    m_fullyObscuredByShroud(false),
+    m_hidden(true),
+    m_renderObject(nullptr),
+    m_shadow(nullptr),
+    m_decalShadow(nullptr),
+    m_trackRenderObject(nullptr),
+    m_isDaytime(true),
+    m_pauseAnimation(false),
+    m_animMode(RenderObjClass::ANIM_MODE_LOOP)
 {
     for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
         m_weaponRecoilInfoVec[i].clear();
@@ -2978,10 +2978,10 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
                         if (anim) {
                             float frame;
                             int frames;
-                            int mode;
+                            int anim_mode;
                             float multiplier;
-                            hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
-                            hlod->Set_Animation(anim, (anim->Get_Num_Frames() - 1) / newframe, mode);
+                            hlod->Peek_Animation_And_Info(frame, frames, anim_mode, multiplier);
+                            hlod->Set_Animation(anim, (anim->Get_Num_Frames() - 1) / newframe, anim_mode);
                         }
                     }
                 }

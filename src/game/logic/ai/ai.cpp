@@ -111,7 +111,7 @@ void TAiData::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
 }
 
-AI::AI() : m_formationID(0), m_groupID(0)
+AI::AI() : m_groupID(0), m_formationID(0)
 {
     m_aiData = new TAiData();
     m_pathfinder = new Pathfinder();

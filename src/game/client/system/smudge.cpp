@@ -60,7 +60,7 @@ void SmudgeSet::Reset()
     }
 }
 
-SmudgeManager::SmudgeManager() : m_heatHazeCount(0), m_hardwareTestResult(HARDWARE_TEST_NOT_RUN) {}
+SmudgeManager::SmudgeManager() : m_hardwareTestResult(HARDWARE_TEST_NOT_RUN), m_heatHazeCount(0) {}
 
 SmudgeManager::~SmudgeManager()
 {

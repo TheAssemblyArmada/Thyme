@@ -26,30 +26,30 @@
 using std::memset;
 
 W3DShroud::W3DShroud() :
-    m_srcFogArray(nullptr),
-    m_destFogArray(nullptr),
+    // BUGFIX init all members
+    m_numCellsX(0),
+    m_numCellsY(0),
+    m_numMaxVisibleCellsX(0),
+    m_numMaxVisibleCellsY(0),
+    m_cellWidth(10.0f),
+    m_cellHeight(10.0f),
+    m_shroudData(nullptr),
 #ifdef BUILD_WITH_D3D8
     m_pSrcTexture(nullptr),
 #endif
-    m_pDstTexture(nullptr),
     m_srcTextureData(nullptr),
     m_srcTexturePitch(0),
-    m_numMaxVisibleCellsX(0),
+    m_pDstTexture(nullptr),
     m_dstTextureWidth(0),
-    m_numMaxVisibleCellsY(0),
     m_dstTextureHeight(0),
-    m_shroudAlpha(g_theWriteableGlobalData->m_shroudAlpha),
-    m_fillBorderShroudData(true),
-    m_cellWidth(10.0f),
-    m_cellHeight(10.0f),
-    m_numCellsX(0),
-    m_numCellsY(0),
     m_shroudFilter(TextureFilterClass::FILTER_TYPE_DEFAULT),
-    // BUGFIX init all members
-    m_shroudData(nullptr),
     m_drawOriginX(0),
     m_drawOriginY(0),
-    m_drawFogOfWar(false)
+    m_drawFogOfWar(false),
+    m_fillBorderShroudData(true),
+    m_shroudAlpha(g_theWriteableGlobalData->m_shroudAlpha),
+    m_srcFogArray(nullptr),
+    m_destFogArray(nullptr)
 {
 }
 

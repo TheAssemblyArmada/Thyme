@@ -40,17 +40,17 @@ class Shadow
 public:
     // BUGFIX init all members
     Shadow() :
-        m_opacity(0xFF),
-        m_color1(0xFFFFFFFF),
-        m_color2(0xFFFFFFFF),
-        m_angle(0.0f),
-        m_decalOffsetU(0.0f),
-        m_decalOffsetV(0.0f),
         m_isEnabled(false),
         m_isInvisibleEnabled(false),
+        m_opacity(0xFF),
+        m_color1(0xFFFFFFFF),
+        m_type(SHADOW_NONE),
+        m_color2(0xFFFFFFFF),
         m_sizeX(0.0f),
         m_sizeY(0.0f),
-        m_type(SHADOW_NONE)
+        m_decalOffsetU(0.0f),
+        m_decalOffsetV(0.0f),
+        m_angle(0.0f)
     {
         // #BUGFIX Initialize all members
         m_position = Coord3D{};

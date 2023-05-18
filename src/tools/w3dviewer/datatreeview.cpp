@@ -37,7 +37,7 @@ BEGIN_MESSAGE_MAP(CDataTreeView, CTreeView)
 END_MESSAGE_MAP()
 // clang-format on
 
-CDataTreeView::CDataTreeView() : m_restrictAnims(true), m_categoryTreeItems{}
+CDataTreeView::CDataTreeView() : m_categoryTreeItems{}, m_restrictAnims(true)
 {
     m_imageListIDs[ICON_ANIMATION] = -1;
     m_imageListIDs[ICON_ANIMSPEED] = -1;
@@ -769,8 +769,8 @@ void CDataTreeView::AddAnimationsForItem(HTREEITEM item)
                         0,
                         item,
                         TVI_SORT);
-                    AssetInfoClass *info = new AssetInfoClass(name, ASSET_TYPE_ANIMATION, nullptr, nullptr);
-                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, reinterpret_cast<LPARAM>(info));
+                    AssetInfoClass *info2 = new AssetInfoClass(name, ASSET_TYPE_ANIMATION, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, reinterpret_cast<LPARAM>(info2));
                 }
 
                 anim->Release_Ref();

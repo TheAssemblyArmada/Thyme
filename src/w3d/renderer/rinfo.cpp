@@ -95,6 +95,6 @@ RenderInfoClass::RINFO_OVERRIDE_FLAGS &RenderInfoClass::Current_Override_Flags()
 }
 
 SpecialRenderInfoClass::SpecialRenderInfoClass(CameraClass &camera, RenderType render_type) :
-    RenderInfoClass(camera), m_visRasterizer(nullptr), m_bwRenderer(nullptr), m_renderType(render_type)
+    RenderInfoClass(camera), m_renderType(render_type), m_visRasterizer(nullptr), m_bwRenderer(nullptr)
 {
 }

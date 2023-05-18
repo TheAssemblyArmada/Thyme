@@ -26,13 +26,13 @@
 #include "view.h"
 
 W3DTankTruckDrawModuleData::W3DTankTruckDrawModuleData() :
+    m_rotationSpeedMultiplier(0.0f),
+    m_powerslideRotationAddition(0.0f),
     m_treadDebrisNameLeft("TrackDebrisDirtLeft"),
     m_treadDebrisNameRight("TrackDebrisDirtRight"),
     m_treadAnimationRate(0.0f),
     m_treadPivotSpeedFraction(0.6f),
-    m_treadDriveSpeedFraction(0.3f),
-    m_powerslideRotationAddition(0.0f),
-    m_rotationSpeedMultiplier(0.0f)
+    m_treadDriveSpeedFraction(0.3f)
 {
 }
 
@@ -73,23 +73,23 @@ W3DTankTruckDraw::W3DTankTruckDraw(Thing *thing, ModuleData const *module_data) 
     m_isPowersliding(false),
     m_dustEffect(nullptr),
     m_dirtEffect(nullptr),
-    m_powerslideEffect(0),
+    m_powerslideEffect(nullptr),
     m_frontWheelRotation(0.0f),
     m_rearWheelRotation(0.0f),
+    m_midFrontWheelRotation(0.0f),
+    m_midRearWheelRotation(0.0f),
     m_frontLeftTireBone(0),
     m_frontRightTireBone(0),
     m_rearLeftTireBone(0),
     m_rearRightTireBone(0),
-    m_prevRenderObj(nullptr),
-    m_treadDebrisLeft(nullptr),
-    m_treadDebrisRight(nullptr),
-    m_treadCount(0),
-    m_midFrontWheelRotation(0.0f),
-    m_midRearWheelRotation(0.0f),
     m_midFrontLeftTireBone(0),
     m_midFrontRightTireBone(0),
     m_midRearLeftTireBone(0),
-    m_midRearRightTireBone(0)
+    m_midRearRightTireBone(0),
+    m_treadDebrisLeft(nullptr),
+    m_treadDebrisRight(nullptr),
+    m_treadCount(0),
+    m_prevRenderObj(nullptr)
 {
     m_landingSound = *thing->Get_Template()->Get_Per_Unit_Sound("TruckLandingSound");
     m_powerslideSound = *thing->Get_Template()->Get_Per_Unit_Sound("TruckPowerslideSound");

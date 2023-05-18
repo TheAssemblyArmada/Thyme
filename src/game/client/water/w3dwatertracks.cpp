@@ -547,18 +547,18 @@ void Test_Water_Update()
 }
 
 WaterTracksRenderSystem::WaterTracksRenderSystem() :
-    m_usedModules(nullptr),
-    m_freeModules(nullptr),
+    // BUGFIX Initialize all members
+    m_vertexBuffer(nullptr),
     m_indexBuffer(nullptr),
     m_vertexMaterialClass(nullptr),
-    m_vertexBuffer(nullptr),
+    m_usedModules(nullptr),
+    m_freeModules(nullptr),
     m_stripSizeX(2),
     m_stripSizeY(2),
-    m_batchStart(0)
+    m_batchStart(0),
+    m_level(0.0f)
 {
     g_theWaterTracksRenderSystem = this;
-    // #BUGFIX Initialize all members
-    m_level = 0.0f;
 }
 
 WaterTracksRenderSystem::~WaterTracksRenderSystem()

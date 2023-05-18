@@ -36,13 +36,13 @@ const FieldParse Anim2DTemplate::s_anim2dFieldParseTable[] = { { "NumberImages",
     { nullptr, nullptr, nullptr, 0 } };
 
 Anim2DTemplate::Anim2DTemplate(Utf8String name) :
+    m_next(nullptr),
     m_name(name),
     m_images(0),
     m_numFrames(0),
     m_animDelay(0),
     m_animMode(ANIM2D_MODE_LOOP),
-    m_randomizeStartFrame(false),
-    m_next(nullptr)
+    m_randomizeStartFrame(false)
 {
 }
 
@@ -142,14 +142,14 @@ void Anim2DTemplate::Parse_Num_Images(INI *ini, void *instance, void *store, con
 
 Anim2D::Anim2D(Anim2DTemplate *tmplate, Anim2DCollection *collection) :
     m_currentFrame(0),
+    m_gameFrame(0),
     m_template(tmplate),
     m_status(0),
-    m_alpha(1.0f),
     m_firstFrame(0),
+    m_alpha(1.0f),
+    m_collection(collection),
     m_collectionSystemNext(nullptr),
-    m_collectionSystemPrev(nullptr),
-    m_gameFrame(0),
-    m_collection(collection)
+    m_collectionSystemPrev(nullptr)
 {
     captainslog_dbgassert(tmplate, "Anim2D::Anim2D - NULL template");
 

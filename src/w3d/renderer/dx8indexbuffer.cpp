@@ -30,7 +30,7 @@ unsigned short g_dynamicDX8IndexBufferSize = 5000;
 unsigned short g_dynamicDX8IndexBufferOffset;
 
 IndexBufferClass::IndexBufferClass(unsigned int type_, unsigned short index_count_) :
-    m_indexCount(index_count_), m_engineRefs(0), m_type(type_)
+    m_engineRefs(0), m_indexCount(index_count_), m_type(type_)
 {
     captainslog_assert(m_type == BUFFER_TYPE_DX8 || m_type == BUFFER_TYPE_SORTING);
     captainslog_assert(m_indexCount);

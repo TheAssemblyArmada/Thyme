@@ -25,11 +25,11 @@
 int ShroudTextureShader::Set(int pass)
 {
 #ifdef BUILD_WITH_D3D8
-    VertexMaterialClass *m = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
-    DX8Wrapper::Set_Material(m);
+    VertexMaterialClass *mat = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
+    DX8Wrapper::Set_Material(mat);
 
-    if (m) {
-        m->Release_Ref();
+    if (mat) {
+        mat->Release_Ref();
     }
 
     DX8Wrapper::Set_Texture(pass, W3DShaderManager::Get_Shader_Texture(0));

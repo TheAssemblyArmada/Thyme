@@ -106,7 +106,7 @@ BoxRenderObjClass::BoxRenderObjClass(const BoxRenderObjClass &src)
     *this = src;
 }
 
-BoxRenderObjClass::BoxRenderObjClass(const W3dBoxStruct &src) : m_opacity(0.25)
+BoxRenderObjClass::BoxRenderObjClass(const W3dBoxStruct &src) : m_opacity(0.25f)
 {
     Set_Name(src.Name);
     W3dUtilityClass::Convert_Color(src.Color, &m_color);
@@ -117,7 +117,7 @@ BoxRenderObjClass::BoxRenderObjClass(const W3dBoxStruct &src) : m_opacity(0.25)
 }
 
 BoxRenderObjClass::BoxRenderObjClass() :
-    m_color(1, 1, 1), m_opacity(0.25), m_objSpaceCenter(0, 0, 0), m_objSpaceExtent(1, 1, 1)
+    m_color(1, 1, 1), m_objSpaceCenter(0, 0, 0), m_objSpaceExtent(1, 1, 1), m_opacity(0.25f)
 {
     memset(m_name, 0, sizeof(m_name));
 }

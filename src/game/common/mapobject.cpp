@@ -26,14 +26,14 @@ Dict MapObject::s_theWorldDict;
 #endif
 
 MapObject::MapObject(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, const ThingTemplate *thing) :
-    m_properties(0),
+    m_location(loc),
     m_objectName(name),
     m_thingTemplate(thing),
-    m_nextMapObject(nullptr),
-    m_location(loc),
     m_angle(Normalize_Angle(angle)),
-    m_color(Make_Color(0, 255, 0, 0)),
+    m_nextMapObject(nullptr),
     m_flags(flags),
+    m_properties(0),
+    m_color(Make_Color(0, 255, 0, 0)),
     m_renderObj(nullptr),
     m_shadowObj(nullptr),
     m_runtimeFlags(0)

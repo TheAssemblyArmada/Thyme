@@ -20,11 +20,15 @@
 #endif
 
 IMEManager::IMEManager() :
+    // BUGFIX init all members
     m_result(0),
     m_window(nullptr),
     m_context(0),
+    m_oldContext(0),
     m_disabled(0),
     m_composing(false),
+    m_compositionString{},
+    m_resultsString{},
     m_compositionCursorPos(0),
     m_compositionStringLength(0),
     m_indexBase(1),
@@ -39,12 +43,7 @@ IMEManager::IMEManager() :
     m_statusWindow(nullptr),
     m_candidateTextArea(nullptr),
     m_candidateUpArrow(nullptr),
-    m_candidateDownArrow(nullptr),
-    // BUGFIX init all members
-    m_oldContext(0),
-    m_compositionString{},
-    m_resultsString{}
-
+    m_candidateDownArrow(nullptr)
 {
 }
 

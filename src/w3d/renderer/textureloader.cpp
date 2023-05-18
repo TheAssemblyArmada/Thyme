@@ -46,12 +46,12 @@ FastCriticalSectionClass g_foregroundCritSec;
 w3dtexture_t Load_Compressed_Texture(
     const StringClass &filename, unsigned base_mip_index, MipCountType mip_level_count, WW3DFormat dest_format)
 {
+#ifdef BUILD_WITH_D3D8
     DDSFileClass dds(filename.Peek_Buffer(), base_mip_index);
 
     w3dsurface_t surface;
     w3dtexture_t texture;
 
-#ifdef BUILD_WITH_D3D8
     if (dds.Have_Level_Sizes() && dds.Load()) {
         texture = DX8Wrapper::Create_Texture(dds.Get_Width(0),
             dds.Get_Height(0),
@@ -82,11 +82,11 @@ void LoaderThreadClass::Thread_Function()
 {
     while (m_isRunning) {
         if (!g_backgroundQueue.Empty()) {
-            FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+            FastCriticalSectionClass::LockClass background_lock(g_backgroundCritSec);
             TextureLoadTaskClass *task = g_backgroundQueue.Pop_Front();
             if (task) {
                 task->Load();
-                FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+                FastCriticalSectionClass::LockClass foreground_lock(g_foregroundCritSec);
                 g_foregroundQueue.Push_Back(task);
             }
         }

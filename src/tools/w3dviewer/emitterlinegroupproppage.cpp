@@ -28,8 +28,8 @@ END_MESSAGE_MAP()
 
 EmitterLineGroupPropPageClass::EmitterLineGroupPropPageClass() :
     CPropertyPage(IDD_LINEGROUP),
-    m_isValid(true),
     m_instanceList(nullptr),
+    m_isValid(true),
     m_blurTimeBar(nullptr),
     m_lifetime(0.0f),
     m_minBlurTime(0.0f),

@@ -62,7 +62,7 @@ void GhostObject::Xfer_Snapshot(Xfer *xfer)
     xfer->xferCoord3D(&m_cachedPos);
 }
 
-GhostObjectManager::GhostObjectManager() : m_isUpdatingMapBoundary(false), m_isLoading(false), m_localPlayerIndex(0) {}
+GhostObjectManager::GhostObjectManager() : m_localPlayerIndex(0), m_isUpdatingMapBoundary(false), m_isLoading(false) {}
 
 void GhostObjectManager::Xfer_Snapshot(Xfer *xfer)
 {

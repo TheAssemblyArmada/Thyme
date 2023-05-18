@@ -28,7 +28,7 @@ using std::memcpy;
 using std::memset;
 
 SurfaceClass::SurfaceClass(unsigned width, unsigned height, WW3DFormat format) :
-    m_surfaceFormat(format), m_d3dSurface(DX8Wrapper::Create_Surface(width, height, format))
+    m_d3dSurface(DX8Wrapper::Create_Surface(width, height, format)), m_surfaceFormat(format)
 {
 }
 

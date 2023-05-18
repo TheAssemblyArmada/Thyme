@@ -18,7 +18,7 @@ void StreakLineClass::Prepare_LOD(CameraClass &camera)
     m_normalizedScreenArea = Get_Screen_Size(camera);
     unsigned int level = m_lineRenderer.Get_Current_Subdivision_Level();
 
-    if (level >= m_maxSubdivisionLevels) {
+    if (level >= static_cast<unsigned int>(m_maxSubdivisionLevels)) {
         m_lineRenderer.Set_Current_Subdivision_Level(m_maxSubdivisionLevels);
     } else {
         m_lineRenderer.Set_Current_Subdivision_Level(level);

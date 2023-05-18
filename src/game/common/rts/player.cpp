@@ -57,31 +57,31 @@
 
 // zh: 0x0044F7B0, wb: 0x0085960A
 Player::Player(int32_t player_index) :
-    m_playerIsPreorder(false),
-    m_playerIsDead(false),
+    m_playerTemplate(nullptr),
     m_playerIndex(player_index),
     m_upgradeList(nullptr),
-    m_buildListInfo(nullptr),
-    m_ai(nullptr),
-    m_resourceGatheringManager(nullptr),
-    m_defaultTeam(nullptr),
     m_radarCount(0),
     m_disableProofRadarCount(0),
     m_radarDisabled(false),
-    m_tunnelSystem(nullptr),
-    m_playerTemplate(nullptr),
     m_battlePlanBonuses(nullptr),
-    m_skillPointsModifier(1.0f),
+    m_buildListInfo(nullptr),
+    m_playerColor(0),
+    m_ai(nullptr),
+    m_resourceGatheringManager(nullptr),
+    m_tunnelSystem(nullptr),
+    m_defaultTeam(nullptr),
+    m_rankLevel(0),
+    m_currentSkillPoints(0),
+    m_sciencePurchasePoints(0),
     m_canBuildUnits(true),
     m_canBuildBase(true),
-    m_bountyCostToBuild(0.0f),
-    m_playerColor(0),
-    m_aiSquad(nullptr),
-    m_rankLevel(0),
-    m_sciencePurchasePoints(0),
-    m_currentSkillPoints(0),
+    m_playerIsPreorder(false),
+    m_skillPointsModifier(1.0f),
+    m_unitsShouldHunt(false),
     m_lastAttackedByFrame(0),
-    m_unitsShouldHunt(0)
+    m_bountyCostToBuild(0.0f),
+    m_aiSquad(nullptr),
+    m_playerIsDead(false)
 {
     m_playerRelations = new PlayerRelationMap();
     m_teamRelations = new TeamRelationMap();
@@ -2818,10 +2818,10 @@ void Player::Transfer_Assets_From_That(Player *that)
             DLINK_ITERATOR<Team> team_it = (*i)->Iterate_Team_Instance_List();
 
             while (!team_it.Done()) {
-                Team *team = team_it.Cur();
+                Team *team2 = team_it.Cur();
 
-                if (team != nullptr) {
-                    DLINK_ITERATOR<Object> obj_it = team->Iterate_Team_Member_List();
+                if (team2 != nullptr) {
+                    DLINK_ITERATOR<Object> obj_it = team2->Iterate_Team_Member_List();
 
                     while (!obj_it.Done()) {
                         Object *obj = obj_it.Cur();

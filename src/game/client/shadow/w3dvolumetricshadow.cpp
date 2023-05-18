@@ -23,18 +23,18 @@
 class MeshModelClass;
 
 W3DShadowGeometryMesh::W3DShadowGeometryMesh() :
-    m_polyNeighbors(nullptr),
-    m_numPolyNeighbors(0),
-    m_parentVerts(nullptr),
-    m_polygonNormals(nullptr),
     // BUGFIX Init all members
     m_mesh(nullptr),
     m_modelIndex(0),
     m_verts(nullptr),
-    m_parentGeometry(nullptr),
+    m_polygonNormals(nullptr),
     m_numVerts(0),
     m_numPolygons(0),
-    m_polygons(nullptr)
+    m_polygons(nullptr),
+    m_parentVerts(nullptr),
+    m_polyNeighbors(nullptr),
+    m_numPolyNeighbors(0),
+    m_parentGeometry(nullptr)
 {
 }
 
@@ -527,14 +527,14 @@ W3DShadowGeometry *W3DShadowGeometryManagerIterator::Get_Current_Geom()
 }
 
 Geometry::Geometry() :
+    // BUGFIX init all members
     m_verts(nullptr),
     m_indices(nullptr),
     m_numPolygon(0),
     m_numVertex(0),
-    m_flags(0),
-    // BUGFIX original didn't init these
     m_numActivePolygon(0),
     m_numActiveVertex(0),
+    m_flags(0),
     m_visibleState(STATE_UNKNOWN)
 {
 }

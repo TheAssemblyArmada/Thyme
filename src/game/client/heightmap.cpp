@@ -203,8 +203,8 @@ void HeightMapRenderObjClass::Render(RenderInfoClass &rinfo)
             DX8Wrapper::Set_Material(m_vertexMaterialClass);
 
             if (m_scene != nullptr) {
-                RTS3DScene *scene = static_cast<RTS3DScene *>(m_scene);
-                RefMultiListIterator<RenderObjClass> lights(scene->Get_Dynamic_Lights());
+                RTS3DScene *rts_scene = static_cast<RTS3DScene *>(m_scene);
+                RefMultiListIterator<RenderObjClass> lights(rts_scene->Get_Dynamic_Lights());
                 TextureClass *noise_texture;
 
                 if (g_theWriteableGlobalData->m_useLightMap) {

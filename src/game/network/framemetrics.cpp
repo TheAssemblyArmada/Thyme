@@ -19,14 +19,14 @@
 #include "rtsutils.h"
 
 FrameMetrics::FrameMetrics() :
+    m_fpsList(nullptr),
+    m_lastFpsTime(0),
+    m_fpsListIndex(0),
     m_averageFps(0.0f),
+    m_pendingLatencies(nullptr),
     m_averageLatency(0.0f),
     m_cushionIndex(0),
-    m_fpsListIndex(0),
-    m_lastFpsTime(0),
-    m_minimumCushion(0),
-    m_pendingLatencies(nullptr),
-    m_fpsList(nullptr)
+    m_minimumCushion(0)
 {
     m_pendingLatencies = new int[MAX_FRAMES_AHEAD];
 

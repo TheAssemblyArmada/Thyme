@@ -99,10 +99,10 @@ class RObjIterator : public RenderObjIterator
 
 // 0x00814090
 W3DAssetManager::W3DAssetManager() :
-    m_loadOnDemand(false),
-    m_activateFogOnLoad(false),
     m_prototypeLoaders(PROTOLOADERS_VECTOR_SIZE),
-    m_prototypes(PROTOTYPES_VECTOR_SIZE)
+    m_prototypes(PROTOTYPES_VECTOR_SIZE),
+    m_loadOnDemand(false),
+    m_activateFogOnLoad(false)
 {
     s_theInstance = this;
     m_prototypeLoaders.Set_Growth_Step(PROTOLOADERS_GROWTH_RATE);

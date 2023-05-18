@@ -25,21 +25,21 @@ END_MESSAGE_MAP()
 
 ColorPickerDialogClass::ColorPickerDialogClass(int red, int green, int blue, CWnd *pParentWnd, UINT nIDTemplate) :
     CDialog(nIDTemplate, pParentWnd),
+    m_originalRed(red),
+    m_originalGreen(green),
+    m_originalBlue(blue),
+    m_currentRed(red),
+    m_currentGreen(green),
+    m_currentBlue(blue),
     m_currentColor(0),
     m_originalColor(0),
-    m_originalRed(red),
     m_red(0),
     m_green(0),
     m_blue(0),
     m_saturation(0),
-    m_originalGreen(green),
     m_colorPicker(nullptr),
-    m_currentGreen(green),
     m_created(false),
-    m_originalBlue(blue),
-    m_setColorCallback(nullptr),
-    m_currentRed(red),
-    m_currentBlue(blue)
+    m_setColorCallback(nullptr)
 {
 }
 

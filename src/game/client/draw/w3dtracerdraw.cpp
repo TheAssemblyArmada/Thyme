@@ -21,11 +21,11 @@
 
 W3DTracerDraw::W3DTracerDraw(Thing *thing, ModuleData const *module_data) :
     DrawModule(thing, module_data),
-    m_opacity(1.0f),
+    m_theTracer(nullptr),
     m_length(20.0f),
     m_width(0.5f),
     m_speedInDistPerFrame(1.0f),
-    m_theTracer(nullptr)
+    m_opacity(1.0f)
 {
     m_color.red = 0.9f;
     m_color.green = 0.8f;

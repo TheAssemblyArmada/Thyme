@@ -29,21 +29,21 @@ TerrainTracksRenderObjClassSystem *g_theTerrainTracksRenderObjClassSystem;
 #endif
 
 TerrainTracksRenderObjClass::TerrainTracksRenderObjClass() :
+    // BUGFIX initialize all members
     m_stageZeroTexture(nullptr),
-    m_lastAnchor(0.0f, 1.0f, 2.25f),
-    m_haveAnchor(false),
-    m_unk(true),
-    m_topIndex(0),
-    m_bottomIndex(0),
     m_activeEdgeCount(0),
     m_totalEdgesAdded(0),
-    m_bound(false),
     m_boundDrawable(nullptr),
-    // BUGFIX initialize all members
     m_edges(),
+    m_lastAnchor(0.0f, 1.0f, 2.25f),
+    m_bottomIndex(0),
+    m_topIndex(0),
+    m_haveAnchor(false),
+    m_bound(false),
     m_width(0),
     m_length(0),
     m_aboveTerrain(false),
+    m_unk(true),
     m_nextSystem(nullptr),
     m_prevSystem(nullptr)
 {
@@ -284,13 +284,13 @@ void TerrainTracksRenderObjClass::Init(float width, float length, char const *te
 }
 
 TerrainTracksRenderObjClassSystem::TerrainTracksRenderObjClassSystem() :
+    m_vertexBuffer(nullptr),
+    m_indexBuffer(nullptr),
+    m_vertexMaterialClass(nullptr),
     m_usedModules(nullptr),
     m_freeModules(nullptr),
     m_TerrainTracksScene(nullptr),
     m_edgesToFlush(0),
-    m_indexBuffer(nullptr),
-    m_vertexMaterialClass(nullptr),
-    m_vertexBuffer(nullptr),
     m_maxTankTrackEdges(g_theWriteableGlobalData->m_maxTankTrackEdges),
     m_maxTankTrackOpaqueEdges(g_theWriteableGlobalData->m_maxTankTrackOpaqueEdges),
     m_maxTankTrackFadeDelay(g_theWriteableGlobalData->m_maxTankTrackFadeDelay)

@@ -26,6 +26,7 @@ class Player;
 enum CanMakeType
 {
     CAN_MAKE_UNK,
+    CAN_MAKE_UNK2 = 4,
 };
 
 class BuildAssistant : public SubsystemInterface

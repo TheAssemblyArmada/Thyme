@@ -289,7 +289,7 @@ public:
         const Coord3D *target_pos,
         const Weapon *weapon,
         Coord3D *destination_pos);
-    bool Adjust_Desination(Object *obj, const LocomotorSet &locomotor_set, Coord3D *dest, const Coord3D *unk);
+    bool Adjust_Destination(Object *obj, const LocomotorSet &locomotor_set, Coord3D *dest, const Coord3D *unk);
     void Update_Goal(Object *obj, const Coord3D *new_goal_pos, PathfindLayerEnum layer);
     void Remove_Goal(Object *obj);
     bool Is_Line_Passable(const Object *obj,

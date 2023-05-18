@@ -163,9 +163,9 @@ public:
     void New_Override();
 
     AIGroup *Create_Group();
-    AIGroup *Find_Group(GroupID id);
+    AIGroup *Find_Group(int id);
     void Destroy_Group(AIGroup *group);
-    FormationID Get_Next_Formation_ID();
+    int Get_Next_Formation_ID();
     Object *Find_Closest_Enemy(const Object *me,
         float range,
         unsigned int qualifiers,
@@ -177,7 +177,7 @@ public:
 
     Pathfinder *Get_Pathfinder() { return m_pathfinder; }
     const TAiData *Get_AI_Data() { return m_aiData; }
-    GroupID Get_Next_Group_ID() { return (GroupID)++m_groupID; }
+    int Get_Next_Group_ID() { return ++m_groupID; }
 
 private:
     Pathfinder *m_pathfinder;

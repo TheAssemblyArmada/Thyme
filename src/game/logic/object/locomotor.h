@@ -303,7 +303,7 @@ public:
     Utf8String Get_Template_Name() const { return m_template->m_name; }
     float Get_Wander_Width_Factor() const { return m_template->m_wanderWidthFactor; }
     float Get_Wander_About_Point_Radius() const { return m_template->m_wanderAboutPointRadius; }
-    int Get_Group_Movement_Priority() const { return m_template->m_groupMovementPriority; }
+    LocomotorGroupMovementPriority Get_Group_Movement_Priority() const { return m_template->m_groupMovementPriority; }
 
     bool Get_Apply_2D_Friction_When_Airborne() const { return m_template->m_apply2DFrictionWhenAirborne; }
     bool Get_Allow_Motive_Force_While_Airborne() const { return m_template->m_allowMotiveForceWhileAirborne; }

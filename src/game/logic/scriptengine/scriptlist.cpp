@@ -22,6 +22,7 @@
 ScriptList *ScriptList::s_readLists[MAX_LIST_COUNT];
 int ScriptList::s_numInReadList = 0;
 ScriptGroup *ScriptList::s_emptyGroup = nullptr;
+int ScriptList::s_curID = 0;
 
 ScriptList::~ScriptList()
 {
@@ -117,7 +118,7 @@ ScriptList *ScriptList::Duplicate()
         Script *duplicate = script->Duplicate();
 
         if (new_script != nullptr) {
-            new_script->Set_Next(duplicate);
+            new_script->Set_Next_Script(duplicate);
         } else {
             new_list->m_firstScript = duplicate;
         }
@@ -153,7 +154,7 @@ ScriptList *ScriptList::Duplicate_And_Qualify(const Utf8String &str1, const Utf8
         Script *duplicate = script->Duplicate_And_Qualify(str1, str2, str3);
 
         if (new_script != nullptr) {
-            new_script->Set_Next(duplicate);
+            new_script->Set_Next_Script(duplicate);
         } else {
             new_list->m_firstScript = duplicate;
         }
@@ -211,10 +212,10 @@ void ScriptList::Add_Script(Script *script, int index)
     }
 
     if (position != nullptr) {
-        script->Set_Next(position->Get_Next());
-        position->Set_Next(script);
+        script->Set_Next_Script(position->Get_Next());
+        position->Set_Next_Script(script);
     } else {
-        script->Set_Next(m_firstScript);
+        script->Set_Next_Script(m_firstScript);
         m_firstScript = script;
     }
 }
@@ -242,7 +243,7 @@ int ScriptList::Get_Read_Scripts(ScriptList **scripts)
  *
  * 0x0051C080
  */
-bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool ScriptList::Parse_Script_List_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     ScriptListReadInfo *read_info = static_cast<ScriptListReadInfo *>(data);
 
@@ -261,8 +262,8 @@ bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *i
     // Increment used list size accordingly.
     ++read_info->num_lists;
 
-    input.Register_Parser("Script", info->label, Script::Parse_Script_From_List_Chunk, nullptr);
-    input.Register_Parser("ScriptGroup", info->label, ScriptGroup::Parse_Group_Chunk, nullptr);
+    input.Register_Parser("Script", info->label, Script::Parse_Script_From_List_Data_Chunk, nullptr);
+    input.Register_Parser("ScriptGroup", info->label, ScriptGroup::Parse_Group_Data_Chunk, nullptr);
 
     return input.Parse(read_info->read_lists[list_index]);
 }
@@ -272,9 +273,9 @@ bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *i
  *
  * 0x0051BF00
  */
-bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool ScriptList::Parse_Scripts_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    input.Register_Parser("ScriptList", info->label, ScriptList::Parse_Script_List_Chunk, nullptr);
+    input.Register_Parser("ScriptList", info->label, ScriptList::Parse_Script_List_Data_Chunk, nullptr);
 
     captainslog_dbgassert(s_numInReadList == 0, "Leftover scripts floating around.");
 
@@ -305,8 +306,8 @@ void ScriptList::Reset()
 {
     if (g_theSidesList != nullptr) {
         for (int i = 0; i < g_theSidesList->Get_Num_Sides(); ++i) {
-            ScriptList *list = g_theSidesList->Get_Sides_Info(i)->Get_ScriptList();
-            g_theSidesList->Get_Sides_Info(i)->Set_ScriptList(nullptr);
+            ScriptList *list = g_theSidesList->Get_Side_Info(i)->Get_Script_List();
+            g_theSidesList->Get_Side_Info(i)->Set_Script_List(nullptr);
             list->Delete_Instance();
         }
     }

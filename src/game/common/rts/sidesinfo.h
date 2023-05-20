@@ -27,14 +27,15 @@ public:
     ~SidesInfo();
 
     void Init(const Dict *dict = nullptr);
-    void Add_To_BuildList(BuildListInfo *list, int pos);
-    int Remove_From_BuildList(BuildListInfo *list);
-    void Reorder_In_BuildList(BuildListInfo *list, int pos);
-    void Set_ScriptList(ScriptList *list) { m_scripts = list; }
-    ScriptList *Get_ScriptList() const { return m_scripts; }
+    void Add_To_Build_List(BuildListInfo *list, int pos);
+    int Remove_From_Build_List(BuildListInfo *list);
+    void Reorder_In_Build_List(BuildListInfo *list, int pos);
+    void Set_Script_List(ScriptList *list) { m_scripts = list; }
+    ScriptList *Get_Script_List() const { return m_scripts; }
     Dict &Get_Dict() { return m_dict; }
-    BuildListInfo *Get_BuildList() { return m_buildList; }
-    void Clear_BuildList() { m_buildList = nullptr; }
+    BuildListInfo *Get_Build_List() { return m_buildList; }
+    void Clear_Build_List() { m_buildList = nullptr; }
+    void Reset() { Init(nullptr); }
 
     SidesInfo &operator=(const SidesInfo &that);
 

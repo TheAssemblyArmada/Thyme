@@ -248,7 +248,7 @@ void Player::Xfer_Snapshot(Xfer *xfer)
 
         for (unsigned short i = 0; i < build_list_count; i++) {
             BuildListInfo *build_list = new BuildListInfo();
-            build_list->Set_Next(nullptr);
+            build_list->Set_Next_Build_List(nullptr);
 
             if (m_buildListInfo != nullptr) {
                 BuildListInfo *build_list2;
@@ -257,7 +257,7 @@ void Player::Xfer_Snapshot(Xfer *xfer)
                      build_list2 = build_list2->Get_Next()) {
                 }
 
-                build_list2->Set_Next(build_list);
+                build_list2->Set_Next_Build_List(build_list);
             } else {
                 m_buildListInfo = build_list;
             }
@@ -1131,7 +1131,7 @@ void Player::Init_From_Dict(const Dict *d)
 
     if (d->Get_Bool(g_playerIsSkirmishKey, &exists)) {
         for (int side_index = 0; side_index < g_theSidesList->Get_Num_Skirmish_Sides(); side_index++) {
-            Dict &side_dict = g_theSidesList->Get_Skirmish_Sides_Info(side_index)->Get_Dict();
+            Dict &side_dict = g_theSidesList->Get_Skirmish_Side_Info(side_index)->Get_Dict();
             pt = g_thePlayerTemplateStore->Find_Player_Template(
                 g_theNameKeyGenerator->Name_To_Key(side_dict.Get_AsciiString(g_playerFactionKey).Str()));
 
@@ -1165,7 +1165,7 @@ void Player::Init_From_Dict(const Dict *d)
             int side_index;
 
             for (side_index = 0; side_index < g_theSidesList->Get_Num_Skirmish_Sides(); side_index++) {
-                Dict &side_dict = g_theSidesList->Get_Skirmish_Sides_Info(side_index)->Get_Dict();
+                Dict &side_dict = g_theSidesList->Get_Skirmish_Side_Info(side_index)->Get_Dict();
                 pt = g_thePlayerTemplateStore->Find_Player_Template(
                     g_theNameKeyGenerator->Name_To_Key(side_dict.Get_AsciiString(g_playerFactionKey).Str()));
 
@@ -1180,20 +1180,20 @@ void Player::Init_From_Dict(const Dict *d)
             }
 
             if (civilian_found) {
-                if (g_theSidesList->Get_Skirmish_Sides_Info(side_index)->Get_ScriptList() != nullptr) {
+                if (g_theSidesList->Get_Skirmish_Side_Info(side_index)->Get_Script_List() != nullptr) {
                     Utf8String index_str;
                     index_str.Format("%d", m_multiplayerStartIndex);
-                    ScriptList *list = g_theSidesList->Get_Skirmish_Sides_Info(side_index)
-                                           ->Get_ScriptList()
+                    ScriptList *list = g_theSidesList->Get_Skirmish_Side_Info(side_index)
+                                           ->Get_Script_List()
                                            ->Duplicate_And_Qualify(index_str, name_index_str, name_str);
 
-                    if (g_theSidesList->Get_Sides_Info(Get_Player_Index())->Get_ScriptList() != nullptr) {
-                        g_theSidesList->Get_Sides_Info(Get_Player_Index())->Get_ScriptList()->Delete_Instance();
+                    if (g_theSidesList->Get_Side_Info(Get_Player_Index())->Get_Script_List() != nullptr) {
+                        g_theSidesList->Get_Side_Info(Get_Player_Index())->Get_Script_List()->Delete_Instance();
                     }
 
-                    g_theSidesList->Get_Sides_Info(Get_Player_Index())->Set_ScriptList(list);
-                    g_theSidesList->Get_Skirmish_Sides_Info(side_index)->Get_ScriptList()->Delete_Instance();
-                    g_theSidesList->Get_Skirmish_Sides_Info(side_index)->Set_ScriptList(nullptr);
+                    g_theSidesList->Get_Side_Info(Get_Player_Index())->Set_Script_List(list);
+                    g_theSidesList->Get_Skirmish_Side_Info(side_index)->Get_Script_List()->Delete_Instance();
+                    g_theSidesList->Get_Skirmish_Side_Info(side_index)->Set_Script_List(nullptr);
                 }
             }
         }
@@ -1212,7 +1212,7 @@ void Player::Init_From_Dict(const Dict *d)
         int side_index;
 
         for (side_index = 0; side_index < g_theSidesList->Get_Num_Skirmish_Sides(); side_index++) {
-            Dict &side_dict = g_theSidesList->Get_Skirmish_Sides_Info(side_index)->Get_Dict();
+            Dict &side_dict = g_theSidesList->Get_Skirmish_Side_Info(side_index)->Get_Dict();
             pt = g_thePlayerTemplateStore->Find_Player_Template(
                 g_theNameKeyGenerator->Name_To_Key(side_dict.Get_AsciiString(g_playerFactionKey).Str()));
 
@@ -1240,15 +1240,15 @@ void Player::Init_From_Dict(const Dict *d)
             m_playerName = name_index_str;
             Utf8String index_str;
             index_str.Format("%d", m_multiplayerStartIndex);
-            ScriptList *list = g_theSidesList->Get_Skirmish_Sides_Info(side_index)
-                                   ->Get_ScriptList()
+            ScriptList *list = g_theSidesList->Get_Skirmish_Side_Info(side_index)
+                                   ->Get_Script_List()
                                    ->Duplicate_And_Qualify(index_str, name_index_str, name_str);
 
-            if (g_theSidesList->Get_Sides_Info(Get_Player_Index())->Get_ScriptList() != nullptr) {
-                g_theSidesList->Get_Sides_Info(Get_Player_Index())->Get_ScriptList()->Delete_Instance();
+            if (g_theSidesList->Get_Side_Info(Get_Player_Index())->Get_Script_List() != nullptr) {
+                g_theSidesList->Get_Side_Info(Get_Player_Index())->Get_Script_List()->Delete_Instance();
             }
 
-            g_theSidesList->Get_Sides_Info(Get_Player_Index())->Set_ScriptList(list);
+            g_theSidesList->Get_Side_Info(Get_Player_Index())->Set_Script_List(list);
 
             for (int team_index = 0; team_index < g_theSidesList->Get_Num_Teams(); team_index++) {
                 Dict *team_dict = g_theSidesList->Get_Team_Info(team_index)->Get_Dict();
@@ -1259,7 +1259,7 @@ void Player::Init_From_Dict(const Dict *d)
             }
 
             Utf8String player_name =
-                g_theSidesList->Get_Skirmish_Sides_Info(side_index)->Get_Dict().Get_AsciiString(g_playerNameKey);
+                g_theSidesList->Get_Skirmish_Side_Info(side_index)->Get_Dict().Get_AsciiString(g_playerNameKey);
             for (int team_index = 0; team_index < g_theSidesList->Get_Num_Skirmish_Teams(); team_index++) {
                 Dict *team_dict = g_theSidesList->Get_Skirmish_Team_Info(team_index)->Get_Dict();
 
@@ -2070,7 +2070,7 @@ void Player::Add_To_Build_List(Object *obj)
     info->Set_Location(*obj->Get_Position());
     info->Set_Angle(obj->Get_Orientation());
     info->Set_Num_Rebuilds(0);
-    info->Set_Next(m_buildListInfo);
+    info->Set_Next_Build_List(m_buildListInfo);
     m_buildListInfo = info;
 }
 
@@ -2082,7 +2082,7 @@ void Player::Add_To_Priority_Build_List(Utf8String template_name, Coord3D *loc, 
     info->Set_Angle(angle);
     info->Set_Unk4();
     info->Set_Num_Rebuilds(1);
-    info->Set_Next(m_buildListInfo);
+    info->Set_Next_Build_List(m_buildListInfo);
     m_buildListInfo = info;
 }
 

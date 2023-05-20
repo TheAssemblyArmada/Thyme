@@ -31,8 +31,6 @@ SidesList *g_theSidesList = nullptr;
 void SidesList::Reset()
 {
     Clear();
-    m_teamRec.Clear();
-    m_skirmishTeamsRec.Clear();
 }
 
 /**
@@ -44,21 +42,21 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
 {
     uint8_t version = 1;
     xfer->xferVersion(&version, 1);
-    int32_t sides = m_numSides;
+    int32_t sides = Get_Num_Sides();
     xfer->xferInt(&sides);
     captainslog_relassert(
-        sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.", sides, m_numSides);
+        sides == Get_Num_Sides(), 6, "Transferred sides %d count does not match m_numSides %d.", sides, Get_Num_Sides());
 
     for (int i = 0; i < sides; ++i) {
         captainslog_relassert(
-            i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
-        bool has_scripts = m_sides[i].Get_ScriptList() != nullptr;
+            i < Get_Num_Sides(), 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
+        bool has_scripts = m_sides[i].Get_Script_List() != nullptr;
         xfer->xferBool(&has_scripts);
 
-        if (m_sides[i].Get_ScriptList() != nullptr) {
+        if (m_sides[i].Get_Script_List() != nullptr) {
             captainslog_relassert(has_scripts, 6, "We have a script list, but has_scripts is not set.");
             // Transfer script class.
-            xfer->xferSnapshot(m_sides[i].Get_ScriptList());
+            xfer->xferSnapshot(m_sides[i].Get_Script_List());
         }
     }
 }
@@ -70,13 +68,8 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
  */
 void SidesList::Clear()
 {
-    m_numSides = 0;
-    m_numSkirmishSides = 0;
-
-    for (int i = 0; i < MAX_SIDE_COUNT; ++i) {
-        m_sides[i].Init();
-        m_skirmishSides[i].Init();
-    }
+    Empty_Sides();
+    Empty_Teams();
 }
 
 /**
@@ -103,9 +96,12 @@ void SidesList::Empty_Teams()
  */
 void SidesList::Empty_Sides()
 {
+    m_numSides = 0;
+    m_numSkirmishSides = 0;
+
     for (int i = 0; i < MAX_SIDE_COUNT; ++i) {
-        m_sides[i].Init();
-        m_skirmishSides[i].Init();
+        m_sides[i].Reset();
+        m_skirmishSides[i].Reset();
     }
 }
 
@@ -119,21 +115,21 @@ bool SidesList::Validate_Sides()
     bool modified = false;
 
     int index;
-    for (index = 0; index < m_numSides; ++index) {
-        SidesInfo *info = Get_Sides_Info(index);
+    for (index = 0; index < Get_Num_Sides(); ++index) {
+        SidesInfo *info = Get_Side_Info(index);
         if (info->Get_Dict().Get_AsciiString(g_playerNameKey).Is_Empty()) {
             break;
         }
     }
 
-    if (index >= m_numSides) {
+    if (index >= Get_Num_Sides()) {
         Add_Player_By_Template("");
         modified = true;
     }
 
     // Validates side info.
-    for (index = 0; index < m_numSides; ++index) {
-        SidesInfo *info = Get_Sides_Info(index);
+    for (index = 0; index < Get_Num_Sides(); ++index) {
+        SidesInfo *info = Get_Side_Info(index);
         Utf8String player_name = info->Get_Dict().Get_AsciiString(g_playerNameKey);
         Utf8String team_name = "team";
         team_name += player_name;
@@ -172,8 +168,8 @@ bool SidesList::Validate_Sides()
     }
 
     // Validates team names.
-    for (index = 0; index < m_teamRec.Get_Num_Teams(); ++index) {
-        TeamsInfo *tinfo = m_teamRec.Get_Team_Info(index);
+    for (index = 0; index < Get_Num_Teams(); ++index) {
+        TeamsInfo *tinfo = Get_Team_Info(index);
         Utf8String team_name = tinfo->Get_Dict()->Get_AsciiString(g_teamNameKey);
 
         if (Find_Side_Info(team_name) != nullptr) {
@@ -190,8 +186,8 @@ bool SidesList::Validate_Sides()
     }
 
     // Validates team owner
-    for (index = 0; index < m_teamRec.Get_Num_Teams(); ++index) {
-        TeamsInfo *tinfo = m_teamRec.Get_Team_Info(index);
+    for (index = 0; index < Get_Num_Teams(); ++index) {
+        TeamsInfo *tinfo = Get_Team_Info(index);
         Utf8String team_name = tinfo->Get_Dict()->Get_AsciiString(g_teamNameKey);
         Utf8String team_owner = tinfo->Get_Dict()->Get_AsciiString(g_teamOwnerKey);
 
@@ -325,7 +321,7 @@ SidesInfo *SidesList::Find_Skirmish_Side_Info(Utf8String name, int *index)
 /**
  * @brief Retrieves side info at the given index.
  */
-SidesInfo *SidesList::Get_Sides_Info(int index)
+SidesInfo *SidesList::Get_Side_Info(int index)
 {
     captainslog_relassert(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
 
@@ -335,7 +331,7 @@ SidesInfo *SidesList::Get_Sides_Info(int index)
 /**
  * @brief Retrieves skirmish side info at the given index.
  */
-SidesInfo *SidesList::Get_Skirmish_Sides_Info(int index)
+SidesInfo *SidesList::Get_Skirmish_Side_Info(int index)
 {
     captainslog_relassert(
         index >= 0 && index < m_numSkirmishSides, 0xDEAD0003, "Index out of bounds for skirmish side info.");
@@ -348,15 +344,17 @@ SidesInfo *SidesList::Get_Skirmish_Sides_Info(int index)
  *
  * 0x004D62A0
  */
-bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool SidesList::Parse_Sides_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
+    captainslog_dbgassert(g_theSidesList != nullptr, "g_theSidesList is null");
+
     if (g_theSidesList == nullptr) {
         return false;
     }
 
-    g_theSidesList->Reset();
-    g_theSidesList->Empty_Sides();
+    g_theSidesList->Clear();
     int side_count = input.Read_Int32();
+    g_theSidesList->Empty_Sides();
 
     for (int i = 0; i < side_count; ++i) {
         Dict read_dict = input.Read_Dict();
@@ -367,7 +365,7 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
         for (int j = 0; j < build_info_count; ++j) {
             BuildListInfo *build_info = NEW_POOL_OBJ(BuildListInfo);
             build_info->Parse_Data_Chunk(input, info);
-            g_theSidesList->m_sides[i].Add_To_BuildList(build_info, j);
+            g_theSidesList->m_sides[i].Add_To_Build_List(build_info, j);
         }
     }
 
@@ -381,7 +379,7 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
         }
     }
 
-    input.Register_Parser("PlayerScriptsList", info->label, ScriptList::Parse_Scripts_Chunk, nullptr);
+    input.Register_Parser("PlayerScriptsList", info->label, ScriptList::Parse_Scripts_Data_Chunk, nullptr);
     bool tmp = input.Parse(nullptr);
     captainslog_relassert(tmp, 0xDEAD0005, "Parsing script chunk failed.");
 
@@ -389,19 +387,20 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
     int script_count = ScriptList::Get_Read_Scripts(scripts);
 
     for (int i = 0; i < script_count; ++i) {
-        if (i >= g_theSidesList->m_numSides) {
+        if (i >= g_theSidesList->Get_Num_Sides()) {
             scripts[i]->Delete_Instance();
-            scripts[i] = nullptr;
         } else {
-            if (g_theSidesList->m_sides[i].Get_ScriptList() != nullptr) {
-                g_theSidesList->m_sides[i].Get_ScriptList()->Delete_Instance();
+            if (g_theSidesList->m_sides[i].Get_Script_List() != nullptr) {
+                g_theSidesList->m_sides[i].Get_Script_List()->Delete_Instance();
             }
 
-            g_theSidesList->m_sides[i].Set_ScriptList(scripts[i]);
+            g_theSidesList->m_sides[i].Set_Script_List(scripts[i]);
         }
+
+        scripts[i] = nullptr;
     }
 
     g_theSidesList->Validate_Sides();
-
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Incorrect data file length.");
     return true;
 }

@@ -25,8 +25,8 @@ BuildListInfo::BuildListInfo() :
     m_script(),
     m_health(100),
     m_whiner(true),
-    m_repairable(false),
-    m_sellable(true),
+    m_sellable(false),
+    m_repairable(true),
     m_autoBuild(true),
     m_renderObj(nullptr),
     m_shadowObj(nullptr),
@@ -34,9 +34,9 @@ BuildListInfo::BuildListInfo() :
     m_objectID(OBJECT_UNK),
     m_objectTimestamp(0),
     m_underConstruction(false),
-    m_unkbool3(false),
-    m_unkint1(0),
-    m_unkint2(0),
+    m_isSupplyCenter(false),
+    m_maxResourceGatherers(0),
+    m_resourceGatherers(0),
     m_unkbool4(false)
 {
     m_location.Zero();
@@ -73,19 +73,19 @@ void BuildListInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferAsciiString(&m_script);
     xfer->xferInt(&m_health);
     xfer->xferBool(&m_whiner);
-    xfer->xferBool(&m_repairable);
     xfer->xferBool(&m_sellable);
+    xfer->xferBool(&m_repairable);
     xfer->xferBool(&m_autoBuild);
     xfer->xferObjectID(&m_objectID);
     xfer->xferUnsignedInt(&m_objectTimestamp);
     xfer->xferBool(&m_underConstruction);
     xfer->xferUser(m_unkArray, sizeof(m_unkArray));
-    xfer->xferBool(&m_unkbool3);
-    xfer->xferInt(&m_unkint1);
+    xfer->xferBool(&m_isSupplyCenter);
+    xfer->xferInt(&m_maxResourceGatherers);
     xfer->xferBool(&m_unkbool4);
 
     if (version >= 2) {
-        xfer->xferInt(&m_unkint2);
+        xfer->xferInt(&m_resourceGatherers);
     }
 }
 
@@ -103,8 +103,8 @@ BuildListInfo &BuildListInfo::operator=(const BuildListInfo &that)
         m_script = that.m_script;
         m_health = that.m_health;
         m_whiner = that.m_whiner;
-        m_repairable = that.m_repairable;
         m_sellable = that.m_sellable;
+        m_repairable = that.m_repairable;
         m_autoBuild = that.m_autoBuild;
         m_renderObj = that.m_renderObj;
         m_shadowObj = that.m_shadowObj;
@@ -113,9 +113,9 @@ BuildListInfo &BuildListInfo::operator=(const BuildListInfo &that)
         m_objectTimestamp = that.m_objectTimestamp;
         m_underConstruction = that.m_underConstruction;
         memcpy(m_unkArray, that.m_unkArray, sizeof(m_unkArray));
-        m_unkbool3 = that.m_unkbool3;
-        m_unkint1 = that.m_unkint1;
-        m_unkint2 = that.m_unkint2;
+        m_isSupplyCenter = that.m_isSupplyCenter;
+        m_maxResourceGatherers = that.m_maxResourceGatherers;
+        m_resourceGatherers = that.m_resourceGatherers;
         m_unkbool4 = that.m_unkbool4;
     }
 
@@ -127,20 +127,23 @@ BuildListInfo &BuildListInfo::operator=(const BuildListInfo &that)
  */
 void BuildListInfo::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info)
 {
-    m_buildingName = input.Read_AsciiString();
-    m_templateName = input.Read_AsciiString();
-    m_location.x = input.Read_Real32();
-    m_location.y = input.Read_Real32();
-    m_location.z = input.Read_Real32();
-    m_angle = input.Read_Real32();
-    m_isInitiallyBuilt = input.Read_Byte() != 0;
-    m_numRebuilds = input.Read_Int32();
+    Set_Building_Name(input.Read_AsciiString());
+    Set_Template_Name(input.Read_AsciiString());
+    Coord3D location;
+    location.x = input.Read_Real32();
+    location.y = input.Read_Real32();
+    input.Read_Real32();
+    location.z = 0; // Confirmed that this throws away the return value of Read_Real
+    Set_Location(location);
+    Set_Angle(input.Read_Real32());
+    Set_Initially_Built(input.Read_Byte() != 0);
+    Set_Num_Rebuilds(input.Read_Int32());
 
     if (info->version >= 3) {
-        m_script = input.Read_AsciiString();
-        m_health = input.Read_Int32();
-        m_whiner = input.Read_Byte() != 0;
-        m_repairable = input.Read_Byte() != 0;
-        m_sellable = input.Read_Byte() != 0;
+        Set_Script(input.Read_AsciiString());
+        Set_Health(input.Read_Int32());
+        Set_Whiner(input.Read_Byte() != 0);
+        Set_Sellable(input.Read_Byte() != 0);
+        Set_Repairable(input.Read_Byte() != 0);
     }
 }

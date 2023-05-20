@@ -159,7 +159,7 @@ Script *Script::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &
  *
  * 0x0051D610
  */
-bool Script::Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool Script::Parse_Script_From_Group_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     Script *script = Parse_Script(input, info->version);
     static_cast<ScriptGroup *>(data)->Add_Script(script, 0xFFFFFF);
@@ -174,7 +174,7 @@ bool Script::Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo 
  *
  * 0x0051D5B0
  */
-bool Script::Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool Script::Parse_Script_From_List_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     Script *script = Parse_Script(input, info->version);
     static_cast<ScriptList *>(data)->Add_Script(script, 0xFFFFFF);
@@ -214,8 +214,8 @@ Script *Script::Parse_Script(DataChunkInput &input, uint16_t version)
     }
 
     input.Register_Parser("OrCondition", "Script", OrCondition::Parse_OrCondition_Chunk, nullptr);
-    input.Register_Parser("ScriptAction", "Script", ScriptAction::Parse_Action_Chunk, nullptr);
-    input.Register_Parser("ScriptActionFalse", "Script", ScriptAction::Parse_False_Action_Chunk, nullptr);
+    input.Register_Parser("ScriptAction", "Script", ScriptAction::Parse_Action_Data_Chunk, nullptr);
+    input.Register_Parser("ScriptActionFalse", "Script", ScriptAction::Parse_Action_False_Data_Chunk, nullptr);
 
     if (!input.Parse(new_script)) {
         return nullptr;

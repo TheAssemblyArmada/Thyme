@@ -75,7 +75,7 @@ void PlayerList::New_Game()
     bool is_local = false;
 
     for (int i = 0; i < g_theSidesList->Get_Num_Sides(); i++) {
-        Dict &dict = g_theSidesList->Get_Sides_Info(i)->Get_Dict();
+        Dict &dict = g_theSidesList->Get_Side_Info(i)->Get_Dict();
         Utf8String name = dict.Get_AsciiString(g_playerNameKey.Key());
 
         if (!name.Is_Empty()) {
@@ -96,8 +96,8 @@ void PlayerList::New_Game()
                 }
             }
 
-            player->Set_Build_List(g_theSidesList->Get_Sides_Info(i)->Get_BuildList());
-            g_theSidesList->Get_Sides_Info(i)->Clear_BuildList();
+            player->Set_Build_List(g_theSidesList->Get_Side_Info(i)->Get_Build_List());
+            g_theSidesList->Get_Side_Info(i)->Clear_Build_List();
         }
     }
 
@@ -120,7 +120,7 @@ void PlayerList::New_Game()
     g_theTeamFactory->Init_From_Sides(g_theSidesList);
 
     for (int i = 0; i < g_theSidesList->Get_Num_Sides(); i++) {
-        Dict &dict = g_theSidesList->Get_Sides_Info(i)->Get_Dict();
+        Dict &dict = g_theSidesList->Get_Side_Info(i)->Get_Dict();
         Player *player =
             Find_Player_With_NameKey(g_theNameKeyGenerator->Name_To_Key(dict.Get_AsciiString(g_playerNameKey.Key()).Str()));
         Utf8String enemies = dict.Get_AsciiString(g_playerEnemiesKey.Key());

@@ -18,8 +18,8 @@
 #include "kindof.h"
 #include <captainslog.h>
 
-Parameter::Parameter(ParameterType type) :
-    m_type(type), m_initialized(false), m_int(0), m_real(0.0f), m_string(), m_objStatus()
+Parameter::Parameter(ParameterType type, int intval) :
+    m_type(type), m_initialized(false), m_int(intval), m_real(0.0f), m_string(), m_objStatus()
 {
     m_coord.Zero();
 }

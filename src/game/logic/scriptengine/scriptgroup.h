@@ -40,11 +40,25 @@ public:
     ScriptGroup *Duplicate();
     ScriptGroup *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
     void Add_Script(Script *script, int index);
-    ScriptGroup *Get_Next() { return m_nextGroup; }
-    Script *Get_Scripts() { return m_firstScript; }
-    void Set_Next(ScriptGroup *next) { m_nextGroup = next; }
+    void Delete_Script(Script *script);
 
-    static bool Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    ScriptGroup *Get_Next() const { return m_nextGroup; }
+    Script *Get_Script() const { return m_firstScript; }
+    Utf8String Get_Name() const { return m_groupName; }
+
+    bool Is_Active() const { return m_isGroupActive; }
+    bool Is_Subroutine() const { return m_isGroupSubroutine; }
+    bool Has_Warnings() const { return m_hasWarnings; }
+
+    void Set_Next(ScriptGroup *next) { m_nextGroup = next; }
+    void Set_Name(Utf8String name) { m_groupName = name; }
+    void Set_Active(bool set) { m_isGroupActive = set; }
+    void Set_Subroutine(bool set) { m_isGroupSubroutine = set; }
+    void Set_Warnings(bool set) { m_hasWarnings = set; }
+    void Set_Next_Group(ScriptGroup *group) { m_nextGroup = group; }
+
+    static bool Parse_Group_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static void Write_Group_Data_Chunk(DataChunkOutput &output, ScriptGroup *group);
 
 private:
     Script *m_firstScript;
@@ -53,6 +67,4 @@ private:
     bool m_isGroupSubroutine;
     ScriptGroup *m_nextGroup;
     bool m_hasWarnings;
-
-    static int s_curID;
 };

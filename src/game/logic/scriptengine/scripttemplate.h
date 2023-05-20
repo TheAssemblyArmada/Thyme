@@ -35,7 +35,10 @@ public:
 
     void Get_UI_Strings(Utf8String *strings) const;
     Parameter::ParameterType Get_Parameter_Type(int parameter) const;
+
     int Get_Num_Parameters() const { return m_numParameters; }
+    Utf8String Get_UI_Name() const { return m_uiName; }
+    Utf8String Get_UI_Name2() const { return m_uiName2; }
 
 private:
     Utf8String m_uiName;
@@ -54,6 +57,7 @@ class ActionTemplate : public Template
     friend class ScriptEngine;
 
 public:
+    ActionTemplate() {}
     virtual ~ActionTemplate() override {}
 };
 
@@ -62,5 +66,6 @@ class ConditionTemplate : public Template
     friend class ScriptEngine;
 
 public:
+    ConditionTemplate() {}
     virtual ~ConditionTemplate() override {}
 };

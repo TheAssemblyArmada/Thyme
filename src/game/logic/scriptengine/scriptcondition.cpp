@@ -21,13 +21,13 @@ Condition::Condition() :
     m_nextAndCondition(nullptr),
     m_hasWarnings(false),
     m_customData(0),
-    m_unkInt1(0)
+    m_frame(0)
 {
     memset(m_params, 0, sizeof(m_params));
 }
 
 Condition::Condition(ConditionType type) :
-    m_conditionType(type), m_numParams(0), m_nextAndCondition(nullptr), m_hasWarnings(false), m_customData(0), m_unkInt1(0)
+    m_conditionType(type), m_numParams(0), m_nextAndCondition(nullptr), m_hasWarnings(false), m_customData(0), m_frame(0)
 {
     memset(m_params, 0, sizeof(m_params));
     Set_Condition_Type(m_conditionType);
@@ -143,7 +143,7 @@ void Condition::Set_Condition_Type(ConditionType type)
  *
  * 0x0051E540
  */
-bool Condition::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool Condition::Parse_Condition_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
 #ifdef GAME_DLL
     return Call_Function<bool, DataChunkInput &, DataChunkInfo *, void *>(PICK_ADDRESS(0x0051E540, 0), input, info, data);
@@ -241,7 +241,7 @@ bool OrCondition::Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *
 {
     Script *script = static_cast<Script *>(data);
     OrCondition *new_or = NEW_POOL_OBJ(OrCondition);
-    OrCondition *script_or = script->Get_Condition();
+    OrCondition *script_or = script->Get_Or_Condition();
 
     // Find the end of the list.
     while (script_or != nullptr) {
@@ -256,10 +256,10 @@ bool OrCondition::Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *
     if (script_or != nullptr) {
         script_or->m_nextOr = new_or;
     } else {
-        script->Set_Condition(new_or);
+        script->Set_Or_Condition(new_or);
     }
 
-    input.Register_Parser("Condition", info->label, Condition::Parse_Data_Chunk, nullptr);
+    input.Register_Parser("Condition", info->label, Condition::Parse_Condition_Data_Chunk, nullptr);
 
     return input.Parse(new_or);
 }

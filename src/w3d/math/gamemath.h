@@ -66,23 +66,6 @@ extern const Array<float, ARC_TABLE_SIZE> _FastAsinTable;
 extern const Array<float, SIN_TABLE_SIZE> _FastSinTable;
 extern const Array<float, SIN_TABLE_SIZE> _FastInvSinTable;
 
-inline float Normalize_Angle(float angle)
-{
-    captainslog_dbgassert(!gm_isnanf(angle), "Angle is NAN in normalizeAngle!\n");
-    if (gm_isnanf(angle)) {
-        return 0.0f;
-    }
-
-    while (angle > GAMEMATH_PI) {
-        angle = angle - GAMEMATH_PI * 2;
-    }
-
-    while (angle <= -GAMEMATH_PI) {
-        angle = angle + GAMEMATH_PI * 2;
-    }
-
-    return angle;
-}
 
 namespace GameMath
 {
@@ -547,4 +530,31 @@ inline int Lrintf(float val)
 //    return true;
 //}
 
+inline bool Is_Nan(float val)
+{
+#ifdef BUILD_WITH_GAMEMATH
+    return gm_isnanf(val);
+#else
+    return isnan(val);
+}
+    
 } // namespace GameMath
+
+
+inline float Normalize_Angle(float angle)
+{
+    captainslog_dbgassert(!GameMath::Is_Nan(angle), "Angle is NAN in normalizeAngle!\n");
+    if (GameMath::Is_Nan(angle)) {
+        return 0.0f;
+    }
+
+    while (angle > GAMEMATH_PI) {
+        angle = angle - GAMEMATH_PI * 2;
+    }
+
+    while (angle <= -GAMEMATH_PI) {
+        angle = angle + GAMEMATH_PI * 2;
+    }
+
+    return angle;
+}

@@ -535,7 +535,7 @@ inline bool Is_Nan(float val)
 #ifdef BUILD_WITH_GAMEMATH
     return gm_isnanf(val);
 #else
-    return isnan(val);
+    return std::isnan(val);
 }
     
 } // namespace GameMath

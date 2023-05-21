@@ -17,8 +17,6 @@
 #include "scriptlist.h"
 #include "xfer.h"
 
-int ScriptGroup::s_curID = 0;
-
 ScriptGroup::ScriptGroup() :
     m_firstScript(nullptr),
     m_groupName(),
@@ -27,7 +25,7 @@ ScriptGroup::ScriptGroup() :
     m_nextGroup(nullptr),
     m_hasWarnings(false)
 {
-    m_groupName.Format("Script Group %d", ++s_curID);
+    m_groupName.Format("Script Group %d", ScriptList::Get_Next_ID());
 }
 
 ScriptGroup::~ScriptGroup()
@@ -101,7 +99,7 @@ ScriptGroup *ScriptGroup::Duplicate()
         Script *duplicate = script->Duplicate();
 
         if (new_script != nullptr) {
-            new_script->Set_Next(duplicate);
+            new_script->Set_Next_Script(duplicate);
         } else {
             new_group->m_firstScript = duplicate;
         }
@@ -130,7 +128,7 @@ ScriptGroup *ScriptGroup::Duplicate_And_Qualify(const Utf8String &str1, const Ut
         Script *duplicate = script->Duplicate_And_Qualify(str1, str2, str3);
 
         if (new_script != nullptr) {
-            new_script->Set_Next(duplicate);
+            new_script->Set_Next_Script(duplicate);
         } else {
             new_group->m_firstScript = duplicate;
         }
@@ -165,10 +163,10 @@ void ScriptGroup::Add_Script(Script *script, int index)
     }
 
     if (position != nullptr) {
-        script->Set_Next(position->Get_Next());
-        position->Set_Next(script);
+        script->Set_Next_Script(position->Get_Next());
+        position->Set_Next_Script(script);
     } else {
-        script->Set_Next(m_firstScript);
+        script->Set_Next_Script(m_firstScript);
         m_firstScript = script;
     }
 }
@@ -178,7 +176,7 @@ void ScriptGroup::Add_Script(Script *script, int index)
  *
  * 0x0051C860
  */
-bool ScriptGroup::Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool ScriptGroup::Parse_Group_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     ScriptGroup *new_group = NEW_POOL_OBJ(ScriptGroup);
 
@@ -190,7 +188,7 @@ bool ScriptGroup::Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, 
     }
 
     static_cast<ScriptList *>(data)->Add_Group(new_group, 0xFFFFFF);
-    input.Register_Parser("Script", info->label, Script::Parse_Script_From_Group_Chunk, nullptr);
+    input.Register_Parser("Script", info->label, Script::Parse_Script_From_Group_Data_Chunk, nullptr);
 
     return input.Parse(new_group);
 }

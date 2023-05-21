@@ -35,6 +35,7 @@ class ObjectTypes;
 class Player;
 class PolygonTrigger;
 class Script;
+class ScriptGroup;
 class ScriptAction;
 class SequentialScript;
 class Team;
@@ -177,8 +178,71 @@ public:
     void Notify_Of_Object_Creation_Or_Destruction();
 
     void Set_Global_Difficulty(GameDifficulty diff);
+    Utf8String Get_Stats(float *slowest_scripts, float *time_last_frame, float *time);
+    void Update_Fades();
+    void Clear_Flag(const Utf8String &flag);
+    void Clear_Team_Flags();
+    int Allocate_Counter(const Utf8String &counter);
+    const TCounter *Get_Counter(const Utf8String &counter);
+    void Create_Named_Map_Reveal(
+        const Utf8String &reveal, const Utf8String &waypoint, float radius, const Utf8String &player);
+    void Do_Named_Map_Reveal(const Utf8String &reveal);
+    void Undo_Named_Map_Reveal(const Utf8String &reveal);
+    void Remove_Named_Map_Reveal(const Utf8String &reveal);
+    int Allocate_Flag(const Utf8String &flag);
+    ScriptGroup *Find_Group(const Utf8String &group);
+    Script *Find_Script(const Utf8String &script);
+    bool Evaluate_Counter(Condition *condition);
+    void Set_Counter(ScriptAction *action);
+    void Set_Fade(ScriptAction *action);
+    void Set_Sway(ScriptAction *action);
+    void Add_Counter(ScriptAction *action);
+    void Sub_Counter(ScriptAction *action);
+    bool Evaluate_Flag(Condition *condition);
+    void Set_Flag(ScriptAction *action);
+    AttackPriorityInfo *Find_Attack_Info(const Utf8String &name, bool add_if_not_found);
+    const AttackPriorityInfo *Get_Default_Attack_Info();
+    void Set_Priority_Thing(ScriptAction *action);
+    void Set_Priority_Kind(ScriptAction *action);
+    void Set_Priority_Default(ScriptAction *action);
+    int Get_Object_Count(int player, const Utf8String &name) const;
+    void Set_Object_Count(int player, const Utf8String &name, int count);
+    int Evaluate_Timer(Condition *condition);
+    void Set_Timer(ScriptAction *action, bool milisecond_timer, bool random);
+    void Pause_Timer(ScriptAction *action);
+    void Restart_Timer(ScriptAction *action);
+    void Adjust_Timer(ScriptAction *action, bool milisecond_timer, bool add);
+    void Enable_Script(ScriptAction *action);
+    void Disable_Script(ScriptAction *action);
+    void Call_Subroutine(ScriptAction *action);
+    void Check_Conditions_For_Team_Names(Script *script);
+    void Execute_Scripts(Script *script);
+    void Evaluate_Condition(Condition *condition);
+    void Set_Topple_Direction(const Utf8String &name, const Coord3D *direction);
+    void Execute_Action(ScriptAction *action);
+    void Create_Named_Cache();
+    void Append_Sequential_Script(const SequentialScript *script);
+    void Remove_Sequential_Script(SequentialScript *script);
+    void Remove_All_Sequential_Scripts(Object *obj);
+    void Remove_All_Sequential_Scripts(Team *team);
+    void Notify_Of_Team_Destruction(Team *team);
+    void Set_Sequential_Timer(Object *obj, int timer);
+    void Set_Sequential_Timer(Team *team, int timer);
+    void Evaluate_And_Process_All_Sequential_Scripts();
+    SequentialScript **Cleanup_Sequential_Script(SequentialScript **it, bool clean_danglers);
+    bool Has_Unit_Completed_Sequential_Script(Object *obj, const Utf8String &name);
+    bool Has_Team_Completed_Sequential_Script(Team *team, const Utf8String &name);
+    bool Get_Enable_Vtune() const;
+    void Set_Enable_Vtune(bool set);
+    void Particle_Editor_Update();
+    void Force_Unfreeze_Time();
+    void Adjust_Debug_Variable_Data(const Utf8String variable, int value, bool pause);
+    void Debug_Victory();
+
     void Set_Use_Object_Difficulty_Bonus(bool bonus) { m_useObjectDifficultyBonuses = bonus; }
     bool Get_Use_Object_Difficulty_Bonus() const { return m_useObjectDifficultyBonuses; }
+    bool Get_Choose_Victim_Always_Uses_Normal() const { return m_chooseVictimAlwaysUsesNormal; }
+    int Get_Object_Creation_Destruction_Frame() const { return m_objectCreationDestructionFrame; }
 
     TFade Get_Fade() { return m_fade; }
     float Get_Fade_Value() { return m_curFadeValue; }
@@ -186,10 +250,22 @@ public:
     bool Is_Time_Frozen_Script() { return m_freezeByScript; }
     bool Is_Time_Frozen_Debug();
     bool Is_Time_Fast();
-    void Notify_Of_Team_Destruction(Team *team_destroyed);
     void Append_Debug_Message(const Utf8String &message, bool b);
     GameDifficulty Get_Difficulty() { return m_gameDifficulty; }
     const AttackPriorityInfo *Get_Attack_Info(Utf8String const &name);
+    bool Has_Shown_MP_Local_Defeat_Window() const { return m_hasShowMPLocalDefeatWindow; }
+    void Mark_MP_Local_Defeat_Window_Shown() { m_hasShowMPLocalDefeatWindow = true; }
+    bool Is_End_Game_Timer_Running() const { return m_endGameTimer >= 0; }
+
+    void Disable_Breeze() { m_breezeInfo.intensity = 0.0f; }
+    void Do_Freeze_Time() { m_freezeByScript = true; }
+    void Do_Unfreeze_Time() { m_freezeByScript = false; }
+
+    void Set_Current_Track_Name(Utf8String track) { m_currentTrackName = track; }
+    void Set_Choose_Victim_Always_Uses_Normal(bool set) { m_chooseVictimAlwaysUsesNormal = set; }
+
+    static void Parse_Script_Action(INI *ini);
+    static void Parse_Script_Condition(INI *ini);
 
 private:
     void Init_Action_Templates();
@@ -197,6 +273,9 @@ private:
     std::vector<SequentialScript *>::iterator Cleanup_Sequential_Scripts(
         std::vector<SequentialScript *>::iterator it, bool clean_danglers);
     void Remove_Object_Types(ObjectTypes *obj);
+
+    void Add_Action_Template_Info(Template *tmplate);
+    void Add_Condition_Template_Info(Template *tmplate);
 
     static void Update_Current_Particle_Cap();
 
@@ -247,7 +326,7 @@ private:
     bool m_freezeByScript;
     std::vector<ObjectTypes *> m_allObjectTypeLists;
     bool m_useObjectDifficultyBonuses;
-    bool m_unkBool1;
+    bool m_chooseVictimAlwaysUsesNormal;
     bool m_hasShowMPLocalDefeatWindow;
 #ifdef GAME_DEBUG_STRUCTS
     double m_numFrames;

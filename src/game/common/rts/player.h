@@ -179,9 +179,12 @@ public:
     bool Get_Can_Build_Base() const { return m_canBuildBase; }
     int Get_Last_Attacked_By_Frame() const { return m_lastAttackedByFrame; }
     int Get_Science_Purchase_Points() const { return m_sciencePurchasePoints; }
+    int Get_Rank_Level() const { return m_rankLevel; }
 
     void Set_Retaliation_Mode_Enabled(bool set) { m_retaliationModeEnabled = set; }
     void Set_Can_Build_Units(bool set) { m_canBuildUnits = set; }
+    void Set_Can_Build_Base(bool set) { m_canBuildBase = set; }
+    void Set_Skill_Points_Modifer(int set) { m_skillPointsModifier = set; }
 
     int Get_Total_Battle_Plan_Count() const
     {
@@ -192,6 +195,9 @@ public:
     bool Is_Retaliation_Mode_Enabled() const { return m_retaliationModeEnabled; }
 
     void On_Upgrade_Removed() {}
+
+    void Add_Power_Bonus(Object *obj) { m_energy.Add_Power_Bonus(obj); }
+    void Remove_Power_Bonus(Object *obj) { m_energy.Add_Power_Bonus(obj); }
 
     Player *Get_Current_Enemy();
     GameDifficulty Get_Player_Difficulty() const;

@@ -24,6 +24,7 @@ class TeamsInfo
 {
 public:
     TeamsInfo() : m_dict(0) {}
+    ~TeamsInfo() {}
     Dict *Get_Dict() { return &m_dict; }
     void Init(const Dict *dict)
     {
@@ -52,7 +53,7 @@ public:
 
     void Add_Team(const Dict *team);
     void Remove_Team(int id);
-    TeamsInfo *Find_Team(Utf8String name, int *id);
+    TeamsInfo *Find_Team_Info(Utf8String name, int *id);
     void Clear();
     int Get_Num_Teams() { return m_numTeams; }
     TeamsInfoRec &operator=(const TeamsInfoRec &that);

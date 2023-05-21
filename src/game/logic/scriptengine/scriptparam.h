@@ -128,7 +128,7 @@ protected:
     virtual ~Parameter() override {}
 
 public:
-    Parameter(ParameterType type);
+    Parameter(ParameterType type, int intval = 0);
 
     Parameter &operator=(const Parameter &that);
 
@@ -137,9 +137,20 @@ public:
     Utf8String Get_UI_Text();
     void Get_Coord3D(Coord3D *coord);
     void Set_Coord3D(Coord3D *coord);
-    void Set_Status_Bits(BitFlags<OBJECT_STATUS_COUNT> bits) { m_objStatus.Set(bits); }
+    void Write_Parameter(DataChunkOutput &output);
 
     static Parameter *Read_Parameter(DataChunkInput &input);
+
+    ParameterType Get_Parameter_Type() const { return m_type; }
+    const Utf8String &Get_String() const { return m_string; }
+    int Get_Int() const { return m_int; }
+    float Get_Real() const { return m_real; }
+    BitFlags<OBJECT_STATUS_COUNT> Get_Status_Bits() const { return m_objStatus; }
+
+    void Set_Status_Bits(BitFlags<OBJECT_STATUS_COUNT> bits) { m_objStatus.Set(bits); }
+    void Set_String(Utf8String s) { m_string = s; }
+    void Set_Int(int set) { m_int = set; }
+    void Set_Real(float set) { m_real = set; }
 
 private:
     ParameterType m_type;

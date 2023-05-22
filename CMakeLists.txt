@@ -96,9 +96,10 @@ option(USE_SDL2 "Use SDL2 for crossplatform window handling." ${DEFAULT_SDL2})
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
-option(BUILD_TESTS "Builds the unit tests." OFF)
 option(USE_SANITIZER "Builds with address sanitizer" OFF)
+option(BUILD_TESTS "Builds the unit tests." OFF)
 option(BUILD_COVERAGE "Instruments the code with coverage." OFF)
+option(BUILD_BENCHMARKS "Builds the benchmarks." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
 include(CMakeDependentOption)
@@ -416,7 +417,23 @@ if(DLL_INSTALL_PREFIX AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")
 endif()
 
 # Build tests
+if(BUILD_TESTS OR BUILD_BENCHMARKS)
+    FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG        release-1.12.1
+    )
+    
+    FetchContent_MakeAvailable(googletest)
+endif()
+
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+# Build benchmarks
+if(BUILD_BENCHMARKS)
+    add_subdirectory(bench)
+endif()
+

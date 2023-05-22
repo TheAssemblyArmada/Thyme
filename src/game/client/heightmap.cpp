@@ -658,12 +658,21 @@ int Invert_Value(int value)
     }
 }
 
+/**
+ * Update the center of the HeightMapRenderObjClass.
+ *
+ * @param camera   Pointer to the CameraClass object.
+ * @param lights   Pointer to the RefMultiListIterator<RenderObjClass> object.
+ */
 void HeightMapRenderObjClass::Update_Center(CameraClass *camera, RefMultiListIterator<RenderObjClass> *lights)
 {
+    // Check if the height map, updating flag, and vertex buffer are valid
     if (m_map != nullptr && !m_updating && m_vertexBufferTiles != nullptr) {
+        // Update the center of the base height map render object
         BaseHeightMapRenderObjClass::Update_Center(camera, lights);
         m_updating = true;
 
+        // Perform a full update if necessary
         if (m_needFullUpdate) {
             m_needFullUpdate = false;
             Update_Block(0, 0, m_x - 1, m_y - 1, m_map, lights);
@@ -671,143 +680,152 @@ void HeightMapRenderObjClass::Update_Center(CameraClass *camera, RefMultiListIte
             return;
         }
 
+        // Check if the dimensions of the height map have been reached
         if (m_x >= m_map->Get_X_Extent() && m_y >= m_map->Get_Y_Extent()) {
             m_updating = false;
             return;
         }
 
-        int i1 = 1;
+        // Initialize variables
+        int increment = 1;
         Matrix3D camera_transform = camera->Get_Transform();
         Vector3 camera_pos = camera->Get_Position();
-        Vector3 v1;
-        Vector3 v2;
+        Vector3 view_direction;
+        Vector3 intersection_point;
         const ViewportClass &viewport = camera->Get_Viewport();
-        int height = WorldHeightMap::Get_Max_Height_Value();
+        int max_height = WorldHeightMap::Get_Max_Height_Value();
 
+        // Find the minimum display height in the height map
         for (int x = 0; x < m_x; x++) {
             for (int y = 0; y < m_y; y++) {
                 unsigned char display_height = m_map->Get_Display_Height(x, y);
 
-                if (display_height < height) {
-                    height = display_height;
+                if (display_height < max_height) {
+                    max_height = display_height;
                 }
             }
         }
 
-        float z = height;
-        Vector2 min;
-        Vector2 max;
-        camera->Get_View_Plane(min, max);
-        float x_dist = max.X - min.X;
-        float y_dist = max.Y - min.Y;
-        float f1 = -1.0f;
-        float f2 = 200000.0f;
-        float f3 = -200000.0f;
-        float f4 = 200000.0f;
-        float f5 = f3;
+        float z = max_height;
+        Vector2 viewport_min;
+        Vector2 viewport_max;
+        camera->Get_View_Plane(viewport_min, viewport_max);
+        float x_dist = viewport_max.X - viewport_min.X;
+        float y_dist = viewport_max.Y - viewport_min.Y;
+        float scale_factor = -1.0f;
+        float min_x = 200000.0f;
+        float max_x = -200000.0f;
+        float min_y = 200000.0f;
+        float max_y = max_x;
 
+        // Calculate the frustum corners
         for (int x = 0; x < 2; x++) {
             for (int y = 0; y < 2; y++) {
-                float f6 = (-x + 0.5f + viewport.m_min.X) * f1 * x_dist;
-                float f7 = (y - 0.5f - viewport.m_min.Y) * f1 * y_dist;
-                float f8 = f1 * camera_transform[0][2];
-                float f9 = f6 * camera_transform[0][0] + f8;
-                float f10 = f7 * camera_transform[0][1] + f9;
-                float f11 = f1 * camera_transform[1][2];
-                float f12 = f6 * camera_transform[1][0] + f11;
-                float f13 = f7 * camera_transform[1][1] + f12;
-                float f14 = f1 * camera_transform[2][2];
-                float f15 = f6 * camera_transform[2][0] + f14;
-                float f16 = f7 * camera_transform[2][1] + f15;
-                v1.Set(f10, f13, f16);
-                v1.Normalize();
-                v2 = camera_pos + v1;
-                f10 = Vector3::Find_X_At_Z(z, camera_pos, v2);
-                f13 = Vector3::Find_Y_At_Z(z, camera_pos, v2);
+                float viewport_x_distance = (-x + 0.5f + viewport.m_min.X) * scale_factor * x_dist;
+                float viewport_y_distance = (y - 0.5f - viewport.m_min.Y) * scale_factor * y_dist;
+                float camera_transform_x = scale_factor * camera_transform[0][2];
+                float x_transformed = viewport_x_distance * camera_transform[0][0] + camera_transform_x;
+                float intersection_x = viewport_y_distance * camera_transform[0][1] + x_transformed;
+                float camera_transform_y = scale_factor * camera_transform[1][2];
+                float y_transformed = viewport_x_distance * camera_transform[1][0] + camera_transform_y;
+                float intersection_y = viewport_y_distance * camera_transform[1][1] + y_transformed;
+                float camera_transform_z = scale_factor * camera_transform[2][2];
+                float z_transformed = viewport_x_distance * camera_transform[2][0] + camera_transform_z;
+                float intersection_z = viewport_y_distance * camera_transform[2][1] + z_transformed;
+                view_direction.Set(intersection_x, intersection_y, intersection_z);
+                view_direction.Normalize();
+                intersection_point = camera_pos + view_direction;
+                intersection_x = Vector3::Find_X_At_Z(z, camera_pos, intersection_point);
+                intersection_y = Vector3::Find_Y_At_Z(z, camera_pos, intersection_point);
 
-                if (f10 < f2) {
-                    f2 = f10;
+                // Update the frustum boundaries
+                if (intersection_x < min_x) {
+                    min_x = intersection_x;
                 }
 
-                if (f10 > f3) {
-                    f3 = f10;
+                if (intersection_x > max_x) {
+                    max_x = intersection_x;
                 }
 
-                if (f13 < f4) {
-                    f4 = f13;
+                if (intersection_y < min_y) {
+                    min_y = intersection_y;
                 }
 
-                if (f13 > f5) {
-                    f5 = f13;
+                if (intersection_y > max_y) {
+                    max_y = intersection_y;
                 }
             }
         }
 
-        f2 = f2 / 10.0f;
-        f3 = f3 / 10.0f;
-        f4 = f4 / 10.0f;
-        f5 = f5 / 10.0f;
-        f2 = m_map->Border_Size() + f2;
-        f3 = m_map->Border_Size() + f3;
-        f4 = m_map->Border_Size() + f4;
-        f5 = m_map->Border_Size() + f5;
+        // Adjust the frustum boundaries
+        min_x = min_x / 10.0f;
+        max_x = max_x / 10.0f;
+        min_y = min_y / 10.0f;
+        max_y = max_y / 10.0f;
+        min_x = m_map->Border_Size() + min_x;
+        max_x = m_map->Border_Size() + max_x;
+        min_y = m_map->Border_Size() + min_y;
+        max_y = m_map->Border_Size() + max_y;
 
+        // Initialize the visibility boundaries
         s_visMinX = m_map->Get_X_Extent();
         s_visMinY = m_map->Get_Y_Extent();
         s_visMaxX = 0;
         s_visMaxY = 0;
 
-        if (f2 < 0.0f) {
-            f2 = 0.0f;
+        // Adjust frustum boundaries if necessary
+        if (min_x < 0.0f) {
+            min_x = 0.0f;
         }
 
-        if (f4 < 0.0f) {
-            f4 = 0.0f;
+        if (min_y < 0.0f) {
+            min_y = 0.0f;
         }
 
-        if (s_visMinX < f3) {
-            f3 = s_visMinX;
+        if (s_visMinX < max_x) {
+            max_x = s_visMinX;
         }
 
-        if (s_visMinY < f5) {
-            f5 = s_visMinY;
+        if (s_visMinY < max_y) {
+            max_y = s_visMinY;
         }
 
         const FrustumClass &frustum = camera->Get_Frustum();
-        int limit = ((f3 - f2) / 2.0f);
+        int limit = ((max_x - min_x) / 2.0f);
 
         if (limit > 16) {
             limit = 16;
         }
 
-        Calc_Vis(frustum, m_map, (f2 - 16.0f), (f4 - 16.0f), (f3 + 16.0f), (f5 + 16.0f), limit);
+        Calc_Vis(frustum, m_map, (min_x - 16.0f), (min_y - 16.0f), (max_x + 16.0f), (max_y + 16.0f), limit);
 
         if (m_map != nullptr) {
-            int x_org;
-            int y_org;
+            int x_origin;
+            int y_origin;
 
             if (s_visMaxX - s_visMinX <= m_x) {
-                x_org = (((s_visMinX + s_visMaxX) / 2) - m_x / 2.0f);
+                x_origin = (((s_visMinX + s_visMaxX) / 2) - m_x / 2.0f);
             } else {
-                x_org = ((f3 + f2) / 2.0f - m_x / 2.0f);
+                x_origin = ((max_x + min_x) / 2.0f - m_x / 2.0f);
             }
 
             if (s_visMaxY - s_visMinY <= m_y) {
-                y_org = (((s_visMinY + s_visMaxY) / 2) - m_y / 2.0f);
+                y_origin = (((s_visMinY + s_visMaxY) / 2) - m_y / 2.0f);
             } else {
-                y_org = s_visMinY + 1;
+                y_origin = s_visMinY + 1;
             }
 
             if (g_theTacticalView->Get_Field_Of_View() != 0.0f) {
-                x_org = (((s_visMinX + s_visMaxX) / 2) - m_x / 2.0f);
-                y_org = (((s_visMinY + s_visMaxY) / 2) - m_y / 2.0f);
+                x_origin = (((s_visMinX + s_visMaxX) / 2) - m_x / 2.0f);
+                y_origin = (((s_visMinY + s_visMaxY) / 2) - m_y / 2.0f);
             }
 
-            int i2 = x_org - m_map->Get_Draw_Origin_X();
-            int i3 = y_org - m_map->Get_Draw_Origin_Y();
+            int origin_offset_x = x_origin - m_map->Get_Draw_Origin_X();
+            int origin_offset_y = y_origin - m_map->Get_Draw_Origin_Y();
 
-            if (Invert_Value(i2) > m_x / 2 || Invert_Value(i3) > m_x / 2) {
-                m_map->Set_Draw_Origin(x_org, y_org);
+            // Check if the origin needs to be updated
+            if (Invert_Value(origin_offset_x) > m_x / 2 || Invert_Value(origin_offset_y) > m_x / 2) {
+                m_map->Set_Draw_Origin(x_origin, y_origin);
                 m_originY = 0;
                 m_originX = 0;
                 Update_Block(0, 0, m_x - 1, m_y - 1, m_map, lights);
@@ -815,93 +833,93 @@ void HeightMapRenderObjClass::Update_Center(CameraClass *camera, RefMultiListIte
                 return;
             }
 
-            if (abs(i2) > 2 || abs(i3) > 2) {
-                if (abs(i3) >= 2) {
-                    if (m_map->Set_Draw_Origin(m_map->Get_Draw_Origin_X(), y_org)) {
-                        int i4 = 0;
-                        int i5 = 0;
-                        i3 -= y_org - m_map->Get_Draw_Origin_Y();
-                        m_originY += i3;
+            if (abs(origin_offset_x) > 2 || abs(origin_offset_y) > 2) {
+                if (abs(origin_offset_y) >= 2) {
+                    if (m_map->Set_Draw_Origin(m_map->Get_Draw_Origin_X(), y_origin)) {
+                        int y_start_tile = 0;
+                        int y_end_tile = 0;
+                        origin_offset_y -= y_origin - m_map->Get_Draw_Origin_Y();
+                        m_originY += origin_offset_y;
 
                         if (m_originY >= m_y - 1) {
                             m_originY -= m_y - 1;
                         }
 
-                        if (i3 >= 0) {
-                            i4 = m_originY - i3;
-                            i5 = m_originY;
+                        if (origin_offset_y >= 0) {
+                            y_start_tile = m_originY - origin_offset_y;
+                            y_end_tile = m_originY;
                         } else {
-                            i4 = m_originY;
-                            i5 = m_originY - i3;
+                            y_start_tile = m_originY;
+                            y_end_tile = m_originY - origin_offset_y;
                         }
 
-                        i4 -= i1;
+                        y_start_tile -= increment;
 
                         if (m_originY < 0) {
                             m_originY = m_originY + m_y - 1;
                         }
 
-                        if (i4 >= 0) {
-                            Update_Block(0, i4, m_x - 1, i5, m_map, lights);
+                        if (y_start_tile >= 0) {
+                            Update_Block(0, y_start_tile, m_x - 1, y_end_tile, m_map, lights);
                         } else {
-                            i4 = i4 + m_y - 1;
+                            y_start_tile = y_start_tile + m_y - 1;
 
-                            if (i4 < 0) {
-                                i4 = 0;
+                            if (y_start_tile < 0) {
+                                y_start_tile = 0;
                             }
 
-                            Update_Block(0, i4, m_x - 1, m_y - 1, m_map, lights);
-                            Update_Block(0, 0, m_x - 1, i5, m_map, lights);
+                            Update_Block(0, y_start_tile, m_x - 1, m_y - 1, m_map, lights);
+                            Update_Block(0, 0, m_x - 1, y_end_tile, m_map, lights);
                         }
                     }
 
-                    if (abs(i2) < 16 && !m_doXNextTime) {
+                    if (abs(origin_offset_x) < 16 && !m_doXNextTime) {
                         m_updating = false;
                         m_doXNextTime = true;
                         return;
                     }
                 }
 
-                if (abs(i2) > 2) {
+                if (abs(origin_offset_x) > 2) {
                     m_doXNextTime = false;
-                    x_org = i2 + m_map->Get_Draw_Origin_X();
+                    x_origin = origin_offset_x + m_map->Get_Draw_Origin_X();
 
-                    if (m_map->Set_Draw_Origin(x_org, m_map->Get_Draw_Origin_Y())) {
-                        int i6 = 0;
-                        int i7 = 0;
-                        i2 -= x_org - m_map->Get_Draw_Origin_X();
-                        m_originX += i2;
+                    if (m_map->Set_Draw_Origin(x_origin, m_map->Get_Draw_Origin_Y())) {
+                        int x_start_tile = 0;
+                        int x_end_tile = 0;
+                        origin_offset_x -= x_origin - m_map->Get_Draw_Origin_X();
+                        m_originX += origin_offset_x;
 
                         if (m_originX >= m_x - 1) {
                             m_originX -= m_x - 1;
                         }
 
-                        if (i2 >= 0) {
-                            i6 = m_originX - i2;
-                            i7 = m_originX;
+                        if (origin_offset_x >= 0) {
+                            x_start_tile = m_originX - origin_offset_x;
+                            x_end_tile = m_originX;
                         } else {
-                            i6 = m_originX;
-                            i7 = m_originX - i2;
+                            x_start_tile = m_originX;
+                            x_end_tile = m_originX - origin_offset_x;
                         }
 
-                        i6 -= i1;
-                        i7 += i1;
+                        x_start_tile -= increment;
+                        x_end_tile += increment;
 
                         if (m_originX < 0) {
                             m_originX = m_originX + m_x - 1;
                         }
 
-                        if (i6 >= 0) {
-                            Update_Block(i6, 0, i7, m_y - 1, m_map, lights);
+                        if (x_start_tile >= 0) {
+                            Update_Block(x_start_tile, 0, x_end_tile, m_y - 1, m_map, lights);
                         } else {
-                            i6 = i6 + m_x - 1;
+                            x_start_tile = x_start_tile + m_x - 1;
 
-                            if (i6 < 0) {
-                                i6 = 0;
+                            if (x_start_tile < 0) {
+                                x_start_tile = 0;
                             }
 
-                            Update_Block(i6, 0, m_x - 1, m_y - 1, m_map, lights);
-                            Update_Block(0, 0, i7, m_y - 1, m_map, lights);
+                            Update_Block(x_start_tile, 0, m_x - 1, m_y - 1, m_map, lights);
+                            Update_Block(0, 0, x_end_tile, m_y - 1, m_map, lights);
                         }
                     }
                 }

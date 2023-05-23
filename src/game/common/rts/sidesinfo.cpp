@@ -42,7 +42,7 @@ void SidesInfo::Init(const Dict *dict)
 /**
  * @brief Inserts a build list info object into the list at the specified position.
  */
-void SidesInfo::Add_To_BuildList(BuildListInfo *list, int pos)
+void SidesInfo::Add_To_Build_List(BuildListInfo *list, int pos)
 {
     BuildListInfo *position = nullptr;
     BuildListInfo *build_list = m_buildList;
@@ -57,10 +57,10 @@ void SidesInfo::Add_To_BuildList(BuildListInfo *list, int pos)
     }
 
     if (position != nullptr) {
-        list->Set_Next(position->Get_Next());
-        position->Set_Next(list);
+        list->Set_Next_Build_List(position->Get_Next());
+        position->Set_Next_Build_List(list);
     } else {
-        list->Set_Next(m_buildList);
+        list->Set_Next_Build_List(m_buildList);
         m_buildList = list;
     }
 }
@@ -68,7 +68,7 @@ void SidesInfo::Add_To_BuildList(BuildListInfo *list, int pos)
 /**
  * @brief Removes a build list info object from the list.
  */
-int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
+int SidesInfo::Remove_From_Build_List(BuildListInfo *list)
 {
     if (list == nullptr) {
         return 0;
@@ -76,7 +76,7 @@ int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
 
     if (list == m_buildList) {
         m_buildList = list->Get_Next();
-        list->Set_Next(nullptr);
+        list->Set_Next_Build_List(nullptr);
 
         return 0;
     }
@@ -85,7 +85,7 @@ int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
 
     for (BuildListInfo *next = m_buildList; next != nullptr; next = next->Get_Next()) {
         if (list == next->Get_Next()) {
-            next->Set_Next(list->Get_Next());
+            next->Set_Next_Build_List(list->Get_Next());
 
             break;
         }
@@ -93,7 +93,7 @@ int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
         ++pos;
     }
 
-    list->Set_Next(nullptr);
+    list->Set_Next_Build_List(nullptr);
 
     return pos;
 }
@@ -101,10 +101,10 @@ int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
 /**
  * @brief Moves a build list info object in the list to the specified position.
  */
-void SidesInfo::Reorder_In_BuildList(BuildListInfo *list, int pos)
+void SidesInfo::Reorder_In_Build_List(BuildListInfo *list, int pos)
 {
-    Remove_From_BuildList(list);
-    Add_To_BuildList(list, pos);
+    Remove_From_Build_List(list);
+    Add_To_Build_List(list, pos);
 }
 
 /**
@@ -124,7 +124,7 @@ SidesInfo &SidesInfo::operator=(const SidesInfo &that)
             if (last == nullptr) {
                 m_buildList = new_list;
             } else {
-                last->Set_Next(new_list);
+                last->Set_Next_Build_List(new_list);
             }
 
             last = new_list;

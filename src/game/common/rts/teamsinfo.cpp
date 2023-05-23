@@ -88,7 +88,7 @@ void TeamsInfoRec::Remove_Team(int id)
 /**
  * @brief Finds team info by name.
  */
-TeamsInfo *TeamsInfoRec::Find_Team(Utf8String name, int *id)
+TeamsInfo *TeamsInfoRec::Find_Team_Info(Utf8String name, int *id)
 {
     if (m_numTeams <= 0) {
         return nullptr;

@@ -50,13 +50,21 @@ public:
     ScriptList *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
     void Add_Group(ScriptGroup *group, int index);
     void Add_Script(Script *script, int index);
-    Script *Get_Scripts() { return m_firstScript; }
-    ScriptGroup *Get_Groups() { return m_firstGroup; }
+    void Update_Defaults();
+    void Discard();
+    void Delete_Script(Script *script);
+    void Delete_Group(ScriptGroup *group);
+
+    Script *Get_Script() { return m_firstScript; }
+    ScriptGroup *Get_Script_Group() { return m_firstGroup; }
 
     static int Get_Read_Scripts(ScriptList **scripts);
-    static bool Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
-    static bool Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static bool Parse_Script_List_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static bool Parse_Scripts_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static void Write_Scripts_Data_Chunk(DataChunkOutput &output, ScriptList **lists, int num_lists);
+    static void Write_Script_List_Data_Chunk(DataChunkOutput &output);
     static void Reset();
+    static int Get_Next_ID() { return ++s_curID; }
 
 private:
     ScriptGroup *m_firstGroup;
@@ -64,4 +72,5 @@ private:
     static ScriptList *s_readLists[MAX_LIST_COUNT];
     static int s_numInReadList;
     static ScriptGroup *s_emptyGroup;
+    static int s_curID;
 };

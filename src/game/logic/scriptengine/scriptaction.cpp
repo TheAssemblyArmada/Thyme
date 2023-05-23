@@ -133,7 +133,7 @@ Utf8String ScriptAction::Get_UI_Text()
  *
  * 0x00521240
  */
-bool ScriptAction::Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool ScriptAction::Parse_Action_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     ScriptAction *paction = Parse_Action(input, info, data);
     ScriptAction *saction = static_cast<Script *>(data)->Get_Action();
@@ -158,7 +158,7 @@ bool ScriptAction::Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info
  *
  * 0x00521280
  */
-bool ScriptAction::Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool ScriptAction::Parse_Action_False_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     ScriptAction *paction = Parse_Action(input, info, data);
     ScriptAction *saction = static_cast<Script *>(data)->Get_False_Action();

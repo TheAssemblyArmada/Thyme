@@ -335,16 +335,19 @@ public:
         return m_dlinkhead_TeamMemberList.m_head;
     }
 
-    bool Get_Active() const { return m_active; }
+    bool Is_Active() const { return m_active; }
     const Utf8String &Get_Name() const;
     unsigned int Get_Team_ID() const { return m_teamID; }
     const TeamPrototype *Get_Prototype() const { return m_proto; }
     const Waypoint *Get_Current_Waypoint() { return m_currentWaypoint; }
     bool Did_Enter_Or_Exit() { return m_enteredOrExited; }
+    Utf8String &Get_State() { return m_state; }
+    bool Is_Created() const { return m_created; }
 
     void Set_Entered_Exited() { m_enteredOrExited = true; }
     void Set_Current_Waypoint(Waypoint *waypoint) { m_currentWaypoint = waypoint; }
     void Set_ID(int id) { m_teamID = id; }
+    void Set_State(Utf8String &state) { m_state = state; }
 
     void Set_Available_For_Recruitment(bool available)
     {

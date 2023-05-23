@@ -1044,7 +1044,7 @@ void TeamPrototype::Update_State()
             if (!it2.Cur()->Get_First_Item_In_Team_Member_List() && !Get_Singleton()) {
                 if (!it2.Cur()->Get_Controlling_Player()
                     || it2.Cur()->Get_Controlling_Player()->Get_Default_Team() != it2.Cur()) {
-                    if (it2.Cur()->Get_Active()) {
+                    if (it2.Cur()->Is_Active()) {
                         g_theTeamFactory->Team_About_To_Be_Deleted(it2.Cur());
                         it2.Cur()->Delete_Instance();
                         done = false;
@@ -2076,7 +2076,7 @@ Object *Team::Try_To_Recruit(const ThingTemplate *tmplate, const Coord3D *pos, f
             Team *team = obj->Get_Team();
             bool is_default = team == player->Get_Default_Team();
 
-            if (team->Get_Active()) {
+            if (team->Is_Active()) {
                 if (team->Get_Prototype()->Get_Template_Info()->m_productionPriority
                     < Get_Prototype()->Get_Template_Info()->m_productionPriority) {
                     bool do_recruit = is_default;

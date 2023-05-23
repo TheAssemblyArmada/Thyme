@@ -130,7 +130,7 @@ WorldHeightMap::WorldHeightMap(ChunkInputStream *strm, bool logical_data_only) :
         Free_List_Of_Map_Objects();
 
         file.Register_Parser("PolygonTriggers", "", PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk, nullptr);
-        file.Register_Parser("SidesList", "", SidesList::Parse_Sides_Chunk, nullptr);
+        file.Register_Parser("SidesList", "", SidesList::Parse_Sides_Data_Chunk, nullptr);
     } else {
         file.Register_Parser("HeightMapData", "", Parse_Height_Map_Data_Chunk, nullptr);
         file.Register_Parser("BlendTileData", "", Parse_Blend_Tile_Data_Chunk, nullptr);

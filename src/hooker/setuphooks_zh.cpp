@@ -694,7 +694,7 @@ void Setup_Hooks()
 
     // teamsinfo.h TeamsInfoRec
     Hook_Method(0x004D8F80, &TeamsInfoRec::Clear);
-    Hook_Method(0x004D9050, &TeamsInfoRec::Find_Team);
+    Hook_Method(0x004D9050, &TeamsInfoRec::Find_Team_Info);
     Hook_Method(0x004D91C0, &TeamsInfoRec::Add_Team);
 
     // scriptparam.h
@@ -712,29 +712,29 @@ void Setup_Hooks()
     // scriptaction.h ScriptAction
     Hook_Method(0x0051FF80, &ScriptAction::Duplicate);
     Hook_Method(0x00520240, &ScriptAction::Duplicate_And_Qualify);
-    Hook_Function(0x00521240, &ScriptAction::Parse_Action_Chunk);
-    Hook_Function(0x00521280, &ScriptAction::Parse_False_Action_Chunk);
+    Hook_Function(0x00521240, &ScriptAction::Parse_Action_Data_Chunk);
+    Hook_Function(0x00521280, &ScriptAction::Parse_Action_False_Data_Chunk);
 
     // script.h Script
     Hook_Any(0x0051CD70, Script::Xfer_Snapshot);
     Hook_Method(0x0051CDB0, &Script::Duplicate);
     Hook_Method(0x0051CFC0, &Script::Duplicate_And_Qualify);
-    Hook_Function(0x0051D610, Script::Parse_Script_From_Group_Chunk);
-    Hook_Function(0x0051D5B0, Script::Parse_Script_From_List_Chunk);
+    Hook_Function(0x0051D610, Script::Parse_Script_From_Group_Data_Chunk);
+    Hook_Function(0x0051D5B0, Script::Parse_Script_From_List_Data_Chunk);
 
     // scriptgroup.h ScriptGroup
     Hook_Any(0x0051C3B0, ScriptGroup::Xfer_Snapshot);
     Hook_Method(0x0051C510, &ScriptGroup::Duplicate);
     Hook_Method(0x0051C670, &ScriptGroup::Duplicate_And_Qualify);
-    Hook_Function(0x0051C860, ScriptGroup::Parse_Group_Chunk);
+    Hook_Function(0x0051C860, ScriptGroup::Parse_Group_Data_Chunk);
 
     // scriptlist.h ScriptList
     Hook_Any(0x0051B920, ScriptList::Xfer_Snapshot);
     Hook_Method(0x0051BC70, &ScriptList::Duplicate);
     Hook_Method(0x0051BD80, &ScriptList::Duplicate_And_Qualify);
     Hook_Function(0x0051C040, ScriptList::Get_Read_Scripts); // Must hooke with Parse_Scripts_Chunk
-    Hook_Function(0x0051C080, ScriptList::Parse_Script_List_Chunk);
-    Hook_Function(0x0051BF00, ScriptList::Parse_Scripts_Chunk); // Must hook with Get_Read_Scripts
+    Hook_Function(0x0051C080, ScriptList::Parse_Script_List_Data_Chunk);
+    Hook_Function(0x0051BF00, ScriptList::Parse_Scripts_Data_Chunk); // Must hook with Get_Read_Scripts
     Hook_Function(0x0051B760, ScriptList::Reset);
 
     // sidesinfo.h SidesInfo
@@ -748,7 +748,7 @@ void Setup_Hooks()
     Hook_Method(0x004D7BC0, &SidesList::Add_Player_By_Template);
     Hook_Method(0x004D6A60, &SidesList::Find_Side_Info);
     Hook_Method(0x004D6BD0, &SidesList::Find_Skirmish_Side_Info);
-    Hook_Function(0x004D62A0, &SidesList::Parse_Sides_Chunk);
+    Hook_Function(0x004D62A0, &SidesList::Parse_Sides_Data_Chunk);
 
     // keyboard.h Keyboard
     Hook_Any(0x0040A120, Keyboard::Init);

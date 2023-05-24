@@ -66,7 +66,6 @@ extern const Array<float, ARC_TABLE_SIZE> _FastAsinTable;
 extern const Array<float, SIN_TABLE_SIZE> _FastSinTable;
 extern const Array<float, SIN_TABLE_SIZE> _FastInvSinTable;
 
-
 namespace GameMath
 {
 void Init();
@@ -538,9 +537,8 @@ inline bool Is_Nan(float val)
     return std::isnan(val);
 #endif
 }
-    
-} // namespace GameMath
 
+} // namespace GameMath
 
 inline float Normalize_Angle(float angle)
 {

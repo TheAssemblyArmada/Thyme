@@ -533,7 +533,7 @@ inline int Lrintf(float val)
 inline bool Is_Nan(float val)
 {
 #ifdef BUILD_WITH_GAMEMATH
-    return gm_isnanf(val);
+    return static_cast<bool>(gm_isnanf(val));
 #else
     return std::isnan(val);
 #endif

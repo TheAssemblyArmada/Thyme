@@ -527,7 +527,7 @@ bool Angle_Changed(float f1, float f2)
 
 void Object::React_To_Transform_Change(const Matrix3D *tm, const Coord3D *pos, float angle)
 {
-    if (gm_isnanf(Get_Position()->x) || gm_isnanf(Get_Position()->y) || gm_isnanf(Get_Position()->z)) {
+    if (GameMath::Is_Nan(Get_Position()->x) || GameMath::Is_Nan(Get_Position()->y) || GameMath::Is_Nan(Get_Position()->z)) {
         captainslog_dbgassert(false, "Object pos is nan.");
         g_theGameLogic->Destroy_Object(this);
     }

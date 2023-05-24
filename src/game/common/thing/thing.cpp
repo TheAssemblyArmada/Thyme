@@ -103,7 +103,8 @@ void Thing::Set_Position_Z(float z)
         React_To_Transform_Change(&old_tm, &old_pos, old_angle);
     }
 
-    captainslog_dbgassert(!gm_isnanf(Get_Position()->x) && !gm_isnanf(Get_Position()->y) && !gm_isnanf(Get_Position()->z),
+    captainslog_dbgassert(
+        !GameMath::Is_Nan(Get_Position()->x) && !GameMath::Is_Nan(Get_Position()->y) && !GameMath::Is_Nan(Get_Position()->z),
         "Drawable/Object position NAN! \'%s\'",
         m_template->Get_Name().Str());
 }
@@ -175,7 +176,8 @@ void Thing::Set_Orientation(float angle)
     m_cachedPos = pos;
     m_cacheFlags &= ~VALID_DIRVECTOR;
     React_To_Transform_Change(&old_tm, &old_pos, old_angle);
-    captainslog_dbgassert(!gm_isnanf(Get_Position()->x) && !gm_isnanf(Get_Position()->y) && !gm_isnanf(Get_Position()->z),
+    captainslog_dbgassert(
+        !GameMath::Is_Nan(Get_Position()->x) && !GameMath::Is_Nan(Get_Position()->y) && !GameMath::Is_Nan(Get_Position()->z),
         "Drawable/Object position NAN! \'%s\'",
         m_template->Get_Name().Str());
 }
@@ -198,7 +200,8 @@ void Thing::Set_Position(const Coord3D *pos)
         React_To_Transform_Change(&old_tm, &old_pos, old_angle);
     }
 
-    captainslog_dbgassert(!gm_isnanf(Get_Position()->x) && !gm_isnanf(Get_Position()->y) && !gm_isnanf(Get_Position()->z),
+    captainslog_dbgassert(
+        !GameMath::Is_Nan(Get_Position()->x) && !GameMath::Is_Nan(Get_Position()->y) && !GameMath::Is_Nan(Get_Position()->z),
         "Drawable/Object position NAN! \'%s\'",
         m_template->Get_Name().Str());
 }
@@ -216,7 +219,8 @@ void Thing::Set_Transform_Matrix(const Matrix3D *mx)
     m_cacheFlags = 0;
     React_To_Transform_Change(&old_tm, &old_pos, old_angle);
 
-    captainslog_dbgassert(!gm_isnanf(Get_Position()->x) && !gm_isnanf(Get_Position()->y) && !gm_isnanf(Get_Position()->z),
+    captainslog_dbgassert(
+        !GameMath::Is_Nan(Get_Position()->x) && !GameMath::Is_Nan(Get_Position()->y) && !GameMath::Is_Nan(Get_Position()->z),
         "Drawable/Object position NAN! \'%s\'",
         m_template->Get_Name().Str());
 }

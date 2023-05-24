@@ -258,7 +258,8 @@ UpdateSleepTime PhysicsBehavior::Update()
             tm.Adjust_Z_Translation(m_vel.z);
         }
 
-        if (GameMath::Is_Nan(tm.Get_X_Translation()) || GameMath::Is_Nan(tm.Get_Y_Translation()) || GameMath::Is_Nan(tm.Get_Z_Translation())) {
+        if (GameMath::Is_Nan(tm.Get_X_Translation()) || GameMath::Is_Nan(tm.Get_Y_Translation())
+            || GameMath::Is_Nan(tm.Get_Z_Translation())) {
             captainslog_dbgassert(false, "Object position is NAN, deleting.");
             g_theGameLogic->Destroy_Object(obj);
         }
@@ -570,7 +571,8 @@ void PhysicsBehavior::On_Collide(Object *other, Coord3D const *loc, Coord3D cons
                                     force.x = f3 * center_diff.x / f1;
                                     force.y = f3 * center_diff.y / f1;
                                     force.z = f3 * center_diff.z / f1;
-                                    captainslog_dbgassert(!GameMath::Is_Nan(force.x) && !GameMath::Is_Nan(force.y) && !GameMath::Is_Nan(force.z),
+                                    captainslog_dbgassert(!GameMath::Is_Nan(force.x) && !GameMath::Is_Nan(force.y)
+                                            && !GameMath::Is_Nan(force.z),
                                         "PhysicsBehavior::onCollide force NAN!");
                                     Apply_Force(&force);
                                 }
@@ -726,8 +728,8 @@ void PhysicsBehavior::Apply_Gravitational_Forces()
 
 void PhysicsBehavior::Apply_Force(const Coord3D *force)
 {
-    captainslog_dbgassert(
-        !GameMath::Is_Nan(force->x) && !GameMath::Is_Nan(force->y) && !GameMath::Is_Nan(force->z), "PhysicsBehavior::applyForce force NAN!");
+    captainslog_dbgassert(!GameMath::Is_Nan(force->x) && !GameMath::Is_Nan(force->y) && !GameMath::Is_Nan(force->z),
+        "PhysicsBehavior::applyForce force NAN!");
 
     if (!GameMath::Is_Nan(force->x) && !GameMath::Is_Nan(force->y) && !GameMath::Is_Nan(force->z)) {
         float mass = Get_Mass();

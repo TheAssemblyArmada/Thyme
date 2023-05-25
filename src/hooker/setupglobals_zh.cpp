@@ -775,3 +775,18 @@ Eva *&g_theEva = Make_Global<Eva *>(PICK_ADDRESS(0x00A2C090, 0x04CA9C28));
 // ghostobject.cpp
 class GhostObjectManager;
 GhostObjectManager *&g_theGhostObjectManager = Make_Global<GhostObjectManager *>(PICK_ADDRESS(0x00A2C280, 0x04CA8CD8));
+
+// scriptactions.cpp
+#include "scriptactions.h"
+ScriptActionsInterface *&g_theScriptActions = Make_Global<ScriptActionsInterface *>(PICK_ADDRESS(0x00A2C140, 0x04CA8740));
+
+// scriptconditions.cpp
+#include "scriptconditions.h"
+ScriptConditionsInterface *&g_theScriptConditions =
+    Make_Global<ScriptConditionsInterface *>(PICK_ADDRESS(0x00A2C10C, 0x04CA86E4));
+TransportStatus *&ScriptConditions::s_transportStatuses =
+    Make_Global<TransportStatus *>(PICK_ADDRESS(0x00A2C108, 0x04CA86E0));
+
+// campaignmanager.cpp
+class CampaignManager;
+CampaignManager *&g_theCampaignManager = Make_Global<CampaignManager *>(PICK_ADDRESS(0x00A2C0A0, 0x04CA8784));

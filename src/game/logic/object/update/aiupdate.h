@@ -387,7 +387,7 @@ public:
 
     void AI_Follow_Waypoint_Path_Exact(const Waypoint *way, CommandSourceType cmd_source)
     {
-        AICommandParms params(AICMD_FOLLOW_WAYPOINT_PATH_AS_TEAM, cmd_source);
+        AICommandParms params(AICMD_FOLLOW_WAYPOINT_PATH_EXACT, cmd_source);
         params.m_waypoint = way;
         AI_Do_Command(&params);
     }

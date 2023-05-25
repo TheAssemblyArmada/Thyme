@@ -114,6 +114,9 @@ public:
     const char *Get_Seps_Colon() const { return m_sepsColon; }
     const char *Get_Seps_Quote() const { return m_sepsQuote; }
 
+    static bool Is_Declaration_Of_Type(Utf8String block_type, Utf8String block_name, char *buffer_to_check);
+    static bool Is_End_Of_Block(char *buffer_to_check);
+
     // Scan functions
     static ScienceType Scan_Science(const char *token);
     static float Scan_PercentToReal(const char *token);

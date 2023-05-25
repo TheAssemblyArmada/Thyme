@@ -291,7 +291,7 @@ Utf8String Parameter::Get_UI_Text()
                 ui_text.Format("Shake Intensity: %s", g_shakeIntensityNames[m_int]);
             }
             break;
-        case UNK_COMMANDBUTTON_RELATED:
+        case COMMANDBUTTON:
             ui_text.Format("Command button: '%s'", ui_string.Str());
             break;
         case FONT:
@@ -305,10 +305,10 @@ Utf8String Parameter::Get_UI_Text()
             }
 
             break;
-        case UNK_ABILITY_RELATED:
+        case TEAM_COMMANDBUTTON_ABILITY:
             ui_text.Format("Ability '%s'", ui_string.Str());
             break;
-        case UNK_STRING_RELATED:
+        case SKIRMISH_APPROACH_PATH:
             ui_text.Format("'%s'", ui_string.Str());
             break;
         case COLOR:
@@ -323,7 +323,7 @@ Utf8String Parameter::Get_UI_Text()
         case FACTION_NAME:
             ui_text.Format("Faction Name: '%s'", ui_string.Str());
             break;
-        case UNK_INT_VALUE_RELATED:
+        case OBJECT_TYPE_LIST:
             ui_text.Format("'%s'", ui_string.Str());
             break;
         case REVEAL_NAME:
@@ -332,7 +332,7 @@ Utf8String Parameter::Get_UI_Text()
         case SCIENCE_AVAILABILITY:
             ui_text.Format("Science availablity '%s'", ui_string.Str());
             break;
-        case UNK_POSITON_REALATED:
+        case EVACUATE_CONTAINER_SIDE:
             switch (m_int) {
                 case 1:
                     ui_text = "left";

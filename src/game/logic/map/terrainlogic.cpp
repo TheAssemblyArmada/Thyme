@@ -1418,12 +1418,12 @@ void TerrainLogic::Xfer_Snapshot(Xfer *xfer)
                 xfer->xferInt(&id);
                 PolygonTrigger *trigger = PolygonTrigger::Get_Polygon_Trigger_By_ID(id);
                 captainslog_relassert(trigger != nullptr,
-                    CODE_06,
+                    6,
                     "TerrainLogic::Xfer_Snapshot - Unable to find polygon trigger for water table with trigger ID '%d'",
                     id);
                 m_waterToUpdate[i].water_table = trigger->Get_Water_Handle();
                 captainslog_relassert(m_waterToUpdate[i].water_table != nullptr,
-                    CODE_06,
+                    6,
                     "TerrainLogic::Xfer_Snapshot - Polygon trigger to use for water handle has no water handle!");
             }
 

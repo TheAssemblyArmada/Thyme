@@ -2827,7 +2827,7 @@ void Player::Transfer_Assets_From_That(Player *that)
                         Object *obj = obj_it.Cur();
 
                         if (obj != nullptr) {
-                            if (obj->Get_Template()->Is_Equivalent_To(beacon)) {
+                            if (!obj->Get_Template()->Is_Equivalent_To(beacon)) {
                                 beacons.push_back(obj);
                             }
                         }

@@ -38,7 +38,7 @@ Script::Script() :
     m_action(nullptr),
     m_actionFalse(nullptr),
     m_nextScript(nullptr),
-    m_unkInt2(0),
+    m_evaluationFrame(0),
     m_hasWarnings(false),
     m_conditionTeamName(),
     m_totalExecTime(0.0f),

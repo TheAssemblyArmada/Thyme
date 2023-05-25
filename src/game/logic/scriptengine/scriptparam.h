@@ -96,19 +96,19 @@ public:
         BUILDABLE,
         SURFACES_ALLOWED,
         SHAKE_INTENSITY,
-        UNK_COMMANDBUTTON_RELATED,
+        COMMANDBUTTON,
         FONT,
         OBJECT_STATUS,
-        UNK_ABILITY_RELATED, // Object ability perhaps?
-        UNK_STRING_RELATED, // Message Popup perhaps?
+        TEAM_COMMANDBUTTON_ABILITY,
+        SKIRMISH_APPROACH_PATH,
         COLOR,
         EMOTICON,
         OBJECT_FLAG,
         FACTION_NAME,
-        UNK_INT_VALUE_RELATED,
+        OBJECT_TYPE_LIST,
         REVEAL_NAME,
         SCIENCE_AVAILABILITY,
-        UNK_POSITON_REALATED, // Vacate/Unload perhaps? right, left, normal(burst from center), unspecified
+        EVACUATE_CONTAINER_SIDE,
         PERCENT,
         NUM_ITEMS,
     };

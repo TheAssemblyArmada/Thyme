@@ -32,6 +32,8 @@
 
 class Object;
 class ObjectTypes;
+class ParticleSystem;
+class ParticleSystemTemplate;
 class Player;
 class PolygonTrigger;
 class Script;
@@ -79,6 +81,12 @@ class AttackPriorityInfo : public MemoryPoolObject, public SnapShot
 
 public:
     AttackPriorityInfo() : m_name(), m_defaultPriority(1), m_priorityMap(nullptr) {}
+
+#ifdef GAME_DLL
+    AttackPriorityInfo *Hook_Ctor() { return new (this) AttackPriorityInfo(); }
+    void Hook_Dtor() { AttackPriorityInfo::~AttackPriorityInfo(); }
+#endif
+
     virtual ~AttackPriorityInfo() override;
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
@@ -86,8 +94,12 @@ public:
     virtual void Load_Post_Process() override {}
 
     void Reset();
+    void Set_Priority(const ThingTemplate *tmplate, int priority);
+    int Get_Priority(const ThingTemplate *tmplate);
 
     Utf8String Get_Name() const { return m_name; }
+    void Set_Name(const Utf8String &name) { m_name = name; }
+    void Set_Default_Priority(int priority) { m_defaultPriority = priority; }
 
 private:
     Utf8String m_name;
@@ -117,6 +129,12 @@ public:
     };
 
     ScriptEngine();
+
+#ifdef GAME_DLL
+    ScriptEngine *Hook_Ctor() { return new (this) ScriptEngine(); }
+    void Hook_Dtor() { ScriptEngine::~ScriptEngine(); }
+#endif
+
     virtual ~ScriptEngine() override;
 
     // SubsystemInterface virtuals.
@@ -207,19 +225,20 @@ public:
     void Set_Priority_Default(ScriptAction *action);
     int Get_Object_Count(int player, const Utf8String &name) const;
     void Set_Object_Count(int player, const Utf8String &name, int count);
-    int Evaluate_Timer(Condition *condition);
-    void Set_Timer(ScriptAction *action, bool milisecond_timer, bool random);
+    bool Evaluate_Timer(Condition *condition);
+    void Set_Timer(ScriptAction *action, bool millisecond_timer, bool random);
     void Pause_Timer(ScriptAction *action);
     void Restart_Timer(ScriptAction *action);
-    void Adjust_Timer(ScriptAction *action, bool milisecond_timer, bool add);
+    void Adjust_Timer(ScriptAction *action, bool millisecond_timer, bool add);
     void Enable_Script(ScriptAction *action);
     void Disable_Script(ScriptAction *action);
     void Call_Subroutine(ScriptAction *action);
     void Check_Conditions_For_Team_Names(Script *script);
     void Execute_Scripts(Script *script);
-    void Evaluate_Condition(Condition *condition);
+    void Execute_Script(Script *script);
+    bool Evaluate_Condition(Condition *condition);
     void Set_Topple_Direction(const Utf8String &name, const Coord3D *direction);
-    void Execute_Action(ScriptAction *action);
+    void Execute_Actions(ScriptAction *action);
     void Create_Named_Cache();
     void Append_Sequential_Script(const SequentialScript *script);
     void Remove_Sequential_Script(SequentialScript *script);
@@ -228,15 +247,14 @@ public:
     void Notify_Of_Team_Destruction(Team *team);
     void Set_Sequential_Timer(Object *obj, int timer);
     void Set_Sequential_Timer(Team *team, int timer);
-    void Evaluate_And_Process_All_Sequential_Scripts();
-    SequentialScript **Cleanup_Sequential_Script(SequentialScript **it, bool clean_danglers);
+    void Evaluate_And_Progress_All_Sequential_Scripts();
     bool Has_Unit_Completed_Sequential_Script(Object *obj, const Utf8String &name);
     bool Has_Team_Completed_Sequential_Script(Team *team, const Utf8String &name);
     bool Get_Enable_Vtune() const;
     void Set_Enable_Vtune(bool set);
     void Particle_Editor_Update();
     void Force_Unfreeze_Time();
-    void Adjust_Debug_Variable_Data(const Utf8String variable, int value, bool pause);
+    void Adjust_Debug_Variable_Data(const Utf8String &variable, int value, bool pause);
     void Debug_Victory();
 
     void Set_Use_Object_Difficulty_Bonus(bool bonus) { m_useObjectDifficultyBonuses = bonus; }
@@ -250,11 +268,11 @@ public:
     bool Is_Time_Frozen_Script() { return m_freezeByScript; }
     bool Is_Time_Frozen_Debug();
     bool Is_Time_Fast();
-    void Append_Debug_Message(const Utf8String &message, bool b);
+    void Append_Debug_Message(const Utf8String &message, bool should_pause);
     GameDifficulty Get_Difficulty() { return m_gameDifficulty; }
     const AttackPriorityInfo *Get_Attack_Info(Utf8String const &name);
-    bool Has_Shown_MP_Local_Defeat_Window() const { return m_hasShowMPLocalDefeatWindow; }
-    void Mark_MP_Local_Defeat_Window_Shown() { m_hasShowMPLocalDefeatWindow = true; }
+    bool Has_Shown_MP_Local_Defeat_Window() const { return m_hasShownMPLocalDefeatWindow; }
+    void Mark_MP_Local_Defeat_Window_Shown() { m_hasShownMPLocalDefeatWindow = true; }
     bool Is_End_Game_Timer_Running() const { return m_endGameTimer >= 0; }
 
     void Disable_Breeze() { m_breezeInfo.intensity = 0.0f; }
@@ -268,16 +286,32 @@ public:
     static void Parse_Script_Condition(INI *ini);
 
 private:
-    void Init_Action_Templates();
-    void Init_Condition_Templates();
-    std::vector<SequentialScript *>::iterator Cleanup_Sequential_Scripts(
-        std::vector<SequentialScript *>::iterator it, bool clean_danglers);
+    std::vector<SequentialScript *>::iterator Cleanup_Sequential_Script(
+        std::vector<SequentialScript *>::iterator it, bool delete_sequence);
     void Remove_Object_Types(ObjectTypes *obj);
 
     void Add_Action_Template_Info(Template *tmplate);
     void Add_Condition_Template_Info(Template *tmplate);
 
+    static void Append_Message(const Utf8String &str, bool is_true_message, bool should_pause);
+    static void Adjust_Variable(const Utf8String &str, int value, bool should_pause);
+    static void Update_Frame_Number();
+    static void Append_All_Particle_Systems();
+    static void Append_All_Thing_Templates();
+    static void Add_Updated_Particle_System(Utf8String particle_system_name);
+    static Utf8String Get_Particle_System_Name();
+    static void Update_AsciiString_Parms_To_System(ParticleSystemTemplate *particle_template);
+    static void Update_AsciiString_Parms_From_System(ParticleSystemTemplate *particle_template);
+    static void Write_Out_INI();
+    static void Write_Single_Particle_System(File *out, ParticleSystemTemplate *templ);
+    static int Get_Editor_Behavior();
+    static void Update_And_Set_Current_System();
+    static void Update_Panel_Parameters(ParticleSystemTemplate *particle_template);
+    static void Reload_Particle_System_From_INI(Utf8String particle_system_name);
+    static int Get_New_Current_Particle_Cap();
     static void Update_Current_Particle_Cap();
+    static void Update_Current_Particle_Count();
+    static void Reload_Textures();
 
 private:
     std::vector<SequentialScript *> m_sequentialScripts;
@@ -327,7 +361,7 @@ private:
     std::vector<ObjectTypes *> m_allObjectTypeLists;
     bool m_useObjectDifficultyBonuses;
     bool m_chooseVictimAlwaysUsesNormal;
-    bool m_hasShowMPLocalDefeatWindow;
+    bool m_hasShownMPLocalDefeatWindow;
 #ifdef GAME_DEBUG_STRUCTS
     double m_numFrames;
     double m_totalUpdateTime;
@@ -335,18 +369,16 @@ private:
     double m_frameUpdateTime;
 #endif
 
-#ifdef GAME_DLL
-    static bool &s_canAppContinue;
-    static int &s_currentFrame;
-    static int &s_lastFrame;
-    static void *&s_debugDll;
-    static void *&s_particleDll;
-#else
     static bool s_canAppContinue;
     static int s_currentFrame;
     static int s_lastFrame;
-    static void *s_debugDll;
-    static void *s_particleDll;
+    static ParticleSystem *s_particleSystem;
+    static char s_bufferToCheck[1032];
+    static bool s_particlesForever;
+    static bool s_appIsFast;
+#ifdef PLATFORM_WINDOWS
+    static HMODULE s_debugDll;
+    static HMODULE s_particleDll;
 #endif
 };
 

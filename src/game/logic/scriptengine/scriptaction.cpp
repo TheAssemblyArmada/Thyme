@@ -14,6 +14,7 @@
  */
 #include "scriptaction.h"
 #include "script.h"
+#include "scriptengine.h"
 
 ScriptAction::ScriptAction() : m_actionType(NO_OP), m_numParams(0), m_nextAction(nullptr), m_hasWarnings(false)
 {
@@ -120,12 +121,25 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const 
  */
 Utf8String ScriptAction::Get_UI_Text()
 {
-    // TODO Requires ScriptEngine vtable
-#ifdef GAME_DLL
-    return Call_Method<Utf8String, ScriptAction>(PICK_ADDRESS(0x005206B0, 0x006FAA16), this);
-#else
-    return Utf8String();
-#endif
+    Utf8String ui_text;
+    Utf8String strings[MAX_ACTION_PARAMETERS];
+    int num_strings = Get_UI_Strings(strings);
+
+    if (m_hasWarnings) {
+        ui_text = "[???]";
+    }
+
+    for (int i = 0; i < MAX_ACTION_PARAMETERS; i++) {
+        if (i < num_strings) {
+            ui_text += strings[i];
+        }
+
+        if (i < m_numParams) {
+            ui_text += m_params[i]->Get_UI_Text();
+        }
+    }
+
+    return ui_text;
 }
 
 /**
@@ -205,4 +219,9 @@ ScriptAction *ScriptAction::Parse_Action(DataChunkInput &input, DataChunkInfo *i
 #else
     return nullptr;
 #endif
+}
+
+int ScriptAction::Get_UI_Strings(Utf8String *const strings)
+{
+    return g_theScriptEngine->Get_Action_Template(m_actionType)->Get_UI_Strings(strings);
 }

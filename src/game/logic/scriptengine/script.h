@@ -52,7 +52,7 @@ public:
     float Get_Total_Exec_Time() const { return m_totalExecTime; }
     int Get_Eval_Count() const { return m_evalCount; }
     Utf8String Get_Name() const { return m_scriptName; }
-    int Get_UnkInt2() const { return m_unkInt2; }
+    unsigned int Get_Evaluation_Frame() const { return m_evaluationFrame; }
     int Get_Evaluation_Interval() const { return m_evaluationInterval; }
     Utf8String Get_Comment() const { return m_comment; }
     Utf8String Get_Action_Comment() const { return m_actionComment; }
@@ -72,7 +72,7 @@ public:
     void Set_Or_Condition(OrCondition *condition) { m_condition = condition; }
     void Set_Action(ScriptAction *action) { m_action = action; }
     void Set_False_Action(ScriptAction *action) { m_actionFalse = action; }
-    void Set_UnkInt2(int set) { m_unkInt2 = set; }
+    void Set_Evaluation_Frame(unsigned int set) { m_evaluationFrame = set; }
     void Set_Comment(Utf8String comment) { m_comment = comment; }
     void Set_Action_Comment(Utf8String comment) { m_actionComment = comment; }
     void Set_Condition_Comment(Utf8String comment) { m_conditionComment = comment; }
@@ -117,7 +117,7 @@ private:
     ScriptAction *m_action;
     ScriptAction *m_actionFalse;
     Script *m_nextScript;
-    int m_unkInt2;
+    unsigned int m_evaluationFrame;
     bool m_hasWarnings;
     Utf8String m_conditionTeamName;
     float m_totalExecTime;

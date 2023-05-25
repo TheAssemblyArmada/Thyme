@@ -65,6 +65,7 @@ public:
     void Set_Velocity_Multiplier(Coord3D *mul) { m_velCoefficient = *mul; }
     void Set_Burst_Count_Multiplier(float mul) { m_countCoefficient = mul; }
     void Set_Size_Multiplier(float mul) { m_sizeCoefficient = mul; }
+    bool Is_Forever() const { return m_isForever; }
 
     void Reset_Delay()
     {

@@ -13,10 +13,10 @@
  *            LICENSE
  */
 #include "sequentialscript.h"
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
+#include "script.h"
+#include "scriptengine.h"
+#include "team.h"
+#include "xfer.h"
 
 SequentialScript::SequentialScript() :
     m_teamToExecOn(nullptr),
@@ -32,8 +32,45 @@ SequentialScript::SequentialScript() :
 
 void SequentialScript::Xfer_Snapshot(Xfer *xfer)
 {
-    // Requires parts of Team and TeamFactory
-#ifdef GAME_DLL
-    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00436980, 0x007128E7), this, xfer);
-#endif
+    unsigned char version = 1;
+    xfer->xferVersion(&version, 1);
+    unsigned int id;
+    if (m_teamToExecOn != nullptr) {
+        id = m_teamToExecOn->Get_Team_ID();
+    } else {
+        id = 0;
+    }
+
+    xfer->xferUser(&id, sizeof(id));
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        m_teamToExecOn = g_theTeamFactory->Find_Team_By_ID(id);
+
+        if (id != 0) {
+            captainslog_relassert(m_teamToExecOn != nullptr,
+                6,
+                "SequentialScript::xfer - Unable to find team by ID (#%d) for m_teamToExecOn",
+                id);
+        }
+    }
+
+    xfer->xferObjectID(&m_objectID);
+    Utf8String name;
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        name = m_scriptToExecuteSequentially->Get_Name();
+        xfer->xferAsciiString(&name);
+    } else {
+        xfer->xferAsciiString(&name);
+        captainslog_dbgassert(
+            m_scriptToExecuteSequentially == nullptr, "SequentialScript::xfer - m_scripttoExecuteSequentially");
+        m_scriptToExecuteSequentially = g_theScriptEngine->Find_Script_By_Name(name);
+        captainslog_dbgassert(m_scriptToExecuteSequentially != nullptr,
+            "SequentialScript::xfer - m_scriptToExecuteSequentially is NULL but should not be");
+    }
+
+    xfer->xferInt(&m_currentInstruction);
+    xfer->xferInt(&m_timesToLoop);
+    xfer->xferInt(&m_framesToWait);
+    xfer->xferBool(&m_unkbool1);
 }

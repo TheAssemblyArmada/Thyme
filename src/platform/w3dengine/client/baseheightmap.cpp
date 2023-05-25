@@ -993,21 +993,21 @@ float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord
         if (index_x <= map_width - 3 && index_y <= height_map->Get_Y_Extent() - 3 && index_y >= 1 && index_x >= 1) {
             unsigned char *height_data = height_map->Get_Data_Ptr();
             int current_point_index = map_width * index_y + index_x;
-            float top_left_height = height_data[current_point_index];
-            float bottom_right_height = height_data[map_width + 1 + current_point_index];
+            float current_point_height = height_data[current_point_index];
+            float top_right_neighbor_height = height_data[map_width + 1 + current_point_index];
             float interpolated_height;
 
             // Calculate the height based on interpolation
             // If fractional y is less than or equal to fractional x, our point is in the top right triangle of the cell
             if (fract_y <= fract_x) {
-                float top_right_height = height_data[current_point_index + 1];
-                interpolated_height = ((bottom_right_height - top_right_height) * fract_y + top_right_height
-                                          + (1.0f - fract_x) * (top_left_height - top_right_height))
+                float right_neighbor_height = height_data[current_point_index + 1];
+                interpolated_height = ((top_right_neighbor_height - right_neighbor_height) * fract_y + right_neighbor_height
+                                          + (1.0f - fract_x) * (current_point_height - right_neighbor_height))
                     * HEIGHTMAP_SCALE;
             } else {
-                float bottom_left_height = height_data[map_width + current_point_index];
-                interpolated_height = ((1.0f - fract_y) * (top_left_height - bottom_left_height) + bottom_left_height
-                                          + (bottom_right_height - bottom_left_height) * fract_x)
+                float top_neighbor_height = height_data[map_width + current_point_index];
+                interpolated_height = ((1.0f - fract_y) * (current_point_height - top_neighbor_height) + top_neighbor_height
+                                          + (top_right_neighbor_height - top_neighbor_height) * fract_x)
                     * HEIGHTMAP_SCALE;
             }
 
@@ -1018,20 +1018,20 @@ float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord
                 int next_row_cell_index = map_width + current_cell_index;
                 int next_next_row_cell_index = map_width * (index_y + 2) + index_x;
                 unsigned char current_cell_height_data = height_data[current_cell_index];
-                unsigned char right_neighbor_height_data = height_data[current_cell_index + 1];
-                unsigned char bottom_right_neighbor_height_data = height_data[map_width + 1 + current_cell_index];
-                unsigned char bottom_neighbor_height_data = height_data[map_width + current_cell_index];
-                unsigned char top_neighbor_height_data = height_data[prev_row_cell_index];
-                unsigned char top_right_neighbor_height_data = height_data[prev_row_cell_index + 1];
-                unsigned char down_two_right_neighbor_height_data = height_data[next_next_row_cell_index + 1];
-                unsigned char down_two_neighbor_height_data = height_data[next_next_row_cell_index];
-                float slope_1 = right_neighbor_height_data - height_data[current_cell_index - 1];
+                unsigned char right = height_data[current_cell_index + 1];
+                unsigned char up_right = height_data[map_width + 1 + current_cell_index];
+                unsigned char up = height_data[map_width + current_cell_index];
+                unsigned char down = height_data[prev_row_cell_index];
+                unsigned char down_right = height_data[prev_row_cell_index + 1];
+                unsigned char up_up_right = height_data[next_next_row_cell_index + 1];
+                unsigned char up_up = height_data[next_next_row_cell_index];
+                float slope_1 = right - height_data[current_cell_index - 1];
                 float slope_2 = height_data[current_cell_index + 2] - current_cell_height_data;
-                float slope_3 = height_data[map_width + 2 + current_cell_index] - bottom_neighbor_height_data;
-                float slope_4 = bottom_neighbor_height_data - top_neighbor_height_data;
-                float slope_5 = bottom_right_neighbor_height_data - top_right_neighbor_height_data;
-                float slope_6 = down_two_right_neighbor_height_data - right_neighbor_height_data;
-                float slope_7 = down_two_neighbor_height_data - current_cell_height_data;
+                float slope_3 = height_data[map_width + 2 + current_cell_index] - up;
+                float slope_4 = up - down;
+                float slope_5 = up_right - down_right;
+                float slope_6 = up_up_right - right;
+                float slope_7 = up_up - current_cell_height_data;
                 float interpolated_slope_x_difference = (1.0f - fract_x) * slope_1 + fract_x * slope_2;
                 float interpolated_slope_y_difference = (1.0f - fract_x) * slope_2 + fract_x * slope_3;
                 float interpolated_normal_x =

@@ -43,7 +43,7 @@ View::View() :
     m_defaultPitchAngle(0.0f),
     m_currentHeightAboveGround(0.0f),
     m_terrainHeightUnderCamera(0.0f),
-    m_cameraLock(OBJECT_UNK),
+    m_cameraLock(INVALID_OBJECT_ID),
     m_cameraLockDrawable(nullptr),
     m_lockType(LOCK_FOLLOW),
     m_lockDist(0.0f),
@@ -67,7 +67,7 @@ void View::Init()
     m_pos.x = 0.0f;
     m_pos.y = 0.0f;
     m_angle = 0.0f;
-    m_cameraLock = OBJECT_UNK;
+    m_cameraLock = INVALID_OBJECT_ID;
     m_cameraLockDrawable = 0;
     m_zoomLimited = true;
     m_maxZoom = 1.3f;

@@ -47,8 +47,8 @@ void LaserUpdateModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 
 LaserUpdate::LaserUpdate(Thing *thing, ModuleData const *module_data) :
     ClientUpdateModule(thing, module_data),
-    m_sourceDrawableID(DRAWABLE_UNK),
-    m_victimDrawableID(DRAWABLE_UNK),
+    m_sourceDrawableID(INVALID_DRAWABLE_ID),
+    m_victimDrawableID(INVALID_DRAWABLE_ID),
     m_dirty(false),
     m_muzzleParticleSystemID(PARTSYS_ID_NONE),
     m_targetParticleSystemID(PARTSYS_ID_NONE),
@@ -348,7 +348,7 @@ void LaserUpdate::Update_End_Pos()
                 m_endPos.z = pos.Z;
             }
 
-            m_victimDrawableID = DRAWABLE_UNK;
+            m_victimDrawableID = INVALID_DRAWABLE_ID;
         } else {
             m_endPos = *drawable->Get_Position();
         }

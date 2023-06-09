@@ -121,7 +121,7 @@ bool SoundManager::Violates_Voice(AudioEventRTS *event)
         return false;
     }
 
-    if (event->Get_Object_ID() != OBJECT_UNK) {
+    if (event->Get_Object_ID() != INVALID_OBJECT_ID) {
         if (g_theAudio->Is_Object_Playing_Voice(event->Get_Object_ID())) {
             return true;
         }

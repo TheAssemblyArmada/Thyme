@@ -6752,7 +6752,7 @@ bool ScriptEngine::Is_Special_Power_Triggered(
     }
 
     for (auto it = m_triggeredSpecialPowers[player_idx].begin(); it != m_triggeredSpecialPowers[player_idx].end(); it++) {
-        if (it->first == power_name && (source == OBJECT_UNK || source == it->second)) {
+        if (it->first == power_name && (source == INVALID_OBJECT_ID || source == it->second)) {
             if (remove_from_list) {
                 m_triggeredSpecialPowers[player_idx].erase(it);
             }
@@ -6772,7 +6772,7 @@ bool ScriptEngine::Is_Special_Power_Midway(
     }
 
     for (auto it = m_midwaySpecialPowers[player_idx].begin(); it != m_midwaySpecialPowers[player_idx].end(); it++) {
-        if (it->first == power_name && (source == OBJECT_UNK || source == it->second)) {
+        if (it->first == power_name && (source == INVALID_OBJECT_ID || source == it->second)) {
             if (remove_from_list) {
                 m_midwaySpecialPowers[player_idx].erase(it);
             }
@@ -6792,7 +6792,7 @@ bool ScriptEngine::Is_Special_Power_Complete(
     }
 
     for (auto it = m_finishedSpecialPowers[player_idx].begin(); it != m_finishedSpecialPowers[player_idx].end(); it++) {
-        if (it->first == power_name && (source == OBJECT_UNK || source == it->second)) {
+        if (it->first == power_name && (source == INVALID_OBJECT_ID || source == it->second)) {
             if (remove_from_list) {
                 m_finishedSpecialPowers[player_idx].erase(it);
             }
@@ -6812,7 +6812,7 @@ bool ScriptEngine::Is_Upgrade_Complete(
     }
 
     for (auto it = m_completedUpgrades[player_idx].begin(); it != m_completedUpgrades[player_idx].end(); it++) {
-        if (it->first == upgrade_name && (source == OBJECT_UNK || source == it->second)) {
+        if (it->first == upgrade_name && (source == INVALID_OBJECT_ID || source == it->second)) {
             if (remove_from_list) {
                 m_completedUpgrades[player_idx].erase(it);
             }
@@ -7097,7 +7097,7 @@ void ScriptEngine::Append_Sequential_Script(const SequentialScript *script)
         SequentialScript *sequential = *it;
 
         if (sequential != nullptr
-            && (script->m_objectID != OBJECT_UNK && sequential->m_objectID == script->m_objectID
+            && (script->m_objectID != INVALID_OBJECT_ID && sequential->m_objectID == script->m_objectID
                 || script->m_teamToExecOn != nullptr && script->m_teamToExecOn == sequential->m_teamToExecOn)) {
             found = true;
 
@@ -7809,7 +7809,7 @@ void ScriptEngine::Xfer_Snapshot(Xfer *xfer)
             if (it->second != nullptr) {
                 id = it->second->Get_ID();
             } else {
-                id = OBJECT_UNK;
+                id = INVALID_OBJECT_ID;
             }
 
             xfer->xferObjectID(&id);
@@ -7823,7 +7823,7 @@ void ScriptEngine::Xfer_Snapshot(Xfer *xfer)
             ObjectID id;
             xfer->xferObjectID(&id);
             Object *obj = g_theGameLogic->Find_Object_By_ID(id);
-            captainslog_relassert(obj != nullptr || id == OBJECT_UNK,
+            captainslog_relassert(obj != nullptr || id == INVALID_OBJECT_ID,
                 6,
                 "ScriptEngine::xfer - Unable to find object by ID for m_namedObjects");
             pair.first = name;

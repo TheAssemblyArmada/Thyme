@@ -29,7 +29,7 @@ public:
         m_parent(parent),
         m_currentLevel(VeterancyLevel::VETERANCY_REGULAR),
         m_currentExperience(0),
-        m_experienceSink(ObjectID::OBJECT_UNK),
+        m_experienceSink(ObjectID::INVALID_OBJECT_ID),
         m_experienceMultiplier(1.0f)
     {
     }

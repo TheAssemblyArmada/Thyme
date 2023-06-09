@@ -21,7 +21,7 @@ class DamageInfoInput : public SnapShot
 {
 public:
     DamageInfoInput() :
-        m_sourceID(OBJECT_UNK),
+        m_sourceID(INVALID_OBJECT_ID),
         m_thingTemplate(nullptr),
         m_playerMask(0),
         m_damageType(DAMAGE_EXPLOSION),

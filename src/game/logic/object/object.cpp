@@ -209,12 +209,12 @@ Object::Object(const ThingTemplate *tt, BitFlags<OBJECT_STATUS_COUNT> status_bit
     m_radarData(nullptr),
     m_experienceTracker(nullptr),
     m_containedBy(nullptr),
-    m_containedByID(OBJECT_UNK),
+    m_containedByID(INVALID_OBJECT_ID),
     m_containedByFrame(0),
     m_team(nullptr),
     m_customIndicatorColor(0),
     m_enteredOrExited(0),
-    m_formationID(FORMATION_UNK),
+    m_formationID(INVALID_FORMATION_ID),
     m_scriptStatus(0),
     m_privateStatus(0),
     m_numTriggerAreasActive(0),
@@ -253,9 +253,9 @@ Object::Object(const ThingTemplate *tt, BitFlags<OBJECT_STATUS_COUNT> status_bit
         m_threatSighting->Reset();
         m_valueSighting = new SightingInfo();
         m_valueSighting->Reset();
-        m_id = OBJECT_UNK;
-        m_producerID = OBJECT_UNK;
-        m_builderID = OBJECT_UNK;
+        m_id = INVALID_OBJECT_ID;
+        m_producerID = INVALID_OBJECT_ID;
+        m_builderID = INVALID_OBJECT_ID;
         m_status = status_bits;
         m_layer = LAYER_GROUND;
         m_aiGroup = nullptr;
@@ -441,7 +441,7 @@ Object::Object(const ThingTemplate *tt, BitFlags<OBJECT_STATUS_COUNT> status_bit
         g_theRadar->Add_Object(this);
         g_theGameLogic->Register_Object(this);
         m_occlusionDelayFrame = tmplate->Get_Occlusion_Delay() + g_theGameLogic->Get_Frame();
-        m_soleHealingBenefactor = OBJECT_UNK;
+        m_soleHealingBenefactor = INVALID_OBJECT_ID;
         m_soleHealingEndFrame = 0;
     }
 }
@@ -504,7 +504,7 @@ Object::~Object()
     m_objectSMCHelper = nullptr;
     m_objectWeaponStatusHelper = nullptr;
     m_objectDefectionHelper = nullptr;
-    m_id = OBJECT_UNK;
+    m_id = INVALID_OBJECT_ID;
     g_theScriptEngine->Notify_Of_Object_Destruction(this);
 }
 
@@ -668,7 +668,7 @@ void Object::Xfer_Snapshot(Xfer *xfer)
     if (drawable != nullptr) {
         drawableid = drawable->Get_ID();
     } else {
-        drawableid = DRAWABLE_UNK;
+        drawableid = INVALID_DRAWABLE_ID;
     }
 
     xfer->xferDrawableID(&drawableid);
@@ -737,7 +737,7 @@ void Object::Xfer_Snapshot(Xfer *xfer)
             if (m_containedBy != nullptr) {
                 m_containedByID = m_containedBy->Get_ID();
             } else {
-                m_containedByID = OBJECT_UNK;
+                m_containedByID = INVALID_OBJECT_ID;
             }
         }
 
@@ -780,7 +780,7 @@ void Object::Xfer_Snapshot(Xfer *xfer)
     xfer->xferUnsignedInt(&m_occlusionDelayFrame);
     xfer->xferUser(&m_formationID, sizeof(m_formationID));
 
-    if (m_formationID != FORMATION_UNK) {
+    if (m_formationID != INVALID_FORMATION_ID) {
         xfer->xferCoord2D(&m_formationOffset);
     }
 
@@ -831,7 +831,7 @@ void Object::Xfer_Snapshot(Xfer *xfer)
 
     if (version < 3) {
         if (xfer->Get_Mode() == XFER_LOAD) {
-            m_soleHealingBenefactor = OBJECT_UNK;
+            m_soleHealingBenefactor = INVALID_OBJECT_ID;
             m_soleHealingEndFrame = 0;
         }
     } else {
@@ -860,7 +860,7 @@ void Object::Xfer_Snapshot(Xfer *xfer)
 
 void Object::Load_Post_Process()
 {
-    if (m_containedByID != OBJECT_UNK) {
+    if (m_containedByID != INVALID_OBJECT_ID) {
         m_containedBy = g_theGameLogic->Find_Object_By_ID(m_containedByID);
     } else {
         m_containedBy = nullptr;
@@ -1506,7 +1506,7 @@ void Object::Kill(DamageType damage, DeathType death)
     DamageInfo info;
     info.m_in.m_damageType = damage;
     info.m_in.m_deathType = death;
-    info.m_in.m_sourceID = OBJECT_UNK;
+    info.m_in.m_sourceID = INVALID_OBJECT_ID;
     info.m_in.m_amount = Get_Body_Module()->Get_Max_Health();
     info.m_in.m_unk2 = true;
     Attempt_Damage(&info);
@@ -1734,7 +1734,7 @@ bool Object::Is_Able_To_Attack() const
                 if (slaved != nullptr) {
                     ObjectID slaver = slaved->Get_Slaver_ID();
 
-                    if (slaver != OBJECT_UNK) {
+                    if (slaver != INVALID_OBJECT_ID) {
                         Object *obj = g_theGameLogic->Find_Object_By_ID(slaver);
 
                         if (obj != nullptr) {
@@ -1972,7 +1972,7 @@ void Object::Set_Producer(const Object *obj)
     if (obj != nullptr) {
         m_producerID = obj->Get_ID();
     } else {
-        m_producerID = OBJECT_UNK;
+        m_producerID = INVALID_OBJECT_ID;
     }
 }
 
@@ -2262,7 +2262,7 @@ void Object::Set_Vision_Spied(bool vision_spied, int player_index)
 
 void Object::Set_ID(ObjectID id)
 {
-    captainslog_dbgassert(id != OBJECT_UNK, "Object::Set_ID - Invalid id");
+    captainslog_dbgassert(id != INVALID_OBJECT_ID, "Object::Set_ID - Invalid id");
 
     if (m_id != id) {
         g_theGameLogic->Remove_Object_From_Lookup_Table(this);
@@ -2639,7 +2639,7 @@ void Object::Fire_Current_Weapon(const Coord3D *pos)
                     m_firingTracker != nullptr, "hey, we are firing but have no firing tracker. this is wrong.");
 
                 if (m_firingTracker != nullptr) {
-                    m_firingTracker->Shot_Fired(weapon, OBJECT_UNK);
+                    m_firingTracker->Shot_Fired(weapon, INVALID_OBJECT_ID);
                 }
 
                 if (fired) {
@@ -2814,7 +2814,7 @@ void Object::Attempt_Healing(float amount, const Object *obj)
         if (obj) {
             id = obj->Get_ID();
         } else {
-            id = OBJECT_UNK;
+            id = INVALID_OBJECT_ID;
         }
 
         info.m_in.m_sourceID = id;
@@ -3375,7 +3375,7 @@ ObjectID Object::Get_Last_Victim_ID() const
     if (m_firingTracker != nullptr) {
         return m_firingTracker->Get_Victim_ID();
     } else {
-        return OBJECT_UNK;
+        return INVALID_OBJECT_ID;
     }
 }
 
@@ -3384,7 +3384,7 @@ void Object::Set_Builder(const Object *obj)
     if (obj != nullptr) {
         m_builderID = obj->Get_ID();
     } else {
-        m_builderID = OBJECT_UNK;
+        m_builderID = INVALID_OBJECT_ID;
     }
 }
 
@@ -3393,7 +3393,7 @@ ObjectID Object::Get_Sole_Healing_Benefactor() const
     if (g_theGameLogic->Get_Frame() <= m_soleHealingEndFrame) {
         return m_soleHealingBenefactor;
     } else {
-        return OBJECT_UNK;
+        return INVALID_OBJECT_ID;
     }
 }
 
@@ -4692,5 +4692,5 @@ ObjectID Object::Calculate_Countermeasure_To_Divert_To(const Object &obj)
         }
     }
 
-    return OBJECT_UNK;
+    return INVALID_OBJECT_ID;
 }

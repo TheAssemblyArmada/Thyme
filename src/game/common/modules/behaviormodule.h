@@ -55,7 +55,7 @@ class AudioEventRTS;
 
 enum ProductionID
 {
-    PRODUCTION_UNK,
+    INVALID_PRODUCTION_ID,
 };
 
 class SlavedUpdateInterface

@@ -20,14 +20,14 @@ ProjectileStreamUpdate::ProjectileStreamUpdate(Thing *thing, ModuleData const *m
     UpdateModule(thing, module_data),
     m_nextFreeIndex(0),
     m_firstValidIndex(0),
-    m_owningObject(OBJECT_UNK),
-    m_targetID(OBJECT_UNK)
+    m_owningObject(INVALID_OBJECT_ID),
+    m_targetID(INVALID_OBJECT_ID)
 {
     m_targetPos.Zero();
 
     // #BUGFIX Initialize all members
     for (int i = 0; i < MAX_SEGMENT_COUNT; ++i) {
-        m_projectileIDs[i] = OBJECT_UNK;
+        m_projectileIDs[i] = INVALID_OBJECT_ID;
     }
 }
 
@@ -82,16 +82,16 @@ Module *ProjectileStreamUpdate::Friend_New_Module_Instance(Thing *thing, ModuleD
 void ProjectileStreamUpdate::Add_Projectile(
     ObjectID source_id, ObjectID projectile_id, ObjectID target_id, const Coord3D *target_pos)
 {
-    captainslog_dbgassert(m_owningObject == OBJECT_UNK || m_owningObject == source_id,
+    captainslog_dbgassert(m_owningObject == INVALID_OBJECT_ID || m_owningObject == source_id,
         "Two objects are trying to use the same Projectile stream.");
 
-    if (m_owningObject == OBJECT_UNK) {
+    if (m_owningObject == INVALID_OBJECT_ID) {
         m_owningObject = source_id;
     }
 
-    if (target_id != OBJECT_UNK) {
+    if (target_id != INVALID_OBJECT_ID) {
         if (target_id != m_targetID) {
-            m_projectileIDs[m_nextFreeIndex] = OBJECT_UNK;
+            m_projectileIDs[m_nextFreeIndex] = INVALID_OBJECT_ID;
             m_nextFreeIndex = (m_nextFreeIndex + 1) % MAX_SEGMENT_COUNT;
             m_targetID = target_id;
         }
@@ -99,12 +99,12 @@ void ProjectileStreamUpdate::Add_Projectile(
         m_targetPos.Zero();
     } else if (target_pos != nullptr) {
         if (!(m_targetPos == *target_pos)) {
-            m_projectileIDs[m_nextFreeIndex] = OBJECT_UNK;
+            m_projectileIDs[m_nextFreeIndex] = INVALID_OBJECT_ID;
             m_nextFreeIndex = (m_nextFreeIndex + 1) % MAX_SEGMENT_COUNT;
             m_targetPos = *target_pos;
         }
 
-        m_targetID = OBJECT_UNK;
+        m_targetID = INVALID_OBJECT_ID;
     } else {
         captainslog_debug("A projectile stream was fired at neither an object nor a position.  Probably bad.");
     }
@@ -125,7 +125,7 @@ void ProjectileStreamUpdate::Cull_Front_Of_List()
 
 bool ProjectileStreamUpdate::Consider_Dying()
 {
-    return m_firstValidIndex == m_nextFreeIndex && m_owningObject != OBJECT_UNK
+    return m_firstValidIndex == m_nextFreeIndex && m_owningObject != INVALID_OBJECT_ID
         && !g_theGameLogic->Find_Object_By_ID(m_owningObject);
 }
 

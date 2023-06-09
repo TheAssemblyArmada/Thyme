@@ -669,7 +669,7 @@ Team::Team(TeamPrototype *proto, unsigned int id) :
     m_availableForRecruitment(false)
 {
     m_created = false;
-    m_targetObjectID = OBJECT_UNK;
+    m_targetObjectID = INVALID_OBJECT_ID;
     m_playerRelations = new PlayerRelationMap();
     m_teamRelations = new TeamRelationMap();
 
@@ -769,7 +769,7 @@ void Team::Xfer_Snapshot(Xfer *xfer)
     if (m_currentWaypoint != nullptr) {
         waypoint_id = m_currentWaypoint->Get_ID();
     } else {
-        waypoint_id = WAYPOINT_UNK;
+        waypoint_id = INVALID_WAYPOINT_ID;
     }
 
     xfer->xferUnsignedInt(reinterpret_cast<unsigned int *>(&waypoint_id));
@@ -1486,7 +1486,7 @@ bool Team::Damage_Team_Members(float amount)
                     DamageInfo info;
                     info.m_in.m_damageType = DAMAGE_UNRESISTABLE;
                     info.m_in.m_deathType = DEATH_NORMAL;
-                    info.m_in.m_sourceID = OBJECT_UNK;
+                    info.m_in.m_sourceID = INVALID_OBJECT_ID;
                     info.m_in.m_amount = amount;
                     it.Cur()->Attempt_Damage(&info);
                 }
@@ -1592,13 +1592,13 @@ void Team::Set_Team_Target_Object(const Object *obj)
             }
         }
     } else {
-        m_targetObjectID = OBJECT_UNK;
+        m_targetObjectID = INVALID_OBJECT_ID;
     }
 }
 
 Object *Team::Get_Team_Target_Object()
 {
-    if (m_targetObjectID == OBJECT_UNK) {
+    if (m_targetObjectID == INVALID_OBJECT_ID) {
         return nullptr;
     }
 
@@ -1622,7 +1622,7 @@ Object *Team::Get_Team_Target_Object()
     }
 
     if (obj == nullptr) {
-        m_targetObjectID = OBJECT_UNK;
+        m_targetObjectID = INVALID_OBJECT_ID;
     }
 
     return obj;

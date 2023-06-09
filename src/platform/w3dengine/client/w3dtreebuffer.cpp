@@ -266,7 +266,7 @@ void W3DTreeBuffer::Add_Tree(
         m_trees[m_numTrees].sway_rand = Get_Client_Random_Value(0, 9);
         m_trees[m_numTrees].push_aside_speed = 0.0f;
         m_trees[m_numTrees].push_aside_frame = 0;
-        m_trees[m_numTrees].push_aside_obj_id = OBJECT_UNK;
+        m_trees[m_numTrees].push_aside_obj_id = INVALID_OBJECT_ID;
         m_trees[m_numTrees].push_aside_move_time = 0.0f;
         m_trees[m_numTrees].push_aside_location.y = 1.0f;
         m_trees[m_numTrees].push_aside_location.x = 1.0f;

@@ -51,7 +51,7 @@ AudioEventRTS::AudioEventRTS() :
 {
     m_positionOfAudio.Zero();
     // #BUGFIX Initialize all members
-    m_objectID = OBJECT_UNK;
+    m_objectID = INVALID_OBJECT_ID;
 }
 
 /**
@@ -83,7 +83,7 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
 {
     if (m_eventType == EVENT_3D || m_eventType == EVENT_3D_DEAD) {
         m_positionOfAudio.Set(&that.m_positionOfAudio);
-        m_objectID = OBJECT_UNK; // #BUGFIX Initialize all members
+        m_objectID = INVALID_OBJECT_ID; // #BUGFIX Initialize all members
     } else if (m_eventType == EVENT_3D_DRAWABLE) {
         m_drawableID = that.m_drawableID;
         m_positionOfAudio.Zero(); // #BUGFIX Initialize all members
@@ -122,7 +122,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name) :
 {
     m_positionOfAudio.Zero();
     // #BUGFIX Initialize all members
-    m_objectID = OBJECT_UNK;
+    m_objectID = INVALID_OBJECT_ID;
 }
 
 /**
@@ -153,7 +153,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
-    if (m_objectID != OBJECT_UNK) {
+    if (m_objectID != INVALID_OBJECT_ID) {
         m_eventType = EVENT_3D_OBJECT;
     }
 
@@ -186,7 +186,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, DrawableID id) :
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
-    if (m_drawableID != DRAWABLE_UNK) {
+    if (m_drawableID != INVALID_DRAWABLE_ID) {
         m_eventType = EVENT_3D_DRAWABLE;
     }
     // #BUGFIX Initialize all members
@@ -222,7 +222,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
 {
     m_positionOfAudio.Set(pos);
     // #BUGFIX Initialize all members
-    m_objectID = OBJECT_UNK;
+    m_objectID = INVALID_OBJECT_ID;
 }
 
 /**
@@ -531,7 +531,7 @@ bool AudioEventRTS::Is_Positional_Audio() const
         return false;
     }
 
-    return m_eventType != EVENT_UNKVAL4 && (m_objectID != OBJECT_UNK || m_eventType == EVENT_3D);
+    return m_eventType != EVENT_UNKVAL4 && (m_objectID != INVALID_OBJECT_ID || m_eventType == EVENT_3D);
 }
 
 /**

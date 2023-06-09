@@ -42,7 +42,7 @@ void TunnelTracker::Xfer_Snapshot(Xfer *xfer)
             break;
         default:
             for (int32_t i = 0; i < m_containListSize; ++i) {
-                auto obj_ID = ObjectID::OBJECT_UNK;
+                auto obj_ID = ObjectID::INVALID_OBJECT_ID;
                 xfer->xferObjectID(&obj_ID);
                 m_IDs.push_back(obj_ID);
             }

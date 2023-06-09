@@ -74,7 +74,7 @@ class Waypoint;
 
 enum FormationID : int32_t
 {
-    FORMATION_UNK,
+    INVALID_FORMATION_ID,
 };
 
 struct TTriggerInfo

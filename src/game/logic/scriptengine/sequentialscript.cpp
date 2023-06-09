@@ -20,7 +20,7 @@
 
 SequentialScript::SequentialScript() :
     m_teamToExecOn(nullptr),
-    m_objectID(OBJECT_UNK),
+    m_objectID(INVALID_OBJECT_ID),
     m_scriptToExecuteSequentially(nullptr),
     m_currentInstruction(-1),
     m_timesToLoop(0),

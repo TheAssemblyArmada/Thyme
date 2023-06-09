@@ -1030,7 +1030,7 @@ void Local_Apply_Battle_Plan_Bonuses_To_Object(Object *obj, void *data)
     if (obj != nullptr) {
         id = obj->Get_ID();
     } else {
-        id = OBJECT_UNK;
+        id = INVALID_OBJECT_ID;
     }
 
     captainslog_debug("Local_Apply_Battle_Plan_Bonuses_To_Object() - looking at object %d (%s)", id, name);
@@ -1048,7 +1048,7 @@ void Local_Apply_Battle_Plan_Bonuses_To_Object(Object *obj, void *data)
         if (obj != nullptr) {
             id = obj->Get_ID();
         } else {
-            id = OBJECT_UNK;
+            id = INVALID_OBJECT_ID;
         }
 
         captainslog_debug("Object is a projectile - looking at object %d (%s) instead", id, name);

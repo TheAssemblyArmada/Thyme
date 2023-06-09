@@ -37,7 +37,7 @@ void GhostObject::Xfer_Snapshot(Xfer *xfer)
 {
     unsigned char version = 1;
     xfer->xferVersion(&version, 1);
-    ObjectID parent_id = OBJECT_UNK;
+    ObjectID parent_id = INVALID_OBJECT_ID;
 
     if (m_parentObject != nullptr) {
         parent_id = m_parentObject->Get_ID();
@@ -48,7 +48,7 @@ void GhostObject::Xfer_Snapshot(Xfer *xfer)
     if (xfer->Get_Mode() == XFER_LOAD) {
         m_parentObject = g_theGameLogic->Find_Object_By_ID(parent_id);
 
-        if (parent_id != OBJECT_UNK) {
+        if (parent_id != INVALID_OBJECT_ID) {
             captainslog_relassert(
                 m_parentObject != nullptr, CODE_06, "GhostObject::Xfer_Snapshot - Unable to connect m_parentObject");
         }

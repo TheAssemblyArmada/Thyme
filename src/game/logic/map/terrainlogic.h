@@ -40,7 +40,7 @@ struct TBridgeAttackInfo
 
 enum WaypointID : int32_t
 {
-    WAYPOINT_UNK,
+    INVALID_WAYPOINT_ID,
 };
 
 class BridgeInfo

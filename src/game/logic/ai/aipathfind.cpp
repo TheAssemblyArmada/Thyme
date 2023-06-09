@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "aipathfind.h"
+#include "object.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -236,6 +237,13 @@ void Pathfinder::Reset()
 #endif
 }
 
+void Pathfinder::New_Map()
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder>(PICK_ADDRESS(0x00560970, 0x00891DC6), this);
+#endif
+}
+
 bool Pathfinder::Valid_Movement_Terrain(PathfindLayerEnum layer, const Locomotor *locomotor, const Coord3D *pos)
 {
 #ifdef GAME_DLL
@@ -368,6 +376,20 @@ Path *Pathfinder::Find_Ground_Path(const Coord3D *point, const Coord3D *point2, 
         PICK_ADDRESS(0x00566980, 0x008974D1), this, point, point2, i, b);
 #else
     return nullptr;
+#endif
+}
+
+void Pathfinder::Add_Wall_Piece(Object *obj)
+{
+    if (m_numWallPieces < 127) {
+        m_wallPieces[m_numWallPieces++] = obj->Get_ID();
+    }
+}
+
+void Pathfinder::Remove_Wall_Piece(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, Object *>(PICK_ADDRESS(0x0055F400, 0x008907BC), this, obj);
 #endif
 }
 

@@ -35,13 +35,29 @@ void GameWindowTransitionsHandler::Reset()
 void GameWindowTransitionsHandler::Update()
 {
 #ifdef GAME_DLL
-    Call_Method<void, GameWindowTransitionsHandler>(PICK_ADDRESS(0x00514EA0, 0), this);
+    Call_Method<void, GameWindowTransitionsHandler>(PICK_ADDRESS(0x00514EA0, 0x008F187A), this);
 #endif
 }
 
 void GameWindowTransitionsHandler::Draw()
 {
 #ifdef GAME_DLL
-    Call_Method<void, GameWindowTransitionsHandler>(PICK_ADDRESS(0x00515010, 0), this);
+    Call_Method<void, GameWindowTransitionsHandler>(PICK_ADDRESS(0x00515010, 0x008F19B9), this);
+#endif
+}
+
+void GameWindowTransitionsHandler::Set_Group(Utf8String str, bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, GameWindowTransitionsHandler, Utf8String, bool>(PICK_ADDRESS(0x00515070, 0x008F19EC), this, str, b);
+#endif
+}
+
+bool GameWindowTransitionsHandler::Is_Finished()
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, GameWindowTransitionsHandler>(PICK_ADDRESS(0x00515760, 0x008F1ED8), this);
+#else
+    return false;
 #endif
 }

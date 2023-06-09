@@ -64,7 +64,7 @@ public:
     void Attach(w3dsurface_t surface);
     void Detach();
     WW3DFormat Get_Surface_Format() const { return m_surfaceFormat; }
-    w3dsurface_t Get_D3D_Surface() const { return m_d3dSurface; }
+    w3dsurface_t Peek_D3D_Surface() const { return m_d3dSurface; }
 
     static int Pixel_Size(const SurfaceDescription &sd);
 

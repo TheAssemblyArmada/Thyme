@@ -66,7 +66,7 @@ void GameState::Clear_Available_Games()
     }
 }
 
-Utf8String GameState::Get_Save_Dir()
+Utf8String GameState::Get_Save_Dir() const
 {
     Utf8String ret = g_theWriteableGlobalData->m_userDataDirectory;
     ret += "Save/";
@@ -74,7 +74,7 @@ Utf8String GameState::Get_Save_Dir()
     return ret;
 }
 
-Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path)
+Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path) const
 {
     Utf8String ret;
     Utf8String ppath = path.Posix_Path();
@@ -101,7 +101,7 @@ Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path)
     return ret.Windows_Path();
 }
 
-Utf8String GameState::Portable_To_Real_Map_Path(const Utf8String &path)
+Utf8String GameState::Portable_To_Real_Map_Path(const Utf8String &path) const
 {
     Utf8String ret;
 
@@ -161,4 +161,87 @@ Utf8String Get_Leaf_And_Dir_Name(const Utf8String &path)
     }
 
     return Utf8String(++leaf);
+}
+
+bool GameState::Is_In_Save_Dir(const Utf8String &path) const
+{
+    Utf8String str = Get_Save_Dir();
+    return path.Starts_With_No_Case(str.Str());
+}
+
+void GameState::Friend_Xfer_Save_Data_For_CRC(Xfer *xfer, SnapShotType type)
+{
+    captainslog_debug("GameState::friend_xferSaveDataForCRC() - SnapshotType %d", type);
+    SaveGameInfo *info = Get_Save_Info();
+    info->m_saveDescription.Clear();
+    info->m_saveFileType = SAVE_TYPE_UNK;
+    info->m_mapPath2.Clear();
+    info->m_pristineMapPath.Clear();
+    Xfer_Save_Data(xfer, type);
+}
+
+void GameState::Xfer_Save_Data(Xfer *xfer, SnapShotType type)
+{
+    if (xfer == nullptr) {
+        throw 4;
+    }
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        captainslog_debug("GameState::xferSaveData() - XFER_SAVE");
+        Utf8String name;
+
+        for (auto it = m_snapShotBlocks[type].begin(); it != m_snapShotBlocks[type].end(); it++) {
+            name = it->m_name;
+            captainslog_debug("Looking at block '%s'", name.Str());
+
+            if (Get_Save_Info()->m_saveFileType != SAVE_TYPE_UNK2 || name.Compare_No_Case("CHUNK_GameState") == 0
+                || name.Compare_No_Case("CHUNK_Campaign") == 0) {
+                xfer->xferAsciiString(&name);
+                xfer->Begin_Block();
+                xfer->xferSnapshot(it->m_snapShot);
+                xfer->End_Block();
+            }
+        }
+
+        Utf8String eof("SG_EOF");
+        xfer->xferAsciiString(&eof);
+    } else {
+        captainslog_debug("GameState::xferSaveData() - not XFER_SAVE");
+        Utf8String name;
+        bool done = false;
+
+        while (!done) {
+            xfer->xferAsciiString(&name);
+
+            if (name.Compare_No_Case("SG_EOF") != 0) {
+                SnapShotBlock *block = Find_Block_Info_By_Token(name, type);
+
+                if (block != nullptr) {
+                    xfer->Begin_Block();
+                    xfer->xferSnapshot(block->m_snapShot);
+                    xfer->End_Block();
+                } else {
+                    captainslog_debug("GameState::xferSaveData - Skipping unknown block '%s'", name.Str());
+                    xfer->Skip(xfer->Begin_Block());
+                }
+            } else {
+                done = true;
+            }
+        }
+    }
+}
+
+GameState::SnapShotBlock *GameState::Find_Block_Info_By_Token(Utf8String name, SnapShotType type)
+{
+    if (name.Is_Empty()) {
+        return nullptr;
+    } else {
+        for (auto it = m_snapShotBlocks[type].begin(); it != m_snapShotBlocks[type].end(); it++) {
+            if (it->m_name == name) {
+                return &*it;
+            }
+        }
+    }
+
+    return nullptr;
 }

@@ -50,6 +50,9 @@ public:
     virtual void Update() override;
     virtual void Draw() override;
 
+    void Set_Group(Utf8String str, bool b);
+    bool Is_Finished();
+
 protected:
     std::list<TransitionGroup *> m_groupList;
     TransitionGroup *m_group1;

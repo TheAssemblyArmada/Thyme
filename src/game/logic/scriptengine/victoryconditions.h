@@ -32,6 +32,8 @@ public:
     virtual bool Am_I_Observer() = 0;
     virtual unsigned int Get_End_Frame() = 0;
 
+    void Set_Victory_Conditions(int conditions) { m_victoryConditions = conditions; }
+
 private:
     int m_victoryConditions;
 };

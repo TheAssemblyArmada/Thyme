@@ -50,6 +50,8 @@ public:
     void Try_Infiltration_Event(Object *obj);
     void Try_Event(RadarEventType event, const Coord3D *pos);
 
+    void Force_On(bool on) { m_radarForceOn = on; }
+
 private:
     enum
     {

@@ -184,6 +184,7 @@ public:
     float Get_Max_Height() const { return m_maxHeight; }
     float Get_Min_Height() const { return m_minHeight; }
     bool Get_Need_Full_Update() const { return m_needFullUpdate; }
+    float Get_Cliff_Angle() const { return m_cliffAngle; }
 
     int Get_Num_Water_Blend_Tiles(bool b)
     {

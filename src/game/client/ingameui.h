@@ -195,6 +195,7 @@ public:
     int Get_Drawable_Caption_Color() const { return m_drawableCaptionColor; }
     bool Is_In_Waypoint_Mode() const { return m_waypointMode; }
     bool Get_Unk7() const { return m_unk7; }
+    void Set_Unk6(bool b) { m_unk6 = b; }
 
 protected:
     struct MoveHintStruct

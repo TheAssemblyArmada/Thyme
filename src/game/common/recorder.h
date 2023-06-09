@@ -42,8 +42,10 @@ public:
 
     bool Playback_File(Utf8String name);
     bool Is_Multiplayer();
+    void Init_Controls();
     RecorderModeType Get_Mode() const { return m_mode; }
     GameMode Get_Org_Game_Mode() const { return m_orgGameMode; }
+    GameInfo *Get_Game_Info() { return &m_gameInfo; }
 
 private:
     CRCInfo *m_crcInfo;

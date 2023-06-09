@@ -164,6 +164,7 @@ public:
 
     MouseCursor Get_Mouse_Cursor() const { return m_currentCursor; }
     MouseIO *Get_Mouse_Status() { return &m_currMouse; }
+    bool Get_Visibility() const { return m_visible; }
 
     static void Parse_Mouse_Definition(INI *ini);
     static void Parse_Cursor_Definition(INI *ini);

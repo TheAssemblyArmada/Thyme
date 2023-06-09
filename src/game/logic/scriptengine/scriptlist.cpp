@@ -106,7 +106,7 @@ ScriptList *ScriptList::Duplicate()
         ScriptGroup *duplicate = group->Duplicate();
 
         if (new_group != nullptr) {
-            new_group->Set_Next(duplicate);
+            new_group->Set_Next_Group(duplicate);
         } else {
             new_list->m_firstGroup = duplicate;
         }
@@ -142,7 +142,7 @@ ScriptList *ScriptList::Duplicate_And_Qualify(const Utf8String &str1, const Utf8
         ScriptGroup *duplicate = group->Duplicate_And_Qualify(str1, str2, str3);
 
         if (new_group != nullptr) {
-            new_group->Set_Next(duplicate);
+            new_group->Set_Next_Group(duplicate);
         } else {
             new_list->m_firstGroup = duplicate;
         }
@@ -185,10 +185,10 @@ void ScriptList::Add_Group(ScriptGroup *group, int index)
     }
 
     if (position != nullptr) {
-        group->Set_Next(position->Get_Next());
-        position->Set_Next(group);
+        group->Set_Next_Group(position->Get_Next());
+        position->Set_Next_Group(group);
     } else {
-        group->Set_Next(m_firstGroup);
+        group->Set_Next_Group(m_firstGroup);
         m_firstGroup = group;
     }
 }

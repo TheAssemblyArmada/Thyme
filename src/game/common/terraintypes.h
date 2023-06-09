@@ -74,6 +74,10 @@ protected:
 public:
     TerrainType();
     Utf8String Get_Texture() { return m_texture; }
+    Utf8String Get_Name() { return m_name; }
+    bool Is_Blend_Edge() { return m_blendEdgeTexture; }
+    TerrainClass Get_Class() { return m_class; }
+    TerrainType *Friend_Get_Next() { return m_next; }
 
 private:
     Utf8String m_name;
@@ -97,6 +101,8 @@ public:
 
     TerrainType *Find_Terrain(Utf8String name);
     TerrainType *New_Terrain(Utf8String name);
+    TerrainType *First_Terrain() { return m_terrainList; }
+    TerrainType *Next_Terrain(TerrainType *terrain) { return terrain->Friend_Get_Next(); }
 
     static void Parse_Terrain_Definition(INI *ini);
 

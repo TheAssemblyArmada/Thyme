@@ -741,6 +741,15 @@ public:
         Row[2].W = f12 * A.Row[2].Z + f11 * A.Row[2].Y + f10 * A.Row[2].X + A.Row[2].W;
     }
 
+    void Mul_Vector3(Vector3 &v) const { Mul_Vector3(v, v); }
+
+    void Mul_Vector3(const Vector3 &in, Vector3 &out) const
+    {
+        out.Set(Row[0].X * in.X + Row[0].Y * in.Y + Row[0].Z * in.Z + Row[0].W,
+            Row[1].X * in.X + Row[1].Y * in.Y + Row[1].Z * in.Z + Row[1].W,
+            Row[2].X * in.X + Row[2].Y * in.Y + Row[2].Z * in.Z + Row[2].W);
+    }
+
     static __forceinline void Transform_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;

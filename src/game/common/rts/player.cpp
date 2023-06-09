@@ -541,7 +541,7 @@ void Player::Init(const PlayerTemplate *pt)
 #endif
 
     if (pt != nullptr) {
-        m_side = pt->Get_Side_Name();
+        m_side = pt->Get_Side();
         m_baseSide = pt->Get_Base_Side();
         m_productionCostChanges = *pt->Get_Production_Cost_Changes();
         m_productionTimeChanges = *pt->Get_Production_Time_Changes();
@@ -1136,7 +1136,7 @@ void Player::Init_From_Dict(const Dict *d)
                 g_theNameKeyGenerator->Name_To_Key(side_dict.Get_AsciiString(g_playerFactionKey).Str()));
 
             if (pt != nullptr) {
-                if (pt->Get_Side_Name() == Get_Side()) {
+                if (pt->Get_Side() == Get_Side()) {
                     is_skirmish = true;
                     break;
                 }
@@ -1170,7 +1170,7 @@ void Player::Init_From_Dict(const Dict *d)
                     g_theNameKeyGenerator->Name_To_Key(side_dict.Get_AsciiString(g_playerFactionKey).Str()));
 
                 if (pt != nullptr) {
-                    if (pt->Get_Side_Name() == civilian) {
+                    if (pt->Get_Side() == civilian) {
                         name_index_str.Format(
                             "%s%d", side_dict.Get_AsciiString(g_playerNameKey).Str(), m_multiplayerStartIndex);
                         civilian_found = true;
@@ -1217,7 +1217,7 @@ void Player::Init_From_Dict(const Dict *d)
                 g_theNameKeyGenerator->Name_To_Key(side_dict.Get_AsciiString(g_playerFactionKey).Str()));
 
             if (pt != nullptr) {
-                if (pt->Get_Side_Name() == side) {
+                if (pt->Get_Side() == side) {
                     name_index_str.Format("%s%d", side_dict.Get_AsciiString(g_playerNameKey).Str(), m_multiplayerStartIndex);
                     side_found = true;
                     break;

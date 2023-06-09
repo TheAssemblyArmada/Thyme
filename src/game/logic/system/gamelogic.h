@@ -48,7 +48,7 @@ public:
     struct ObjectTOCEntry
     {
         Utf8String name;
-        short id;
+        unsigned short id;
     };
 
     GameLogic();
@@ -65,7 +65,7 @@ public:
 
     unsigned int Get_Frame() { return m_frame; }
     GameMode Get_Game_Mode() { return m_gameMode; }
-    short Get_Max_Simultaneous_Of_Type() { return m_maxSimultaneousOfType; }
+    unsigned short Get_Max_Simultaneous_Of_Type() { return m_maxSimultaneousOfType; }
     unsigned int Get_Sleepy_Module_Count() { return m_sleepingUpdateModules.size(); }
     int Get_Next_Obj_ID() { return m_nextObjID; }
     int Get_Rank_Level_Limit() { return m_rankLevelLimit; }
@@ -127,6 +127,7 @@ public:
     bool Is_In_Replay_Game() { return m_gameMode == GAME_REPLAY; }
     bool Is_In_Shell_Game() { return m_gameMode == GAME_SHELL; }
     bool Is_In_Multiplayer_Game() { return m_gameMode == GAME_LAN || m_gameMode == GAME_INTERNET; }
+    bool Is_In_Internet_Game() { return m_gameMode == GAME_INTERNET; }
     bool Is_In_Skirmish_Game() { return m_gameMode == GAME_SKIRMISH; }
     bool Is_In_Lan_Game() { return m_gameMode == GAME_LAN; }
 
@@ -186,7 +187,7 @@ public:
     void Bind_Object_And_Drawable(Object *obj, Drawable *d);
     void Send_Object_Destroyed(Object *obj);
     unsigned int Get_Object_Count();
-    void Prepare_For_Object_Load();
+    void Prepare_Logic_For_Object_Load();
     Object *Get_First_Object();
 
     void Erase_Sleepy_Update(int index);
@@ -242,7 +243,7 @@ private:
     ObjectID m_nextObjID;
     GameMode m_gameMode;
     int m_rankLevelLimit;
-    short m_maxSimultaneousOfType;
+    unsigned short m_maxSimultaneousOfType;
     LoadScreen *m_loadScreen;
     bool m_gamePaused;
     bool m_inputEnabled;

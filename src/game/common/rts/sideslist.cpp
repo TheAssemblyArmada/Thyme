@@ -404,3 +404,10 @@ bool SidesList::Parse_Sides_Data_Chunk(DataChunkInput &input, DataChunkInfo *inf
     captainslog_dbgassert(input.At_End_Of_Chunk(), "Incorrect data file length.");
     return true;
 }
+
+void SidesList::Prepare_For_MP_Or_Skirmish()
+{
+#ifdef GAME_DLL
+    Call_Method<void, SidesList>(PICK_ADDRESS(0x004D6DA0, 0x006B9F32), this);
+#endif
+}

@@ -73,3 +73,15 @@ void MapCache::Update_Cache()
     Call_Method<void, MapCache>(PICK_ADDRESS(0x0047F3B0, 0x009EE29A), this);
 #endif
 }
+
+MapMetaData *MapCache::Find_Map(Utf8String map_name)
+{
+    map_name.To_Lower();
+    auto it = find(map_name);
+
+    if (it == end()) {
+        return nullptr;
+    } else {
+        return &it->second;
+    }
+}

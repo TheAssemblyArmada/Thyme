@@ -103,3 +103,27 @@ const CommandButton *CommandSet::Get_Command_Button(int button) const
 
     return m_command[button];
 }
+
+const CommandButton *ControlBar::Find_Command_Button(const Utf8String &name)
+{
+#ifdef GAME_DLL
+    return Call_Method<const CommandButton *, ControlBar, const Utf8String &>(
+        PICK_ADDRESS(0x0045F6D0, 0x0072E204), this, name);
+#else
+    return nullptr;
+#endif
+}
+
+void ControlBar::Hide_Communicator(bool hide)
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar, bool>(PICK_ADDRESS(0x00460AB0, 0x0072FA8D), this, hide);
+#endif
+}
+
+void ControlBar::Init_Special_Power_Shortcut_Bar(Player *player)
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar, Player *>(PICK_ADDRESS(0x00461680, 0x0073027A), this, player);
+#endif
+}

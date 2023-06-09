@@ -405,14 +405,14 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
 
         for (int i = 0; i < (int)i1; i++) {
             point.x = src_rect.right * i;
-            DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Get_D3D_Surface(), &point);
+            DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Peek_D3D_Surface(), &point);
         }
 
         if (i2) {
             unsigned int right = src_rect.right;
             point.x = src_rect.right * i1;
             src_rect.right = i2;
-            DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Get_D3D_Surface(), &point);
+            DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Peek_D3D_Surface(), &point);
             src_rect.right = right;
         }
     }
@@ -476,7 +476,7 @@ void W3DShroud::Render(CameraClass *cam)
                 Fill_Border_Shroud_Data(m_shroudAlpha, surface);
             }
 
-            DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Get_D3D_Surface(), &point);
+            DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Peek_D3D_Surface(), &point);
             Ref_Ptr_Release(surface);
         }
     }

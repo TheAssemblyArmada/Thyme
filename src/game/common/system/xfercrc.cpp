@@ -61,3 +61,79 @@ void XferCRC::xferImplementation(void *thing, int size)
         Add_CRC(tmp);
     }
 }
+
+XferDeepCRC::XferDeepCRC()
+{
+    m_type = XFER_SAVE;
+    m_fileHandle = nullptr;
+}
+
+XferDeepCRC::~XferDeepCRC()
+{
+    if (m_fileHandle != nullptr) {
+        captainslog_dbgassert(false, "Warning: Xfer file '%s' was left open", m_filename.Str());
+        Close();
+    }
+}
+
+void XferDeepCRC::Open(Utf8String filename)
+{
+    m_type = XFER_SAVE;
+    captainslog_relassert(m_fileHandle == nullptr,
+        XFER_STATUS_FILE_ALREADY_OPEN,
+        "Cannot open file '%s' cause we've already got '%s' open",
+        filename.Str(),
+        m_filename.Str());
+    Xfer::Open(filename);
+    m_fileHandle = fopen(filename.Str(), "w+b");
+    captainslog_relassert(m_fileHandle != nullptr, XFER_STATUS_FILE_NOT_FOUND, "File '%s' not found", filename.Str());
+    m_crc = 0;
+}
+
+void XferDeepCRC::Close()
+{
+    captainslog_relassert(m_fileHandle != nullptr, XFER_STATUS_FILE_NOT_OPEN, "Xfer close called, but no file was open");
+    fclose(m_fileHandle);
+    m_fileHandle = nullptr;
+    m_filename.Clear();
+}
+
+void XferDeepCRC::xferImplementation(void *thing, int size)
+{
+    if (thing != nullptr && size >= 1) {
+        captainslog_dbgassert(m_fileHandle != nullptr, "XferSave - file pointer for '%s' is NULL", m_filename.Str());
+        int ret = fwrite(thing, size, 1, m_fileHandle);
+        captainslog_relassert(ret == 1, XFER_STATUS_WRITE_ERROR, "XferSave - Error writing to file '%s'", m_filename.Str());
+        XferCRC::xferImplementation(thing, size);
+    }
+}
+
+void XferDeepCRC::xferMarkerLabel(Utf8String thing) {}
+
+void XferDeepCRC::xferAsciiString(Utf8String *thing)
+{
+    captainslog_relassert(thing->Get_Length() <= 16385,
+        XFER_STATUS_STRING_TOO_LONG,
+        "XferSave cannot save this ascii string because it's too long.  Change the size of the length header (but be sure "
+        "to preserve save file compatability");
+    unsigned short len = thing->Get_Length();
+    xferUnsignedShort(&len);
+
+    if (len != 0) {
+        xferUser(const_cast<char *>(thing->Str()), len);
+    }
+}
+
+void XferDeepCRC::xferUnicodeString(Utf16String *thing)
+{
+    captainslog_relassert(thing->Get_Length() <= 255,
+        XFER_STATUS_STRING_TOO_LONG,
+        "XferSave cannot save this unicode string because it's too long.  Change the size of the length header (but be sure "
+        "to preserve save file compatability");
+    int8_t len = thing->Get_Length();
+    xferByte(&len);
+
+    if (len != 0) {
+        xferUser(const_cast<unichar_t *>(thing->Str()), len * 2);
+    }
+}

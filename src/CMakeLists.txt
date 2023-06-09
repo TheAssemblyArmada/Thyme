@@ -151,6 +151,7 @@ set(GAMEENGINE_SRC
     game/client/shader/roadshader.cpp
     game/client/shader/shroudshader.cpp
     game/client/shader/terrainshader.cpp
+    game/client/system/campaignmanager.cpp
     game/client/system/debugdisplay.cpp
     game/client/system/rayeffect.cpp
     game/client/system/particlesystem/particle.cpp
@@ -321,10 +322,13 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptaction.cpp
+    game/logic/scriptengine/scriptactions.cpp
     game/logic/scriptengine/scriptcondition.cpp
+    game/logic/scriptengine/scriptconditions.cpp
     game/logic/scriptengine/scriptgroup.cpp
     game/logic/scriptengine/scriptlist.cpp
     game/logic/scriptengine/scriptparam.cpp
+    game/logic/scriptengine/scripttemplate.cpp
     game/logic/scriptengine/sequentialscript.cpp
     game/logic/scriptengine/victoryconditions.cpp
     game/logic/system/damage.cpp

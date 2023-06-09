@@ -285,7 +285,7 @@ public:
     void Set_Formation_Offset(Coord2D *c) { m_formationOffset = *c; }
     void Set_Formation_ID(FormationID id) { m_formationID = id; }
     void Set_Single_Use_Command() { m_singleUseCommand = true; }
-    void Set_Name(Utf8String &name) { m_name = name; }
+    void Set_Name(const Utf8String &name) { m_name = name; }
     void Set_Partition_Data(PartitionData *data) { m_partitionData = data; }
     void Set_Radar_Data(RadarObject *data) { m_radarData = data; }
     void Set_Construction_Percent(float percent) { m_constructionPercent = percent; }

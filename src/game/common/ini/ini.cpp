@@ -1003,3 +1003,97 @@ void INI::Parse_Object_Reskin_Definition(INI *ini)
     Utf8String reskin = ini->Get_Next_Token();
     ThingFactory::Parse_Object_Definition(ini, name, reskin);
 }
+
+bool INI::Is_Declaration_Of_Type(Utf8String block_type, Utf8String block_name, char *buffer_to_check)
+{
+    bool ret = true;
+
+    if (buffer_to_check == nullptr || block_type.Is_Empty() || block_name.Is_Empty()) {
+        return false;
+    } else {
+        char *buffer = buffer_to_check;
+        int block_type_len = block_type.Get_Length();
+        int block_name_len = block_name.Get_Length();
+
+        while (isspace(*buffer)) {
+            buffer++;
+        }
+
+        if (strlen(buffer) <= static_cast<size_t>(block_type_len)) {
+            ret = false;
+        } else {
+            char c = buffer[block_type_len];
+            buffer[block_type_len] = '\0';
+
+            if (strcasecmp(block_type.Str(), buffer) != 0) {
+                ret = false;
+            }
+
+            buffer[block_type_len] = c;
+            buffer += block_type_len;
+        }
+
+        while (isspace(*buffer)) {
+            buffer++;
+        }
+
+        if (strlen(buffer) <= static_cast<size_t>(block_name_len)) {
+            ret = false;
+        } else {
+            char c = buffer[block_name_len];
+            buffer[block_name_len] = '\0';
+
+            if (strcasecmp(block_name.Str(), buffer) != 0) {
+                ret = false;
+            }
+
+            buffer[block_name_len] = c;
+            buffer += block_name_len;
+        }
+
+        while (strlen(buffer) != 0) {
+            ret = ret && isspace(*buffer);
+            buffer++;
+        }
+
+        return ret;
+    }
+}
+
+bool INI::Is_End_Of_Block(char *buffer_to_check)
+{
+    static const char *end_string = "End";
+    bool ret = false;
+
+    if (buffer_to_check == nullptr) {
+        return false;
+    }
+
+    size_t end_string_len = strlen(end_string);
+    char *buffer = buffer_to_check;
+
+    while (isspace(*buffer)) {
+        buffer++;
+    }
+
+    if (strlen(buffer) <= end_string_len) {
+        ret = false;
+    } else {
+        char c = buffer[end_string_len];
+        buffer[end_string_len] = '\0';
+
+        if (strcasecmp(end_string, buffer) != 0) {
+            ret = false;
+        }
+
+        buffer[end_string_len] = c;
+        buffer += end_string_len;
+    }
+
+    while (strlen(buffer) != 0) {
+        ret = ret && isspace(*buffer);
+        buffer++;
+    }
+
+    return ret;
+}

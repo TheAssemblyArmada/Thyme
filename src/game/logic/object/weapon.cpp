@@ -223,7 +223,7 @@ WeaponTemplate *WeaponStore::New_Override(WeaponTemplate *tmplate)
     }
 
     WeaponTemplate *t = new WeaponTemplate();
-    t = tmplate;
+    *t = *tmplate;
     t->Friend_Set_Next_Template(tmplate);
     return t;
 }

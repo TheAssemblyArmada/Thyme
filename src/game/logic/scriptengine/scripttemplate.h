@@ -33,7 +33,7 @@ public:
     Template();
     virtual ~Template() override{};
 
-    void Get_UI_Strings(Utf8String *strings) const;
+    int Get_UI_Strings(Utf8String *const strings) const;
     Parameter::ParameterType Get_Parameter_Type(int parameter) const;
 
     int Get_Num_Parameters() const { return m_numParameters; }

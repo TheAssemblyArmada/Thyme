@@ -218,6 +218,7 @@ protected:
     float m_windMotionEndAngleMin;
     float m_windMotionEndAngleMax;
     bool m_windMotionMovingToEndAngle;
+    friend class ScriptEngine;
 };
 
 // no evidence this function exists so we can't be sure its accurate

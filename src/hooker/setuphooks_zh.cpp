@@ -132,11 +132,15 @@
 #include "scorekeeper.h"
 #include "script.h"
 #include "scriptaction.h"
+#include "scriptactions.h"
 #include "scriptcondition.h"
+#include "scriptconditions.h"
+#include "scriptengine.h"
 #include "scriptgroup.h"
 #include "scriptlist.h"
 #include "segline.h"
 #include "seglinerenderer.h"
+#include "sequentialscript.h"
 #include "setuphooks.h"
 #include "shader.h"
 #include "shadermanager.h"
@@ -370,6 +374,8 @@ void Setup_Hooks()
     Hook_Function(0x0041DD10, &INI::Parse_Velocity_Real);
     Hook_Function(0x0041DD90, &INI::Parse_Acceleration_Real);
     Hook_Function(0x0041BB20, &INI::Parse_Bitstring32);
+    Hook_Function(0x0041E730, &INI::Is_Declaration_Of_Type);
+    Hook_Function(0x0041E9A0, &INI::Is_End_Of_Block);
 
     // Replace NameKeyGenerator
     Hook_Method(0x0047B2F0, &NameKeyGenerator::Key_To_Name);
@@ -2255,7 +2261,17 @@ void Setup_Hooks()
     Hook_Any(0x005CCCB0, PhysicsBehavior::Set_Bounce_Sound);
 
     // objecttypes.h
+    Hook_Any(0x005375C0, ObjectTypes::Hook_Ctor);
+    Hook_Any(0x005376D0, ObjectTypes::Hook_Dtor);
+    Hook_Any(0x005377A0, ObjectTypes::Hook_Ctor2);
+    Hook_Any(0x00537820, ObjectTypes::Add_Object_Type);
+    Hook_Any(0x00537890, ObjectTypes::Remove_Object_Type);
+    Hook_Method(0x00537B70, static_cast<bool (ObjectTypes::*)(const Utf8String &) const>(&ObjectTypes::Is_In_Set));
+    Hook_Method(0x00537DE0, static_cast<bool (ObjectTypes::*)(const ThingTemplate *) const>(&ObjectTypes::Is_In_Set));
+    Hook_Any(0x00538050, ObjectTypes::Prep_For_Player_Counting);
+    Hook_Any(0x00538290, ObjectTypes::Can_Build_Any);
     Hook_Any(0x005382E0, ObjectTypes::Xfer_Snapshot);
+    Hook_Any(0x00432A40, ObjectTypes::Get_Nth_In_List);
 
     // drawable.cpp
     Hook_Any(0x0046DAB0, Drawable::Init_Static_Images);
@@ -2468,7 +2484,7 @@ void Setup_Hooks()
     Hook_Any(0x0049F390, TeamPrototype::Has_Any_Build_Facility);
     Hook_Any(0x0049F3E0, TeamPrototype::Evaluate_Production_Condition);
     Hook_Any(0x004A0180, Team::Count_Objects_By_Thing_Template);
-    Hook_Any(0x004A0220, Team::Count_Buildings);
+    Hook_Any(0x004A0220, Team::Iterate_Objects);
     Hook_Any(0x004A0250, Team::Has_Any_Units);
     Hook_Any(0x004A0300, Team::Has_Any_Objects);
     Hook_Any(0x004A0360, Team::Update_State);
@@ -3041,10 +3057,146 @@ void Setup_Hooks()
     Hook_Any(0x00555A60, AIGroup::Set_Weapon_Lock_For_Group);
     Hook_Any(0x00555AC0, AIGroup::Release_Weapon_Lock_For_Group);
     Hook_Any(0x00555AF0, AIGroup::Queue_Upgrade);
-    Hook_Any(0x00555B80, AIGroup::Is_Busy);
+    Hook_Any(0x00555B80, AIGroup::Is_Idle);
     Hook_Any(0x00555BD0, AIGroup::Is_Group_AI_Dead);
     Hook_Any(0x00555C00, AIGroup::Get_Special_Power_Source_Object);
     Hook_Any(0x00555C50, AIGroup::Get_Command_Button_Source_Object);
     Hook_Any(0x00555CC0, AIGroup::Group_Set_Emoticon);
     Hook_Any(0x00555D00, AIGroup::Group_Override_Special_Power_Destination);
+
+    // scriptengine.h
+    Hook_Any(0x00421A90, AttackPriorityInfo::Hook_Ctor);
+    Hook_Any(0x00421BD0, AttackPriorityInfo::Hook_Dtor);
+    Hook_Any(0x00421CD0, AttackPriorityInfo::Set_Priority);
+    Hook_Any(0x00421E10, AttackPriorityInfo::Get_Priority);
+    Hook_Any(0x00421E60, AttackPriorityInfo::Reset);
+    Hook_Any(0x004221C0, ScriptEngine::Parse_Script_Action);
+    Hook_Any(0x00422680, ScriptEngine::Parse_Script_Condition);
+    Hook_Any(0x00422840, ScriptEngine::Hook_Ctor);
+    Hook_Any(0x00422C00, ScriptEngine::Find_Script_By_Name);
+    Hook_Any(0x00422EF0, ScriptEngine::Hook_Dtor);
+    Hook_Any(0x00423280, ScriptEngine::Init);
+    Hook_Any(0x0042E780, ScriptEngine::Reset);
+    Hook_Any(0x0042EC20, ScriptEngine::New_Map);
+    Hook_Any(0x0042EF40, ScriptEngine::Update);
+    Hook_Any(0x0042F4D0, ScriptEngine::Start_Quick_End_Game_Timer);
+    Hook_Any(0x0042F4E0, ScriptEngine::Start_End_Game_Timer);
+    Hook_Any(0x0042F4F0, ScriptEngine::Start_Close_Window_Timer);
+    Hook_Any(0x0042F500, ScriptEngine::Update_Fades);
+    Hook_Any(0x0042F5C0, ScriptEngine::Get_Current_Player);
+    Hook_Any(0x0042F710, ScriptEngine::Clear_Flag);
+    Hook_Any(0x0042F840, ScriptEngine::Clear_Team_Flags);
+    Hook_Any(0x0042FC70, ScriptEngine::Get_Skirmish_Enemy_Player);
+    Hook_Any(0x0042FD10, ScriptEngine::Get_Player_From_AsciiString);
+    Hook_Any(0x0042FFD0, ScriptEngine::Get_Object_Types);
+    Hook_Any(0x00430060, ScriptEngine::Do_ObjectType_List_Maintenance);
+    Hook_Any(0x00430240, ScriptEngine::Get_Qualified_Trigger_Area_By_Name);
+    Hook_Any(0x004305F0, ScriptEngine::Get_Team_Named);
+    Hook_Any(0x00430980, ScriptEngine::Get_Unit_Named);
+    Hook_Any(0x00430A60, ScriptEngine::Did_Unit_Exist);
+    Hook_Any(0x00430AF0, ScriptEngine::Run_Script);
+    Hook_Any(0x00430EC0, ScriptEngine::Run_Object_Script);
+    Hook_Any(0x00431260, ScriptEngine::Allocate_Counter);
+    Hook_Any(0x00431360, ScriptEngine::Get_Counter);
+    Hook_Any(0x00431400, ScriptEngine::Create_Named_Map_Reveal);
+    Hook_Any(0x00431680, ScriptEngine::Do_Named_Map_Reveal);
+    Hook_Any(0x00431780, ScriptEngine::Undo_Named_Map_Reveal);
+    Hook_Any(0x00431880, ScriptEngine::Remove_Named_Map_Reveal);
+    Hook_Any(0x00431970, ScriptEngine::Allocate_Flag);
+    Hook_Any(0x00431A70, ScriptEngine::Find_Group);
+    Hook_Any(0x00431BB0, ScriptEngine::Find_Script);
+    Hook_Any(0x00431DB0, ScriptEngine::Evaluate_Counter);
+    Hook_Any(0x00431F90, ScriptEngine::Set_Fade);
+    Hook_Any(0x00432090, ScriptEngine::Set_Sway);
+    Hook_Any(0x00432160, ScriptEngine::Evaluate_Flag);
+    Hook_Any(0x00432300, ScriptEngine::Find_Attack_Info);
+    Hook_Any(0x00432470, ScriptEngine::Get_Default_Attack_Info);
+    Hook_Any(0x00432480, ScriptEngine::Get_Attack_Info);
+    Hook_Any(0x00432580, ScriptEngine::Set_Priority_Thing);
+    Hook_Any(0x00432A90, ScriptEngine::Set_Priority_Kind);
+    Hook_Any(0x00432E00, ScriptEngine::Set_Priority_Default);
+    Hook_Any(0x00433020, ScriptEngine::Get_Object_Count);
+    Hook_Any(0x00433120, ScriptEngine::Set_Object_Count);
+    Hook_Any(0x00433150, ScriptEngine::Set_Timer);
+    Hook_Any(0x00433370, ScriptEngine::Adjust_Timer);
+    Hook_Any(0x00433520, ScriptEngine::Disable_Script);
+    Hook_Any(0x00433570, ScriptEngine::Call_Subroutine);
+    Hook_Any(0x004338C0, ScriptEngine::Check_Conditions_For_Team_Names);
+    Hook_Any(0x00433DD0, ScriptEngine::Execute_Script);
+    Hook_Any(0x004340F0, ScriptEngine::Friend_Execute_Action);
+    Hook_Any(0x00434150, ScriptEngine::Add_Object_To_Cache);
+    Hook_Any(0x004343E0, ScriptEngine::Remove_Object_From_Cache);
+    Hook_Any(0x00434410, ScriptEngine::Transfer_Object_Name);
+    Hook_Any(0x00434540, ScriptEngine::Notify_Of_Object_Destruction);
+    Hook_Any(0x00434590, ScriptEngine::Notify_Of_Completed_Video);
+    Hook_Any(0x004345C0, ScriptEngine::Notify_Of_Triggered_Special_Power);
+    Hook_Any(0x00434670, ScriptEngine::Notify_Of_Midway_Special_Power);
+    Hook_Any(0x00434720, ScriptEngine::Notify_Of_Completed_Special_Power);
+    Hook_Any(0x004347D0, ScriptEngine::Notify_Of_Completed_Upgrade);
+    Hook_Any(0x00434880, ScriptEngine::Notify_Of_Acquired_Science);
+    Hook_Any(0x004348D0, ScriptEngine::Signal_UI_Interact);
+    Hook_Any(0x00434900, ScriptEngine::Is_Video_Complete);
+    Hook_Any(0x00434960, ScriptEngine::Is_Speech_Complete);
+    Hook_Any(0x00434B20, ScriptEngine::Is_Audio_Complete);
+    Hook_Any(0x00434CE0, ScriptEngine::Is_Special_Power_Triggered);
+    Hook_Any(0x00434E50, ScriptEngine::Is_Special_Power_Midway);
+    Hook_Any(0x00434FB0, ScriptEngine::Is_Special_Power_Complete);
+    Hook_Any(0x00435110, ScriptEngine::Is_Upgrade_Complete);
+    Hook_Any(0x00435270, ScriptEngine::Is_Science_Acquired);
+    Hook_Any(0x004352E0, ScriptEngine::Set_Topple_Direction);
+#if 0
+    // Can't hook Adjust_Topple_Direction with Hook_Method since that wont work for virtual functions and can't hook with Hook_Any because that wont work if there are 2 functions with the same name.
+    Hook_Method(
+        0x004354A0, static_cast<void (ScriptEngine::*)(Object *, Coord2D *)>(&ScriptEngine::Adjust_Topple_Direction));
+    Hook_Method(
+        0x004354F0, static_cast<void (ScriptEngine::*)(Object *, Coord3D *)>(&ScriptEngine::Adjust_Topple_Direction));
+#endif
+    Hook_Any(0x00435670, ScriptEngine::Evaluate_Conditions);
+    Hook_Any(0x00435830, ScriptEngine::Execute_Actions);
+    Hook_Any(0x00435C90, ScriptEngine::Get_Action_Template);
+    Hook_Any(0x00435CB0, ScriptEngine::Get_Condition_Template);
+    Hook_Any(0x00435CD0, ScriptEngine::Append_Sequential_Script);
+    Hook_Method(0x00435FA0, static_cast<void (ScriptEngine::*)(Object *)>(&ScriptEngine::Remove_All_Sequential_Scripts));
+    Hook_Any(0x00436060, ScriptEngine::Notify_Of_Object_Creation_Or_Destruction);
+    Hook_Any(0x00436070, ScriptEngine::Notify_Of_Team_Destruction);
+    Hook_Method(0x00436150, static_cast<void (ScriptEngine::*)(Object *, int)>(&ScriptEngine::Set_Sequential_Timer));
+    Hook_Method(0x00436190, static_cast<void (ScriptEngine::*)(Team *, int)>(&ScriptEngine::Set_Sequential_Timer));
+    Hook_Any(0x004361D0, ScriptEngine::Evaluate_And_Progress_All_Sequential_Scripts);
+    Hook_Any(0x00436B60, ScriptEngine::Particle_Editor_Update);
+    Hook_Any(0x00436FC0, ScriptEngine::Is_Time_Frozen_Script);
+    Hook_Any(0x00436FF0, ScriptEngine::Is_Time_Frozen_Debug);
+    Hook_Any(0x00437040, ScriptEngine::Is_Time_Fast);
+    Hook_Any(0x004370B0, ScriptEngine::Force_Unfreeze_Time);
+    Hook_Any(0x004370D0, ScriptEngine::Append_Debug_Message);
+    Hook_Any(0x004371F0, ScriptEngine::Set_Global_Difficulty);
+    Hook_Any(0x00437200, ScriptEngine::Xfer_Snapshot);
+    Hook_Any(0x00438620, ScriptEngine::Load_Post_Process);
+    Hook_Any(0x00438700, ScriptEngine::Has_Shown_MP_Local_Defeat_Window);
+    Hook_Any(0x00438710, ScriptEngine::Mark_MP_Local_Defeat_Window_Shown);
+    Hook_Any(0x00438720, ScriptEngine::Append_Message);
+    Hook_Any(0x004388E0, ScriptEngine::Add_Updated_Particle_System);
+    Hook_Any(0x00438AE0, ScriptEngine::Get_Particle_System_Name);
+    Hook_Any(0x00438B70, ScriptEngine::Update_Panel_Parameters);
+    Hook_Any(0x00438BA0, ScriptEngine::Update_AsciiString_Parms_To_System);
+    Hook_Any(0x00438D70, ScriptEngine::Update_AsciiString_Parms_From_System);
+    Hook_Any(0x00438E00, ScriptEngine::Write_Out_INI);
+    Hook_Any(0x0043E6C0, ScriptEngine::Write_Single_Particle_System);
+    Hook_Any(0x004424C0, ScriptEngine::Reload_Particle_System_From_INI);
+    Hook_Any(0x00442830, ScriptEngine::Get_New_Current_Particle_Cap);
+    Hook_Any(0x00442850, ScriptEngine::Update_Current_Particle_Count);
+    Hook_Any(0x00742B00, ScriptEngine::Reload_Textures);
+
+    // scriptactions.h
+    Hook_Any(0x00528CC0, ScriptActions::Hook_Ctor);
+    Hook_Any(0x00528DA0, ScriptActions::Hook_Dtor);
+    Hook_Any(0x00528E40, ScriptActions::Reset);
+    Hook_Any(0x005324C0, ScriptActions::Do_Enable_Or_Disable_Object_Difficulty_Bonuses);
+
+    // scriptconditions.h
+    Hook_Any(0x00521400, ScriptConditions::Hook_Ctor);
+    Hook_Any(0x00521440, ScriptConditions::Hook_Dtor);
+    Hook_Any(0x00521500, ScriptConditions::Reset);
+
+    // sequentialscript.h
+    Hook_Any(0x00436980, SequentialScript::Xfer_Snapshot);
 }

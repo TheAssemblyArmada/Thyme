@@ -186,6 +186,7 @@ private:
     friend class Team;
     friend class TeamPrototype;
     friend class Object;
+    friend class ScriptEngine;
 };
 
 class Team : public MemoryPoolObject, public SnapShot

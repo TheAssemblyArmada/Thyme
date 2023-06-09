@@ -85,6 +85,9 @@ public:
     Particle *Get_Particle_Head(ParticlePriorityType priority) { return m_allParticlesHead[priority]; }
     unsigned Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap);
 
+    partsystempmap_t::iterator Get_Starting_Template() { return m_templateStore.begin(); }
+    partsystempmap_t::iterator Get_Ending_Template() { return m_templateStore.end(); }
+
     static ParticleSystemID Create_Attached_Particle_System_ID(
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
     static void Parse_Particle_System_Definition(INI *ini);

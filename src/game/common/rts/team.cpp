@@ -1100,13 +1100,13 @@ bool TeamPrototype::Evaluate_Production_Condition()
     }
 
     if (m_productionConditionScript != nullptr) {
-        if (g_theGameLogic->Get_Frame() < static_cast<unsigned int>(m_productionConditionScript->Get_UnkInt2())) {
+        if (g_theGameLogic->Get_Frame() < static_cast<unsigned int>(m_productionConditionScript->Get_Evaluation_Frame())) {
             return false;
         } else {
             int interval = m_productionConditionScript->Get_Evaluation_Interval();
 
             if (interval > 0) {
-                m_productionConditionScript->Set_UnkInt2(30 * interval + g_theGameLogic->Get_Frame());
+                m_productionConditionScript->Set_Evaluation_Frame(30 * interval + g_theGameLogic->Get_Frame());
             }
 
             return g_theScriptEngine->Evaluate_Conditions(m_productionConditionScript, nullptr, Get_Controlling_Player());

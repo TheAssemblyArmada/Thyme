@@ -19,7 +19,7 @@
 FiringTracker::FiringTracker(Thing *thing, const ModuleData *module_data) :
     UpdateModule(thing, module_data),
     m_consecutiveShots(0),
-    m_victimID(OBJECT_UNK),
+    m_victimID(INVALID_OBJECT_ID),
     m_fireFrame(0),
     m_idleFrame(0),
     m_fireSoundFrame(0),
@@ -159,7 +159,7 @@ void FiringTracker::Cool_Down()
 
     obj->Clear_And_Set_Model_Condition_Flags(must_be_clear, must_be_set);
     m_consecutiveShots = 0;
-    m_victimID = OBJECT_UNK;
+    m_victimID = INVALID_OBJECT_ID;
 }
 
 void FiringTracker::Speed_Up()

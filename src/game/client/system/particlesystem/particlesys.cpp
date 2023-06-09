@@ -37,8 +37,8 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
     m_systemParticlesTail(nullptr),
     m_particleCount(0),
     m_systemID(id),
-    m_attachedToDrawableID(DRAWABLE_UNK),
-    m_attachedToObjectID(OBJECT_UNK),
+    m_attachedToDrawableID(INVALID_DRAWABLE_ID),
+    m_attachedToObjectID(INVALID_OBJECT_ID),
     m_localTransform(true),
     m_transform(true),
     m_burstDelayLeft(0),
@@ -153,8 +153,8 @@ ParticleSystem::~ParticleSystem()
         i->Delete_Instance();
     }
 
-    m_attachedToDrawableID = DRAWABLE_UNK;
-    m_attachedToObjectID = OBJECT_UNK;
+    m_attachedToDrawableID = INVALID_DRAWABLE_ID;
+    m_attachedToObjectID = INVALID_OBJECT_ID;
 
     if (m_controlParticle != nullptr) {
         m_controlParticle->m_systemUnderControl = nullptr;

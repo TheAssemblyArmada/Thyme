@@ -198,7 +198,7 @@ bool AIGroup::Get_Min_Max_And_Center(Coord2D *min, Coord2D *max, Coord3D *center
     center->x = 0;
     center->y = 0;
     center->z = 0;
-    FormationID id = FORMATION_UNK;
+    FormationID id = INVALID_FORMATION_ID;
 
     for (auto it = m_memberList.begin(); it != m_memberList.end(); it++) {
         if (!(*it)->Get_Disabled_State(DISABLED_TYPE_DISABLED_HELD)) {
@@ -255,7 +255,7 @@ bool AIGroup::Get_Min_Max_And_Center(Coord2D *min, Coord2D *max, Coord3D *center
         return false;
     }
 
-    return id != FORMATION_UNK;
+    return id != INVALID_FORMATION_ID;
 }
 
 void AIGroup::Recompute()
@@ -1525,7 +1525,7 @@ void AIGroup::Group_Move_To_Position(const Coord3D *pos, bool append, CommandSou
         bool is_first_in_formation = true;
 
         for (Object *iter_obj = iter->First(); iter_obj != nullptr; iter_obj = iter->Next()) {
-            iter_obj->Set_Formation_ID(FORMATION_UNK);
+            iter_obj->Set_Formation_ID(INVALID_FORMATION_ID);
             AIUpdateInterface *update = iter_obj->Get_AI_Update_Interface();
 
             if (is_first_in_formation) {
@@ -1837,7 +1837,7 @@ void AIGroup::Group_Attack_Object_Private(bool force, Object *victim, int max_sh
             ContainModuleInterface *contain = iter_obj->Get_Contain();
 
             if (contain != nullptr) {
-                if (contain->Is_Passenger_Allowed_To_Fire(OBJECT_UNK)) {
+                if (contain->Is_Passenger_Allowed_To_Fire(INVALID_OBJECT_ID)) {
                     const std::list<Object *> *list = contain->Get_Contained_Items_List();
 
                     if (list != nullptr) {
@@ -2158,19 +2158,19 @@ void AIGroup::Group_Create_Formation(CommandSourceType cmd_source)
     bool in_formation = Get_Min_Max_And_Center(&min, &max, &center);
     FormationID next_id = static_cast<FormationID>(g_theAI->Get_Next_Formation_ID());
     int member_count = 0;
-    FormationID cur_id = FORMATION_UNK;
+    FormationID cur_id = INVALID_FORMATION_ID;
 
     for (auto it = m_memberList.begin(); it != m_memberList.end(); it++) {
         member_count++;
         cur_id = (*it)->Get_Formation_ID();
     }
 
-    if (member_count == 1 && cur_id != FORMATION_UNK) {
+    if (member_count == 1 && cur_id != INVALID_FORMATION_ID) {
         in_formation = true;
     }
 
     if (in_formation) {
-        next_id = FORMATION_UNK;
+        next_id = INVALID_FORMATION_ID;
     }
 
     for (auto it = m_memberList.begin(); it != m_memberList.end(); it++) {
@@ -2540,7 +2540,7 @@ Object *AIGroup::Get_Command_Button_Source_Object(GUICommand command_type)
 
 void AIGroup::CRC_Snapshot(Xfer *xfer)
 {
-    ObjectID id = OBJECT_UNK;
+    ObjectID id = INVALID_OBJECT_ID;
 
     for (auto it = m_memberList.begin(); it != m_memberList.end(); it++) {
         if ((*it) != nullptr) {
@@ -2557,7 +2557,7 @@ void AIGroup::CRC_Snapshot(Xfer *xfer)
 #ifdef GAME_DEBUG_STRUCTS
     // TODO CRC log stuff
 #endif
-    id = OBJECT_UNK;
+    id = INVALID_OBJECT_ID;
     xfer->xferObjectID(&id);
 #ifdef GAME_DEBUG_STRUCTS
     // TODO CRC log stuff

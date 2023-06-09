@@ -89,7 +89,7 @@ public:
         if (m_eventType == EVENT_3D_OBJECT) {
             return m_objectID;
         } else {
-            return OBJECT_UNK;
+            return INVALID_OBJECT_ID;
         }
     }
     DrawableID Get_Drawable_ID() const
@@ -97,7 +97,7 @@ public:
         if (m_eventType == EVENT_3D_DRAWABLE) {
             return m_drawableID;
         } else {
-            return DRAWABLE_UNK;
+            return INVALID_DRAWABLE_ID;
         }
     }
     void Decrement_Delay(float amount) { m_delay -= amount; }

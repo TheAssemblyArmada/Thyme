@@ -73,14 +73,14 @@ enum ScienceType : int32_t
 // Placeholder
 enum ObjectID : uint32_t
 {
-    OBJECT_UNK,
+    INVALID_OBJECT_ID,
 };
 
 DEFINE_ENUMERATION_OPERATORS_T(ObjectID, uint32_t);
 
 enum DrawableID : uint32_t
 {
-    DRAWABLE_UNK,
+    INVALID_DRAWABLE_ID,
 };
 
 enum DrawableStatus

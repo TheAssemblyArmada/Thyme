@@ -39,20 +39,20 @@ AIPlayer::AIPlayer(Player *p) :
     m_teamDelay(0),
     m_skillsetSelector(INVALID_SKILLSET_SELECTION),
     m_baseRadius(0.0f),
-    m_dozerID(OBJECT_UNK),
+    m_dozerID(INVALID_OBJECT_ID),
     m_structureRepairCount(0),
     m_dozerQueued(false),
     m_dozerRepairing(false),
     m_bridgeRepairTimer(0),
     m_supplySourceFrame(0),
-    m_supplySourceID(OBJECT_UNK),
-    m_supplyCenterID(OBJECT_UNK)
+    m_supplySourceID(INVALID_OBJECT_ID),
+    m_supplyCenterID(INVALID_OBJECT_ID)
 {
     m_frameLastBuildingBuilt = g_theGameLogic->Get_Frame();
     p->Set_Can_Build_Units(false);
 
     for (int i = 0; i < 2; i++) {
-        m_structureRepairQueue[i] = OBJECT_UNK;
+        m_structureRepairQueue[i] = INVALID_OBJECT_ID;
     }
 
     m_dozerPosition.Zero();

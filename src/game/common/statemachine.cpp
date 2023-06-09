@@ -264,7 +264,7 @@ Utf8String StateMachine::Get_Name() const
 
 void StateMachine::Internal_Clear()
 {
-    m_goalObjectID = OBJECT_UNK;
+    m_goalObjectID = INVALID_OBJECT_ID;
     m_goalPosition.x = 0.0f;
     m_goalPosition.y = 0.0f;
     m_goalPosition.z = 0.0f;
@@ -542,7 +542,7 @@ void StateMachine::Set_Goal_Object(Object const *obj)
 
 bool StateMachine::Is_Goal_Object_Destroyed() const
 {
-    return m_goalObjectID != OBJECT_UNK && Get_Goal_Object() == nullptr;
+    return m_goalObjectID != INVALID_OBJECT_ID && Get_Goal_Object() == nullptr;
 }
 
 void StateMachine::Halt()
@@ -567,7 +567,7 @@ void StateMachine::Internal_Set_Goal_Object(Object const *obj)
         m_goalObjectID = obj->Get_ID();
         Internal_Set_Goal_Position(obj->Get_Position());
     } else {
-        m_goalObjectID = OBJECT_UNK;
+        m_goalObjectID = INVALID_OBJECT_ID;
     }
 }
 

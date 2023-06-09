@@ -361,7 +361,7 @@ public:
     GeometryInfo const &Get_Drawable_Geometry_Info() const;
     DrawableID Get_ID() const
     {
-        captainslog_dbgassert(m_id != DRAWABLE_UNK, "Drawable::getID - Using ID before it was assigned!!!!");
+        captainslog_dbgassert(m_id != INVALID_DRAWABLE_ID, "Drawable::getID - Using ID before it was assigned!!!!");
         return m_id;
     }
     DrawableIconInfo *Get_Icon_Info();

@@ -36,7 +36,7 @@ bool ExperienceTracker::Is_Trainable() const
 // zh: 0x0061B7E0 wb: 0x008A3654
 bool ExperienceTracker::Is_Accepting_Experience_Points() const
 {
-    return Is_Trainable() || m_experienceSink != ObjectID::OBJECT_UNK;
+    return Is_Trainable() || m_experienceSink != ObjectID::INVALID_OBJECT_ID;
 }
 
 // zh: 0x0061B820 wb: 0x008A36A4
@@ -97,7 +97,7 @@ bool ExperienceTracker::Can_Gain_Exp_For_Level(int32_t levels_to_gain) const
 // zh: 0x0061B910 wb: 0x008A381C
 void ExperienceTracker::Add_Experience_Points(int32_t experience_gain, bool apply_multiplier)
 {
-    if (m_experienceSink != ObjectID::OBJECT_UNK) {
+    if (m_experienceSink != ObjectID::INVALID_OBJECT_ID) {
         auto *sink_object = g_theGameLogic->Find_Object_By_ID(m_experienceSink);
         if (sink_object != nullptr) {
             sink_object->Get_Experience_Tracker()->Add_Experience_Points(
@@ -133,7 +133,7 @@ void ExperienceTracker::Add_Experience_Points(int32_t experience_gain, bool appl
 // zh: 0x0061B9D0 wb: 0x008A3934
 void ExperienceTracker::Set_Experience_And_Level(int32_t experience_gain, bool unk)
 {
-    if (m_experienceSink != ObjectID::OBJECT_UNK) {
+    if (m_experienceSink != ObjectID::INVALID_OBJECT_ID) {
         auto *sink_object = g_theGameLogic->Find_Object_By_ID(m_experienceSink);
         if (sink_object != nullptr) {
             sink_object->Get_Experience_Tracker()->Set_Experience_And_Level(experience_gain, unk);

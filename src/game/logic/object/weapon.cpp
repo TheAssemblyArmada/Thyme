@@ -324,7 +324,7 @@ Weapon::Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot) :
     m_whenPreAttackFinished(0),
     m_whenLastReloadStarted(0),
     m_lastFireFrame(0),
-    m_projectileStreamID(OBJECT_UNK),
+    m_projectileStreamID(INVALID_OBJECT_ID),
     m_maxShotCount(0x7FFFFFFF),
     m_curBarrel(0),
     m_leechWeaponRangeActive(false)
@@ -343,7 +343,7 @@ Weapon::Weapon(const Weapon &that) :
     m_whenPreAttackFinished(0),
     m_whenLastReloadStarted(0),
     m_lastFireFrame(0),
-    m_projectileStreamID(OBJECT_UNK),
+    m_projectileStreamID(INVALID_OBJECT_ID),
     m_maxShotCount(0x7FFFFFFF),
     m_curBarrel(0),
     m_leechWeaponRangeActive(false)
@@ -371,7 +371,7 @@ Weapon &Weapon::operator=(const Weapon &that)
         m_lastFireFrame = 0;
         m_suspendFXDelay = that.Get_Suspend_FX_Delay();
         m_numShotsForCurBarrel = m_template->Get_Shots_Per_Barrel();
-        m_projectileStreamID = OBJECT_UNK;
+        m_projectileStreamID = INVALID_OBJECT_ID;
     }
 
     return *this;
@@ -429,7 +429,7 @@ void Weapon::CRC_Snapshot(Xfer *xfer)
     // todo
 #endif
 
-    ObjectID laser = OBJECT_UNK;
+    ObjectID laser = INVALID_OBJECT_ID;
     xfer->xferObjectID(&laser);
 
 #ifdef GAME_DEBUG_STRUCTS
@@ -517,7 +517,7 @@ void Weapon::Xfer_Snapshot(Xfer *xfer)
     }
 
     xfer->xferObjectID(&m_projectileStreamID);
-    ObjectID laser = OBJECT_UNK;
+    ObjectID laser = INVALID_OBJECT_ID;
     xfer->xferObjectID(&laser);
     xfer->xferInt(&m_maxShotCount);
     xfer->xferInt(&m_curBarrel);
@@ -546,9 +546,9 @@ void Weapon::Xfer_Snapshot(Xfer *xfer)
 
 void Weapon::Load_Post_Process()
 {
-    if (m_projectileStreamID != OBJECT_UNK) {
+    if (m_projectileStreamID != INVALID_OBJECT_ID) {
         if (g_theGameLogic->Find_Object_By_ID(m_projectileStreamID) == nullptr) {
-            m_projectileStreamID = OBJECT_UNK;
+            m_projectileStreamID = INVALID_OBJECT_ID;
         }
     }
 }
@@ -579,7 +579,7 @@ bool Weapon::Private_Fire_Weapon(const Object *source_obj,
     bool do_damage)
 {
     if (projectile_id != nullptr) {
-        *projectile_id = OBJECT_UNK;
+        *projectile_id = INVALID_OBJECT_ID;
     }
 
     if (m_template == nullptr) {
@@ -1086,7 +1086,7 @@ void Weapon::New_Projectile_Fired(
         Object *obj = g_theGameLogic->Find_Object_By_ID(m_projectileStreamID);
 
         if (obj == nullptr) {
-            m_projectileStreamID = OBJECT_UNK;
+            m_projectileStreamID = INVALID_OBJECT_ID;
             ThingTemplate *tmplate = g_theThingFactory->Find_Template(m_template->Get_Projectile_Stream_Name(), true);
             obj = g_theThingFactory->New_Object(
                 tmplate, source_obj->Get_Controlling_Player()->Get_Default_Team(), OBJECT_STATUS_MASK_NONE);
@@ -1108,7 +1108,7 @@ void Weapon::New_Projectile_Fired(
             if (target_obj != nullptr) {
                 id = target_obj->Get_ID();
             } else {
-                id = OBJECT_UNK;
+                id = INVALID_OBJECT_ID;
             }
 
             module->Add_Projectile(source_obj->Get_ID(), projectile_obj->Get_ID(), id, target_pos);
@@ -1280,7 +1280,7 @@ bool Weapon::Fire_Projectile_Detonation_Weapon(
 
 Object *Weapon::Force_Fire_Weapon(const Object *source_obj, const Coord3D *victim_pos)
 {
-    ObjectID id = OBJECT_UNK;
+    ObjectID id = INVALID_OBJECT_ID;
     Private_Fire_Weapon(source_obj, nullptr, victim_pos, false, true, 0, &id, true);
     return g_theGameLogic->Find_Object_By_ID(id);
 }
@@ -2276,7 +2276,7 @@ unsigned int WeaponTemplate::Fire_Weapon_Template(const Object *source_obj,
             new_pos += offset;
             victim_pos = &new_pos;
             victim_obj = nullptr;
-            victim_id = OBJECT_UNK;
+            victim_id = INVALID_OBJECT_ID;
             dist_sqr = g_thePartitionManager->Get_Distance_Squared(source_obj, &new_pos, FROM_BOUNDINGSPHERE_2D, nullptr);
         } else if (victim_obj->Is_KindOf(KINDOF_BRIDGE)) {
             TBridgeAttackInfo info;
@@ -2295,7 +2295,7 @@ unsigned int WeaponTemplate::Fire_Weapon_Template(const Object *source_obj,
             dist_sqr = g_thePartitionManager->Get_Distance_Squared(source_obj, victim_obj, FROM_BOUNDINGSPHERE_2D, nullptr);
         }
     } else {
-        victim_id = OBJECT_UNK;
+        victim_id = INVALID_OBJECT_ID;
         dist_sqr = g_thePartitionManager->Get_Distance_Squared(source_obj, victim_pos, FROM_BOUNDINGSPHERE_2D, nullptr);
     }
 
@@ -2466,7 +2466,7 @@ unsigned int WeaponTemplate::Fire_Weapon_Template(const Object *source_obj,
             SpecialPowerCompletionDie *projectile_die = projectile_obj->Find_Special_Power_Completion_Die();
 
             if (projectile_die != nullptr) {
-                projectile_die->Set_Creator(OBJECT_UNK);
+                projectile_die->Set_Creator(INVALID_OBJECT_ID);
             }
         } else {
             SpecialPowerCompletionDie *projectile_die = projectile_obj->Find_Special_Power_Completion_Die();
@@ -2533,11 +2533,11 @@ unsigned int WeaponTemplate::Fire_Weapon_Template(const Object *source_obj,
     } else {
         Coord3D firing_vector = *victim_pos - *source_pos;
         float firing_duration = firing_vector.Length() / Get_Weapon_Speed();
-        ObjectID target_id = !Is_Damage_Dealt_At_Self_Position() ? victim_id : OBJECT_UNK;
+        ObjectID target_id = !Is_Damage_Dealt_At_Self_Position() ? victim_id : INVALID_OBJECT_ID;
 
         if (firing_weapon->Has_Laser()) {
             if (Get_Primary_Damage_Radius(bonus) < scatter && Get_Secondary_Damage_Radius(bonus) < scatter) {
-                target_id = OBJECT_UNK;
+                target_id = INVALID_OBJECT_ID;
                 firing_weapon->Create_Laser(source_obj, nullptr, &pos);
             } else {
                 if (victim_obj != nullptr) {
@@ -2603,7 +2603,7 @@ void WeaponTemplate::Deal_Damage_Internal(ObjectID source_id,
     const WeaponBonus &bonus,
     bool is_projectile_detonation) const
 {
-    if (source_id != OBJECT_UNK && (victim_id != OBJECT_UNK || pos != nullptr)) {
+    if (source_id != INVALID_OBJECT_ID && (victim_id != INVALID_OBJECT_ID || pos != nullptr)) {
         Object *source = g_theGameLogic->Find_Object_By_ID(source_id);
         Trim_Old_Historic_Damage();
 
@@ -2632,7 +2632,7 @@ void WeaponTemplate::Deal_Damage_Internal(ObjectID source_id,
 
         Object *victim;
 
-        if (victim_id != OBJECT_UNK) {
+        if (victim_id != INVALID_OBJECT_ID) {
             victim = g_theGameLogic->Find_Object_By_ID(victim_id);
         } else {
             victim = nullptr;

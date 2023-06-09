@@ -31,7 +31,7 @@ BuildListInfo::BuildListInfo() :
     m_renderObj(nullptr),
     m_shadowObj(nullptr),
     m_selected(false),
-    m_objectID(OBJECT_UNK),
+    m_objectID(INVALID_OBJECT_ID),
     m_objectTimestamp(0),
     m_underConstruction(false),
     m_isSupplyCenter(false),

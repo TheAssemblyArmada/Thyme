@@ -391,7 +391,7 @@ bool Drawable::Draws_Any_UI_Text()
     }
 
     m_groupString = nullptr;
-    return object->Get_Formation_ID() != FORMATION_UNK;
+    return object->Get_Formation_ID() != INVALID_FORMATION_ID;
 }
 
 bool Compute_Health_Region(Drawable const *drawable, IRegion2D &region)
@@ -1223,7 +1223,7 @@ Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
         m_fullyObscuredByShroud = false;
         m_groupString = nullptr;
         m_hidden = false;
-        m_id = DRAWABLE_UNK;
+        m_id = INVALID_DRAWABLE_ID;
         m_instanceIsIdentity = false;
         m_instanceScale = 1.0f;
         m_isModelDirty = false;
@@ -1577,7 +1577,7 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
     if (m_object != nullptr) {
         object_id = m_object->Get_ID();
     } else {
-        object_id = OBJECT_UNK;
+        object_id = INVALID_OBJECT_ID;
     }
 
     xfer->xferObjectID(&object_id);
@@ -1589,7 +1589,7 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
                 "Drawable::Xfer_Snapshot - Drawable '%s' is attached to wrong object '%s'",
                 Get_Template()->Get_Name().Str(),
                 m_object->Get_Template()->Get_Name().Str());
-        } else if (object_id != OBJECT_UNK) {
+        } else if (object_id != INVALID_OBJECT_ID) {
             Object *object = g_theGameLogic->Find_Object_By_ID(object_id);
             captainslog_relassert(0,
                 6,
@@ -1805,13 +1805,13 @@ void Drawable::Replace_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> cons
 void Drawable::Set_ID(DrawableID id)
 {
     if (m_id != id) {
-        if (m_id != DRAWABLE_UNK) {
+        if (m_id != INVALID_DRAWABLE_ID) {
             g_theGameClient->Remove_Drawable_From_Lookup_Table(this);
         }
 
         m_id = id;
 
-        if (m_id != DRAWABLE_UNK) {
+        if (m_id != INVALID_DRAWABLE_ID) {
             g_theGameClient->Add_Drawable_To_Lookup_Table(this);
 
             if (m_ambientSound != nullptr) {
@@ -2572,7 +2572,7 @@ void Drawable::Calc_Physics_Xform_Treads(Locomotor const *locomotor, PhysicsXfor
                             n.Normalize();
                         }
                     }
-                } else if (physics->Get_Previous_Overlap() != OBJECT_UNK && m_drawableLocoInfo->m_overlapZ > 0.0f) {
+                } else if (physics->Get_Previous_Overlap() != INVALID_OBJECT_ID && m_drawableLocoInfo->m_overlapZ > 0.0f) {
                     m_drawableLocoInfo->m_pitchRate += f3;
                 }
 

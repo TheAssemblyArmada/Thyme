@@ -165,7 +165,7 @@ W3DGhostObject::W3DGhostObject()
     m_info.drawable = nullptr;
     m_info.flags = 0;
     m_info.ghost_object = nullptr;
-    m_info.object_id = OBJECT_UNK;
+    m_info.object_id = INVALID_OBJECT_ID;
     m_next = nullptr;
     m_prev = nullptr;
 }
@@ -189,7 +189,7 @@ void W3DGhostObject::Xfer_Snapshot(Xfer *xfer)
     if (m_info.drawable != nullptr) {
         drawable_id = m_info.drawable->Get_ID();
     } else {
-        drawable_id = DRAWABLE_UNK;
+        drawable_id = INVALID_DRAWABLE_ID;
     }
 
     xfer->xferDrawableID(&drawable_id);
@@ -654,7 +654,7 @@ void W3DGhostObjectManager::Xfer_Snapshot(Xfer *xfer)
             if (obj->m_parentObject != nullptr) {
                 object_id = obj->m_parentObject->Get_ID();
             } else {
-                object_id = OBJECT_UNK;
+                object_id = INVALID_OBJECT_ID;
             }
 
             xfer->xferObjectID(&object_id);
@@ -667,7 +667,7 @@ void W3DGhostObjectManager::Xfer_Snapshot(Xfer *xfer)
             Object *obj;
             GhostObject *ghost_obj;
 
-            if (object_id != OBJECT_UNK) {
+            if (object_id != INVALID_OBJECT_ID) {
                 obj = g_theGameLogic->Find_Object_By_ID(object_id);
             } else {
                 obj = nullptr;

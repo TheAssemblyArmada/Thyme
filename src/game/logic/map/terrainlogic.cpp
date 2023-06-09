@@ -43,7 +43,11 @@ WaterHandle TerrainLogic::m_gridWaterHandle;
 #endif
 
 BridgeInfo::BridgeInfo() :
-    bridge_width(0.0f), bridge_index(0), cur_damage_state(BODY_PRISTINE), bridge_object_id(OBJECT_UNK), is_destroyed(false)
+    bridge_width(0.0f),
+    bridge_index(0),
+    cur_damage_state(BODY_PRISTINE),
+    bridge_object_id(INVALID_OBJECT_ID),
+    is_destroyed(false)
 {
     from.Zero();
     to.Zero();
@@ -53,7 +57,7 @@ BridgeInfo::BridgeInfo() :
     to_right.Zero();
 
     for (int i = 0; i < BRIDGE_MAX_TOWERS; i++) {
-        tower_object_id[i] = OBJECT_UNK;
+        tower_object_id[i] = INVALID_OBJECT_ID;
     }
 }
 
@@ -750,7 +754,7 @@ void Bridge::Update_Damage_State()
 {
     m_bridgeInfo.is_destroyed = false;
 
-    if (m_bridgeInfo.bridge_object_id != OBJECT_UNK) {
+    if (m_bridgeInfo.bridge_object_id != INVALID_OBJECT_ID) {
         Object *bridge = g_theGameLogic->Find_Object_By_ID(m_bridgeInfo.bridge_object_id);
 
         if (bridge != nullptr) {
@@ -790,7 +794,7 @@ void Bridge::Update_Damage_State()
                 }
             }
         } else {
-            m_bridgeInfo.bridge_object_id = OBJECT_UNK;
+            m_bridgeInfo.bridge_object_id = INVALID_OBJECT_ID;
             captainslog_dbgassert(false, "Bridge object disappeared - unexpected.");
         }
     }
@@ -1843,7 +1847,7 @@ void TerrainLogic::Set_Water_Height(const WaterHandle *water, float height, floa
                     DamageInfo info;
                     info.m_in.m_damageType = DAMAGE_WATER;
                     info.m_in.m_deathType = DEATH_NORMAL;
-                    info.m_in.m_sourceID = OBJECT_UNK;
+                    info.m_in.m_sourceID = INVALID_OBJECT_ID;
                     info.m_in.m_amount = damage_amount;
                     obj->Attempt_Damage(&info);
                 }

@@ -20,7 +20,8 @@
 #include "texture.h"
 
 // BUGFIX added extra variable initializations.
-W3DBib::W3DBib() : m_highlighted(false), m_unknown(0), m_objectID(OBJECT_UNK), m_drawableID(DRAWABLE_UNK), m_isUnused(true)
+W3DBib::W3DBib() :
+    m_highlighted(false), m_unknown(0), m_objectID(INVALID_OBJECT_ID), m_drawableID(INVALID_DRAWABLE_ID), m_isUnused(true)
 {
     m_points[0].Set(0.0f, 0.0f, 0.0f);
     m_points[1].Set(0.0f, 0.0f, 0.0f);
@@ -252,7 +253,7 @@ void W3DBibBuffer::Add_Bib_To_Object(Vector3 *points, ObjectID id, bool highligh
     m_bibs[i].m_unknown = 0;
     m_bibs[i].m_isUnused = false;
     m_bibs[i].m_objectID = id;
-    m_bibs[i].m_drawableID = DRAWABLE_UNK;
+    m_bibs[i].m_drawableID = INVALID_DRAWABLE_ID;
 }
 
 void W3DBibBuffer::Add_Bib_To_Drawable(Vector3 *points, DrawableID id, bool highlighted)
@@ -286,7 +287,7 @@ void W3DBibBuffer::Add_Bib_To_Drawable(Vector3 *points, DrawableID id, bool high
     m_bibs[i].m_highlighted = highlighted;
     m_bibs[i].m_unknown = 0;
     m_bibs[i].m_isUnused = false;
-    m_bibs[i].m_objectID = OBJECT_UNK;
+    m_bibs[i].m_objectID = INVALID_OBJECT_ID;
     m_bibs[i].m_drawableID = id;
 }
 
@@ -295,8 +296,8 @@ void W3DBibBuffer::Remove_Bib_From_Object(ObjectID id)
     for (int i = 0; i < m_numBibs; ++i) {
         if (m_bibs[i].m_objectID == id) {
             m_bibs[i].m_isUnused = true;
-            m_bibs[i].m_objectID = OBJECT_UNK;
-            m_bibs[i].m_drawableID = DRAWABLE_UNK;
+            m_bibs[i].m_objectID = INVALID_OBJECT_ID;
+            m_bibs[i].m_drawableID = INVALID_DRAWABLE_ID;
 
             m_anythingChanged = true;
         }
@@ -308,8 +309,8 @@ void W3DBibBuffer::Remove_Bib_From_Drawable(DrawableID id)
     for (int i = 0; i < m_numBibs; ++i) {
         if (m_bibs[i].m_drawableID == id) {
             m_bibs[i].m_isUnused = true;
-            m_bibs[i].m_objectID = OBJECT_UNK;
-            m_bibs[i].m_drawableID = DRAWABLE_UNK;
+            m_bibs[i].m_objectID = INVALID_OBJECT_ID;
+            m_bibs[i].m_drawableID = INVALID_DRAWABLE_ID;
 
             m_anythingChanged = true;
         }

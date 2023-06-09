@@ -100,12 +100,12 @@ PhysicsBehavior::PhysicsBehavior(Thing *thing, const ModuleData *module_data) :
     m_rollRate(0.0f),
     m_pitchRate(0.0f),
     m_bounceSound(nullptr),
-    m_ignoreCollisionsWith(OBJECT_UNK),
+    m_ignoreCollisionsWith(INVALID_OBJECT_ID),
     m_flags(0),
     m_mass(Get_Physics_Behavior_Module_Data()->m_mass),
-    m_currentOverlap(OBJECT_UNK),
-    m_previousOverlap(OBJECT_UNK),
-    m_collided(OBJECT_UNK),
+    m_currentOverlap(INVALID_OBJECT_ID),
+    m_previousOverlap(INVALID_OBJECT_ID),
+    m_collided(INVALID_OBJECT_ID),
     m_motiveForceApplied(0),
     m_extraBounciness(0.0f),
     m_extraFriction(0.0f),
@@ -343,7 +343,7 @@ UpdateSleepTime PhysicsBehavior::Update()
 
     m_accel.Zero();
     m_previousOverlap = m_currentOverlap;
-    m_currentOverlap = OBJECT_UNK;
+    m_currentOverlap = INVALID_OBJECT_ID;
 
     if (b && Get_Flag(ALLOW_BOUNCE)) {
         Apply_Force(&bounce);
@@ -1180,7 +1180,7 @@ bool PhysicsBehavior::Was_Previously_Overlapped(Object *obj) const
 
 bool PhysicsBehavior::Is_Ignoring_Collisions_With(ObjectID id) const
 {
-    return id != OBJECT_UNK && id == m_ignoreCollisionsWith;
+    return id != INVALID_OBJECT_ID && id == m_ignoreCollisionsWith;
 }
 
 bool PhysicsBehavior::Is_Currently_Overlapped(Object *obj) const
@@ -1358,7 +1358,7 @@ void PhysicsBehavior::Set_Ignore_Collisions_With(const Object *obj)
     if (obj != nullptr) {
         m_ignoreCollisionsWith = obj->Get_ID();
     } else {
-        m_ignoreCollisionsWith = OBJECT_UNK;
+        m_ignoreCollisionsWith = INVALID_OBJECT_ID;
     }
 }
 

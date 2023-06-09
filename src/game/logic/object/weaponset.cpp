@@ -666,7 +666,7 @@ CanAttackResult WeaponSet::Get_Able_To_Use_Weapon_Against_Target(AbleToAttackTyp
     ContainModuleInterface *contain = source_obj->Get_Contain();
 
     if (contain != nullptr) {
-        if (contain->Is_Passenger_Allowed_To_Fire(OBJECT_UNK)) {
+        if (contain->Is_Passenger_Allowed_To_Fire(INVALID_OBJECT_ID)) {
             const std::list<Object *> *list = contain->Get_Contained_Items_List();
 
             if (list != nullptr) {

@@ -59,6 +59,15 @@ public:
     void Delete_All_Fonts();
 
     GameFont *Get_Font(Utf8String name, int point_size, bool bold);
+    GameFont *First_Font() const { return m_fontList; }
+    GameFont *Next_Font(GameFont *font) const
+    {
+        if (font != nullptr) {
+            return font->m_next;
+        } else {
+            return nullptr;
+        }
+    }
 
 private:
     GameFont *m_fontList;

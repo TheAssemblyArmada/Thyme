@@ -38,6 +38,7 @@ private:
     bool m_isChallengeCampaign;
     Utf8String m_playerFaction;
     friend class ScriptEngine;
+    friend class GameLogic;
 };
 
 class CampaignManager : public SnapShot
@@ -48,6 +49,7 @@ public:
     virtual void Load_Post_Process() override;
 
     Campaign *Get_Current_Campaign() { return m_currentCampaign; }
+    void Set_Is_Victory(bool set) { m_isVictory = set; }
 
 private:
     std::list<Campaign *> m_campaignList;

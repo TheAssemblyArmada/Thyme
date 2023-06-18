@@ -16,7 +16,8 @@
 
 #include "asciistring.h"
 #include "coord.h"
-#include "list"
+#include "unicodestring.h"
+#include <list>
 #include <map>
 #include <set>
 
@@ -37,7 +38,7 @@ struct WinTimeStamp
 
 struct MapMetaData
 {
-    Utf8String m_displayName;
+    Utf16String m_displayName;
     Utf8String m_lookupTag;
     Region3D m_extent;
     int m_numPlayers;
@@ -49,6 +50,7 @@ struct MapMetaData
     WaypointMap m_waypoints;
     std::list<Coord3D> m_supplyPositions;
     std::list<Coord3D> m_techPositions;
+    Utf8String m_mapFilename;
 };
 
 class MapCache : public std::map<Utf8String, MapMetaData>
@@ -67,6 +69,7 @@ public:
     bool Clear_Unseen_Maps(Utf8String prefix);
     void Load_Standard_Maps();
     bool Load_User_Maps();
+    MapMetaData *Find_Map(Utf8String map_name);
 
 private:
     static const char *const s_mapDirName;

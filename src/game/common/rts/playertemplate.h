@@ -52,7 +52,7 @@ public:
     Utf8String Get_Starting_Unit(int unit) const;
 
     Utf8String Get_Name() const { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }
-    Utf8String Get_Side_Name() const { return m_side; }
+    Utf8String Get_Side() const { return m_side; }
     NameKeyType Get_Name_Key() const { return m_nameKey; }
     void Set_Name_Key(NameKeyType key) { m_nameKey = key; }
     Utf8String Get_Beacon_Name() const { return m_beaconName; }

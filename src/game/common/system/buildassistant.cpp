@@ -14,6 +14,7 @@
  */
 #include "buildassistant.h"
 #include "globaldata.h"
+#include "xfer.h"
 
 #ifdef GAME_DLL
 #include "hooker.h"
@@ -193,5 +194,12 @@ void BuildAssistant::Sell_Object(Object *object)
 {
 #ifdef GAME_DLL
     Call_Method<void, BuildAssistant, Object *>(PICK_ADDRESS(0x004B5930, 0x009FB1A0), this, object);
+#endif
+}
+
+void BuildAssistant::Xfer_The_Sell_List(Xfer *xfer)
+{
+#ifdef GAME_DLL
+    Call_Method<void, BuildAssistant, Xfer *>(PICK_ADDRESS(0x004B3430, 0x009F8A53), this, xfer);
 #endif
 }

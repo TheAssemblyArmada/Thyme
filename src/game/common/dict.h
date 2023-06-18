@@ -117,7 +117,8 @@ public:
         Release_Data();
         m_data = nullptr;
     }
-    int Get_PairCount() const { return m_data->m_numPairsUsed; }
+    bool Known(NameKeyType key, DataType type) const { return type == Get_Type(key); }
+    int Get_Pair_Count() const { return m_data->m_numPairsUsed; }
     NameKeyType Get_Nth_Key(int n) const;
     DataType Get_Type(NameKeyType key) const;
     DataType Get_Nth_Type(int n) const;

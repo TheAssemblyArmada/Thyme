@@ -37,3 +37,19 @@ protected:
 
     uint32_t m_crc;
 };
+
+class XferDeepCRC : public XferCRC
+{
+public:
+    XferDeepCRC();
+    virtual ~XferDeepCRC() override;
+    virtual void Open(Utf8String filename) override;
+    virtual void Close() override;
+    virtual void xferMarkerLabel(Utf8String thing) override;
+    virtual void xferAsciiString(Utf8String *thing) override;
+    virtual void xferUnicodeString(Utf16String *thing) override;
+    virtual void xferImplementation(void *thing, int size) override;
+
+private:
+    FILE *m_fileHandle;
+};

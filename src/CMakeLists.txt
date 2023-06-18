@@ -189,6 +189,7 @@ set(GAMEENGINE_SRC
     game/common/registry.cpp
     game/common/staticnamekey.cpp
     game/common/statemachine.cpp
+    game/common/statscollector.cpp
     game/common/terraintypes.cpp
     game/common/userpreferences.cpp
     game/common/version.cpp
@@ -347,6 +348,7 @@ set(GAMEENGINE_SRC
     game/network/lanapi.cpp
     game/network/lanapiinterface.cpp
     game/network/network.cpp
+    game/network/peerdefs.cpp
     game/network/transport.cpp
     game/network/udp.cpp
     game/network/networkutil.cpp

@@ -97,6 +97,7 @@ public:
     virtual ~CommandButton() override;
 
     GUICommand Get_Command() const { return m_command; }
+    CommandButton *Get_Next() const { return m_nextCommandButton; }
     const SpecialPowerTemplate *Get_Special_Power() const { return m_specialPower; }
     unsigned int Get_Options() const { return m_options; }
     WeaponSlotType Get_Weapon_Slot() const { return m_weaponSlot; }
@@ -143,6 +144,9 @@ public:
     void On_Player_Rank_Changed(const Player *player);
     void On_Player_Science_Purchase_Points_Changed(const Player *player);
     const CommandSet *Find_Command_Set(const Utf8String &name);
+    const CommandButton *Find_Command_Button(const Utf8String &name);
+    void Hide_Communicator(bool hide);
+    void Init_Special_Power_Shortcut_Bar(Player *player);
 };
 
 #ifdef GAME_DLL

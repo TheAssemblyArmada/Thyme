@@ -766,7 +766,10 @@ ControlBar *&g_theControlBar = Make_Global<ControlBar *>(PICK_ADDRESS(0x00A2B6E0
 
 // gameinfo.cpp
 class GameInfo;
+class SkirmishGameInfo;
 GameInfo *&g_theGameInfo = Make_Global<GameInfo *>(PICK_ADDRESS(0x00A2C2B8, 0x04CA8B04));
+SkirmishGameInfo *&g_theSkirmishGameInfo = Make_Global<SkirmishGameInfo *>(PICK_ADDRESS(0x00A2DF10, 0x04CA9F00));
+SkirmishGameInfo *&g_theChallengeGameInfo = Make_Global<SkirmishGameInfo *>(PICK_ADDRESS(0x00A2F374, 0x04CA9E20));
 
 // eva.cpp
 class Eva;
@@ -790,3 +793,11 @@ TransportStatus *&ScriptConditions::s_transportStatuses =
 // campaignmanager.cpp
 class CampaignManager;
 CampaignManager *&g_theCampaignManager = Make_Global<CampaignManager *>(PICK_ADDRESS(0x00A2C0A0, 0x04CA8784));
+
+// statscollector.cpp
+class StatsCollector;
+StatsCollector *&g_theStatsCollector = Make_Global<StatsCollector *>(PICK_ADDRESS(0x00A2F324, 0x04CA9C88));
+
+// peerdefs.cpp
+class GameSpyStagingRoom;
+GameSpyStagingRoom *&g_theGameSpyGame = Make_Global<GameSpyStagingRoom *>(PICK_ADDRESS(0x00A2C680, 0x04CA9D14));

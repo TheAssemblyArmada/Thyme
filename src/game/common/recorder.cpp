@@ -47,3 +47,10 @@ bool RecorderClass::Is_Multiplayer()
     return false;
 #endif
 }
+
+void RecorderClass::Init_Controls()
+{
+#ifdef GAME_DLL
+    Call_Method<void, RecorderClass>(PICK_ADDRESS(0x0048D970, 0x00903D94), this);
+#endif
+}

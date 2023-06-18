@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "aiupdate.h"
+#include "aipathfind.h"
 #include "gamelogic.h"
 #ifdef GAME_DLL
 #include "hooker.h"
@@ -230,4 +231,29 @@ bool AIUpdateInterface::Can_Auto_Acquire_While_Stealthed() const
     return Get_Object() != nullptr && Get_Object()->Get_Stealth_Update() != nullptr
         && Get_Object()->Get_Stealth_Update()->Get_Granted_By_Special_Power()
         || (Get_AI_Update_Module_Data()->m_autoAcquireEnemiesWhenIdle & 2) != 0;
+}
+
+bool AIUpdateInterface::Is_Moving() const
+{
+    if (Is_Idle()) {
+        return false;
+    }
+
+    if (m_locomotorGoalType != NONE) {
+        return true;
+    }
+
+    return m_unkStartingToMove;
+}
+
+void AIUpdateInterface::Destroy_Path()
+{
+    if (m_path != nullptr) {
+        m_path->Delete_Instance();
+        m_path = nullptr;
+    }
+
+    m_waitingForPath = false;
+    m_isAttackPath = false;
+    Set_Locomotor_Goal_None();
 }

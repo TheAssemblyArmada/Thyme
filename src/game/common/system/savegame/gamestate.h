@@ -35,6 +35,7 @@ struct SaveDate
 enum SaveFileType
 {
     SAVE_TYPE_UNK,
+    SAVE_TYPE_UNK2,
 };
 
 enum SnapShotType
@@ -87,11 +88,16 @@ public:
 
     void Clear_Available_Games();
 
-    Utf8String Get_Save_Dir();
-    Utf8String Real_To_Portable_Map_Path(const Utf8String &path);
-    Utf8String Portable_To_Real_Map_Path(const Utf8String &path);
+    Utf8String Get_Save_Dir() const;
+    Utf8String Real_To_Portable_Map_Path(const Utf8String &path) const;
+    Utf8String Portable_To_Real_Map_Path(const Utf8String &path) const;
+    bool Is_In_Save_Dir(const Utf8String &path) const;
+    void Friend_Xfer_Save_Data_For_CRC(Xfer *xfer, SnapShotType type);
+    void Xfer_Save_Data(Xfer *xfer, SnapShotType type);
 
     bool Is_Loading() const { return m_isLoading; }
+    void Set_Pristine_Map_Name(Utf8String path) { m_saveInfo.m_pristineMapPath = path; }
+    SaveGameInfo *Get_Save_Info() { return &m_saveInfo; }
 
 private:
     struct SnapShotBlock
@@ -99,6 +105,8 @@ private:
         SnapShot *m_snapShot;
         Utf8String m_name;
     };
+
+    SnapShotBlock *Find_Block_Info_By_Token(Utf8String name, SnapShotType type);
 
     std::list<SnapShotBlock> m_snapShotBlocks[SNAPSHOT_TYPE_COUNT];
     SaveGameInfo m_saveInfo;

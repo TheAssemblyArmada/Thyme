@@ -53,6 +53,7 @@ public:
     Utf8String Get_Texture() { return m_texture; }
     float Get_Road_Width_In_Texture() { return m_roadWidthInTexture; }
     float Get_Road_Width() { return m_roadWidth; }
+    bool Is_Bridge() { return m_isBridge; }
 
     float Get_Bridge_Scale() { return m_bridgeScale; }
     Utf8String Get_Bridge_Model() { return m_bridgeModelName; }
@@ -123,6 +124,7 @@ public:
     static void Parse_Terrain_Bridge_Definition(INI *ini);
 
     TerrainRoadType *First_Road() { return m_roadList; }
+    TerrainRoadType *First_Bridge() { return m_bridgeList; }
     TerrainRoadType *Next_Road(TerrainRoadType *road) { return road->Get_Next(); }
 
 private:

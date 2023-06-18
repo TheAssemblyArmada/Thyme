@@ -140,6 +140,8 @@ public:
     static void Parse_Anim2D_Definition(INI *ini);
     static void Parse_Anim2D_Template(INI *ini, void *formal, void *store, const void *user_data);
 
+    Anim2DTemplate *Get_Templates() const { return m_templateList; }
+
 #ifdef GAME_DLL
     Anim2DCollection *Hook_Ctor() { return new (this) Anim2DCollection(); }
 #endif

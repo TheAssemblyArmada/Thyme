@@ -156,7 +156,7 @@ void W3DMouse::Set_Cursor(MouseCursor cursor)
             m_hotSpotY = m_cursorInfo[cursor].hot_spot.y;
             unk4 = 0;
             unk7 = m_cursorInfo[cursor].fps * 0.001f;
-            device->SetCursorProperties(m_hotSpotX, m_hotSpotY, m_D3DCursorSurfaces[0]->Get_D3D_Surface());
+            device->SetCursorProperties(m_hotSpotX, m_hotSpotY, m_D3DCursorSurfaces[0]->Peek_D3D_Surface());
             device->ShowCursor(true);
             unk5 = static_cast<int32_t>(unk4);
             m_currentD3DCursor = cursor;

@@ -305,9 +305,12 @@ public:
     void Remove_Pos(Object *obj);
     void Change_Bridge_State(PathfindLayerEnum layer, bool b);
     PathfindLayerEnum Add_Bridge(Bridge *bridge);
+    void Add_Wall_Piece(Object *obj);
+    void Remove_Wall_Piece(Object *obj);
     bool Is_Point_On_Wall(const Coord3D *point);
     void Force_Map_Recalculation();
     Path *Find_Ground_Path(const Coord3D *point, const Coord3D *point2, int i, bool b);
+    void New_Map();
 
     void Remove_Object_From_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, false); }
     void Add_Object_To_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, true); }

@@ -731,6 +731,8 @@ public:
     bool Is_Aircraft_That_Adjusts_Destination() const;
     bool Is_Turret_Enabled(WhichTurretType tur) const;
     bool Can_Auto_Acquire_While_Stealthed() const;
+    bool Is_Moving() const;
+    void Destroy_Path();
 
     const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
     Locomotor *Get_Cur_Locomotor() { return m_curLocomotor; }
@@ -746,6 +748,7 @@ public:
     int Get_Unk3() const { return m_unk3; }
     bool Is_Recruitable() const { return m_isRecruitable; }
     int Is_Auto_Acquire_Enemies_When_Idle() const { return Get_AI_Update_Module_Data()->m_autoAcquireEnemiesWhenIdle != 0; }
+    bool Is_Waiting_For_Path() const { return m_waitingForPath; }
 
     const AIUpdateModuleData *Get_AI_Update_Module_Data() const
     {

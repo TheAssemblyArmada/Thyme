@@ -28,6 +28,7 @@ public:
 
     const SpecialPowerTemplate *Get_FO() const;
 
+    Utf8String Get_Name() const { return Get_FO()->m_name; }
     SpecialPowerType Get_Type() const { return Get_FO()->m_type; }
     bool Get_Shortcut_Power() const { return Get_FO()->m_shortcutPower; }
     bool Get_Shared_Synced_Timer() const { return Get_FO()->m_sharedSyncedTimer; }

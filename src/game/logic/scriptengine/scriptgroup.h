@@ -50,12 +50,11 @@ public:
     bool Is_Subroutine() const { return m_isGroupSubroutine; }
     bool Has_Warnings() const { return m_hasWarnings; }
 
-    void Set_Next(ScriptGroup *next) { m_nextGroup = next; }
+    void Set_Next_Group(ScriptGroup *next) { m_nextGroup = next; }
     void Set_Name(Utf8String name) { m_groupName = name; }
     void Set_Active(bool set) { m_isGroupActive = set; }
     void Set_Subroutine(bool set) { m_isGroupSubroutine = set; }
     void Set_Warnings(bool set) { m_hasWarnings = set; }
-    void Set_Next_Group(ScriptGroup *group) { m_nextGroup = group; }
 
     static bool Parse_Group_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static void Write_Group_Data_Chunk(DataChunkOutput &output, ScriptGroup *group);

@@ -79,6 +79,8 @@ public:
     virtual bool Is_Possible_To_Make_Unit(Object *constructor_object, const ThingTemplate *what) const;
     virtual void Sell_Object(Object *object);
 
+    void Xfer_The_Sell_List(Xfer *xfer);
+
 private:
     Coord3D *m_buildPositions;
     int m_buildPositionSize;

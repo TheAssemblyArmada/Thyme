@@ -349,6 +349,7 @@ set(GAMEENGINE_SRC
     game/network/lanapiinterface.cpp
     game/network/network.cpp
     game/network/peerdefs.cpp
+    game/network/threadutils.cpp
     game/network/transport.cpp
     game/network/udp.cpp
     game/network/networkutil.cpp

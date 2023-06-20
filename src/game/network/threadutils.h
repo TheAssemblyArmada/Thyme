@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Gamespy stuff
+ * @brief Thread Utils
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,19 +14,7 @@
  */
 #pragma once
 #include "always.h"
-#include "gameinfo.h"
+#include <string>
 
-class GameSpyStagingRoom : public GameInfo
-{
-public:
-    Utf16String Get_Game_Name() const { return m_gameName; }
-
-private:
-    Utf16String m_gameName;
-};
-
-#ifdef GAME_DLL
-extern GameSpyStagingRoom *&g_theGameSpyGame;
-#else
-extern GameSpyStagingRoom *g_theGameSpyGame;
-#endif
+std::wstring MultiByteToWideCharSingleLine(const char *orig);
+std::string WideCharStringToMultiByte(const wchar_t *orig);

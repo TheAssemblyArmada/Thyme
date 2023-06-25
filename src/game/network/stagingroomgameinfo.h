@@ -12,9 +12,15 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "peerdefs.h"
+#pragma once
+#include "always.h"
+#include "gameinfo.h"
 
-#ifndef GAME_DLL
-GameSpyInfoInterface *g_theGameSpyInfo;
-GameSpyStagingRoom *g_theGameSpyGame;
-#endif
+class GameSpyStagingRoom : public GameInfo
+{
+public:
+    Utf16String Get_Game_Name() const { return m_gameName; }
+
+private:
+    Utf16String m_gameName;
+};

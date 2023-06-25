@@ -28,7 +28,6 @@ class CaveInterface;
 class CollideModuleInterface;
 class ContainModuleInterface;
 class DamageModuleInterface;
-class DestroyModuleInterface;
 class DieModuleInterface;
 class DockUpdateInterface;
 class ExitInterface;
@@ -56,6 +55,12 @@ class AudioEventRTS;
 enum ProductionID
 {
     INVALID_PRODUCTION_ID,
+};
+
+class DestroyModuleInterface
+{
+public:
+    virtual void On_Destroy() = 0;
 };
 
 class SlavedUpdateInterface

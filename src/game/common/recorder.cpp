@@ -19,6 +19,7 @@
 
 #ifndef GAME_DLL
 RecorderClass *g_theRecorder;
+int g_replayCRCInterval;
 #endif
 
 bool RecorderClass::Playback_File(Utf8String name)

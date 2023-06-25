@@ -1493,22 +1493,52 @@ void Setup_Hooks()
     Hook_Any(0x008898C0, SegLineRendererClass::Scale);
 
     // gamelogic.h
+    Hook_Any(0x004A2250, GameLogic::Is_In_Single_Player_Game);
+    Hook_Any(0x004A2510, GameLogic::Init);
+    Hook_Any(0x004A27D0, GameLogic::Reset);
+    Hook_Any(0x004A2EA0, GameLogic::Start_New_Game);
+    Hook_Any(0x004A6160, GameLogic::Load_Map_INI);
+    Hook_Any(0x004A6550, GameLogic::Process_Destroy_List);
+    Hook_Any(0x004A66B0, GameLogic::Process_Command_List);
     Hook_Any(0x004A67B0, GameLogic::Is_Intro_Movie_Playing);
+    Hook_Any(0x004A67E0, GameLogic::Select_Object);
+    Hook_Any(0x004A6890, GameLogic::Deselect_Object);
     Hook_Any(0x004A6940, GameLogic::Rebalance_Parent_Sleepy_Update);
     Hook_Any(0x004A6980, GameLogic::Rebalance_Child_Sleepy_Update);
-    Hook_Method(0x004A6A10, &GameLogic::Friend_Awaken_Update_Module);
+    Hook_Any(0x004A6A10, GameLogic::Friend_Awaken_Update_Module);
+    Hook_Any(0x004A6B30, GameLogic::Update);
     Hook_Any(0x004A6F30, GameLogic::Get_First_Object);
     Hook_Any(0x004A6F40, GameLogic::Allocate_Object_ID);
+    Hook_Any(0x004A6F50, GameLogic::Add_Object_To_Lookup_Table);
+    Hook_Any(0x004A70F0, GameLogic::Remove_Object_From_Lookup_Table);
+    Hook_Any(0x004A7110, GameLogic::Register_Object);
+    Hook_Any(0x004A7280, GameLogic::Friend_Create_Object);
+    Hook_Any(0x004A7370, GameLogic::Destroy_Object);
+    Hook_Any(0x004A7470, GameLogic::Get_CRC);
+    Hook_Any(0x004A7870, GameLogic::Send_Object_Created);
+    Hook_Any(0x004A78B0, GameLogic::Bind_Object_And_Drawable);
+    Hook_Any(0x004A78D0, GameLogic::Send_Object_Destroyed);
     Hook_Any(0x004A7900, GameLogic::Is_Game_Paused);
+    Hook_Any(0x004A7910, GameLogic::Set_Game_Paused);
+    Hook_Any(0x004A79F0, GameLogic::Process_Progress);
     Hook_Any(0x004A7A30, GameLogic::Process_Progress_Complete);
     Hook_Any(0x004A7A70, GameLogic::Time_Out_Game_Start);
+    Hook_Any(0x004A7A80, GameLogic::Init_Time_Out_Values);
+    Hook_Any(0x004A7AD0, GameLogic::Get_Object_Count);
+    Hook_Any(0x004A7AF0, GameLogic::Create_Ghost_Object_Manager);
+    Hook_Any(0x004A7B50, GameLogic::Create_Terrain_Logic);
     Hook_Any(0x004A7BB0, GameLogic::Set_Buildable_Status_Override);
     Hook_Any(0x004A7BD0, GameLogic::Find_Buildable_Status_Override);
     Hook_Any(0x004A7C00, GameLogic::Set_Control_Bar_Override);
     Hook_Any(0x004A7DA0, GameLogic::Find_Control_Bar_Override);
+    Hook_Any(0x004A7EB0, GameLogic::Find_TOC_Entry_By_Name);
     Hook_Any(0x004A7FA0, GameLogic::Add_TOC_Entry);
-    Hook_Any(0x004A7B50, GameLogic::Create_Terrain_Logic);
-    Hook_Any(0x004A7AF0, GameLogic::Create_Ghost_Object_Manager);
+    Hook_Any(0x004A8070, GameLogic::Xfer_Object_TOC);
+    Hook_Any(0x004A8280, GameLogic::Prepare_Logic_For_Object_Load);
+    Hook_Any(0x004A8350, GameLogic::Xfer_Snapshot);
+    Hook_Any(0x004A8D60, GameLogic::Load_Post_Process);
+    Hook_Any(0x005FA1A0, GameLogic::Clear_Game_Data);
+    Hook_Any(0x005FA3A0, GameLogic::Prepare_New_Game);
 
     // shadermanager.h
     Hook_Any(0x0074DF20, W3DShaderManager::Init);

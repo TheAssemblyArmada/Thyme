@@ -19,7 +19,8 @@
 class W3DGameLogic : public GameLogic
 {
 public:
-    virtual ~W3DGameLogic() override;
+    W3DGameLogic() {}
+    virtual ~W3DGameLogic() override {}
     virtual TerrainLogic *Create_Terrain_Logic() override;
     virtual GhostObjectManager *Create_Ghost_Object_Manager() override;
 };

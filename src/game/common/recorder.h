@@ -65,6 +65,8 @@ RecorderClass *Create_Recorder();
 
 #ifdef GAME_DLL
 extern RecorderClass *&g_theRecorder;
+extern int &g_replayCRCInterval;
 #else
 extern RecorderClass *g_theRecorder;
+extern int g_replayCRCInterval;
 #endif

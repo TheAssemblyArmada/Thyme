@@ -17,4 +17,4 @@
 #include <string>
 
 std::wstring MultiByteToWideCharSingleLine(const char *orig);
-std::string WideCharStringToMultiByte(const wchar_t *orig);
+std::string WideCharStringToMultiByte(const unichar_t *orig);

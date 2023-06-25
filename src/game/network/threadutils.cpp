@@ -14,7 +14,6 @@
  */
 #include "threadutils.h"
 
-// leaving unimplemented because I can't work out
 std::wstring MultiByteToWideCharSingleLine(const char *orig)
 {
 #ifdef PLATFORM_WINDOWS
@@ -49,7 +48,7 @@ std::wstring MultiByteToWideCharSingleLine(const char *orig)
 #endif
 }
 
-std::string WideCharStringToMultiByte(const wchar_t *orig)
+std::string WideCharStringToMultiByte(const unichar_t *orig)
 {
 #ifdef PLATFORM_WINDOWS
     std::string ret;

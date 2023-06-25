@@ -733,6 +733,7 @@ public:
     bool Can_Auto_Acquire_While_Stealthed() const;
     bool Is_Moving() const;
     void Destroy_Path();
+    void Execute_Waypoint_Queue();
 
     const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
     Locomotor *Get_Cur_Locomotor() { return m_curLocomotor; }
@@ -749,6 +750,7 @@ public:
     bool Is_Recruitable() const { return m_isRecruitable; }
     int Is_Auto_Acquire_Enemies_When_Idle() const { return Get_AI_Update_Module_Data()->m_autoAcquireEnemiesWhenIdle != 0; }
     bool Is_Waiting_For_Path() const { return m_waitingForPath; }
+    bool Is_AI_In_Dead_State() const { return m_isAiDead; }
 
     const AIUpdateModuleData *Get_AI_Update_Module_Data() const
     {

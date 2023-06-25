@@ -379,6 +379,7 @@ public:
     GameMessage *Get_Prev() { return m_prev; }
 
     MessageType Get_Type() const { return m_type; }
+    int Get_Player_Index() const { return m_playerIndex; }
 
 private:
     GameMessage *m_next;

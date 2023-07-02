@@ -13,21 +13,20 @@
  *            LICENSE
  */
 #include "particlesys.h"
+#include "drawable.h"
 #include "gameclient.h"
 #include "gamelod.h"
+#include "gamelogic.h"
 #include "gamemath.h"
 #include "globaldata.h"
+#include "object.h"
 #include "particle.h"
 #include "particlesystemplate.h"
 #include "randomvalue.h"
+#include "terrainlogic.h"
 #include "xfer.h"
 #include <algorithm>
 #include <captainslog.h>
-
-using GameMath::Cos;
-using GameMath::Fabs;
-using GameMath::Sin;
-using GameMath::Sqrt;
 
 /**
  * 0x004CDA10
@@ -146,18 +145,29 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
  */
 ParticleSystem::~ParticleSystem()
 {
-    Remove_Slave();
-    Remove_Master();
+    if (m_slaveSystem != nullptr) {
+        captainslog_dbgassert(
+            m_slaveSystem->Get_Master() == this, "~ParticleSystem: Our slave doesn't have us as a master!");
+        m_slaveSystem->Set_Master(nullptr);
+        Set_Slave(nullptr);
+    }
 
-    for (Particle *i = m_systemParticlesHead; i != nullptr; i = m_systemParticlesHead) {
-        i->Delete_Instance();
+    if (m_masterSystem != nullptr) {
+        captainslog_dbgassert(
+            m_masterSystem->Get_Slave() == this, "~ParticleSystem: Our master doesn't have us as a slave!");
+        m_masterSystem->Set_Slave(nullptr);
+        Set_Master(nullptr);
+    }
+
+    while (m_systemParticlesHead != nullptr) {
+        m_systemParticlesHead->Delete_Instance();
     }
 
     m_attachedToDrawableID = INVALID_DRAWABLE_ID;
     m_attachedToObjectID = INVALID_OBJECT_ID;
 
     if (m_controlParticle != nullptr) {
-        m_controlParticle->m_systemUnderControl = nullptr;
+        m_controlParticle->Detach_Controlled_Particle_System();
     }
 
     m_controlParticle = nullptr;
@@ -170,12 +180,180 @@ ParticleSystem::~ParticleSystem()
  *
  * 0x004CFB80
  */
-void ParticleSystem::Update(int unk)
+bool ParticleSystem::Update(int index)
 {
-    // Needs Drawable, GameClient, GameLogic
-#ifdef GAME_DLL
-    Call_Method<void, ParticleSystem, int>(0x004CFB80, this, unk);
-#endif
+    if (!g_theWriteableGlobalData->m_useFX) {
+        return false;
+    }
+
+    if (m_delayLeft != 0) {
+        if (--m_delayLeft == 0) {
+            m_startTimestamp = g_theGameClient->Get_Frame();
+        }
+
+        return true;
+    } else {
+        if (m_windMotion != WIND_MOTION_UNUSED) {
+            Update_Wind_Motion();
+        }
+
+        bool matrix_set = false;
+        const Matrix3D *matrix = nullptr;
+        bool shrouded = false;
+
+        if (m_attachedToDrawableID != INVALID_DRAWABLE_ID) {
+            Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(m_attachedToDrawableID);
+
+            if (drawable != nullptr) {
+                if (drawable->Is_Fully_Obscured_By_Shroud()) {
+                    shrouded = true;
+                }
+
+                matrix = drawable->Get_Transform_Matrix();
+                m_lastPos = m_pos;
+                m_pos = *drawable->Get_Position();
+            } else {
+                m_attachedToDrawableID = INVALID_DRAWABLE_ID;
+                Destroy();
+            }
+        } else if (m_attachedToObjectID != INVALID_OBJECT_ID) {
+            Object *object = g_theGameLogic->Find_Object_By_ID(m_attachedToObjectID);
+
+            if (object != nullptr) {
+                shrouded = object->Get_Shrouded_Status(index) >= SHROUDED_UNK3;
+
+                Drawable *drawable = object->Get_Drawable();
+
+                if (drawable != nullptr) {
+                    matrix = drawable->Get_Transform_Matrix();
+                } else {
+                    matrix = object->Get_Transform_Matrix();
+                }
+
+                m_lastPos = m_pos;
+                m_pos = *object->Get_Position();
+            } else {
+                m_attachedToObjectID = INVALID_OBJECT_ID;
+                Destroy();
+            }
+        }
+
+        if (matrix != nullptr) {
+            if (m_unkBool1) {
+                m_transform = m_localTransform;
+            } else if (m_isLocalIdentity) {
+                m_transform = *matrix;
+            } else {
+                m_transform.Mul(*matrix, m_localTransform);
+            }
+
+            m_isIdentity = false;
+            matrix_set = true;
+        }
+
+        if (!matrix_set) {
+            if (m_isLocalIdentity) {
+                m_isIdentity = true;
+            } else {
+                m_transform = m_localTransform;
+                m_isIdentity = false;
+            }
+        }
+
+        if (m_controlParticle != nullptr) {
+            const Coord3D *pos = m_controlParticle->Get_Position();
+            m_transform.Set_X_Translation(pos->x);
+            m_transform.Set_Y_Translation(pos->y);
+            m_transform.Set_Z_Translation(pos->z);
+            m_isIdentity = false;
+            m_lastPos = m_pos;
+            m_pos = *pos;
+        }
+
+        if (!m_isDestroyed && (m_isForever || m_systemLifetimeLeft != 0) && !shrouded && !m_isStopped
+            && m_masterSystem == nullptr) {
+            if (m_burstDelayLeft != 0) {
+                m_burstDelayLeft--;
+            } else {
+                ParticlePriorityType priority = Get_Priority();
+                int particle_count = GameMath::Fast_To_Int_Truncate(m_burstCount.Get_Value()) * m_countCoefficient;
+
+                for (int particle_num = 0; particle_num < particle_count; particle_num++) {
+                    ParticleInfo *info = Generate_Particle_Info(particle_num, particle_count);
+
+                    if (m_isEmitAboveGroundOnly) {
+                        float ground_height = g_theTerrainLogic->Get_Ground_Height(info->m_pos.x, info->m_pos.y, nullptr);
+
+                        if (ground_height > info->m_pos.z) {
+                            continue;
+                        }
+                    }
+
+                    Particle *control_particle = Create_Particle(*info, priority, false);
+
+                    if (control_particle != nullptr) {
+                        if (!m_attachedSystemName.Is_Empty()) {
+                            ParticleSystemTemplate *system_template =
+                                g_theParticleSystemManager->Find_Template(m_attachedSystemName);
+
+                            if (system_template != nullptr) {
+                                ParticleSystem *control_system =
+                                    g_theParticleSystemManager->Create_Particle_System(system_template, false);
+                                control_system->Set_Control_Particle(control_particle);
+                                control_particle->Control_Particle_System(control_system);
+                            }
+                        }
+
+                        if (m_slaveSystem != nullptr) {
+                            m_slaveSystem->Create_Particle(
+                                Merge_Related_Systems(this, m_slaveSystem, false), priority, false);
+                        }
+                    }
+                }
+
+                m_burstDelayLeft = m_burstDelay.Get_Value();
+                m_burstDelayLeft *= m_delayCoefficient;
+            }
+        }
+
+        Particle *particle = m_systemParticlesHead;
+
+        while (particle != nullptr) {
+            if (m_gravity != 0.0f) {
+                Coord3D force;
+                force.x = 0.0f;
+                force.y = 0.0f;
+                force.z = m_gravity;
+                particle->Apply_Force(force);
+            }
+
+            if (particle->Update()) {
+                particle = particle->m_systemNext;
+            } else {
+                Particle *old_particle = particle;
+                particle = particle->m_systemNext;
+                old_particle->Delete_Instance();
+            }
+        }
+
+        if (m_isDestroyed && m_systemParticlesHead == nullptr) {
+            return false;
+        }
+
+        if (m_isForever) {
+            return true;
+        }
+
+        if (m_systemLifetimeLeft != 0) {
+            m_systemLifetimeLeft--;
+        }
+
+        if (Get_Particle_Count() != 0) {
+            return true;
+        }
+
+        return m_systemLifetimeLeft != 0;
+    }
 }
 
 /**
@@ -224,7 +402,10 @@ void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
         ParticleInfo *info = Generate_Particle_Info(0, 1);
 
         for (unsigned i = 0; i < count; ++i) {
-            xfer->xferSnapshot(Create_Particle(*info, m_priority, true));
+            Particle *particle = Create_Particle(*info, m_priority, true);
+            captainslog_dbgassert(
+                particle != nullptr, "ParticleSystem::Xfer_Snapshot - Unable to create particle for loading");
+            xfer->xferSnapshot(particle);
         }
     }
 }
@@ -237,18 +418,21 @@ void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
 void ParticleSystem::Load_Post_Process()
 {
     if (m_slaveID != PARTSYS_ID_NONE) {
-        captainslog_relassert(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.");
-        m_slaveSystem = g_theParticleSystemManager->Find_Particle_System(m_slaveID);
         captainslog_relassert(
-            m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed, 6, "Slave system not found or is set as destroyed.");
+            m_slaveSystem == nullptr, 6, "ParticleSystem::Load_Post_Process - m_slaveSystem is not NULL but should be");
+        m_slaveSystem = g_theParticleSystemManager->Find_Particle_System(m_slaveID);
+        captainslog_relassert(m_slaveSystem != nullptr && !m_slaveSystem->Is_Destroyed(),
+            6,
+            "ParticleSystem::Load_Post_Process - m_slaveSystem is NULL or destroyed");
     }
 
     if (m_masterID != PARTSYS_ID_NONE) {
-        captainslog_relassert(m_masterSystem == nullptr, 6, "Master ID set but master system already present on load.");
+        captainslog_relassert(
+            m_masterSystem == nullptr, 6, "ParticleSystem::Load_Post_Process - m_masterSystem is not NULL but should be");
         m_masterSystem = g_theParticleSystemManager->Find_Particle_System(m_masterID);
-        captainslog_relassert(m_masterSystem != nullptr && !m_masterSystem->m_isDestroyed,
+        captainslog_relassert(m_masterSystem != nullptr && !m_masterSystem->Is_Destroyed(),
             6,
-            "Master system not found or is set as destroyed.");
+            "ParticleSystem::Load_Post_Process - m_masterSystem is NULL or destroyed");
     }
 }
 
@@ -259,8 +443,8 @@ void ParticleSystem::Set_Saveable(bool saveable)
 {
     m_saveable = saveable;
 
-    for (ParticleSystem *sys = m_slaveSystem; sys != nullptr; sys = sys->m_slaveSystem) {
-        sys->m_saveable = saveable;
+    if (m_slaveSystem != nullptr) {
+        m_slaveSystem->Set_Saveable(saveable);
     }
 }
 
@@ -273,8 +457,8 @@ void ParticleSystem::Destroy()
 {
     m_isDestroyed = true;
 
-    for (ParticleSystem *sys = m_slaveSystem; sys != nullptr; sys = sys->m_slaveSystem) {
-        sys->m_isDestroyed = true;
+    if (m_slaveSystem != nullptr) {
+        m_slaveSystem->Destroy();
     }
 }
 
@@ -302,9 +486,9 @@ void ParticleSystem::Get_Position(Coord3D *pos) const
  */
 void ParticleSystem::Set_Position(const Coord3D &pos)
 {
-    m_localTransform[0][3] = pos.x;
-    m_localTransform[1][3] = pos.y;
-    m_localTransform[2][3] = pos.z;
+    m_localTransform.Set_X_Translation(pos.x);
+    m_localTransform.Set_Y_Translation(pos.y);
+    m_localTransform.Set_Z_Translation(pos.z);
     m_isLocalIdentity = false;
 }
 
@@ -356,10 +540,11 @@ void ParticleSystem::Rotate_Local_Transform_Z(float theta)
  */
 void ParticleSystem::Attach_To_Drawable(const Drawable *drawable)
 {
-// TODO requires Drawable.
-#ifdef GAME_DLL
-    Call_Method<void, ParticleSystem, const Drawable *>(0x004CE800, this, drawable);
-#endif
+    if (drawable != nullptr) {
+        m_attachedToDrawableID = drawable->Get_ID();
+    } else {
+        m_attachedToDrawableID = INVALID_DRAWABLE_ID;
+    }
 }
 
 /**
@@ -369,10 +554,11 @@ void ParticleSystem::Attach_To_Drawable(const Drawable *drawable)
  */
 void ParticleSystem::Attach_To_Object(const Object *object)
 {
-// TODO requires Object.
-#ifdef GAME_DLL
-    Call_Method<void, ParticleSystem, const Object *>(0x004CE830, this, object);
-#endif
+    if (object != nullptr) {
+        m_attachedToObjectID = object->Get_ID();
+    } else {
+        m_attachedToObjectID = INVALID_OBJECT_ID;
+    }
 }
 
 /**
@@ -412,8 +598,8 @@ Coord3D *ParticleSystem::Compute_Particle_Velocity(const Coord3D *pos)
         case EMISSION_VELOCITY_CYLINDRICAL: {
             float radius = m_emissionVelocity.cylindrical.radial.Get_Value();
             float two_pi = Get_Client_Random_Value_Real(0.0f, GAMEMATH_PI * 2);
-            _vel.x = Cos(two_pi) * radius;
-            _vel.y = Sin(two_pi) * radius;
+            _vel.x = GameMath::Cos(two_pi) * radius;
+            _vel.y = GameMath::Sin(two_pi) * radius;
             _vel.z = m_emissionVelocity.cylindrical.normal.Get_Value();
         } break;
         case EMISSION_VELOCITY_OUTWARD: {
@@ -563,8 +749,8 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
             float radius = m_isEmissionVolumeHollow ? m_emissionVolume.cylinder.radius :
                                                       Get_Client_Random_Value_Real(0.0f, m_emissionVolume.cylinder.radius);
             float height = m_emissionVolume.cylinder.length * 0.5f;
-            _pos.x = Cos(two_pi) * radius;
-            _pos.y = Sin(two_pi) * radius;
+            _pos.x = GameMath::Cos(two_pi) * radius;
+            _pos.y = GameMath::Sin(two_pi) * radius;
             _pos.z = Get_Client_Random_Value_Real(-height, height);
         } break;
 
@@ -596,27 +782,22 @@ Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePrio
     }
 
     // Don't render if priority is lower than LOD minimum priority.
-    if (priority < g_theGameLODManager->Min_Particle_Priority()) {
+    // If skip priority is lower than LOD minimum, workout if we skip this particular particle.
+    if (priority < g_theGameLODManager->Min_Particle_Priority()
+        || (priority < g_theGameLODManager->Min_Particle_Skip_Priority() && g_theGameLODManager->Is_Particle_Skipped())) {
         return nullptr;
     }
 
-    // If skip priority is lower than LOD minimum, workout if we skip this particular particle.
-    if (priority < g_theGameLODManager->Min_Particle_Skip_Priority()) {
-        if (g_theGameLODManager->Is_Particle_Skipped()) {
-            return nullptr;
-        }
-    }
-
-    if (m_particleCount != 0 && priority == PARTICLE_PRIORITY_AREA_EFFECT) {
+    if (Get_Particle_Count() != 0 && priority == PARTICLE_PRIORITY_AREA_EFFECT) {
         if (m_isGroundAligned
-            && g_theParticleSystemManager->Field_Particle_Count() > g_theWriteableGlobalData->m_maxFieldParticleCount) {
+            && g_theParticleSystemManager->Get_Field_Particle_Count() > g_theWriteableGlobalData->m_maxFieldParticleCount) {
             return nullptr;
         }
     } else if (priority == PARTICLE_PRIORITY_ALWAYS_RENDER) {
         return NEW_POOL_OBJ(Particle, this, info);
     }
 
-    int excess = g_theParticleSystemManager->Particle_Count() - g_theWriteableGlobalData->m_maxParticleCount;
+    int excess = g_theParticleSystemManager->Get_Particle_Count() - g_theWriteableGlobalData->m_maxParticleCount;
 
     if (excess > 0 && g_theParticleSystemManager->Remove_Oldest_Particles(excess, priority) != unsigned(excess)) {
         return nullptr;
@@ -638,7 +819,10 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
 {
     static ParticleInfo _info;
 
-    if (count != 0) {
+    if (count == 0) {
+        captainslog_dbgassert(false, "particleCount must NOT be 0. Set to 1 or greater.");
+        return &_info;
+    } else {
         _info.m_pos = *Compute_Particle_Position();
         _info.m_vel = *Compute_Particle_Velocity(&_info.m_pos);
 
@@ -654,7 +838,7 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
             pos.X = _info.m_pos.x;
             pos.Y = _info.m_pos.y;
             pos.Z = _info.m_pos.z;
-            transform = m_transform * pos;
+            m_transform.Mul_Vector3(pos, transform);
             _info.m_pos.x = transform.X - (1.0f - (float)id / (float)count) * (m_pos.x - m_lastPos.x);
             _info.m_pos.y = transform.Y - (1.0f - (float)id / (float)count) * (m_pos.y - m_lastPos.y);
             _info.m_pos.z = transform.Z - (1.0f - (float)id / (float)count) * (m_pos.z - m_lastPos.z);
@@ -704,16 +888,15 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
 
         Vector3 pos;
         Vector3 trans(0.0f, 0.0f, 0.0f);
-        pos = m_transform * trans;
+        m_transform.Mul_Vector3(trans, pos);
         _info.m_emitterPos.x = pos.X;
         _info.m_emitterPos.y = pos.Y;
         _info.m_emitterPos.z = pos.Z;
 
         _info.m_particleUpTowardsEmitter = m_isParticleUpTowardsEmitter;
         _info.m_windRandomness = Get_Client_Random_Value_Real(0.7f, 1.3f);
+        return &_info;
     }
-
-    return &_info;
 }
 
 /**
@@ -734,7 +917,7 @@ void ParticleSystem::Add_Particle(Particle *particle)
         m_systemParticlesTail = particle;
         particle->m_systemNext = nullptr;
         particle->m_inSystemList = true;
-        particle->m_particleID = m_lastParticleID++;
+        particle->Set_ID(m_lastParticleID++);
         ++m_particleCount;
     }
 }
@@ -796,10 +979,12 @@ void ParticleSystem::Update_Wind_Motion()
 {
     switch (m_windMotion) {
         case WIND_MOTION_PING_PONG: {
+            captainslog_dbgassert(
+                m_windMotionStartAngle < m_windMotionEndAngle, "Update_Wind_Motion: startAngle must be < endAngle");
             // Mathsy stuff here, not sure what the actual formula being used here is for, harmonic motion perhaps?
             float tmp = float(m_windMotionStartAngle - m_windMotionEndAngle) * 0.5f;
-            float change =
-                float(1.0f - float(Fabs(float(tmp - m_windAngle) + m_windMotionEndAngle) / tmp)) * m_windAngleChange;
+            float change = float(1.0f - float(GameMath::Fabs(float(tmp - m_windAngle) + m_windMotionEndAngle) / tmp))
+                * m_windAngleChange;
             change = std::max(change, 0.005f);
 
             // Apply change in correct direction.
@@ -854,7 +1039,7 @@ void ParticleSystem::Set_Master(ParticleSystem *master)
     m_masterSystem = master;
 
     if (master != nullptr) {
-        m_masterID = master->m_systemID;
+        m_masterID = master->Get_System_ID();
     } else {
         m_masterID = PARTSYS_ID_NONE;
     }
@@ -868,34 +1053,8 @@ void ParticleSystem::Set_Slave(ParticleSystem *slave)
     m_slaveSystem = slave;
 
     if (slave != nullptr) {
-        m_slaveID = slave->m_systemID;
+        m_slaveID = slave->Get_System_ID();
     } else {
-        m_slaveID = PARTSYS_ID_NONE;
-    }
-}
-
-/**
- * @brief Removes the master system from this particle system.
- */
-void ParticleSystem::Remove_Master()
-{
-    if (m_masterSystem != nullptr) {
-        m_masterSystem->m_slaveSystem = nullptr;
-        m_masterSystem->m_slaveID = PARTSYS_ID_NONE;
-        m_masterSystem = nullptr;
-        m_masterID = PARTSYS_ID_NONE;
-    }
-}
-
-/**
- * @brief Removes the slave system from this particle system.
- */
-void ParticleSystem::Remove_Slave()
-{
-    if (m_slaveSystem != nullptr) {
-        m_slaveSystem->m_masterSystem = nullptr;
-        m_slaveSystem->m_masterID = PARTSYS_ID_NONE;
-        m_slaveSystem = nullptr;
         m_slaveID = PARTSYS_ID_NONE;
     }
 }
@@ -907,7 +1066,10 @@ void ParticleSystem::Remove_Slave()
  */
 ParticleInfo ParticleSystem::Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave)
 {
-    if (master != nullptr && slave != nullptr) {
+    if (master == nullptr || slave == nullptr) {
+        captainslog_dbgassert(false, "masterParticleSystem or slaveParticleSystem was NULL. Should not happen.");
+        return ParticleInfo();
+    } else {
         ParticleInfo tmp = *master->Generate_Particle_Info(1, 1);
         ParticleInfo *slave_info = slave->Generate_Particle_Info(1, 1);
 
@@ -933,7 +1095,7 @@ ParticleInfo ParticleSystem::Merge_Related_Systems(ParticleSystem *master, Parti
         }
 
         tmp.m_colorScale = slave_info->m_colorScale;
-        tmp.m_pos += slave->m_slavePosOffset;
+        tmp.m_pos += *slave->Get_Slave_Position_Offset();
 
         if (promote_slave) {
             slave->m_burstCount = master->m_burstCount;
@@ -956,7 +1118,5 @@ ParticleInfo ParticleSystem::Merge_Related_Systems(ParticleSystem *master, Parti
         }
 
         return tmp;
-    } else {
-        return ParticleInfo();
     }
 }

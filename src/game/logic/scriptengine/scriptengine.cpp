@@ -9436,7 +9436,7 @@ void ScriptEngine::Update_Current_Particle_Count()
             reinterpret_cast<void (*)(int)>(GetProcAddress(s_particleDll, "UpdateCurrentNumParticles"));
 
         if (UpdateCurrentNumParticles != nullptr) {
-            UpdateCurrentNumParticles(g_theParticleSystemManager->Particle_Count());
+            UpdateCurrentNumParticles(g_theParticleSystemManager->Get_Particle_Count());
         }
     }
 #endif

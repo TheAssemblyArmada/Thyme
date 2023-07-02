@@ -13,7 +13,10 @@
  *            LICENSE
  */
 #include "particlesysmanager.h"
+#include "display.h"
+#include "gamelogic.h"
 #include "ini.h"
+#include "object.h"
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesystemplate.h"
@@ -35,8 +38,8 @@ ParticleSystemManager::ParticleSystemManager() :
     m_fieldParticleCount(0),
     m_particleSystemCount(0),
     m_onScreenParticleCount(0),
-    m_someGameLogicValue(0),
-    m_unkInt2(0),
+    m_frame(0),
+    m_playerIndex(0),
     m_templateStore()
 {
     for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
@@ -64,6 +67,10 @@ void ParticleSystemManager::Init()
     ini.Load("Data/INI/ParticleSystem.ini", INI_LOAD_OVERWRITE, nullptr);
 
     for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
+        captainslog_dbgassert(
+            m_allParticlesHead[i] == nullptr, "INIT: ParticleSystem all particles head[%d] is not NULL!", i);
+        captainslog_dbgassert(
+            m_allParticlesTail[i] == nullptr, "INIT: ParticleSystem all particles tail[%d] is not NULL!", i);
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -85,6 +92,10 @@ void ParticleSystemManager::Reset()
     }
 
     for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
+        captainslog_dbgassert(
+            m_allParticlesHead[i] == nullptr, "INIT: ParticleSystem all particles head[%d] is not NULL!", i);
+        captainslog_dbgassert(
+            m_allParticlesTail[i] == nullptr, "INIT: ParticleSystem all particles tail[%d] is not NULL!", i);
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -93,7 +104,7 @@ void ParticleSystemManager::Reset()
     m_fieldParticleCount = 0;
     m_particleSystemCount = 0;
     m_uniqueSystemID = PARTSYS_ID_NONE;
-    m_someGameLogicValue = -1;
+    m_frame = -1;
 }
 
 /**
@@ -103,10 +114,19 @@ void ParticleSystemManager::Reset()
  */
 void ParticleSystemManager::Update()
 {
-    // TODO Needs game logic.
-#ifdef GAME_DLL
-    Call_Method<void, ParticleSystemManager>(PICK_ADDRESS(0x004D1CC0, 0x00769348), this);
-#endif
+    if (m_frame != g_theGameLogic->Get_Frame()) {
+        m_frame = g_theGameLogic->Get_Frame();
+
+        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); it++) {
+            ParticleSystem *system = *it;
+
+            if (system != nullptr) {
+                if (!system->Update(m_playerIndex)) {
+                    system->Delete_Instance();
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -126,8 +146,9 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 
     if (xfer->Get_Mode() == XFER_SAVE) {
         for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
-            if (!(*it)->m_isDestroyed && (*it)->m_saveable) {
-                name = (*it)->m_template->Get_Name();
+            count--;
+            if (!(*it)->Is_Destroyed() && (*it)->Is_Saveable()) {
+                name = (*it)->Get_Template()->Get_Name();
                 xfer->xferAsciiString(&name);
                 xfer->xferSnapshot(*it);
             } else {
@@ -135,18 +156,24 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
                 xfer->xferAsciiString(&empty);
             }
         }
+
+        captainslog_dbgassert(count == 0, "Mismatch in write count.");
     } else {
-        for (unsigned i = 0; i < count; ++i) {
+        for (unsigned int i = 0; i < count; ++i) {
             xfer->xferAsciiString(&name);
 
             if (name.Is_Not_Empty()) {
-                ParticleSystemTemplate *temp = Find_Template(name);
-                captainslog_relassert(
-                    temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
-                ParticleSystem *sys = NEW_POOL_OBJ(ParticleSystem, temp, ++m_uniqueSystemID, false);
-                captainslog_relassert(
-                    sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
-                xfer->xferSnapshot(sys);
+                ParticleSystemTemplate *system_template = Find_Template(name);
+                captainslog_relassert(system_template != nullptr,
+                    6,
+                    "ParticleSystemManager::Xfer_Snapshot - Unknown particle system template '%s'",
+                    name.Str());
+                ParticleSystem *system = NEW_POOL_OBJ(ParticleSystem, system_template, ++m_uniqueSystemID, false);
+                captainslog_relassert(system != nullptr,
+                    6,
+                    "ParticleSystemManager::Xfer_Snapshot - Unable to allocate particle system '%s'",
+                    name.Str());
+                xfer->xferSnapshot(system);
             }
         }
     }
@@ -261,10 +288,19 @@ void ParticleSystemManager::Destroy_Particle_System_By_ID(ParticleSystemID id)
  */
 void ParticleSystemManager::Destroy_Attached_Systems(Object *object)
 {
-    // TODO Requires Object.
-#ifdef GAME_DLL
-    Call_Method<void, ParticleSystemManager, Object *>(PICK_ADDRESS(0x004D2270, 0x00769810), this, object);
-#endif
+    if (object != nullptr) {
+        ParticleSystem *system = nullptr;
+
+        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); it++) {
+            system = *it;
+
+            if (system != nullptr) {
+                if (system->Get_Attached_Object() == object->Get_ID()) {
+                    system->Destroy();
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -274,10 +310,14 @@ void ParticleSystemManager::Destroy_Attached_Systems(Object *object)
  */
 void ParticleSystemManager::Preload_Assets(TimeOfDayType time)
 {
-    // TODO Requires Display.
-#ifdef GAME_DLL
-    Call_Method<void, ParticleSystemManager, TimeOfDayType>(PICK_ADDRESS(0x004D2370, 0x00769B8B), this, time);
-#endif
+    for (auto it = m_templateStore.begin(); it != m_templateStore.end(); it++) {
+        ParticleSystemTemplate *particle_template = (*it).second;
+
+        if (particle_template->m_particleType == ParticleSystemInfo::PARTICLE_TYPE_PARTICLE
+            && !particle_template->m_particleTypeName.Is_Empty()) {
+            g_theDisplay->Preload_Texture_Assets(particle_template->m_particleTypeName);
+        }
+    }
 }
 
 /**
@@ -369,11 +409,11 @@ void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
 /**
  * @brief Removes count number of the oldest particles the manager knows about.
  */
-unsigned ParticleSystemManager::Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap)
+unsigned int ParticleSystemManager::Remove_Oldest_Particles(unsigned int count, ParticlePriorityType priority_cap)
 {
-    unsigned remaining = count - 1;
+    unsigned int remaining = count - 1;
 
-    for (unsigned i = 0; i < count && m_particleCount != 0; ++i, --remaining) {
+    for (unsigned int i = 0; i < count && m_particleCount != 0; ++i, --remaining) {
         for (ParticlePriorityType j = PARTICLE_PRIORITY_LOWEST; j < priority_cap; ++j) {
             if (m_allParticlesHead[j] != nullptr) {
                 m_allParticlesHead[j]->Delete_Instance();
@@ -393,18 +433,17 @@ unsigned ParticleSystemManager::Remove_Oldest_Particles(unsigned count, Particle
 ParticleSystemID ParticleSystemManager::Create_Attached_Particle_System_ID(
     const ParticleSystemTemplate *temp, Object *object, bool create_slaves)
 {
-#ifdef GAME_DLL
-    return Call_Function<ParticleSystemID, const ParticleSystemTemplate *, Object *, bool>(
-        PICK_ADDRESS(0x004D1DF0, 0x007694CC), temp, object, create_slaves);
-#else
     ParticleSystem *sys = g_theParticleSystemManager->Create_Particle_System(temp, create_slaves);
 
+    if (sys != nullptr && object != nullptr) {
+        sys->Attach_To_Object(object);
+    }
+
     if (sys != nullptr) {
-        // TODO requires Object.
+        return sys->Get_System_ID();
     }
 
     return PARTSYS_ID_NONE;
-#endif
 }
 
 // zh: 0x005047E0 wb: 0x009B5160

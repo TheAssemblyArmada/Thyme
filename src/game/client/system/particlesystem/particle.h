@@ -41,6 +41,20 @@ public:
     void Compute_Color_Rate();
     void Apply_Force(const Coord3D &force);
     void Do_Wind_Motion();
+    bool Update();
+    bool Is_Invisible();
+
+    const Coord3D *Get_Position() const { return &m_pos; }
+    float Get_Size() const { return m_size; }
+    float Get_Angle() const { return m_angleZ; }
+    float Get_Alpha() const { return m_alpha; }
+    const RGBColor *Get_Color() const { return &m_color; }
+    uint32_t Get_ID() const { return m_particleID; }
+
+    void Set_ID(uint32_t id) { m_particleID = id; }
+
+    void Control_Particle_System(ParticleSystem *system) { m_systemUnderControl = system; }
+    void Detach_Controlled_Particle_System() { m_systemUnderControl = nullptr; }
 
     ParticlePriorityType Get_Priority() const;
 

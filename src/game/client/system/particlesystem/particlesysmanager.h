@@ -80,15 +80,19 @@ public:
     void Add_Particle_System(ParticleSystem *system);
     void Remove_Particle(Particle *particle);
     void Remove_Particle_System(ParticleSystem *system);
-    int Particle_Count() const { return m_particleCount; }
-    int Field_Particle_Count() const { return m_fieldParticleCount; }
+    int Get_Particle_Count() const { return m_particleCount; }
+    int Get_Field_Particle_Count() const { return m_fieldParticleCount; }
     Particle *Get_Particle_Head(ParticlePriorityType priority) { return m_allParticlesHead[priority]; }
-    unsigned Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap);
+    unsigned int Remove_Oldest_Particles(unsigned int count, ParticlePriorityType priority_cap);
 
     partsystempmap_t::iterator Get_Starting_Template() { return m_templateStore.begin(); }
     partsystempmap_t::iterator Get_Ending_Template() { return m_templateStore.end(); }
+    std::list<ParticleSystem *> &Get_All_Particle_Systems() { return m_allParticleSystemList; }
+    unsigned int Get_Particle_System_Count() { return m_particleSystemCount; }
 
-    static ParticleSystemID Create_Attached_Particle_System_ID(
+    void Set_Player_Index(unsigned int index) { m_playerIndex = index; }
+
+    ParticleSystemID Create_Attached_Particle_System_ID(
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
     static void Parse_Particle_System_Definition(INI *ini);
 
@@ -99,10 +103,10 @@ private:
     std::list<ParticleSystem *> m_allParticleSystemList;
     int m_particleCount;
     int m_fieldParticleCount;
-    unsigned m_particleSystemCount;
+    unsigned int m_particleSystemCount;
     int m_onScreenParticleCount;
-    int m_someGameLogicValue;
-    int m_unkInt2;
+    int m_frame;
+    unsigned int m_playerIndex;
     partsystempmap_t m_templateStore;
 };
 

@@ -52,6 +52,7 @@ public:
 
     void Set_Group(Utf8String str, bool b);
     bool Is_Finished();
+    void Reverse(Utf8String str);
 
 protected:
     std::list<TransitionGroup *> m_groupList;
@@ -60,3 +61,9 @@ protected:
     TransitionGroup *m_group3;
     TransitionGroup *m_group4;
 };
+
+#ifdef GAME_DLL
+extern GameWindowTransitionsHandler *&g_theTransitionHandler;
+#else
+extern GameWindowTransitionsHandler *g_theTransitionHandler;
+#endif

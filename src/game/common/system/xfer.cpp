@@ -32,7 +32,7 @@ void Xfer::xferVersion(uint8_t *thing, uint8_t check)
     xferImplementation(thing, sizeof(*thing));
 
     captainslog_relassert(
-        *thing > check, XFER_STATUS_UNKNOWN_VERSION, "Xfer version %d greater than expected, %d.", *thing, check);
+        *thing <= check, XFER_STATUS_UNKNOWN_VERSION, "Xfer version %d greater than expected, %d.", *thing, check);
 }
 
 void Xfer::xferByte(int8_t *thing)
@@ -219,7 +219,7 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
         }
     } else {
         captainslog_relassert(Get_Mode() == XFER_LOAD, XFER_STATUS_UNKNOWN_XFER_MODE, "Xfer mode unknown.");
-        captainslog_relassert(thing->size(), XFER_STATUS_NOT_EMPTY, "Trying to xfer load to none empty vector.");
+        captainslog_relassert(thing->size() == 0, XFER_STATUS_NOT_EMPTY, "Trying to xfer load to none empty vector.");
 
         ObjectID val;
 

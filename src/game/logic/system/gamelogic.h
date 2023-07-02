@@ -134,7 +134,7 @@ public:
     bool Is_In_Single_Player_Game();
     bool Is_Intro_Movie_Playing();
 
-    unsigned int Get_CRC(int i, Utf8String s);
+    unsigned int Get_CRC(int crc_source, Utf8String deep_crc_name);
 #ifdef GAME_DEBUG_STRUCTS
     void Get_AI_Stats(
         int *objects, int *moving_objects, int *attacking_objects, int *waiting_objects, int *failed_pathfinds);
@@ -165,18 +165,18 @@ public:
     void Time_Out_Game_Start();
     void Init_Time_Out_Values();
 
-    void Start_New_Game(bool b);
-    void Load_Map_INI(Utf8String ini);
+    void Start_New_Game(bool restart);
+    void Load_Map_INI(Utf8String map_file);
 
     bool Is_Game_Paused();
-    void Set_Game_Paused(bool b1, bool b2);
+    void Set_Game_Paused(bool pause, bool pause_music);
 
     void Process_Destroy_List();
     void Process_Command_List(CommandList *list);
 
     void Destroy_All_Objects_Immediate();
-    void Select_Object(Object *obj, bool b1, unsigned short i, bool b2);
-    void Deselect_Object(Object *obj, unsigned short i, bool b);
+    void Select_Object(Object *obj, bool force_select, unsigned short player_mask, bool select_ui);
+    void Deselect_Object(Object *obj, unsigned short player_mask, bool deselect_ui);
     ObjectID Allocate_Object_ID();
     void Add_Object_To_Lookup_Table(Object *obj);
     void Remove_Object_From_Lookup_Table(Object *obj);
@@ -221,7 +221,7 @@ private:
     float m_height;
     unsigned int m_frame;
     unsigned int m_crc;
-    std::map<int, std::pair<int const, unsigned int>> m_crcCheckList;
+    std::map<int, unsigned int> m_crcCheckList;
     bool m_checkCRCs;
     bool m_prepareNewGame;
     bool m_loadingGameStateMap;

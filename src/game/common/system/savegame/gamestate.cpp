@@ -69,7 +69,7 @@ void GameState::Clear_Available_Games()
 Utf8String GameState::Get_Save_Dir() const
 {
     Utf8String ret = g_theWriteableGlobalData->m_userDataDirectory;
-    ret += "Save/";
+    ret += "Save\\";
 
     return ret;
 }

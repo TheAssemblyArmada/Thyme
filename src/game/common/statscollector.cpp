@@ -48,3 +48,17 @@ void StatsCollector::Reset()
     Call_Method<void, StatsCollector>(PICK_ADDRESS(0x00607E50, 0x009C3132), this);
 #endif
 }
+
+void StatsCollector::Write_File_End()
+{
+#ifdef GAME_DLL
+    Call_Method<void, StatsCollector>(PICK_ADDRESS(0x00608140, 0x009C34BE), this);
+#endif
+}
+
+void StatsCollector::Collect_Msg_Stats(const GameMessage *msg)
+{
+#ifdef GAME_DLL
+    Call_Method<void, StatsCollector, const GameMessage *>(PICK_ADDRESS(0x00607ED0, 0x009C321D), this, msg);
+#endif
+}

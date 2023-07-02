@@ -128,6 +128,7 @@ set(GAMEENGINE_SRC
     game/client/gui/imemanagerinterface.cpp
     game/client/gui/imemanager.cpp
     game/client/gui/loadscreen.cpp
+    game/client/gui/shell.cpp
     game/client/gui/wininstancedata.cpp
     game/client/gui/windowlayout.cpp
     game/client/gui/w3dgamefont.cpp
@@ -334,24 +335,28 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/victoryconditions.cpp
     game/logic/system/damage.cpp
     game/logic/system/gamelogic.cpp
+    game/logic/system/gamelogicdispatch.cpp
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
     game/logic/system/cratesystem.cpp
     game/logic/system/partitionmanager.cpp
     game/logic/system/simpleobjectiterator.cpp
+    game/network/buddythread.cpp
+    game/network/filetransfer.cpp
     game/network/framemetrics.cpp
     game/network/gameinfo.cpp
     game/network/gameresultsthread.cpp
-    game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp
     game/network/ipenumeration.cpp
     game/network/lanapi.cpp
     game/network/lanapiinterface.cpp
     game/network/network.cpp
+    game/network/networkutil.cpp
     game/network/peerdefs.cpp
+    game/network/stagingroomgameinfo.cpp
+    game/network/threadutils.cpp
     game/network/transport.cpp
     game/network/udp.cpp
-    game/network/networkutil.cpp
     platform/fpusetting.cpp
     platform/input/win32mouse.cpp
     platform/standardfile.cpp

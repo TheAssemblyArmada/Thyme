@@ -16,6 +16,7 @@
 #include "always.h"
 #include "asciistring.h"
 
+class GameMessage;
 class StatsCollector
 {
 public:
@@ -23,6 +24,8 @@ public:
     ~StatsCollector() {}
     void Update();
     void Reset();
+    void Write_File_End();
+    void Collect_Msg_Stats(const GameMessage *msg);
 
 private:
     Utf8String m_statsFileName;

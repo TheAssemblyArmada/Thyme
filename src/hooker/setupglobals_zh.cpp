@@ -703,6 +703,7 @@ CrateSystem *&g_theCrateSystem = Make_Global<CrateSystem *>(PICK_ADDRESS(0x00A2B
 // recorder.cpp
 class RecorderClass;
 RecorderClass *&g_theRecorder = Make_Global<RecorderClass *>(PICK_ADDRESS(0x00A2B9F4, 0x04CA8B24));
+int &g_replayCRCInterval = Make_Global<int>(PICK_ADDRESS(0x009D7638, 0x00D4AA04));
 
 // radar.cpp
 class Radar;
@@ -799,5 +800,21 @@ class StatsCollector;
 StatsCollector *&g_theStatsCollector = Make_Global<StatsCollector *>(PICK_ADDRESS(0x00A2F324, 0x04CA9C88));
 
 // peerdefs.cpp
+class GameSpyInfoInterface;
 class GameSpyStagingRoom;
+GameSpyInfoInterface *&g_theGameSpyInfo = Make_Global<GameSpyInfoInterface *>(PICK_ADDRESS(0x00A2C67C, 0x04CA9D10));
 GameSpyStagingRoom *&g_theGameSpyGame = Make_Global<GameSpyStagingRoom *>(PICK_ADDRESS(0x00A2C680, 0x04CA9D14));
+
+// buddythread.cpp
+class GameSpyBuddyMessageQueueInterface;
+GameSpyBuddyMessageQueueInterface *&g_theGameSpyBuddyMessageQueue =
+    Make_Global<GameSpyBuddyMessageQueueInterface *>(PICK_ADDRESS(0x00A2F350, 0x04CA9D30));
+
+// gamewindowtransitions.cpp
+class GameWindowTransitionsHandler;
+GameWindowTransitionsHandler *&g_theTransitionHandler =
+    Make_Global<GameWindowTransitionsHandler *>(PICK_ADDRESS(0x00A2C094, 0x04CA8A78));
+
+// shell.cpp
+class Shell;
+Shell *&g_theShell = Make_Global<Shell *>(PICK_ADDRESS(0x00A2C68C, 0x04CA9D74));

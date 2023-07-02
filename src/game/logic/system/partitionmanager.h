@@ -21,13 +21,49 @@
 #include "subsysteminterface.h"
 #include <queue>
 
-struct FindPositionOptions;
 struct ShroudStatusStoreRestore;
 class Object;
 class GhostObject;
 class SimpleObjectIterator;
 class GeometryInfo;
 class CellAndObjectIntersection;
+
+enum FindPositionFlags
+{
+    FPF_NONE = 0,
+    FPF_IGNORE_WATER = 1,
+    FPF_WATER_ONLY = 2,
+    FPF_IGNORE_ALL_OBJECTS = 4,
+    FPF_IGNORE_ALLY_OR_NEUTRAL_UNITS = 8,
+    FPF_IGNORE_ALLY_OR_NEUTRAL_STRUCTURES = 0x10,
+    FPF_IGNORE_ENEMY_UNITS = 0x20,
+    FPF_IGNORE_ENEMY_STRUCTURES = 0x40,
+    FPF_USE_LAYER_HEIGHT = 0x80,
+    FPF_CLEAR_CELLS_ONLY = 0x100,
+};
+
+struct FindPositionOptions
+{
+    FindPositionFlags flags;
+    float min_radius;
+    float max_radius;
+    float start_angle;
+    float unk;
+    Object *ignore_object;
+    Object *source_to_path_to_dest;
+    Object *relationship_object;
+    FindPositionOptions() :
+        flags(FPF_NONE),
+        min_radius(0.0f),
+        max_radius(0.0f),
+        start_angle(-99999.898f),
+        unk(10000000000.0f),
+        ignore_object(nullptr),
+        source_to_path_to_dest(nullptr),
+        relationship_object(nullptr)
+    {
+    }
+};
 
 class PartitionFilter
 {

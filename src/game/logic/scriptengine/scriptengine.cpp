@@ -5014,8 +5014,7 @@ void ScriptEngine::Reset()
 
     Update_Current_Particle_Cap();
 
-    for (auto it = m_sequentialScripts.begin(); it != m_sequentialScripts.end(); it++) {
-        Cleanup_Sequential_Script(it, true);
+    for (auto it = m_sequentialScripts.begin(); it != m_sequentialScripts.end(); Cleanup_Sequential_Script(it, true)) {
     }
 
     for (auto it = m_allObjectTypeLists.begin(); it != m_allObjectTypeLists.end(); it = m_allObjectTypeLists.begin()) {

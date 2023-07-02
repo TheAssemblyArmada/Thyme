@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Gamespy stuff
+ * @brief Thread Utils
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,9 +12,9 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "peerdefs.h"
+#pragma once
+#include "always.h"
+#include <string>
 
-#ifndef GAME_DLL
-GameSpyInfoInterface *g_theGameSpyInfo;
-GameSpyStagingRoom *g_theGameSpyGame;
-#endif
+std::wstring MultiByteToWideCharSingleLine(const char *orig);
+std::string WideCharStringToMultiByte(const unichar_t *orig);

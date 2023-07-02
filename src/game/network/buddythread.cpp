@@ -12,9 +12,8 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "peerdefs.h"
+#include "buddythread.h"
 
 #ifndef GAME_DLL
-GameSpyInfoInterface *g_theGameSpyInfo;
-GameSpyStagingRoom *g_theGameSpyGame;
+GameSpyBuddyMessageQueueInterface *g_theGameSpyBuddyMessageQueue;
 #endif

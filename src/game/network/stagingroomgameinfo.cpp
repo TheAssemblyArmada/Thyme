@@ -12,9 +12,4 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "peerdefs.h"
-
-#ifndef GAME_DLL
-GameSpyInfoInterface *g_theGameSpyInfo;
-GameSpyStagingRoom *g_theGameSpyGame;
-#endif
+#include "stagingroomgameinfo.h"

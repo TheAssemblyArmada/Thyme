@@ -257,3 +257,11 @@ void AIUpdateInterface::Destroy_Path()
     m_isAttackPath = false;
     Set_Locomotor_Goal_None();
 }
+
+void AIUpdateInterface::Execute_Waypoint_Queue()
+{
+    if (!Is_AI_In_Dead_State() && m_waypointCount > 0) {
+        m_waypointIndex = 0;
+        m_executingWaypointQueue = true;
+    }
+}

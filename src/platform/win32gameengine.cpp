@@ -14,11 +14,11 @@
  */
 #include "win32gameengine.h"
 #include "audiomanager.h"
-#include "gamelogic.h"
 #include "lanapiinterface.h"
 #include "main.h"
 #include "thingfactory.h"
 #include "w3dfunctionlexicon.h"
+#include "w3dgamelogic.h"
 #include "w3dmodulefactory.h"
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
@@ -117,12 +117,7 @@ ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System()
 
 GameLogic *Win32GameEngine::Create_Game_Logic()
 {
-#ifdef GAME_DLL
-    // only exists in game exe, not wb exe
-    return Call_Method<GameLogic *, Win32GameEngine>(0x00741DF0, this);
-#else
-    return nullptr;
-#endif
+    return new W3DGameLogic;
 }
 
 GameClient *Win32GameEngine::Create_Game_Client()

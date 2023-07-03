@@ -30,7 +30,6 @@ class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
 {
     ALLOW_HOOKING
     IMPLEMENT_NAMED_POOL(ParticleSystem, ParticleSystemPool);
-    friend class ParticleSystemManager;
 
 protected:
     virtual ~ParticleSystem() override;
@@ -38,8 +37,10 @@ protected:
 public:
     ParticleSystem(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves);
 
-    virtual void Update(int unk);
+    virtual bool Update(int index);
     virtual Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);
+
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
@@ -59,13 +60,54 @@ public:
     void Attach_To_Object(const Object *object);
     void Add_Particle(Particle *particle);
     void Remove_Particle(Particle *particle);
-    ParticlePriorityType Get_Priority() const { return m_priority; }
+
     void Set_Lifetime_Range(float min, float max) { m_lifetime.Set_Range(min, max, GameClientRandomVariable::UNIFORM); }
     void Set_Unk(bool set) { m_unkBool1 = set; }
     void Set_Velocity_Multiplier(Coord3D *mul) { m_velCoefficient = *mul; }
     void Set_Burst_Count_Multiplier(float mul) { m_countCoefficient = mul; }
     void Set_Size_Multiplier(float mul) { m_sizeCoefficient = mul; }
+    void Set_Delay_Left(uint32_t delay) { m_delayLeft = delay; }
+    void Set_System_Life_Left(uint32_t life) { m_systemLifetimeLeft = life; }
+
+    void Set_Emission_Volume_Sphere(float volume)
+    {
+        if (m_emissionVolumeType == EMISSION_VOLUME_SPHERE) {
+            m_emissionVolume.sphere = volume;
+        }
+    }
+
+    void Set_Emission_Volume_Cylinder(float volume)
+    {
+        if (m_emissionVolumeType == EMISSION_VOLUME_CYLINDER) {
+            m_emissionVolume.cylinder.radius = volume;
+        }
+    }
+
+    void Detach_Control_Particle() { m_controlParticle = nullptr; }
+
     bool Is_Forever() const { return m_isForever; }
+    bool Is_Drawable() const { return m_particleType == PARTICLE_TYPE_DRAWABLE; }
+    bool Is_Streak() const { return m_particleType == PARTICLE_TYPE_STREAK; }
+    unsigned int Is_Volume_Particle() const { return m_particleType != PARTICLE_TYPE_VOLUME_PARTICLE ? 0 : 6; }
+    bool Is_Ground_Aligned() const { return m_isGroundAligned; }
+    bool Is_Destroyed() const { return m_isDestroyed; }
+    bool Is_Saveable() const { return m_saveable; }
+
+    ParticlePriorityType Get_Priority() const { return m_priority; }
+    float Get_Wind_Angle() const { return m_windAngle; }
+    ObjectID Get_Attached_Object() const { return m_attachedToObjectID; }
+    DrawableID Get_Attached_Drawable() const { return m_attachedToDrawableID; }
+    const Coord3D *Get_Drift_Velocity() const { return &m_driftVelocity; }
+    WindMotion Get_Wind_Motion() const { return m_windMotion; }
+    ParticleShaderType Get_Shader_Type() const { return m_shaderType; }
+    Utf8String Get_Particle_Type_Name() const { return m_particleTypeName; }
+    Particle *Get_First_Particle() const { return m_systemParticlesHead; }
+    EmissionVolumeType Get_Emission_Volume_Type() const { return m_emissionVolumeType; }
+    const ParticleSystemTemplate *Get_Template() const { return m_template; }
+    const ParticleSystem *Get_Slave() const { return m_slaveSystem; }
+    const ParticleSystem *Get_Master() const { return m_masterSystem; }
+    uint32_t Get_Particle_Count() const { return m_particleCount; }
+    const Coord3D *Get_Slave_Position_Offset() const { return &m_slavePosOffset; }
 
     void Reset_Delay()
     {
@@ -89,8 +131,6 @@ private:
     void Update_Wind_Motion();
     void Set_Master(ParticleSystem *master);
     void Set_Slave(ParticleSystem *slave);
-    void Remove_Master();
-    void Remove_Slave();
     static Coord3D *Compute_Point_On_Sphere();
 
 private:

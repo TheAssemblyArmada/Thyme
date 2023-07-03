@@ -1865,7 +1865,7 @@ void W3DDisplay::Gather_Debug_Stats()
         m_displayStrings[7]->Set_Text(str1);
 
         str1.Format(L"Particles: %d in world, %d being displayed",
-            g_theParticleSystemManager->Particle_Count(),
+            g_theParticleSystemManager->Get_Particle_Count(),
             g_theParticleSystemManager->Get_On_Screen_Particle_Count());
         m_displayStrings[8]->Set_Text(str1);
 

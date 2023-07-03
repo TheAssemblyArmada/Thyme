@@ -13,7 +13,10 @@
  *            LICENSE
  */
 #include "particle.h"
+#include "drawable.h"
 #include "gameclient.h"
+#include "gamelogic.h"
+#include "object.h"
 #include "particlesys.h"
 #include "particlesysmanager.h"
 #include "xfer.h"
@@ -90,7 +93,7 @@ Particle::~Particle()
     m_system->Remove_Particle(this);
 
     if (m_systemUnderControl != nullptr) {
-        m_systemUnderControl->Set_Control_Particle(nullptr);
+        m_systemUnderControl->Detach_Control_Particle();
         m_systemUnderControl->Destroy();
     }
 
@@ -139,11 +142,14 @@ void Particle::Load_Post_Process()
 {
     // When is the system ID loaded to the memory for the pointer? Some unswizzling scheme?
     if (m_systemUnderControl != nullptr) {
-        ParticleSystemID id = ParticleSystemID(reinterpret_cast<uintptr_t>(m_systemUnderControl));
-        ParticleSystem *sys = g_theParticleSystemManager->Find_Particle_System(id);
-        captainslog_relassert(sys != nullptr, 6, "Failed to find controlled particle system for ID %d.\n", id);
-        sys->Set_Control_Particle(this);
-        m_systemUnderControl = sys;
+        ParticleSystemID system_id = ParticleSystemID(reinterpret_cast<uintptr_t>(m_systemUnderControl));
+        ParticleSystem *system = g_theParticleSystemManager->Find_Particle_System(system_id);
+        system->Set_Control_Particle(this);
+        Control_Particle_System(system);
+        captainslog_relassert(m_systemUnderControl != nullptr,
+            6,
+            "Particle::Load_Post_Process - Unable to find system under control pointer",
+            system_id);
     }
 }
 
@@ -198,10 +204,42 @@ void Particle::Apply_Force(const Coord3D &force)
  */
 void Particle::Do_Wind_Motion()
 {
-    // TODO requires GameLogic and GameClient global.
-#ifdef GAME_DLL
-    Call_Method<void, Particle>(PICK_ADDRESS(0x004CD160, 0), this);
-#endif
+    float wind_angle = m_system->Get_Wind_Angle();
+    Coord3D system_pos;
+    m_system->Get_Position(&system_pos);
+    ObjectID object_id = m_system->Get_Attached_Object();
+
+    if (object_id != INVALID_OBJECT_ID) {
+        Object *obj = g_theGameLogic->Find_Object_By_ID(object_id);
+
+        if (obj != nullptr) {
+            system_pos += *obj->Get_Position();
+        }
+    } else {
+        DrawableID drawable_id = m_system->Get_Attached_Drawable();
+
+        if (drawable_id != INVALID_DRAWABLE_ID) {
+            Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(drawable_id);
+
+            if (drawable != nullptr) {
+                system_pos += *drawable->Get_Position();
+            }
+        }
+    }
+
+    Coord3D coords = m_pos - system_pos;
+    float dist_from_wind = coords.Length();
+
+    if (dist_from_wind < 200.0f) {
+        float wind_force_strength = 2.0f * m_windRandomness;
+
+        if (dist_from_wind > 75.0f) {
+            wind_force_strength = (1.0f - (dist_from_wind - 75.0f) / (200.0f - 75.0f)) * wind_force_strength;
+        }
+
+        m_pos.x += GameMath::Cos(wind_angle) * wind_force_strength;
+        m_pos.y += GameMath::Sin(wind_angle) * wind_force_strength;
+    }
 }
 
 /**
@@ -210,4 +248,150 @@ void Particle::Do_Wind_Motion()
 ParticlePriorityType Particle::Get_Priority() const
 {
     return m_system->Get_Priority();
+}
+
+float Angle_Between(const Coord2D *veca, const Coord2D *vecb)
+{
+    if (veca == nullptr || veca->Length() == 0.0f || vecb == nullptr || vecb->Length() == 0.0f) {
+        return 0.0f;
+    }
+
+    float lena = veca->Length();
+    float lenb = vecb->Length();
+
+    float len = veca->x * vecb->x + veca->y * vecb->y;
+
+    if (len == 0.0f) {
+        if (vecb->x <= 0.0f) {
+            return 0.0f;
+        } else {
+            return GAMEMATH_PI;
+        }
+    } else {
+        float cos = GameMath::Acos(len / (lena * lenb));
+
+        if (vecb->x <= 0.0f) {
+            return -cos;
+        } else {
+            return cos;
+        }
+    }
+}
+
+bool Particle::Update()
+{
+    m_vel += m_accel;
+    m_vel *= m_velDamping;
+    m_pos += m_vel + *m_system->Get_Drift_Velocity();
+
+    if (m_system->Get_Wind_Motion() != ParticleSystemInfo::WIND_MOTION_UNUSED) {
+        Do_Wind_Motion();
+    }
+
+    m_angleZ += m_angularRateZ;
+    m_angularRateZ *= m_angularDamping;
+
+    if (m_particleUpTowardsEmitter) {
+        Coord2D coord_2d;
+        coord_2d.x = m_pos.x - m_emitterPos.x;
+        coord_2d.y = m_pos.y - m_emitterPos.y;
+        static Coord2D upVec{ 0.0f, 1.0f };
+        m_angleZ = Angle_Between(&upVec, &coord_2d) + GAMEMATH_PI;
+    }
+
+    m_size += m_sizeRate;
+    m_sizeRate *= m_sizeRateDamping;
+
+    if (m_system->Get_Shader_Type() != ParticleSystemInfo::PARTICLE_SHADER_ADDITIVE) {
+        m_alpha += m_alphaRate;
+
+        if (m_alphaTargetKey < KEYFRAME_COUNT && m_alphaKey[m_alphaTargetKey].frame != 0) {
+            if (g_theGameClient->Get_Frame() - m_createTimestamp >= m_alphaKey[m_alphaTargetKey].frame) {
+                m_alpha = m_alphaKey[m_alphaTargetKey++].value;
+                Compute_Alpha_Rate();
+            }
+        } else {
+            m_alphaRate = 0.0f;
+        }
+
+        if (m_alpha >= 0.0f) {
+            if (m_alpha > 1.0f) {
+                m_alpha = 1.0f;
+            }
+        } else {
+            m_alpha = 0.0f;
+        }
+    }
+
+    m_color.red += m_colorRate.red;
+    m_color.green += m_colorRate.green;
+    m_color.blue += m_colorRate.blue;
+
+    if (m_colorTargetKey < KEYFRAME_COUNT && m_colorKey[m_colorTargetKey].frame != 0) {
+        if (g_theGameClient->Get_Frame() - m_createTimestamp >= m_colorKey[m_colorTargetKey].frame) {
+            m_colorTargetKey++;
+            Compute_Color_Rate();
+        }
+    } else {
+        m_colorRate.red = 0.0f;
+        m_colorRate.green = 0.0f;
+        m_colorRate.blue = 0.0f;
+    }
+
+    m_color.red += m_colorScale;
+    m_color.green += m_colorScale;
+    m_color.blue += m_colorScale;
+
+    if (m_color.red >= 0.0f) {
+        if (m_color.red > 1.0f) {
+            m_color.red = 1.0f;
+        }
+    } else {
+        m_color.red = 0.0f;
+    }
+
+    if (m_color.red >= 0.0f) {
+        if (m_color.green > 1.0f) {
+            m_color.green = 1.0f;
+        }
+    } else {
+        m_color.green = 0.0f;
+    }
+
+    if (m_color.blue >= 0.0f) {
+        if (m_color.blue > 1.0f) {
+            m_color.blue = 1.0f;
+        }
+    } else {
+        m_color.blue = 0.0f;
+    }
+
+    m_accel.x = 0.0f;
+    m_accel.y = 0.0f;
+    m_accel.z = 0.0f;
+
+    if (m_lifetimeLeft != 0) {
+        if (--m_lifetimeLeft == 0) {
+            return false;
+        }
+    }
+
+    captainslog_dbgassert(m_lifetimeLeft != 0, "A particle has an infinite lifetime...");
+    return !Is_Invisible();
+}
+
+bool Particle::Is_Invisible()
+{
+    switch (m_system->Get_Shader_Type()) {
+        case ParticleSystemInfo::PARTICLE_SHADER_ADDITIVE:
+            return m_colorKey[m_colorTargetKey].frame == 0 && m_color.red + m_color.green + m_color.blue <= 0.059999999f;
+        case ParticleSystemInfo::PARTICLE_SHADER_ALPHA:
+            return m_alpha < 0.02f;
+        case ParticleSystemInfo::PARTICLE_SHADER_ALPHA_TEST:
+            return false;
+        case ParticleSystemInfo::PARTICLE_SHADER_MULTIPLY:
+            return m_colorKey[m_colorTargetKey].frame == 0 && m_color.red * m_color.green * m_color.blue > 0.94999999f;
+        default:
+            return true;
+    }
 }

@@ -29,6 +29,7 @@
 class ParticleSystemInfo : public SnapShot
 {
     friend class ParticleSystemManager;
+    friend class Particle;
 
 protected:
     enum

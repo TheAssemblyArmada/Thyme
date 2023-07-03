@@ -855,10 +855,13 @@ void Setup_Hooks()
     Hook_Method(0x004CF750, &ParticleSystem::Generate_Particle_Info);
     Hook_Method(0x004D0920, &ParticleSystem::Update_Wind_Motion);
     Hook_Function(0x004D0B30, &ParticleSystem::Merge_Related_Systems);
+    Hook_Any(0x004CE800, ParticleSystem::Attach_To_Drawable);
+    Hook_Any(0x004CE830, ParticleSystem::Attach_To_Object);
 
     // particlesysmanager.h
     Hook_Any(0x004D1BA0, ParticleSystemManager::Init);
     Hook_Any(0x004D1C40, ParticleSystemManager::Reset);
+    Hook_Any(0x004D1CC0, ParticleSystemManager::Update);
     Hook_Any(0x004D2460, ParticleSystemManager::Xfer_Snapshot);
     Hook_Method(0x004D1EB0, &ParticleSystemManager::Find_Template);
     Hook_Method(0x004D1EE0, &ParticleSystemManager::New_Template);
@@ -867,6 +870,9 @@ void Setup_Hooks()
     Hook_Method(0x004D1E30, &ParticleSystemManager::Find_Particle_System);
     Hook_Method(0x004D1E60, &ParticleSystemManager::Destroy_Particle_System_By_ID);
     Hook_Method(0x004D22D0, &ParticleSystemManager::Remove_Particle);
+    Hook_Any(0x004D2270, ParticleSystemManager::Destroy_Attached_Systems);
+    Hook_Any(0x004D2370, ParticleSystemManager::Preload_Assets);
+    Hook_Any(0x004D1DF0, ParticleSystemManager::Create_Attached_Particle_System_ID);
 
 #ifdef BUILD_WITH_BINK
     // binkvideostream.h

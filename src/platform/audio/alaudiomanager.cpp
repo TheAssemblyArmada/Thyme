@@ -27,7 +27,7 @@ ALAudioManager::ALAudioManager() :
     m_3dSampleCount(0),
     m_streamCount(0),
 #ifdef BUILD_WITH_FFMPEG
-    m_audioFileCache(new Thyme::FFmpegAudioFileCache),
+    m_audioFileCache(new FFmpegAudioFileCache),
 #endif
     m_binkPlayingAudio(nullptr),
     m_speakerType(0)
@@ -226,6 +226,9 @@ void ALAudioManager::Next_Music_Track()
     Utf8String track_name;
 
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+            track_name = (*it)->openal.audio_event->Get_Event_Name();
+        }
     }
 
     // Original calls g_theAudio->Remove_Audio_Event(4) but result should be the same.
@@ -245,6 +248,9 @@ void ALAudioManager::Prev_Music_Track()
     Utf8String track_name;
 
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+            track_name = (*it)->openal.audio_event->Get_Event_Name();
+        }
     }
 
     // Original calls g_theAudio->Remove_Audio_Event(4) but result should be the same.
@@ -348,17 +354,18 @@ void ALAudioManager::Enumerate_Devices()
     const ALCchar *devices = NULL;
     if (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") == AL_TRUE) {
         devices = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
-        if ((!devices || *devices == '\0') && alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT") == AL_TRUE) {
+        if ((devices == nullptr || *devices == '\0') && alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT") == AL_TRUE) {
             devices = alcGetString(NULL, ALC_DEVICE_SPECIFIER);
         }
     }
 
-    if (!devices) {
+    if (devices == nullptr) {
         captainslog_warn("Enumerating OpenAL devices is not supported");
         return;
     }
 
-    const ALCchar *device = devices, *next = devices + 1;
+    const ALCchar *device = devices;
+    const ALCchar *next = devices + 1;
     size_t len = 0, idx = 0;
     while (device && *device != '\0' && next && *next != '\0' && idx < AL_MAX_PLAYBACK_DEVICES) {
         m_alDevicesList[idx++] = device;
@@ -383,14 +390,14 @@ void ALAudioManager::Open_Device()
     Enumerate_Devices();
 
     m_alcDevice = alcOpenDevice(NULL);
-    if (!m_alcDevice) {
+    if (m_alcDevice == nullptr) {
         captainslog_error("Failed to open ALC device");
         return;
     }
 
     ALCint attributes[] = { ALC_FREQUENCY, m_audioSettings->Output_Rate(), 0 /* end-of-list */ };
     m_alcContext = alcCreateContext(m_alcDevice, attributes);
-    if (!m_alcContext) {
+    if (m_alcContext == nullptr) {
         captainslog_error("Failed to create ALC context");
         return;
     }
@@ -1368,10 +1375,15 @@ void ALAudioManager::Process_Stopped_List()
 void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
 {
     if (audio->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SOUND) {
-        if (audio->openal.playing_type != 0) {
-            m_soundManager->Notify_Of_3D_Sample_Completion();
-        } else {
-            m_soundManager->Notify_Of_2D_Sample_Completion();
+        switch (audio->openal.playing_type) {
+            case PAT_2DSAMPLE:
+                m_soundManager->Notify_Of_2D_Sample_Completion();
+                break;
+            case PAT_3DSAMPLE:
+                m_soundManager->Notify_Of_3D_Sample_Completion();
+                break;
+            default:
+                break;
         }
     }
 
@@ -1482,7 +1494,7 @@ AudioDataHandle ALAudioManager::Play_Sample(AudioEventRTS *event, PlayingAudio *
         uint32_t size = 0, freq = 0;
         uint8_t channels = 1, bits_per_sample = 16;
 #if BUILD_WITH_FFMPEG
-        Thyme::FFmpegAudioFileCache::Get_Wave_Data(handle, data, size, freq, channels, bits_per_sample);
+        FFmpegAudioFileCache::Get_Wave_Data(handle, data, size, freq, channels, bits_per_sample);
 #endif
         auto openal = audio->openal;
         alGenBuffers(1, &openal.buffer);
@@ -1554,7 +1566,27 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
 void ALAudioManager::Adjust_Playing_Volume(PlayingAudio *audio)
 {
     float adjusted_vol = audio->openal.audio_event->Get_Volume() * audio->openal.audio_event->Get_Volume_Shift();
-    alSourcef(audio->openal.source, AL_GAIN, adjusted_vol);
+    switch (audio->openal.playing_type) {
+        case PAT_2DSAMPLE: {
+            alSourcef(audio->openal.source, AL_GAIN, adjusted_vol * m_soundVolume);
+        } break;
+        case PAT_3DSAMPLE:
+            alSourcef(audio->openal.source, AL_GAIN, adjusted_vol * m_3dSoundVolume);
+            break;
+        case PAT_STREAM: {
+            float vol;
+
+            if (audio->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+                vol = adjusted_vol * m_musicVolume;
+            } else {
+                vol = adjusted_vol * m_speechVolume;
+            }
+
+            alSourcef(audio->openal.source, AL_GAIN, vol * m_3dSoundVolume);
+        } break;
+        default:
+            break;
+    }
 }
 
 /**

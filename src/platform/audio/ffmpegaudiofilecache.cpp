@@ -453,7 +453,7 @@ void FFmpegAudioFileCache::Close_File(AudioDataHandle file)
 /**
  * Get the length of the file in MS.
  */
-float FFmpegAudioFileCache::Get_File_Length_MS(AudioDataHandle file)
+float FFmpegAudioFileCache::Get_File_Length_MS(AudioDataHandle file) const
 {
     if (file == nullptr) {
         return 0.0f;

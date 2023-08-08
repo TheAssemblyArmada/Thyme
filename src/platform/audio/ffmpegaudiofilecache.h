@@ -69,7 +69,7 @@ public:
     inline unsigned Get_Max_Size() const { return m_maxSize; }
     inline unsigned Get_Current_Size() const { return m_currentSize; }
 
-    float Get_File_Length_MS(AudioDataHandle file);
+    float Get_File_Length_MS(AudioDataHandle file) const;
 
     // #FEATURE: We can maybe call this during loading to free any old sounds we won't need ingame and decrease computation
     // ingame
@@ -98,6 +98,6 @@ private:
     ffmpegaudiocachemap_t m_cacheMap;
     unsigned m_currentSize;
     unsigned m_maxSize;
-    SimpleMutexClass m_mutex;
+    mutable SimpleMutexClass m_mutex;
 };
 } // namespace Thyme

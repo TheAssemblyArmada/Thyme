@@ -292,13 +292,6 @@ void GameEngine::Real_Init(int argc, char *argv[])
     // textures are DDS in the release build anyhow.
     //}
 
-    // We don't support most after this
-#ifndef GAME_DLL
-#pragma message("SKIPPING NOT YET SUPPORTED SUBSYSTEMS !!!")
-    captainslog_info("Skipping not yet supported subsystems");
-    return;
-#endif
-
     ini.Load("Data/INI/Default/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
@@ -346,6 +339,13 @@ void GameEngine::Real_Init(int argc, char *argv[])
         "Data/INI/Default/Roads.ini",
         "Data/INI/Roads.ini");
     Init_Subsystem(g_theGlobalLanguage, "TheGlobalLanguageData", new GlobalLanguage);
+
+    // We don't support most after this
+#ifndef GAME_DLL
+#pragma message("SKIPPING NOT YET SUPPORTED SUBSYSTEMS !!!")
+    captainslog_info("Skipping not yet supported subsystems");
+    return;
+#endif
 
     Init_Subsystem(g_theCDManager, "TheCDManager", Create_CD_Manager());
 #ifdef GAME_DEBUG_STRUCTS

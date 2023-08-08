@@ -170,6 +170,7 @@ set(GAMEENGINE_SRC
     game/common/bezfwditerator.cpp
     game/common/beziersegment.cpp
     game/common/bitflags.cpp
+    game/common/chat.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp
     game/common/crc.cpp

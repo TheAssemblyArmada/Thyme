@@ -103,7 +103,7 @@ void MultiplayerSettings::Add_Starting_Money_Choice(const Money &money, bool is_
 class StartingMoney : public Money
 {
 private:
-    bool m_default;
+    bool m_default = false;
     friend class MultiplayerSettings;
 };
 

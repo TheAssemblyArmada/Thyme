@@ -17,6 +17,7 @@
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "audiosettings.h"
+#include "chat.h"
 #include "color.h"
 #include "colorspace.h"
 #include "coord.h"
@@ -104,7 +105,6 @@ const BlockParse TheTypeTable[] = {
     {"MultiplayerColor", &MultiplayerColorDefinition::Parse_Multiplayer_Color_Definition},
     {"MultiplayerStartingMoneyChoice",
         &MultiplayerSettings::Parse_Multiplayer_Starting_Money_Choice_Definition},
-    {"OnlineChatColors", (iniblockparse_t)(0x00504D10) /*&INI::parseOnlineChatColorDefinition*/},
     {"MultiplayerSettings", &MultiplayerSettings::Parse_Multiplayer_Settings_Definition},
     {"MusicTrack", (iniblockparse_t)(0x0044EAF0) /*&INI::parseMusicTrackDefinition*/},
     {"Object", &INI::Parse_Object_Definition},
@@ -124,7 +124,6 @@ const BlockParse TheTypeTable[] = {
     {"Video", (iniblockparse_t)(0x005039D0) /*&INI::parseVideoDefinition*/},
     {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},
-    {"Weather", (iniblockparse_t)(0x00502DF0) /*&WeatherSetting::Parse_Weather_Definition*/},
     {"Weapon", WeaponStore::Parse_Weapon_Template_Definition},
     {"WebpageURL", (iniblockparse_t)(0x005028F0) /*&INI::parseWebpageURL*/},
     {"HeaderTemplate", (iniblockparse_t)(0x00501E50) /*&INI::parseHeaderTemplateDefinition*/},
@@ -135,6 +134,13 @@ const BlockParse TheTypeTable[] = {
     {"ReallyLowMHz", &GameLODManager::Parse_Really_Low_MHz},
     {"ScriptAction", (iniblockparse_t)(0x004221C0) /*&ScriptEngine::parseScriptAction*/},
     {"ScriptCondition", (iniblockparse_t)(0x00422680) /*&ScriptEngine::parseScriptCondition*/},
+#ifndef GAME_DLL // incomplete parsers
+    {"OnlineChatColors", &OnlineChatColors::Parse_Online_Chat_Colors_Definition},
+    {"Weather", &WeatherSetting::Parse_Weather_Definition},
+#else
+    {"OnlineChatColors", (iniblockparse_t)(0x00504D10) /*&INI::parseOnlineChatColorDefinition*/},
+    {"Weather", (iniblockparse_t)(0x00502DF0) /*&WeatherSetting::Parse_Weather_Definition*/},
+#endif
     {nullptr, nullptr}
 };
 // clang-format on

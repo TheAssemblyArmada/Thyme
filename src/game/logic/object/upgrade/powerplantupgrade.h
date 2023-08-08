@@ -21,15 +21,15 @@ class PowerPlantUpgrade : public UpgradeModule
     IMPLEMENT_POOL(PowerPlantUpgrade)
 
 public:
-    virtual ~PowerPlantUpgrade() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void On_Delete() override;
-    virtual void On_Capture(Player *player1, Player *player2) override;
+    ~PowerPlantUpgrade() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void On_Delete() override;
+    void On_Capture(Player *player1, Player *player2) override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual bool Is_Sub_Objects_Upgrade() override;
-    virtual void Upgrade_Implementation() override;
+    bool Is_Sub_Objects_Upgrade() override;
+    void Upgrade_Implementation() override;
 };

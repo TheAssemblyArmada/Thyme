@@ -68,7 +68,7 @@ public:
         // #BUGFIX Initialize all members
         m_wheelInfo = TWheelInfo{};
     }
-    virtual ~DrawableLocoInfo() override {}
+    ~DrawableLocoInfo() override {}
     float m_pitch;
     float m_pitchRate;
     float m_roll;
@@ -140,7 +140,7 @@ public:
             timings[i] = 0;
         }
     }
-    virtual ~DrawableIconInfo() override { Reset(); }
+    ~DrawableIconInfo() override { Reset(); }
 
 private:
     Anim2D *anims[MAX_ICONS];
@@ -187,13 +187,13 @@ public:
     };
 
     Drawable(ThingTemplate const *thing_template, DrawableStatus status);
-    virtual ~Drawable() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
-    virtual Drawable *As_Drawable_Meth() override { return this; }
-    virtual const Drawable *As_Drawable_Meth() const override { return this; }
-    virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
+    ~Drawable() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
+    Drawable *As_Drawable_Meth() override { return this; }
+    const Drawable *As_Drawable_Meth() const override { return this; }
+    void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
     virtual void Set_Animation_Frame(int frame);
 
     Object *Get_Object() { return m_object; }

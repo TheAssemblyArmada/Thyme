@@ -33,11 +33,11 @@ class ThingFactory : public SubsystemInterface
 {
 public:
     ThingFactory();
-    virtual ~ThingFactory() override;
-    virtual void Init() override {}
-    virtual void PostProcessLoad() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
+    ~ThingFactory() override;
+    void Init() override {}
+    void PostProcessLoad() override;
+    void Reset() override;
+    void Update() override {}
 
     ThingTemplate *New_Template(const Utf8String &name);
     ThingTemplate *New_Override(ThingTemplate *thing_template);

@@ -23,12 +23,12 @@
 class FileSystem : public SubsystemInterface
 {
 public:
-    virtual ~FileSystem() {}
+    ~FileSystem() override {}
 
     // SubsystemInterface implementations
-    virtual void Init();
-    virtual void Reset();
-    virtual void Update();
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     // Filesystem
     File *Open_File(const char *filename, int mode);

@@ -71,7 +71,7 @@ struct StringLookUp
 class GameTextInterface : public SubsystemInterface
 {
 public:
-    virtual ~GameTextInterface() {}
+    ~GameTextInterface() override {}
 
     virtual Utf16String Fetch(const char *args, bool *success = nullptr) = 0;
     virtual Utf16String Fetch(Utf8String args, bool *success = nullptr) = 0;
@@ -84,17 +84,17 @@ class GameTextManager : public GameTextInterface
 {
 public:
     GameTextManager();
-    virtual ~GameTextManager();
+    ~GameTextManager() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
-    virtual Utf16String Fetch(const char *args, bool *success = nullptr) override;
-    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr) override;
-    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label) override;
-    virtual void Init_Map_String_File(Utf8String const &filename) override;
-    virtual void Deinit() override;
+    Utf16String Fetch(const char *args, bool *success = nullptr) override;
+    Utf16String Fetch(Utf8String args, bool *success = nullptr) override;
+    std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label) override;
+    void Init_Map_String_File(Utf8String const &filename) override;
+    void Deinit() override;
 
     static int Compare_LUT(void const *a, void const *b);
     static GameTextInterface *Create_Game_Text_Interface();

@@ -26,7 +26,7 @@ public:
     {
     public:
         CameraShakerClass(const Vector3 &position, float radius, float duration, float intensity);
-        ~CameraShakerClass() {}
+        ~CameraShakerClass() override {}
 
         void Compute_Rotations(const Vector3 &position, Vector3 *set_angles);
 

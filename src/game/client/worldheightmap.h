@@ -99,12 +99,12 @@ public:
     void Hook_Dtor() { WorldHeightMap::~WorldHeightMap(); }
 #endif
 
-    virtual ~WorldHeightMap() override;
+    ~WorldHeightMap() override;
 
-    virtual int Get_Border_Size() override { return m_borderSize; }
-    virtual float Get_Seismic_Z_Velocity(int x, int y) const override;
-    virtual void Set_Seismic_Z_Velocity(int x, int y, float velocity) override;
-    virtual float Get_Bilinear_Sample_Seismic_Z_Velocity(int x, int y) override;
+    int Get_Border_Size() override { return m_borderSize; }
+    float Get_Seismic_Z_Velocity(int x, int y) const override;
+    void Set_Seismic_Z_Velocity(int x, int y, float velocity) override;
+    float Get_Bilinear_Sample_Seismic_Z_Velocity(int x, int y) override;
 
     bool Get_Cliff_State(int x_index, int y_index) const;
     bool Get_Flip_State(int x, int y) const;

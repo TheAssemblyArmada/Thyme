@@ -53,15 +53,15 @@ class ParticleSystemManager : public SubsystemInterface, public SnapShot
 {
 public:
     ParticleSystemManager();
-    virtual ~ParticleSystemManager();
+    ~ParticleSystemManager() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     virtual int Get_On_Screen_Particle_Count() = 0;
     virtual void Set_On_Screen_Particle_Count(int count) { m_onScreenParticleCount = count; };

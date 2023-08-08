@@ -59,7 +59,7 @@ class GameMessageArgument : public MemoryPoolObject
     IMPLEMENT_POOL(GameMessageArgument);
 
 protected:
-    virtual ~GameMessageArgument() override {}
+    ~GameMessageArgument() override {}
 
 public:
     // #BUGFIX Initialize important members
@@ -352,7 +352,7 @@ public:
     };
 
 protected:
-    virtual ~GameMessage() override;
+    ~GameMessage() override;
 
 public:
     GameMessage(MessageType type);

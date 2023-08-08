@@ -29,9 +29,9 @@ class Object;
 class Radar : public SnapShot, public SubsystemInterface
 {
 public:
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
     virtual void Refresh_Terrain(TerrainLogic *logic);
     virtual void Queue_Terrain_Refresh();
     virtual void New_Map(TerrainLogic *logic);
@@ -39,10 +39,10 @@ public:
     virtual void Clear_Shroud() = 0;
     virtual void Set_Shroud_Level(int i1, int i2, CellShroudStatus status) = 0;
 
-    virtual ~Radar() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    ~Radar() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     void Remove_Object(Object *obj);
     void Add_Object(Object *obj);

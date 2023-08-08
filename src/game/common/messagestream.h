@@ -51,7 +51,7 @@ private:
 
 public:
     MessageStream() : m_firstTranslator(nullptr), m_lastTranslator(nullptr), m_nextTranslatorID(1) {}
-    virtual ~MessageStream();
+    ~MessageStream() override;
 
     virtual GameMessage *Append_Message(GameMessage::MessageType type);
     virtual GameMessage *Insert_Message(GameMessage::MessageType type, GameMessage *msg);

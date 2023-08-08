@@ -125,7 +125,7 @@ private:
     };
 
 protected:
-    virtual ~Parameter() override {}
+    ~Parameter() override {}
 
 public:
     Parameter(ParameterType type, int intval = 0);

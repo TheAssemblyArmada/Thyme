@@ -217,12 +217,12 @@ public:
     void Hook_Dtor() { W3DModelDrawModuleData::~W3DModelDrawModuleData(); }
 #endif
     W3DModelDrawModuleData();
-    virtual ~W3DModelDrawModuleData() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override { Xfer_Snapshot(xfer); }
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
-    virtual StaticGameLODLevel Get_Minimum_Required_Game_LOD() const override { return m_minLodRequired; }
-    virtual const W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const override { return this; }
+    ~W3DModelDrawModuleData() override;
+    void CRC_Snapshot(Xfer *xfer) override { Xfer_Snapshot(xfer); }
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
+    StaticGameLODLevel Get_Minimum_Required_Game_LOD() const override { return m_minLodRequired; }
+    const W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const override { return this; }
 
     static void Build_Field_Parse(MultiIniFieldParse &p);
     const ModelConditionInfo *Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &flags) const;
@@ -301,77 +301,76 @@ public:
 #endif
     W3DModelDraw(Thing *thing, ModuleData const *module_data);
 
-    virtual ~W3DModelDraw() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void On_Drawable_Bound_To_Object() override;
-    virtual void Preload_Assets(TimeOfDayType time_of_day) override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
-    virtual void Set_Shadows_Enabled(bool enable) override;
-    virtual void Release_Shadows() override;
-    virtual void Allocate_Shadows() override;
+    ~W3DModelDraw() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void On_Drawable_Bound_To_Object() override;
+    void Preload_Assets(TimeOfDayType time_of_day) override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
+    void Set_Shadows_Enabled(bool enable) override;
+    void Release_Shadows() override;
+    void Allocate_Shadows() override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual void Gather_Draw_Stats(DebugDrawStats *stats) override;
+    void Gather_Draw_Stats(DebugDrawStats *stats) override;
 #endif
-    virtual void Set_Terrain_Decal(TerrainDecalType decal) override;
-    virtual void Set_Terrain_Decal_Size(float width, float height) override;
-    virtual void Set_Terrain_Decal_Opacity(float opacity) override;
-    virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override;
-    virtual bool Is_Visible() const override;
-    virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
-    virtual void React_To_Geometry_Change() override;
-    virtual ObjectDrawInterface *Get_Object_Draw_Interface() override { return this; }
-    virtual const ObjectDrawInterface *Get_Object_Draw_Interface() const override { return this; }
+    void Set_Terrain_Decal(TerrainDecalType decal) override;
+    void Set_Terrain_Decal_Size(float width, float height) override;
+    void Set_Terrain_Decal_Opacity(float opacity) override;
+    void Set_Fully_Obscured_By_Shroud(bool obscured) override;
+    bool Is_Visible() const override;
+    void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
+    void React_To_Geometry_Change() override;
+    ObjectDrawInterface *Get_Object_Draw_Interface() override { return this; }
+    const ObjectDrawInterface *Get_Object_Draw_Interface() const override { return this; }
     virtual void On_Render_Obj_Recreated();
     virtual void Adjust_Transform_Mtx(Matrix3D &transform) const;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual bool Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, Matrix3D *transform) const override;
-    virtual bool Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *box) const override;
-    virtual bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const override;
-    virtual int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
+    bool Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, Matrix3D *transform) const override;
+    bool Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *box) const override;
+    bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const override;
+    int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
         char const *bone_name,
         int start_index,
         Coord3D *positions,
         Matrix3D *transforms,
         int max_bones) const override;
-    virtual int Get_Current_Bone_Positions(char const *bone_name_prefix,
+    int Get_Current_Bone_Positions(char const *bone_name_prefix,
         int start_index,
         Coord3D *positions,
         Matrix3D *transforms,
         int max_bones) const override;
-    virtual bool Get_Current_Worldspace_Client_Bone_Positions(
-        char const *bone_name_prefix, Matrix3D &transform) const override;
-    virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &flags,
+    bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const override;
+    bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &flags,
         WeaponSlotType wslot,
         int specific_barrel_to_use,
         Matrix3D *launch_pos,
         WhichTurretType tur,
         Coord3D *turret_rot_pos,
         Coord3D *turret_pitch_pos) const override;
-    virtual void Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot) override;
-    virtual void Update_Draw_Module_Supply_Status(int max, int current) override;
-    virtual void Notify_Draw_Module_Dependency_Cleared() override;
-    virtual void Set_Hidden(bool hidden) override;
-    virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags) override;
-    virtual void Replace_Indicator_Color(int color) override;
-    virtual bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
+    void Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot) override;
+    void Update_Draw_Module_Supply_Status(int max, int current) override;
+    void Notify_Draw_Module_Dependency_Cleared() override;
+    void Set_Hidden(bool hidden) override;
+    void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags) override;
+    void Replace_Indicator_Color(int color) override;
+    bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
         int specific_barrel_to_use,
         FXList const *fxl,
         float weapon_speed,
         Coord3D const *victim_pos,
         float radius) override;
-    virtual int Get_Barrel_Count(WeaponSlotType wslot) const override;
-    virtual void Set_Selectable(bool selectable) override;
-    virtual void Set_Animation_Loop_Duration(unsigned int num_frames) override;
-    virtual void Set_Animation_Completion_Time(unsigned int num_frames) override;
-    virtual bool Update_Bones_For_Client_Particle_Systems() override;
-    virtual void Set_Animation_Frame(int frame) override;
-    virtual void Set_Pause_Animation(bool pause) override;
-    virtual void Update_Sub_Objects() override;
-    virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visible) override;
+    int Get_Barrel_Count(WeaponSlotType wslot) const override;
+    void Set_Selectable(bool selectable) override;
+    void Set_Animation_Loop_Duration(unsigned int num_frames) override;
+    void Set_Animation_Completion_Time(unsigned int num_frames) override;
+    bool Update_Bones_For_Client_Particle_Systems() override;
+    void Set_Animation_Frame(int frame) override;
+    void Set_Pause_Animation(bool pause) override;
+    void Update_Sub_Objects() override;
+    void Show_Sub_Object(Utf8String const &sub_obj_name, bool visible) override;
 
     void Adjust_Anim_Speed_To_Movement_Speed();
 #ifdef GAME_DEBUG_STRUCTS

@@ -85,59 +85,59 @@ public:
 
     ParticleEmitterClass(const ParticleEmitterClass &src);
     ParticleEmitterClass &operator=(const ParticleEmitterClass &);
-    virtual ~ParticleEmitterClass();
-    virtual RenderObjClass *Clone() const;
+    ~ParticleEmitterClass() override;
+    RenderObjClass *Clone() const override;
     static ParticleEmitterClass *Create_From_Definition(const ParticleEmitterDefClass &definition);
     ParticleEmitterDefClass *Build_Definition() const;
     W3DErrorType Save(ChunkSaveClass &chunk_save) const;
-    virtual int Class_ID() const { return CLASSID_PARTICLEEMITTER; }
-    virtual const char *Get_Name() const { return m_nameString; }
-    virtual void Set_Name(const char *pname);
+    int Class_ID() const override { return CLASSID_PARTICLEEMITTER; }
+    const char *Get_Name() const override { return m_nameString; }
+    void Set_Name(const char *pname) override;
 
-    virtual void Notify_Added(SceneClass *scene);
-    virtual void Notify_Removed(SceneClass *scene);
-    virtual void Render(RenderInfoClass &rinfo) {}
-    virtual void Restart();
-    virtual void Scale(float scale);
-    virtual void On_Frame_Update();
+    void Notify_Added(SceneClass *scene) override;
+    void Notify_Removed(SceneClass *scene) override;
+    void Render(RenderInfoClass &rinfo) override {}
+    void Restart() override;
+    void Scale(float scale) override;
+    void On_Frame_Update() override;
 
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override
     {
         sphere.Center.Set(0, 0, 0);
         sphere.Radius = 0;
     }
 
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override
     {
         box.m_center.Set(0, 0, 0);
         box.m_extent.Set(0, 0, 0);
     }
 
-    virtual void Set_Hidden(int onoff)
+    void Set_Hidden(int onoff) override
     {
         RenderObjClass::Set_Hidden(onoff);
         Update_On_Visibilty();
     }
 
-    virtual void Set_Visible(int onoff)
+    void Set_Visible(int onoff) override
     {
         RenderObjClass::Set_Visible(onoff);
         Update_On_Visibilty();
     }
 
-    virtual void Set_Animation_Hidden(int onoff)
+    void Set_Animation_Hidden(int onoff) override
     {
         RenderObjClass::Set_Animation_Hidden(onoff);
         Update_On_Visibilty();
     }
 
-    virtual void Set_Force_Visible(int onoff)
+    void Set_Force_Visible(int onoff) override
     {
         RenderObjClass::Set_Force_Visible(onoff);
         Update_On_Visibilty();
     }
 
-    virtual void Set_LOD_Bias(float bias)
+    void Set_LOD_Bias(float bias) override
     {
         if (m_buffer) {
             m_buffer->Set_LOD_Bias(bias);
@@ -223,7 +223,7 @@ public:
         m_bufferSceneNeeded = true;
     }
 
-    virtual bool Is_Complete() { return m_isComplete; }
+    bool Is_Complete() override { return m_isComplete; }
     bool Is_Remove_On_Complete_Enabled() { return m_removeOnComplete; }
     void Enable_Remove_On_Complete(bool onoff) { m_removeOnComplete = onoff; }
     static bool Default_Remove_On_Complete() { return s_defaultRemoveOnComplete; }
@@ -287,11 +287,11 @@ public:
     Vector2 Get_UV_Offset_Rate() const { return m_buffer->Get_UV_Offset_Rate(); }
 
 protected:
-    virtual void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false);
+    void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false) override;
     virtual void Update_On_Visibilty();
 
 private:
-    virtual void Update_Cached_Bounding_Volumes() const;
+    void Update_Cached_Bounding_Volumes() const override;
     void Create_New_Particles(const Quaternion &curr_quat, const Vector3 &curr_orig);
     void Initialize_Particle(NewParticleStruct *newpart, unsigned int age, const Quaternion &quat, const Vector3 &orig);
 

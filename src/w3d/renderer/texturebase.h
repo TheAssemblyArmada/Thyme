@@ -65,7 +65,7 @@ class TextureBaseClass : public RefCountClass
 public:
     TextureBaseClass(
         unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool render_target, bool allow_reduction);
-    virtual ~TextureBaseClass();
+    ~TextureBaseClass() override;
     virtual int Get_Asset_Type() = 0;
     virtual unsigned Get_Texture_Memory_Usage() = 0;
     virtual void Init() = 0;

@@ -69,7 +69,7 @@ class TerrainType : public MemoryPoolObject
     friend class TerrainTypeCollection;
 
 protected:
-    virtual ~TerrainType() override {}
+    ~TerrainType() override {}
 
 public:
     TerrainType();
@@ -92,12 +92,12 @@ class TerrainTypeCollection : public SubsystemInterface
 {
 public:
     TerrainTypeCollection() : m_terrainList(nullptr) {}
-    virtual ~TerrainTypeCollection();
+    ~TerrainTypeCollection() override;
 
     // SubsystemInterface implementations
-    virtual void Init() override{};
-    virtual void Reset() override{};
-    virtual void Update() override{};
+    void Init() override{};
+    void Reset() override{};
+    void Update() override{};
 
     TerrainType *Find_Terrain(Utf8String name);
     TerrainType *New_Terrain(Utf8String name);

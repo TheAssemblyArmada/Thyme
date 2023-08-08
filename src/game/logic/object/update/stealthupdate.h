@@ -22,7 +22,7 @@ class StealthUpdateModuleData : public UpdateModuleData
     friend class StealthUpdate;
 
 public:
-    virtual ~StealthUpdateModuleData() override;
+    ~StealthUpdateModuleData() override;
 
 private:
     BitFlags<OBJECT_STATUS_COUNT> m_hintDetectableConditions;
@@ -54,14 +54,14 @@ class StealthUpdate : public UpdateModule
     IMPLEMENT_POOL(StealthUpdate)
 
 public:
-    virtual ~StealthUpdate() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual StealthUpdate *Get_Steath() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
-    virtual UpdateSleepTime Update() override;
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
+    ~StealthUpdate() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    StealthUpdate *Get_Steath() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
+    UpdateSleepTime Update() override;
+    BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
 
     const StealthUpdateModuleData *Get_Stealth_Update_Module_Data() const
     {

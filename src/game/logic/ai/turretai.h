@@ -44,13 +44,13 @@ class TurretStateMachine : public StateMachine
 public:
     TurretStateMachine(TurretAI *tai, Object *obj, Utf8String name);
     ~TurretStateMachine() override {}
-    virtual void Clear() override;
-    virtual StateReturnType Reset_To_Default_State() override;
-    virtual StateReturnType Set_State(unsigned int new_state_id) override;
+    void Clear() override;
+    StateReturnType Reset_To_Default_State() override;
+    StateReturnType Set_State(unsigned int new_state_id) override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     TurretAI *Get_Turret_AI() const { return m_turretAI; }
     unsigned int Peek_Sleep_Till() const { return m_sleepTill; }
@@ -106,17 +106,17 @@ public:
 #endif
     TurretAI(Object *owner, const TurretAIData *data, WhichTurretType tur);
 
-    virtual ~TurretAI() override;
+    ~TurretAI() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void Notify_Fired() override;
-    virtual void Notify_New_Victim_Chosen(Object *victim) override;
-    virtual bool Is_Weapon_Slot_Ok_To_Fire(WeaponSlotType wslot) const override;
-    virtual bool Is_Attacking_Object() const override { return m_targetType == TARGET_TYPE_OBJECT; }
-    virtual const Coord3D *Get_Original_Victim_Pos() const override { return nullptr; }
+    void Notify_Fired() override;
+    void Notify_New_Victim_Chosen(Object *victim) override;
+    bool Is_Weapon_Slot_Ok_To_Fire(WeaponSlotType wslot) const override;
+    bool Is_Attacking_Object() const override { return m_targetType == TARGET_TYPE_OBJECT; }
+    const Coord3D *Get_Original_Victim_Pos() const override { return nullptr; }
 
     bool Friend_Turn_Towards_Angle(float desired_angle, float rate_modifier, float unk);
     bool Friend_Turn_Towards_Pitch(float desired_pitch, float rate_modifier);
@@ -202,7 +202,7 @@ class TurretState : public State
 public:
     TurretState(TurretStateMachine *machine, Utf8String name);
 
-    virtual ~TurretState() override {}
+    ~TurretState() override {}
 
     TurretAI *Get_Turret_AI() { return static_cast<TurretStateMachine *>(Get_Machine())->Get_Turret_AI(); }
 };
@@ -214,14 +214,14 @@ class TurretAIAimTurretState : public TurretState
 public:
     TurretAIAimTurretState(TurretStateMachine *machine);
 
-    virtual ~TurretAIAimTurretState() override {}
-    virtual StateReturnType On_Enter() override { return STATE_CONTINUE; }
-    virtual void On_Exit(StateExitType status) override {}
-    virtual StateReturnType Update() override;
+    ~TurretAIAimTurretState() override {}
+    StateReturnType On_Enter() override { return STATE_CONTINUE; }
+    void On_Exit(StateExitType status) override {}
+    StateReturnType Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 };
 
 class TurretAIRecenterTurretState : public TurretState
@@ -231,14 +231,14 @@ class TurretAIRecenterTurretState : public TurretState
 public:
     TurretAIRecenterTurretState(TurretStateMachine *machine);
 
-    virtual ~TurretAIRecenterTurretState() override {}
-    virtual StateReturnType On_Enter() override { return STATE_CONTINUE; }
-    virtual void On_Exit(StateExitType status) override {}
-    virtual StateReturnType Update() override;
+    ~TurretAIRecenterTurretState() override {}
+    StateReturnType On_Enter() override { return STATE_CONTINUE; }
+    void On_Exit(StateExitType status) override {}
+    StateReturnType Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 };
 
 class TurretAIIdleState : public TurretState
@@ -248,13 +248,13 @@ class TurretAIIdleState : public TurretState
 public:
     TurretAIIdleState(TurretStateMachine *machine);
 
-    virtual ~TurretAIIdleState() override {}
-    virtual StateReturnType On_Enter() override;
-    virtual StateReturnType Update() override;
+    ~TurretAIIdleState() override {}
+    StateReturnType On_Enter() override;
+    StateReturnType Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Reset_Idle_Scan();
 
@@ -269,14 +269,14 @@ class TurretAIIdleScanState : public TurretState
 public:
     TurretAIIdleScanState(TurretStateMachine *machine);
 
-    virtual ~TurretAIIdleScanState() override {}
-    virtual StateReturnType On_Enter() override;
-    virtual void On_Exit(StateExitType status) override {}
-    virtual StateReturnType Update() override;
+    ~TurretAIIdleScanState() override {}
+    StateReturnType On_Enter() override;
+    void On_Exit(StateExitType status) override {}
+    StateReturnType Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     float m_desiredAngle;
@@ -289,14 +289,14 @@ class TurretAIHoldTurretState : public TurretState
 public:
     TurretAIHoldTurretState(TurretStateMachine *machine);
 
-    virtual ~TurretAIHoldTurretState() override {}
-    virtual StateReturnType On_Enter() override;
-    virtual void On_Exit(StateExitType status) override {}
-    virtual StateReturnType Update() override;
+    ~TurretAIHoldTurretState() override {}
+    StateReturnType On_Enter() override;
+    void On_Exit(StateExitType status) override {}
+    StateReturnType Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     unsigned int m_nextRecenterTime;

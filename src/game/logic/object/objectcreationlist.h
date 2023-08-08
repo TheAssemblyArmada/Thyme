@@ -28,7 +28,7 @@ class ObjectCreationNugget : public MemoryPoolObject
     IMPLEMENT_ABSTRACT_POOL(ObjectCreationNugget);
 
 public:
-    virtual ~ObjectCreationNugget() {}
+    ~ObjectCreationNugget() override {}
     virtual void Create(Object *primaryObj, const Coord3D *primary, const Coord3D *secondary, float unk1, uint32_t unk2) = 0;
     virtual void Create(Object *primary, const Object *secondary, uint32_t unk);
     virtual void Create(Object *primaryObj, const Coord3D *primary, const Coord3D *secondary, bool, uint32_t unk);
@@ -58,10 +58,10 @@ class ObjectCreationListStore : public SubsystemInterface
 public:
     ObjectCreationListStore() {}
 
-    virtual ~ObjectCreationListStore() override;
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~ObjectCreationListStore() override;
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
     // zh: 0x004C1280 wb: 0x00756BBD
     ObjectCreationListStore *Hook_Ctor() { return new (this) ObjectCreationListStore; }

@@ -75,7 +75,7 @@ class PathNode : public MemoryPoolObject
     IMPLEMENT_NAMED_POOL(PathNode, PathNodePool)
 
 public:
-    virtual ~PathNode() override;
+    ~PathNode() override;
 
     const Coord3D *Get_Position() const { return &m_pos; }
 
@@ -98,12 +98,12 @@ class Path : public MemoryPoolObject, public SnapShot
     IMPLEMENT_NAMED_POOL(Path, PathPool);
 
 protected:
-    virtual ~Path() override;
+    ~Path() override;
 
 public:
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     void Get_Point_Pos(Coord3D *pos) const { *pos = m_closestPoint.m_pos; }
     PathNode *Get_First_Node() const { return m_path; }
@@ -252,23 +252,22 @@ public:
     Pathfinder();
     ~Pathfinder();
 
-    virtual Path *Find_Path(
-        Object *obj, const LocomotorSet &locomotor_set, const Coord3D *from, const Coord3D *raw_to) override;
-    virtual Path *Find_Closest_Path(Object *obj,
+    Path *Find_Path(Object *obj, const LocomotorSet &locomotor_set, const Coord3D *from, const Coord3D *raw_to) override;
+    Path *Find_Closest_Path(Object *obj,
         const LocomotorSet &locomotor_set,
         const Coord3D *from,
         Coord3D *raw_to,
         bool blocked,
         float path_cost_multiplier,
         bool move_allies) override;
-    virtual Path *Find_Attack_Path(const Object *obj,
+    Path *Find_Attack_Path(const Object *obj,
         const LocomotorSet &locomotor_set,
         const Coord3D *from,
         const Object *victim,
         const Coord3D *victim_pos,
         const Weapon *weapon) override;
-    virtual Path *Patch_Path(const Object *obj, const LocomotorSet &locomotor_set, Path *path, bool blocked) override;
-    virtual Path *Find_Safe_Path(const Object *obj,
+    Path *Patch_Path(const Object *obj, const LocomotorSet &locomotor_set, Path *path, bool blocked) override;
+    Path *Find_Safe_Path(const Object *obj,
         const LocomotorSet &locomotor_set,
         const Coord3D *pos1,
         const Coord3D *pos2,
@@ -277,9 +276,9 @@ public:
     virtual Path *Internal_Find_Path(
         Object *obj, const LocomotorSet &locomotor_set, const Coord3D *from, const Coord3D *raw_to);
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Reset();
 

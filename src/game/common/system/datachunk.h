@@ -43,7 +43,7 @@ class DataChunkInput
         friend class DataChunkInput;
 
     protected:
-        virtual ~InputChunk() override {}
+        ~InputChunk() override {}
 
     private:
         InputChunk *next;
@@ -60,7 +60,7 @@ class DataChunkInput
         friend class DataChunkInput;
 
     protected:
-        virtual ~UserParser() override {}
+        ~UserParser() override {}
 
     private:
         UserParser *next;

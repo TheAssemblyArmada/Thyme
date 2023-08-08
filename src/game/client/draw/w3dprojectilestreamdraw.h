@@ -24,7 +24,7 @@ class W3DProjectileStreamDrawModuleData : ModuleData
 {
 public:
     W3DProjectileStreamDrawModuleData();
-    virtual ~W3DProjectileStreamDrawModuleData() {}
+    ~W3DProjectileStreamDrawModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -43,19 +43,19 @@ class W3DProjectileStreamDraw : DrawModule
 public:
     W3DProjectileStreamDraw(Thing *thing, ModuleData const *module_data);
 
-    virtual ~W3DProjectileStreamDraw() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
-    virtual void Set_Shadows_Enabled(bool enable) override {}
-    virtual void Release_Shadows() override {}
-    virtual void Allocate_Shadows() override {}
-    virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override;
-    virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override {}
-    virtual void React_To_Geometry_Change() override {}
+    ~W3DProjectileStreamDraw() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
+    void Set_Shadows_Enabled(bool enable) override {}
+    void Release_Shadows() override {}
+    void Allocate_Shadows() override {}
+    void Set_Fully_Obscured_By_Shroud(bool obscured) override;
+    void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override {}
+    void React_To_Geometry_Change() override {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     void Make_Or_Update_Line(Vector3 *points, unsigned int point_count, int line_index);
 

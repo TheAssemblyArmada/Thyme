@@ -49,15 +49,15 @@ public:
     W3DPropBuffer();
     ~W3DPropBuffer();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
 
-    virtual void Xfer_Snapshot(Xfer *xfer) override
+    void Xfer_Snapshot(Xfer *xfer) override
     {
         unsigned char version = 1;
         xfer->xferVersion(&version, 1);
     }
 
-    virtual void Load_Post_Process() override {}
+    void Load_Post_Process() override {}
 
     void Cull(CameraClass *camera);
     void Clear_All_Props();

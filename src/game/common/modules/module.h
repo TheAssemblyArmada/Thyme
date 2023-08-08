@@ -52,9 +52,9 @@ public:
     virtual StaticGameLODLevel Get_Minimum_Required_Game_LOD() const { return STATLOD_LOW; }
 
     // Snapshot
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override {}
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override {}
+    void Load_Post_Process() override {}
     //~Snapshot
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
@@ -71,7 +71,7 @@ class Module : public MemoryPoolObject, public SnapShot
 
 protected:
     Module(const ModuleData *module_data) : m_moduleData(module_data) {}
-    virtual ~Module() override {}
+    ~Module() override {}
 
 public:
     virtual NameKeyType Get_Module_Name_Key() const = 0;
@@ -81,9 +81,9 @@ public:
     virtual void On_Delete() {}
 
     // Snapshot
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
     //~Snapshot
 
     const ModuleData *Get_Module_Data() const;
@@ -103,16 +103,16 @@ class ObjectModule : public Module
 
 protected:
     ObjectModule(Thing *thing, const ModuleData *module_data);
-    virtual ~ObjectModule() override {}
+    ~ObjectModule() override {}
 
 public:
     virtual void On_Capture(Player *player1, Player *player2) {}
     virtual void On_Disabled_Edge(bool b) {}
 
     // Snapshot
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
     //~Snapshot
 
     Object *Get_Object() { return m_object; }
@@ -128,13 +128,13 @@ class DrawableModule : public Module
 
 protected:
     DrawableModule(Thing *thing, const ModuleData *module_data);
-    virtual ~DrawableModule() override {}
+    ~DrawableModule() override {}
 
 public:
     // Snapshot
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
     //~Snapshot
 
     Drawable *Get_Drawable() { return m_drawable; }

@@ -45,10 +45,10 @@ protected:
     float m_gradientUCoord;
 
 public:
-    virtual ~MatrixMapperClass() override {}
+    ~MatrixMapperClass() override {}
     TextureMapperClass *Clone() const override;
     void Apply(int uv_array_index) override;
-    virtual void Calculate_Texture_Matrix(Matrix4 &matrix) override;
+    void Calculate_Texture_Matrix(Matrix4 &matrix) override;
 
     MatrixMapperClass(int stage = 0);
     void Update_View_To_Pixel_Transform(float texsize);

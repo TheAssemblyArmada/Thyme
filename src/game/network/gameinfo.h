@@ -201,9 +201,9 @@ class SkirmishGameInfo : public GameInfo, public SnapShot
 public:
     SkirmishGameInfo();
     ~SkirmishGameInfo() {}
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     GameSlot m_gameSlot[MAX_SLOTS];

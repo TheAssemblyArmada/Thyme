@@ -21,7 +21,7 @@ class W3DTankDrawModuleData : public W3DModelDrawModuleData
 {
 public:
     W3DTankDrawModuleData();
-    virtual ~W3DTankDrawModuleData() {}
+    ~W3DTankDrawModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -59,17 +59,17 @@ public:
 
     W3DTankDraw(Thing *thing, ModuleData const *module_data);
 
-    virtual ~W3DTankDraw() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
-    virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override;
-    virtual void On_Render_Obj_Recreated() override;
+    ~W3DTankDraw() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
+    void Set_Fully_Obscured_By_Shroud(bool obscured) override;
+    void On_Render_Obj_Recreated() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void Set_Hidden(bool hidden) override;
+    void Set_Hidden(bool hidden) override;
 
     void Toss_Emitters();
     void Create_Emitters();

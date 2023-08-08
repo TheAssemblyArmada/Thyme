@@ -37,7 +37,7 @@ class UpdateModuleData : public BehaviorModuleData
 {
 public:
     UpdateModuleData() {}
-    virtual ~UpdateModuleData() override {}
+    ~UpdateModuleData() override {}
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
 };
@@ -60,23 +60,23 @@ class UpdateModule : public BehaviorModule, public UpdateModuleInterface
 
 protected:
     UpdateModule(Thing *thing, const ModuleData *module_data);
-    virtual ~UpdateModule() override;
+    ~UpdateModule() override;
 
 public:
     virtual SleepyUpdatePhase Get_Update_Phase() const;
 
     // Snapshot
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
     //~Snapshot
 
     // BehaviorModule
-    virtual UpdateModuleInterface *Get_Update() override;
+    UpdateModuleInterface *Get_Update() override;
     //~BehaviorModule
 
     // UpdateModuleInterface
-    virtual DisabledBitFlags Get_Disabled_Types_To_Process() const override;
+    DisabledBitFlags Get_Disabled_Types_To_Process() const override;
     //~UpdateModuleInterface
 
     // Indexing is currently used by GameLogic class.

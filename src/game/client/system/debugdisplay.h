@@ -51,22 +51,22 @@ class DebugDisplay : public DebugDisplayInterface
 {
 public:
     DebugDisplay() : m_width(0), m_height(0) { Reset(); }
-    virtual ~DebugDisplay() {}
+    ~DebugDisplay() override {}
 
-    virtual void Printf(const char *format, ...) override;
-    virtual void Set_Cursor_Pos(int x, int y) override
+    void Printf(const char *format, ...) override;
+    void Set_Cursor_Pos(int x, int y) override
     {
         m_xPos = x;
         m_yPos = y;
     }
-    virtual int Get_Cursor_X_Pos() override { return m_xPos; }
-    virtual int Get_Cursor_Y_Pos() override { return m_yPos; }
-    virtual int Get_Width() override { return m_width; }
-    virtual int Get_Height() override { return m_height; }
-    virtual void Set_Text_Color(DebugDisplayInterface::Color color) override { m_textColor = color; }
-    virtual void Set_Right_Margin(int right_pos) override { m_rightMargin = right_pos; }
-    virtual void Set_Left_Margin(int left_pos) override { m_leftMargin = left_pos; }
-    virtual void Reset() override
+    int Get_Cursor_X_Pos() override { return m_xPos; }
+    int Get_Cursor_Y_Pos() override { return m_yPos; }
+    int Get_Width() override { return m_width; }
+    int Get_Height() override { return m_height; }
+    void Set_Text_Color(DebugDisplayInterface::Color color) override { m_textColor = color; }
+    void Set_Right_Margin(int right_pos) override { m_rightMargin = right_pos; }
+    void Set_Left_Margin(int left_pos) override { m_leftMargin = left_pos; }
+    void Reset() override
     {
         Set_Cursor_Pos(0, 0);
         Set_Text_Color(DebugDisplayInterface::WHITE);

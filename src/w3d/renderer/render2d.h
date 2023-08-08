@@ -30,7 +30,7 @@ class Render2DClass : public W3DMPO
     IMPLEMENT_W3D_POOL(Render2DClass)
 public:
     Render2DClass(TextureClass *texture = nullptr);
-    virtual ~Render2DClass();
+    ~Render2DClass() override;
     virtual void Reset();
 
     void Render();

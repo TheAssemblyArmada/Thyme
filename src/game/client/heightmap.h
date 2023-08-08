@@ -27,20 +27,20 @@ public:
 
     HeightMapRenderObjClass();
 
-    virtual ~HeightMapRenderObjClass() override;
-    virtual void Render(RenderInfoClass &rinfo) override;
-    virtual void On_Frame_Update() override;
-    virtual int Init_Height_Data(
+    ~HeightMapRenderObjClass() override;
+    void Render(RenderInfoClass &rinfo) override;
+    void On_Frame_Update() override;
+    int Init_Height_Data(
         int x, int y, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights, bool update_shoreline) override;
-    virtual int Free_Map_Resources() override;
-    virtual void Update_Center(CameraClass *camera, RefMultiListIterator<RenderObjClass> *lights) override;
-    virtual void Adjust_Terrain_LOD(int adj) override;
-    virtual void Do_Partial_Update(
+    int Free_Map_Resources() override;
+    void Update_Center(CameraClass *camera, RefMultiListIterator<RenderObjClass> *lights) override;
+    void Adjust_Terrain_LOD(int adj) override;
+    void Do_Partial_Update(
         IRegion2D &partial_range, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights) override;
-    virtual void Static_Lighting_Changed() override;
-    virtual void Oversize_Terrain(int tiles_to_oversize) override;
-    virtual void Reset() override;
-    virtual int Get_Num_Extra_Blend_Tiles(bool b) override
+    void Static_Lighting_Changed() override;
+    void Oversize_Terrain(int tiles_to_oversize) override;
+    void Reset() override;
+    int Get_Num_Extra_Blend_Tiles(bool b) override
     {
         if (b) {
             return m_extraBlendTilesRendered;
@@ -48,11 +48,11 @@ public:
             return m_numExtraBlendTiles;
         }
     }
-    virtual int Update_Block(
+    int Update_Block(
         int x0, int y0, int x, int y, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights) override;
 
-    virtual void Release_Resources() override;
-    virtual void Re_Acquire_Resources() override;
+    void Release_Resources() override;
+    void Re_Acquire_Resources() override;
 
     void Free_Index_Vertex_Buffers();
     void Do_The_Dynamic_Light(VertexFormatXYZDUV2 *vb,

@@ -73,7 +73,7 @@ public:
 
     VertexMaterialClass();
     VertexMaterialClass(const VertexMaterialClass &src);
-    virtual ~VertexMaterialClass();
+    ~VertexMaterialClass() override;
 
     VertexMaterialClass &operator=(const VertexMaterialClass &src);
     VertexMaterialClass *Clone()

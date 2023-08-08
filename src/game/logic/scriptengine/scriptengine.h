@@ -87,11 +87,11 @@ public:
     void Hook_Dtor() { AttackPriorityInfo::~AttackPriorityInfo(); }
 #endif
 
-    virtual ~AttackPriorityInfo() override;
+    ~AttackPriorityInfo() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Reset();
     void Set_Priority(const ThingTemplate *tmplate, int priority);
@@ -135,17 +135,17 @@ public:
     void Hook_Dtor() { ScriptEngine::~ScriptEngine(); }
 #endif
 
-    virtual ~ScriptEngine() override;
+    ~ScriptEngine() override;
 
     // SubsystemInterface virtuals.
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     // Snapshot virtuals.
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     // ScriptEngine virtuals.
     virtual void New_Map();

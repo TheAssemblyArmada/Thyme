@@ -27,9 +27,9 @@ class GhostObject : public SnapShot
 public:
     GhostObject();
     virtual ~GhostObject() {}
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
     virtual void SnapShot(int player) = 0;
     virtual void Update_Parent_Object(Object *obj, PartitionData *data) = 0;
     virtual void Free_SnapShot(int player) = 0;
@@ -49,9 +49,9 @@ class GhostObjectManager : public SnapShot
 {
 public:
     GhostObjectManager();
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
     virtual ~GhostObjectManager() {}
     virtual void Reset() {}
     virtual GhostObject *Add_Ghost_Object(Object *obj, PartitionData *data) { return nullptr; }

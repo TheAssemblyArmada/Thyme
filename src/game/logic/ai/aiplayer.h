@@ -32,10 +32,10 @@ class TeamInQueue : public MemoryPoolObject, public SnapShot
     IMPLEMENT_POOL(TeamInQueue)
 
 public:
-    virtual ~TeamInQueue() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    ~TeamInQueue() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     TeamInQueue *Dlink_Next_Team_Build_Queue() const { return m_dlink_TeamBuildQueue.m_next; }
 
@@ -197,7 +197,7 @@ class AIPlayer : public MemoryPoolObject, public SnapShot
 
 public:
     AIPlayer(Player *p);
-    virtual ~AIPlayer() override;
+    ~AIPlayer() override;
     virtual bool Compute_Superweapon_Target(
         const SpecialPowerTemplate *special_power, Coord3D *pos, int player_index, float f);
     virtual void Update();
@@ -228,9 +228,9 @@ public:
     virtual void Process_Base_Building();
     virtual void Process_Team_Building();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Set_Team_Delay_Seconds(int seconds) { m_teamDelaySeconds = seconds; }
 
@@ -432,37 +432,37 @@ class AISkirmishPlayer : public AIPlayer
 
 public:
     AISkirmishPlayer(Player *p);
-    virtual ~AISkirmishPlayer() override;
+    ~AISkirmishPlayer() override;
 
-    virtual bool Compute_Superweapon_Target(
+    bool Compute_Superweapon_Target(
         const SpecialPowerTemplate *special_power, Coord3D *pos, int player_index, float f) override;
-    virtual void Update() override;
-    virtual void New_Map() override;
-    virtual void On_Unit_Produced(Object *factory, Object *unit) override;
-    virtual void Build_Specific_AI_Team(TeamPrototype *team_proto, bool priority_build) override;
-    virtual void Build_AI_Base_Defense(bool b) override;
-    virtual void Build_AI_Base_Defense_Structure(const Utf8String &name, bool b) override;
-    virtual void Build_Specific_AI_Building(const Utf8String &name) override;
-    virtual void Recruit_Specific_AI_Team(TeamPrototype *team_proto, float recruit_radius) override;
-    virtual bool Is_Skirmish_AI() override { return true; }
-    virtual Player *Get_Ai_Enemy() override;
-    virtual bool Check_Bridges(Object *obj, Waypoint *waypoint) override;
-    virtual void Do_Base_Building() override;
-    virtual void Check_Ready_Teams() override;
-    virtual void Check_Queued_Teams() override;
-    virtual void Do_Team_Building() override;
-    virtual Object *Find_Dozer(const Coord3D *pos) override;
-    virtual void Queue_Dozer() override;
-    virtual bool Select_Team_To_Build() override;
-    virtual bool Select_Team_To_Reinforce(int min_priority) override;
-    virtual bool Start_Training(WorkOrder *order, bool busy_ok, Utf8String team_name) override;
-    virtual bool Is_A_Good_Idea_To_Build_Team(TeamPrototype *team_proto) override;
-    virtual void Process_Base_Building() override;
-    virtual void Process_Team_Building() override;
+    void Update() override;
+    void New_Map() override;
+    void On_Unit_Produced(Object *factory, Object *unit) override;
+    void Build_Specific_AI_Team(TeamPrototype *team_proto, bool priority_build) override;
+    void Build_AI_Base_Defense(bool b) override;
+    void Build_AI_Base_Defense_Structure(const Utf8String &name, bool b) override;
+    void Build_Specific_AI_Building(const Utf8String &name) override;
+    void Recruit_Specific_AI_Team(TeamPrototype *team_proto, float recruit_radius) override;
+    bool Is_Skirmish_AI() override { return true; }
+    Player *Get_Ai_Enemy() override;
+    bool Check_Bridges(Object *obj, Waypoint *waypoint) override;
+    void Do_Base_Building() override;
+    void Check_Ready_Teams() override;
+    void Check_Queued_Teams() override;
+    void Do_Team_Building() override;
+    Object *Find_Dozer(const Coord3D *pos) override;
+    void Queue_Dozer() override;
+    bool Select_Team_To_Build() override;
+    bool Select_Team_To_Reinforce(int min_priority) override;
+    bool Start_Training(WorkOrder *order, bool busy_ok, Utf8String team_name) override;
+    bool Is_A_Good_Idea_To_Build_Team(TeamPrototype *team_proto) override;
+    void Process_Base_Building() override;
+    void Process_Team_Building() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     int m_flags1;

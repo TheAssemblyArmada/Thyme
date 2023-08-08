@@ -36,11 +36,11 @@ public:
         unk1{}, unk2{}, unk3{}, unk4{}, m_indexBuffer(nullptr), m_surfaceWidth{}, m_surfaceHeight{}
     {
     }
-    virtual ~W3DSmudgeManager() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Release_Resources() override;
-    virtual void Re_Acquire_Resources() override;
+    ~W3DSmudgeManager() override;
+    void Init() override;
+    void Reset() override;
+    void Release_Resources() override;
+    void Re_Acquire_Resources() override;
     bool Test_Hardware_Support();
     void Render(RenderInfoClass &rinfo);
     W3DSmudgeManager *Hook_Ctor() { return new (this) W3DSmudgeManager; }

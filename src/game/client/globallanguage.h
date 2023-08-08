@@ -48,11 +48,11 @@ public:
     friend W3DFontLibrary;
 
     GlobalLanguage();
-    virtual ~GlobalLanguage() {}
+    ~GlobalLanguage() override {}
 
-    virtual void Init() override;
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override {}
+    void Update() override {}
 
     int Adjust_Font_Size(int size);
 

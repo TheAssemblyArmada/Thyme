@@ -138,9 +138,9 @@ public:
     WeaponSet();
     ~WeaponSet();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Update_Weapon_Set(const Object *source_obj);
     static BitFlags<MODELCONDITION_COUNT> Get_Model_Condition_For_Weapon_Slot(

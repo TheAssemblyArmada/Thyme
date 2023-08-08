@@ -120,7 +120,7 @@ public:
 
 public:
     VertexBufferClass(unsigned int type_, unsigned int fvf, unsigned short vertex_count_, unsigned int vertex_size);
-    ~VertexBufferClass();
+    ~VertexBufferClass() override;
     void Add_Engine_Ref() const;
     void Release_Engine_Ref();
     FVFInfoClass &FVF_Info() { return *m_fvfInfo; }
@@ -161,7 +161,7 @@ public:
         UsageType usage);
     DX8VertexBufferClass(
         Vector3 *vertices, Vector4 *diffuse, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
-    ~DX8VertexBufferClass();
+    ~DX8VertexBufferClass() override;
     void Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, unsigned int first_vertex, unsigned int count);
     void Copy(Vector3 *loc, unsigned int first_vertex, unsigned int count);
     void Copy(Vector3 *loc, Vector2 *uv, unsigned int first_vertex, unsigned int count);
@@ -191,7 +191,7 @@ class SortingVertexBufferClass : public VertexBufferClass
     ALLOW_HOOKING
 public:
     SortingVertexBufferClass(unsigned short VertexCount);
-    ~SortingVertexBufferClass();
+    ~SortingVertexBufferClass() override;
     VertexFormatXYZNDUV2 *Get_Sorting_Vertex_Buffer() { return m_vertexBuffer; }
 
 private:

@@ -32,7 +32,7 @@ public:
         bool strip,
         unsigned int pass);
     DX8PolygonRendererClass(const DX8PolygonRendererClass &src, MeshModelClass *mmc);
-    virtual ~DX8PolygonRendererClass();
+    ~DX8PolygonRendererClass() override;
 
     void Render(int offset);
     void Render_Sorted(int offset, const SphereClass &sphere);

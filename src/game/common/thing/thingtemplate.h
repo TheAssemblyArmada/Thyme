@@ -137,7 +137,7 @@ class ThingTemplate : public Overridable
     };
 
 protected:
-    virtual ~ThingTemplate() override {}
+    ~ThingTemplate() override {}
 
 public:
     // Not 100% clear on these values

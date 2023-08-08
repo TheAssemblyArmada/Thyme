@@ -33,20 +33,20 @@ class PlayerList : public SubsystemInterface, public SnapShot
 {
 public:
     PlayerList();
-    virtual ~PlayerList() override;
+    ~PlayerList() override;
 
     // SubsystemInterface interface
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     virtual void New_Game();
     virtual void New_Map();
 
     // SnapShot interface
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     Player *Find_Player_With_NameKey(NameKeyType key);
     void Team_About_To_Be_Deleted(Team *team);

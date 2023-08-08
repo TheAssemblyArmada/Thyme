@@ -36,7 +36,7 @@ public:
 #endif
 
     MatBufferClass(const MatBufferClass &that);
-    ~MatBufferClass();
+    ~MatBufferClass() override;
 
     void Set_Element(int index, VertexMaterialClass *mat);
     VertexMaterialClass *Get_Element(int index);
@@ -67,7 +67,7 @@ public:
 #endif
 
     TexBufferClass(const TexBufferClass &that);
-    ~TexBufferClass();
+    ~TexBufferClass() override;
 
     void Set_Element(int index, TextureClass *tex);
     TextureClass *Get_Element(int index);
@@ -135,7 +135,7 @@ public:
 
     MeshMatDescClass();
     MeshMatDescClass(const MeshMatDescClass &that);
-    ~MeshMatDescClass();
+    ~MeshMatDescClass() override;
 
     void Reset(int polycount, int vertcount, int passcount);
     MeshMatDescClass &operator=(const MeshMatDescClass &that);

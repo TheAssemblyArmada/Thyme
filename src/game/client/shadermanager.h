@@ -124,9 +124,9 @@ private:
 class ShroudTextureShader : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 
 private:
     int m_pass;
@@ -135,9 +135,9 @@ private:
 class FlatShroudTextureShader : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 
 private:
     int m_pass;
@@ -146,17 +146,17 @@ private:
 class MaskTextureShader : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 };
 
 class TerrainShader2Stage : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 
 #ifdef BUILD_WITH_D3D8
     void Update_Noise_1(D3DXMATRIX *dest_matrix, D3DXMATRIX *cur_view_inverse, bool do_update);
@@ -174,18 +174,18 @@ private:
 class FlatTerrainShader2Stage : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 };
 
 class FlatTerrainShaderPixelShader : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
-    virtual int Shutdown() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
+    int Shutdown() override;
 
 private:
     unsigned long m_dwBase1PixelShader;
@@ -197,18 +197,18 @@ private:
 class TerrainShader8Stage : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 };
 
 class TerrainShaderPixelShader : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
-    virtual int Shutdown() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
+    int Shutdown() override;
 
 private:
     unsigned long m_dwBasePixelShader;
@@ -219,9 +219,9 @@ private:
 class CloudTextureShader : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 
 private:
     int m_pass;
@@ -230,10 +230,10 @@ private:
 class RoadShaderPixelShader : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
-    virtual int Shutdown() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
+    int Shutdown() override;
 
 private:
     unsigned long m_dwBaseNoise2PixelShader;
@@ -242,32 +242,32 @@ private:
 class RoadShader2Stage : public W3DShaderInterface
 {
 public:
-    virtual int Set(int pass) override;
-    virtual void Reset() override;
-    virtual int Init() override;
+    int Set(int pass) override;
+    void Reset() override;
+    int Init() override;
 };
 
 class ScreenDefaultFilter : public W3DFilterInterface
 {
 public:
-    virtual int Init() override;
-    virtual bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
-    virtual bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
-    virtual bool Setup(FilterModes mode) override { return true; }
-    virtual int Set(FilterModes mode) override;
-    virtual void Reset() override;
+    int Init() override;
+    bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
+    bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
+    bool Setup(FilterModes mode) override { return true; }
+    int Set(FilterModes mode) override;
+    void Reset() override;
 };
 
 class ScreenBWFilter : public W3DFilterInterface
 {
 public:
-    virtual int Init() override;
-    virtual int Shutdown() override;
-    virtual bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
-    virtual bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
-    virtual bool Setup(FilterModes mode) override { return true; }
-    virtual int Set(FilterModes mode) override;
-    virtual void Reset() override;
+    int Init() override;
+    int Shutdown() override;
+    bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
+    bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
+    bool Setup(FilterModes mode) override { return true; }
+    int Set(FilterModes mode) override;
+    void Reset() override;
     static void Set_Fade_Parameters(int frames, int direction)
     {
         s_curFadeFrame = 0;
@@ -288,25 +288,25 @@ private:
 class ScreenBWFilterDOT3 : public W3DFilterInterface
 {
 public:
-    virtual int Init() override;
-    virtual int Shutdown() override;
-    virtual bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
-    virtual bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
-    virtual bool Setup(FilterModes mode) override { return true; }
-    virtual int Set(FilterModes mode) override;
-    virtual void Reset() override;
+    int Init() override;
+    int Shutdown() override;
+    bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
+    bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
+    bool Setup(FilterModes mode) override { return true; }
+    int Set(FilterModes mode) override;
+    void Reset() override;
 };
 
 class ScreenCrossFadeFilter : public W3DFilterInterface
 {
 public:
-    virtual int Init() override;
-    virtual int Shutdown() override;
-    virtual bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
-    virtual bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
-    virtual bool Setup(FilterModes mode) override { return true; }
-    virtual int Set(FilterModes mode) override;
-    virtual void Reset() override;
+    int Init() override;
+    int Shutdown() override;
+    bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
+    bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
+    bool Setup(FilterModes mode) override { return true; }
+    int Set(FilterModes mode) override;
+    void Reset() override;
 
     bool Update_Fade_Level();
 
@@ -333,13 +333,13 @@ class ScreenMotionBlurFilter : public W3DFilterInterface
 public:
     ScreenMotionBlurFilter();
 
-    virtual int Init() override;
-    virtual int Shutdown() override;
-    virtual bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
-    virtual bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
-    virtual bool Setup(FilterModes mode) override;
-    virtual int Set(FilterModes mode) override;
-    virtual void Reset() override;
+    int Init() override;
+    int Shutdown() override;
+    bool Pre_Render(bool &skip, CustomScenePassModes &mode) override;
+    bool Post_Render(FilterModes mode, Coord2D &delta, bool &b) override;
+    bool Setup(FilterModes mode) override;
+    int Set(FilterModes mode) override;
+    void Reset() override;
 
     static void Set_Zoom_To_Pos(const Coord3D *pos)
     {

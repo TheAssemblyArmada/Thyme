@@ -22,7 +22,7 @@ class BufferStraw : public Straw
 public:
     BufferStraw(Buffer const &buffer) : m_bufferPtr(buffer), m_index(0) {}
     BufferStraw(void *buffer, int length) : m_bufferPtr(buffer, length), m_index(0) {}
-    virtual int Get(void *source, int slen);
+    int Get(void *source, int slen) override;
 
 private:
     Buffer m_bufferPtr;

@@ -45,11 +45,11 @@ public:
     };
 
     Display();
-    virtual ~Display();
-    virtual void Init() override {}
-    virtual void Reset() override;
-    virtual void Update() override;
-    virtual void Draw() override;
+    ~Display() override;
+    void Init() override {}
+    void Reset() override;
+    void Update() override;
+    void Draw() override;
 
     virtual void Set_Width(unsigned width);
     virtual void Set_Height(unsigned height);

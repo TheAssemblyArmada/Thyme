@@ -147,7 +147,7 @@ class BehaviorModuleData : public ModuleData
 {
 public:
     BehaviorModuleData() {}
-    virtual ~BehaviorModuleData() override {}
+    ~BehaviorModuleData() override {}
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
 };
@@ -230,52 +230,52 @@ class BehaviorModule : public ObjectModule, public BehaviorModuleInterface
 
 protected:
     BehaviorModule(Thing *thing, const ModuleData *module_data);
-    virtual ~BehaviorModule() override;
+    ~BehaviorModule() override;
 
 public:
     virtual StealthUpdate *Get_Steath();
     virtual SpyVisionUpdate *Get_Spy_Vision_Update();
 
     // Snapshot
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
     //~Snapshot
 
     // BehaviorModuleInterface
-    virtual BodyModuleInterface *Get_Body() override;
-    virtual CollideModuleInterface *Get_Collide() override;
-    virtual ContainModuleInterface *Get_Contain() override;
-    virtual CreateModuleInterface *Get_Create() override;
-    virtual DamageModuleInterface *Get_Damage() override;
-    virtual DestroyModuleInterface *Get_Destroy() override;
-    virtual DieModuleInterface *Get_Die() override;
-    virtual SpecialPowerModuleInterface *Get_Special_Power() override;
-    virtual UpdateModuleInterface *Get_Update() override;
-    virtual UpgradeModuleInterface *Get_Upgrade() override;
-    virtual ParkingPlaceBehaviorInterface *Get_Parking_Place_Behavior_Interface() override;
-    virtual RebuildHoleBehaviorInterface *Get_Rebuild_Hole_Behavior_Interface() override;
-    virtual BridgeBehaviorInterface *Get_Bridge_Behavior_Interface() override;
-    virtual BridgeTowerBehaviorInterface *Get_Bridge_Tower_Behavior_Interface() override;
-    virtual BridgeScaffoldBehaviorInterface *Get_Bridge_Scaffold_Behavior_Interface() override;
-    virtual OverchargeBehaviorInterface *Get_Overcharge_Behavior_Interface() override;
-    virtual TransportPassengerInterface *Get_Transport_Passenger_Interface() override;
-    virtual CaveInterface *Get_Cave_Interface() override;
-    virtual LandMineInterface *Get_Land_Mine_Interface() override;
-    virtual DieModuleInterface *Get_Eject_Pilot_Die_Interface() override;
-    virtual ProjectileUpdateInterface *Get_Projectile_Update_Interface() override;
-    virtual AIUpdateInterface *Get_AI_Update_Interface() override;
-    virtual ExitInterface *Get_Update_Exit_Interface() override;
-    virtual DockUpdateInterface *Get_Dock_Update_Interface() override;
-    virtual RailedTransportDockUpdateInterface *Get_Railed_Transport_Dock_Update_Interface() override;
-    virtual SlowDeathBehaviorInterface *Get_Slow_Death_Behavior_Interface() override;
-    virtual SpecialPowerUpdateInterface *Get_Special_Power_Update_Interface() override;
-    virtual SlavedUpdateInterface *Get_Slaved_Update_Interface() override;
-    virtual ProductionUpdateInterface *Get_Production_Update_Interface() override;
-    virtual HordeUpdateInterface *Get_Horde_Update_Interface() override;
-    virtual PowerPlantUpdateInterface *Get_Power_Plant_Update_Interface() override;
-    virtual SpawnBehaviorInterface *Get_Spawn_Behavior_Interface() override;
-    virtual CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() override;
-    virtual const CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() const override;
+    BodyModuleInterface *Get_Body() override;
+    CollideModuleInterface *Get_Collide() override;
+    ContainModuleInterface *Get_Contain() override;
+    CreateModuleInterface *Get_Create() override;
+    DamageModuleInterface *Get_Damage() override;
+    DestroyModuleInterface *Get_Destroy() override;
+    DieModuleInterface *Get_Die() override;
+    SpecialPowerModuleInterface *Get_Special_Power() override;
+    UpdateModuleInterface *Get_Update() override;
+    UpgradeModuleInterface *Get_Upgrade() override;
+    ParkingPlaceBehaviorInterface *Get_Parking_Place_Behavior_Interface() override;
+    RebuildHoleBehaviorInterface *Get_Rebuild_Hole_Behavior_Interface() override;
+    BridgeBehaviorInterface *Get_Bridge_Behavior_Interface() override;
+    BridgeTowerBehaviorInterface *Get_Bridge_Tower_Behavior_Interface() override;
+    BridgeScaffoldBehaviorInterface *Get_Bridge_Scaffold_Behavior_Interface() override;
+    OverchargeBehaviorInterface *Get_Overcharge_Behavior_Interface() override;
+    TransportPassengerInterface *Get_Transport_Passenger_Interface() override;
+    CaveInterface *Get_Cave_Interface() override;
+    LandMineInterface *Get_Land_Mine_Interface() override;
+    DieModuleInterface *Get_Eject_Pilot_Die_Interface() override;
+    ProjectileUpdateInterface *Get_Projectile_Update_Interface() override;
+    AIUpdateInterface *Get_AI_Update_Interface() override;
+    ExitInterface *Get_Update_Exit_Interface() override;
+    DockUpdateInterface *Get_Dock_Update_Interface() override;
+    RailedTransportDockUpdateInterface *Get_Railed_Transport_Dock_Update_Interface() override;
+    SlowDeathBehaviorInterface *Get_Slow_Death_Behavior_Interface() override;
+    SpecialPowerUpdateInterface *Get_Special_Power_Update_Interface() override;
+    SlavedUpdateInterface *Get_Slaved_Update_Interface() override;
+    ProductionUpdateInterface *Get_Production_Update_Interface() override;
+    HordeUpdateInterface *Get_Horde_Update_Interface() override;
+    PowerPlantUpdateInterface *Get_Power_Plant_Update_Interface() override;
+    SpawnBehaviorInterface *Get_Spawn_Behavior_Interface() override;
+    CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() override;
+    const CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() const override;
     //~BehaviorModuleInterface
 };

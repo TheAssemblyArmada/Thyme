@@ -47,12 +47,12 @@ class SpecialPowerUpdateModule : public UpdateModule, public SpecialPowerUpdateI
     IMPLEMENT_ABSTRACT_POOL(SpecialPowerUpdateModule)
 
 public:
-    virtual ~SpecialPowerUpdateModule() override;
+    ~SpecialPowerUpdateModule() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual bool Does_Special_Power_Update_Pass_Science_Test() const override;
-    virtual ScienceType Get_Extra_Required_Science() const override;
+    bool Does_Special_Power_Update_Pass_Science_Test() const override;
+    ScienceType Get_Extra_Required_Science() const override;
 };

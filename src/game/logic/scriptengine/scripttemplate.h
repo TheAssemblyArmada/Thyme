@@ -31,7 +31,7 @@ class Template : public MemoryPoolObject
 
 public:
     Template();
-    virtual ~Template() override{};
+    ~Template() override{};
 
     int Get_UI_Strings(Utf8String *const strings) const;
     Parameter::ParameterType Get_Parameter_Type(int parameter) const;
@@ -58,7 +58,7 @@ class ActionTemplate : public Template
 
 public:
     ActionTemplate() {}
-    virtual ~ActionTemplate() override {}
+    ~ActionTemplate() override {}
 };
 
 class ConditionTemplate : public Template
@@ -67,5 +67,5 @@ class ConditionTemplate : public Template
 
 public:
     ConditionTemplate() {}
-    virtual ~ConditionTemplate() override {}
+    ~ConditionTemplate() override {}
 };

@@ -63,10 +63,10 @@ class DamageFXStore : public SubsystemInterface
 {
 public:
     DamageFXStore() { m_dfxmap.clear(); }
-    virtual ~DamageFXStore() override { m_dfxmap.clear(); }
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~DamageFXStore() override { m_dfxmap.clear(); }
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
 private:
     damagefxmap_t m_dfxmap;

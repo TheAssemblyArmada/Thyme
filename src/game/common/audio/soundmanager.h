@@ -22,10 +22,10 @@
 class SoundManager : public SubsystemInterface
 {
 public:
-    virtual void Init() override {}
-    virtual void PostProcessLoad() override {}
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override {}
+    void PostProcessLoad() override {}
+    void Reset() override;
+    void Update() override {}
     virtual void Lose_Focus() {}
     virtual void Gain_Focus() {}
     virtual void Set_Listener_Position(const Coord3D *pos) {}

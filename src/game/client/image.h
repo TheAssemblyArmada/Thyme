@@ -29,7 +29,7 @@ class Image : public MemoryPoolObject
     IMPLEMENT_POOL(Image);
 
 protected:
-    virtual ~Image() override;
+    ~Image() override;
 
 public:
     Image();
@@ -80,10 +80,10 @@ class ImageCollection : public SubsystemInterface
 {
 public:
     ImageCollection() {}
-    virtual ~ImageCollection() override;
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~ImageCollection() override;
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
     void Add_Image(Image *image);
     void Load(int texture_size);

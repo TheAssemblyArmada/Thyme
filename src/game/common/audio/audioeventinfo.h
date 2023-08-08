@@ -67,7 +67,7 @@ class AudioEventInfo : public MemoryPoolObject
     IMPLEMENT_POOL(AudioEventInfo);
 
 protected:
-    virtual ~AudioEventInfo() override {}
+    ~AudioEventInfo() override {}
 
 public:
     AudioEventInfo();
@@ -165,10 +165,10 @@ public:
     DynamicAudioEventInfo() {}
     DynamicAudioEventInfo(const AudioEventInfo &audio) : AudioEventInfo(audio) {}
 
-    virtual ~DynamicAudioEventInfo() override {}
-    virtual bool Is_Level_Specific() const override { return true; }
-    virtual DynamicAudioEventInfo *Get_Dynamic_Event_Info() override { return this; }
-    virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const override { return this; }
+    ~DynamicAudioEventInfo() override {}
+    bool Is_Level_Specific() const override { return true; }
+    DynamicAudioEventInfo *Get_Dynamic_Event_Info() override { return this; }
+    const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const override { return this; }
 
     bool Name_Overridden() const { return m_overrideFlags.Test(OVERRIDE_NAME); }
     bool Loop_Flag_Overridden() const { return m_overrideFlags.Test(OVERRIDE_LOOP_FLAG); }

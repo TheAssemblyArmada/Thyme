@@ -22,11 +22,11 @@ class ObjectHelper : public UpdateModule
 
 public:
     ObjectHelper(Thing *thing, const ModuleData *module_data);
-    virtual ~ObjectHelper() override {}
+    ~ObjectHelper() override {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     void Sleep_Until(unsigned int frame);
 };

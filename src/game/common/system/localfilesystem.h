@@ -24,7 +24,7 @@ class File;
 class LocalFileSystem : public SubsystemInterface
 {
 public:
-    virtual ~LocalFileSystem() {}
+    ~LocalFileSystem() override {}
 
     virtual File *Open_File(const char *filename, int mode) = 0;
     virtual bool Does_File_Exist(const char *filename) const = 0;

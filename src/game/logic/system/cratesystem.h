@@ -30,7 +30,7 @@ class CrateTemplate : public Overridable
     IMPLEMENT_POOL(CrateTemplate);
 
 public:
-    virtual ~CrateTemplate() override;
+    ~CrateTemplate() override;
 
 private:
     Utf8String m_name;
@@ -46,10 +46,10 @@ class CrateSystem : public SubsystemInterface
 {
 public:
     CrateSystem();
-    virtual ~CrateSystem() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
+    ~CrateSystem() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
 private:
     std::vector<CrateTemplate *> m_crateTemplateVector;

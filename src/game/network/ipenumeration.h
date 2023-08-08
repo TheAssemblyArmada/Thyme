@@ -23,7 +23,7 @@ class EnumeratedIP : public MemoryPoolObject
 
 public:
     EnumeratedIP() : m_IP(0), m_next(nullptr) {}
-    virtual ~EnumeratedIP() override {}
+    ~EnumeratedIP() override {}
 
     Utf8String Get_IP_String() { return m_IPstring; }
     unsigned int Get_IP() { return m_IP; }

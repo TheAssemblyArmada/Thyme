@@ -34,8 +34,8 @@ public:
     DynamicMeshModel(unsigned int max_polys, unsigned int max_verts, MaterialInfoClass *mat_info);
     DynamicMeshModel(const DynamicMeshModel &src);
 
-    virtual ~DynamicMeshModel() override;
-    virtual void Compute_Bounds(Vector3 *verts);
+    ~DynamicMeshModel() override;
+    void Compute_Bounds(Vector3 *verts) override;
     virtual void Compute_Plane_Equations();
     virtual void Compute_Vertex_Normals();
 
@@ -111,13 +111,13 @@ public:
     DynamicMeshClass(int max_poly, int max_vert, MaterialInfoClass *mat_info);
     DynamicMeshClass(const DynamicMeshClass &src);
 
-    virtual ~DynamicMeshClass();
-    virtual RenderObjClass *Clone() const;
-    virtual int Class_ID() const override { return CLASSID_DYNAMESH; }
-    virtual int Get_Num_Polys() const override { return m_polyCount; }
-    virtual void Render(RenderInfoClass &rinfo) override;
+    ~DynamicMeshClass() override;
+    RenderObjClass *Clone() const override;
+    int Class_ID() const override { return CLASSID_DYNAMESH; }
+    int Get_Num_Polys() const override { return m_polyCount; }
+    void Render(RenderInfoClass &rinfo) override;
 
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override
     {
         if (!Bounding_Volumes_Valid()) {
             m_model->Compute_Bounds(nullptr);
@@ -126,7 +126,7 @@ public:
         m_model->Get_Bounding_Sphere(&sphere);
     }
 
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override
     {
         if (!Bounding_Volumes_Valid()) {
             m_model->Compute_Bounds(0);
@@ -135,10 +135,10 @@ public:
         m_model->Get_Bounding_Box(&box);
     }
 
-    virtual MaterialInfoClass *Get_Material_Info() override { return m_model->Get_Material_Info(); }
-    virtual int Get_Sort_Level() const override { return m_sortLevel; }
+    MaterialInfoClass *Get_Material_Info() override { return m_model->Get_Material_Info(); }
+    int Get_Sort_Level() const override { return m_sortLevel; }
 
-    virtual void Set_Sort_Level(int sort) override
+    void Set_Sort_Level(int sort) override
     {
         m_sortLevel = (char)sort;
 
@@ -305,13 +305,13 @@ public:
     DynamicScreenMeshClass(const DynamicScreenMeshClass &src);
     DynamicScreenMeshClass(int max_poly, int max_vert, float aspect);
 
-    virtual ~DynamicScreenMeshClass() override {}
-    virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override { return CLASSID_DYNASCREENMESH; }
-    virtual void Set_Position(const Vector3 &v) override;
-    virtual void Reset() override;
-    virtual void Location(float x, float y, float z) override;
-    virtual void Move_Vertex(int index, float x, float y, float z) override;
-    virtual bool Flip_Face() override { return m_triVertexCount & 1; }
+    ~DynamicScreenMeshClass() override {}
+    RenderObjClass *Clone() const override;
+    int Class_ID() const override { return CLASSID_DYNASCREENMESH; }
+    void Set_Position(const Vector3 &v) override;
+    void Reset() override;
+    void Location(float x, float y, float z) override;
+    void Move_Vertex(int index, float x, float y, float z) override;
+    bool Flip_Face() override { return m_triVertexCount & 1; }
     virtual void Set_Aspect(float aspect) { m_aspect = aspect; }
 };

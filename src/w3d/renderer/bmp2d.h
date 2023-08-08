@@ -29,6 +29,6 @@ public:
         int th,
         bool opaque);
     Bitmap2D(const Bitmap2D &src);
-    virtual RenderObjClass *Clone() const;
-    virtual int Class_ID() const { return CLASSID_BITMAP2D; }
+    RenderObjClass *Clone() const override;
+    int Class_ID() const override { return CLASSID_BITMAP2D; }
 };

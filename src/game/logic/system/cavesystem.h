@@ -28,15 +28,15 @@ class TunnelTracker : public MemoryPoolObject, public SnapShot
     IMPLEMENT_POOL(TunnelTracker);
 
 protected:
-    virtual ~TunnelTracker() override{};
+    ~TunnelTracker() override{};
 
 public:
     TunnelTracker() : m_containListSize(0), m_tunnelCount(0), m_nemesisID(0), m_lastNemesisFrame(0) {}
 
     // Snapshot interface methods
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     std::list<ObjectID> m_tunnelIDs;
     std::list<Object *> m_containList;
@@ -51,17 +51,17 @@ class CaveSystem : public SubsystemInterface, public SnapShot
 {
 public:
     CaveSystem() {}
-    virtual ~CaveSystem() { Reset(); };
+    ~CaveSystem() override { Reset(); };
 
     // Subsystem interface methods.
-    virtual void Init() override {}
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override {}
+    void Reset() override;
+    void Update() override {}
 
     // Snapshot interface methods
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     bool Can_Switch_Index_to_Index(size_t unk1, size_t unk2);
     TunnelTracker *Register_New_Cave(int index);

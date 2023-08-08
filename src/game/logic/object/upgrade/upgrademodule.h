@@ -44,12 +44,12 @@ public:
 class UpgradeMux : public UpgradeModuleInterface
 {
 public:
-    virtual bool Is_Already_Upgraded() const override;
-    virtual bool Attempt_Upgrade(BitFlags<128ul> mask) override;
-    virtual bool Would_Upgrade(BitFlags<128ul> mask) const override;
-    virtual bool Reset_Upgrade(BitFlags<128ul> mask) override;
-    virtual void Force_Refresh_Upgrade() override;
-    virtual bool Test_Upgrade_Conditions(BitFlags<128ul> mask) const override;
+    bool Is_Already_Upgraded() const override;
+    bool Attempt_Upgrade(BitFlags<128ul> mask) override;
+    bool Would_Upgrade(BitFlags<128ul> mask) const override;
+    bool Reset_Upgrade(BitFlags<128ul> mask) override;
+    void Force_Refresh_Upgrade() override;
+    bool Test_Upgrade_Conditions(BitFlags<128ul> mask) const override;
 
     virtual void Upgrade_Implementation() = 0;
     virtual void Get_Upgrade_Activation_Masks(BitFlags<128ul> &activation_mask, BitFlags<128ul> &conflicting_mask) const = 0;
@@ -67,7 +67,7 @@ private:
 class UpgradeModuleData : public BehaviorModuleData
 {
 public:
-    virtual ~UpgradeModuleData();
+    ~UpgradeModuleData() override;
 
 private:
     UpgradeMuxData m_upgradeMuxData;
@@ -78,17 +78,16 @@ class UpgradeModule : public BehaviorModule, public UpgradeMux
     IMPLEMENT_ABSTRACT_POOL(UpgradeModule);
 
 public:
-    virtual ~UpgradeModule() override;
+    ~UpgradeModule() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual UpgradeModuleInterface *Get_Upgrade() override;
+    UpgradeModuleInterface *Get_Upgrade() override;
 
-    virtual void Get_Upgrade_Activation_Masks(
-        BitFlags<128ul> &activation_mask, BitFlags<128ul> &conflicting_mask) const override;
-    virtual void Perform_Upgrade_FX() override;
-    virtual bool Requires_All_Activation_Upgrades() const override;
-    virtual void Process_Upgrade_Removal() override;
+    void Get_Upgrade_Activation_Masks(BitFlags<128ul> &activation_mask, BitFlags<128ul> &conflicting_mask) const override;
+    void Perform_Upgrade_FX() override;
+    bool Requires_All_Activation_Upgrades() const override;
+    void Process_Upgrade_Removal() override;
 };

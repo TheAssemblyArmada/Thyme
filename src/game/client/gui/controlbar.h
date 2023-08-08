@@ -31,7 +31,7 @@ public:
         MAX_COMMAND_BUTTONS = 18,
     };
 
-    virtual ~CommandSet() override;
+    ~CommandSet() override;
     const CommandButton *Get_Command_Button(int button) const;
 
 private:
@@ -94,7 +94,7 @@ class CommandButton : public Overridable
     IMPLEMENT_POOL(CommandButton)
 
 public:
-    virtual ~CommandButton() override;
+    ~CommandButton() override;
 
     GUICommand Get_Command() const { return m_command; }
     CommandButton *Get_Next() const { return m_nextCommandButton; }

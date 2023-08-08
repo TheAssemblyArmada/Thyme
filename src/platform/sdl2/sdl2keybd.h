@@ -43,12 +43,12 @@ class SDL2InputKeyboard : public Keyboard
 
 public:
     SDL2InputKeyboard();
-    virtual ~SDL2InputKeyboard();
+    ~SDL2InputKeyboard() override;
 
-    virtual void Init() override;
+    void Init() override;
 
-    virtual bool Get_Caps_State() override;
-    virtual void Get_Key(KeyboardIO *io) override;
+    bool Get_Caps_State() override;
+    void Get_Key(KeyboardIO *io) override;
 
     void Add_SDL2_Event(SDL_Event *ev);
 

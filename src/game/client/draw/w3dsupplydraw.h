@@ -20,7 +20,7 @@ class W3DSupplyDrawModuleData : public W3DModelDrawModuleData
 {
 public:
     W3DSupplyDrawModuleData() {}
-    virtual ~W3DSupplyDrawModuleData() override {}
+    ~W3DSupplyDrawModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -38,15 +38,15 @@ public:
     {
     }
 
-    virtual ~W3DSupplyDraw() override {}
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void React_To_Geometry_Change() override {}
+    ~W3DSupplyDraw() override {}
+    NameKeyType Get_Module_Name_Key() const override;
+    void React_To_Geometry_Change() override {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void Update_Draw_Module_Supply_Status(int max, int current) override;
+    void Update_Draw_Module_Supply_Status(int max, int current) override;
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);

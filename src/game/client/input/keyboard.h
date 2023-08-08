@@ -236,11 +236,11 @@ public:
     };
 
     Keyboard();
-    virtual ~Keyboard() {}
+    ~Keyboard() override {}
 
-    virtual void Init() override;
-    virtual void Reset() override {}
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override {}
+    void Update() override;
 
     virtual bool Get_Caps_State() = 0;
     virtual void Create_Stream_Messages();

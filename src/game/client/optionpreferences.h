@@ -23,7 +23,7 @@ class OptionPreferences : public UserPreferences
 {
 public:
     OptionPreferences();
-    virtual ~OptionPreferences() {}
+    ~OptionPreferences() override {}
 
     int Get_Campaign_Difficulty();
     void Set_Campaign_Difficulty(int difficulty);

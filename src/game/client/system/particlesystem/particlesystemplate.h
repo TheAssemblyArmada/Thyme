@@ -29,7 +29,7 @@ class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInf
     IMPLEMENT_NAMED_POOL(ParticleSystemTemplate, ParticleSystemTemplatePool);
 
 protected:
-    virtual ~ParticleSystemTemplate() override {}
+    ~ParticleSystemTemplate() override {}
 
 public:
     ParticleSystemTemplate(const Utf8String &name) : m_name(name), m_slaveTemplate(nullptr) {}

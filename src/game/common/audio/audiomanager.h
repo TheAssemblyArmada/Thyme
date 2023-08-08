@@ -76,12 +76,12 @@ class AudioManager : public SubsystemInterface
 {
 public:
     AudioManager();
-    virtual ~AudioManager();
+    ~AudioManager() override;
 
     // SubsystemInterface interface
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     // AudioManager interface
     virtual void Stop_Audio(AudioAffect affect) = 0;

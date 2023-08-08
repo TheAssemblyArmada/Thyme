@@ -26,31 +26,31 @@ class CDManager : public CDManagerInterface
 {
 public:
     CDManager() {}
-    virtual ~CDManager() override {}
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~CDManager() override {}
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
-    virtual int Drive_Count() override
+    int Drive_Count() override
     {
         captainslog_relassert(false, 0, "CDManager error");
         return 0;
     }
 
-    virtual CDDriveInterface *Get_Drive() override
+    CDDriveInterface *Get_Drive() override
     {
         captainslog_relassert(false, 0, "CDManager error");
         return nullptr;
     }
 
-    virtual CDDriveInterface *New_Drive(const char *drive) override
+    CDDriveInterface *New_Drive(const char *drive) override
     {
         captainslog_relassert(false, 0, "CDManager error");
         return nullptr;
     }
 
-    virtual void Refresh_Drives() override { captainslog_relassert(false, 0, "CDManager error"); }
-    virtual void Destroy_All_Drives() override { captainslog_relassert(false, 0, "CDManager error"); }
+    void Refresh_Drives() override { captainslog_relassert(false, 0, "CDManager error"); }
+    void Destroy_All_Drives() override { captainslog_relassert(false, 0, "CDManager error"); }
 };
 
 CDManagerInterface *Create_CD_Manager()

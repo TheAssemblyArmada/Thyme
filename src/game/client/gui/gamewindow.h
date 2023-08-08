@@ -171,7 +171,7 @@ class GameWindow : public MemoryPoolObject
 
 public:
     GameWindow();
-    virtual ~GameWindow();
+    ~GameWindow() override;
 
     virtual void Win_Draw_Border() = 0;
 
@@ -324,7 +324,7 @@ public:
         m_next(nullptr)
     {
     }
-    virtual ~ModalWindow() override {}
+    ~ModalWindow() override {}
 
 public:
     GameWindow *m_window;

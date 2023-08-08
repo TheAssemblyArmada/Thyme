@@ -29,9 +29,9 @@ class LoaderThreadClass : public ThreadClass
 {
 public:
     LoaderThreadClass(const char *thread_name) : ThreadClass(thread_name, nullptr) {}
-    virtual ~LoaderThreadClass() {}
+    ~LoaderThreadClass() override {}
 
-    virtual void Thread_Function() override;
+    void Thread_Function() override;
 };
 
 class TextureLoader

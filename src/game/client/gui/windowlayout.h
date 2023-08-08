@@ -32,7 +32,7 @@ public:
     WindowLayout();
 
 protected:
-    virtual ~WindowLayout() override;
+    ~WindowLayout() override;
 
 public:
     void Hide(bool hide);

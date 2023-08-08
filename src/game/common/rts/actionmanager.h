@@ -30,10 +30,10 @@ class ActionManager : public SubsystemInterface
 {
 public:
     ActionManager() {}
-    virtual ~ActionManager() override {}
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~ActionManager() override {}
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
     bool Can_Enter_Object(const Object *obj, const Object *object_to_enter, CommandSourceType source, CanEnterType type);
     bool Can_Do_Special_Power(

@@ -35,7 +35,7 @@ class FXNugget : public MemoryPoolObject
     IMPLEMENT_ABSTRACT_POOL(FXNugget);
 
 public:
-    virtual ~FXNugget(){};
+    ~FXNugget() override{};
     virtual void Do_FX_Pos(const Coord3D *primary,
         const Matrix3D *primary_mtx,
         float primary_speed,
@@ -77,11 +77,11 @@ class FXListStore : public SubsystemInterface
 {
 public:
     FXListStore() {}
-    virtual ~FXListStore() override {}
+    ~FXListStore() override {}
 
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
     FXList *Find_FXList(const char *name);
 
@@ -103,14 +103,14 @@ class SoundFXNugget : public FXNugget
 
 public:
     SoundFXNugget(){};
-    virtual ~SoundFXNugget() override{};
+    ~SoundFXNugget() override{};
 
-    virtual void Do_FX_Pos(const Coord3D *primary,
+    void Do_FX_Pos(const Coord3D *primary,
         const Matrix3D *primary_mtx,
         float primary_speed,
         const Coord3D *secondary,
         float radius) const override;
-    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+    void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
 
     static void Parse(INI *ini, void *formal, void *, const void *);
 

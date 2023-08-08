@@ -29,5 +29,5 @@ class Win32LocalFile : public LocalFile
     friend class Thyme::StdLocalFileSystem;
 
 protected:
-    virtual ~Win32LocalFile() override {}
+    ~Win32LocalFile() override {}
 };

@@ -25,9 +25,9 @@ class W3DDebugDisplay : public DebugDisplay
 {
 public:
     W3DDebugDisplay() : m_font(nullptr), m_fontWidth(0), m_fontHeight(0), m_displayString(nullptr) {}
-    virtual ~W3DDebugDisplay();
+    ~W3DDebugDisplay() override;
 
-    virtual void Draw_Text(int x, int y, char *text) override;
+    void Draw_Text(int x, int y, char *text) override;
 
     void Init();
     void Set_Font(GameFont *font);

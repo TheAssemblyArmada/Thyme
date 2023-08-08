@@ -43,7 +43,7 @@ class AISideInfo : public MemoryPoolObject
 
 public:
     AISideInfo();
-    virtual ~AISideInfo() override {}
+    ~AISideInfo() override {}
 
 private:
     Utf8String m_unkString;
@@ -61,7 +61,7 @@ class AISideBuildList : public MemoryPoolObject
     IMPLEMENT_POOL(AISideBuildList)
 
 protected:
-    virtual ~AISideBuildList() override;
+    ~AISideBuildList() override;
 
 public:
     AISideBuildList(Utf8String name);
@@ -80,9 +80,9 @@ public:
     TAiData();
     ~TAiData();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Add_Faction_Build_List(AISideBuildList *list);
     void Add_Side_Info(AISideInfo *info);
@@ -143,15 +143,15 @@ public:
 #endif
 
     AI();
-    virtual ~AI() override;
+    ~AI() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     static void Parse_Side_Info(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Skill_Set(INI *ini, void *formal, void *store, const void *user_data);

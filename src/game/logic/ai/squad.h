@@ -23,10 +23,10 @@ class Squad : public MemoryPoolObject, public SnapShot
 
 public:
     Squad() {}
-    virtual ~Squad() override {}
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~Squad() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     bool Is_On_Squad(const Object *obj) const;
     void Clear_Squad();

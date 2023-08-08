@@ -60,7 +60,7 @@ class HAnimManagerIterator : public HashTableIteratorClass
 public:
     HAnimManagerIterator(HAnimManagerIterator &iterator) : HashTableIteratorClass(iterator) {}
     HAnimManagerIterator(HAnimManagerClass &that) : HashTableIteratorClass(*that.m_animPtrTable) {}
-    virtual ~HAnimManagerIterator() {}
+    ~HAnimManagerIterator() override {}
 
     HAnimClass *Get_Current_Anim();
 };

@@ -19,8 +19,8 @@ class W3DFontLibrary : public FontLibrary
 {
 public:
     W3DFontLibrary() {}
-    virtual ~W3DFontLibrary() override {}
+    ~W3DFontLibrary() override {}
 
-    virtual bool Load_Font_Data(GameFont *font) override;
-    virtual void Release_Font_Data(GameFont *font) override;
+    bool Load_Font_Data(GameFont *font) override;
+    void Release_Font_Data(GameFont *font) override;
 };

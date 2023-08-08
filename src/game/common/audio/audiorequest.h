@@ -38,7 +38,7 @@ class AudioRequest : public MemoryPoolObject
     friend class MilesAudioManager;
 
 protected:
-    virtual ~AudioRequest() override {}
+    ~AudioRequest() override {}
 
 public:
     void Request_Play(AudioEventRTS *object)

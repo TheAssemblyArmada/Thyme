@@ -30,15 +30,15 @@ class StatusDamageHelper : public ObjectHelper
 public:
     StatusDamageHelper(Thing *thing, const ModuleData *module_data);
 
-    virtual ~StatusDamageHelper() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~StatusDamageHelper() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
-    virtual UpdateSleepTime Update() override;
+    BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
+    UpdateSleepTime Update() override;
 
     void Clear_Status_Condition();
     void Do_Status_Damage(ObjectStatusTypes status, float damage);

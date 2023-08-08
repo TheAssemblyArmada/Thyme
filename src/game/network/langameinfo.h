@@ -38,8 +38,8 @@ private:
 class LANGameInfo : public GameInfo
 {
 public:
-    virtual int Get_Local_Slot_Num() const override;
-    virtual void Reset_Accepted() override;
+    int Get_Local_Slot_Num() const override;
+    void Reset_Accepted() override;
 
 private:
     LANGameSlot m_LANSlot[8];

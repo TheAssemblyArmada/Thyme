@@ -37,9 +37,9 @@ public:
         m_shockWavePos.Zero();
     }
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     ObjectID m_sourceID;
     ThingTemplate *m_thingTemplate;
@@ -61,9 +61,9 @@ class DamageInfoOutput : public SnapShot
 public:
     DamageInfoOutput() : m_actualDamageDealt(0.0f), m_actualDamageClipped(0.0f), m_noEffect(false) {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     float m_actualDamageDealt;
     float m_actualDamageClipped;
@@ -73,9 +73,9 @@ public:
 class DamageInfo : public SnapShot
 {
 public:
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     DamageInfoInput m_in;
     DamageInfoOutput m_out;

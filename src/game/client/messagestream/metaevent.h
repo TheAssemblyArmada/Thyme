@@ -144,7 +144,7 @@ class MetaMapRec : public MemoryPoolObject
     IMPLEMENT_POOL(MetaMapRec);
 
 public:
-    virtual ~MetaMapRec() override;
+    ~MetaMapRec() override;
 
     MetaMapRec *m_next;
     GameMessage::MessageType m_meta;
@@ -161,10 +161,10 @@ class MetaMap : public SubsystemInterface
 {
 public:
     MetaMap() : m_metaMaps(nullptr) {}
-    virtual ~MetaMap() override;
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~MetaMap() override;
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
 private:
     MetaMapRec *m_metaMaps;

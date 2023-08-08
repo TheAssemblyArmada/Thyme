@@ -204,18 +204,18 @@ public:
         MAX_TRIGGER_AREA_INFOS = 5
     };
     Object(const ThingTemplate *tt, BitFlags<OBJECT_STATUS_COUNT> status_bits, Team *team);
-    virtual ~Object() override;
+    ~Object() override;
 
-    virtual float Calculate_Height_Above_Terrain() const override;
-    virtual Object *As_Object_Meth() override { return this; }
-    virtual const Object *As_Object_Meth() const override { return this; }
+    float Calculate_Height_Above_Terrain() const override;
+    Object *As_Object_Meth() override { return this; }
+    const Object *As_Object_Meth() const override { return this; }
 
-    virtual void React_To_Transform_Change(const Matrix3D *tm, const Coord3D *pos, float angle) override;
+    void React_To_Transform_Change(const Matrix3D *tm, const Coord3D *pos, float angle) override;
     virtual void React_To_Turret(WhichTurretType turret, float angle, float pitch);
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     ObjectID Get_ID() const { return m_id; }
     bool Get_Status(ObjectStatusTypes status) const { return m_status.Test(status); }

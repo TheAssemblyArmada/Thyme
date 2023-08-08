@@ -57,7 +57,7 @@ class Overridable : public MemoryPoolObject
     IMPLEMENT_POOL(Overridable);
 
 protected:
-    virtual ~Overridable() override
+    ~Overridable() override
     {
         if (m_next != nullptr) {
             m_next->Delete_Instance();

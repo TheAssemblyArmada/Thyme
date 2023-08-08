@@ -28,28 +28,28 @@ class SDL2GameEngine : public GameEngine
 {
 public:
     SDL2GameEngine();
-    virtual ~SDL2GameEngine();
+    ~SDL2GameEngine() override;
 
     // SubsystemInterface implementations, the original appears to do this to no benefit?
-    virtual void Init() override { GameEngine::Init(); }
-    virtual void Reset() override { GameEngine::Reset(); }
-    virtual void Update() override { GameEngine::Update(); }
+    void Init() override { GameEngine::Init(); }
+    void Reset() override { GameEngine::Reset(); }
+    void Update() override { GameEngine::Update(); }
 
     // GameEngine interface
-    virtual void Service_Windows_OS() override;
-    virtual void Execute() override;
-    virtual LocalFileSystem *Create_Local_File_System() override;
-    virtual ArchiveFileSystem *Create_Archive_File_System() override;
-    virtual GameLogic *Create_Game_Logic() override;
-    virtual GameClient *Create_Game_Client() override;
-    virtual ModuleFactory *Create_Module_Factory() override;
-    virtual ThingFactory *Create_Thing_Factory() override;
-    virtual FunctionLexicon *Create_Function_Lexicon() override;
-    virtual Radar *Create_Radar() override;
-    virtual WebBrowser *Create_Web_Browser() override;
-    virtual ParticleSystemManager *Create_Particle_System_Manager() override;
-    virtual AudioManager *Create_Audio_Manager() override;
-    virtual NetworkInterface *Create_Network() override;
+    void Service_Windows_OS() override;
+    void Execute() override;
+    LocalFileSystem *Create_Local_File_System() override;
+    ArchiveFileSystem *Create_Archive_File_System() override;
+    GameLogic *Create_Game_Logic() override;
+    GameClient *Create_Game_Client() override;
+    ModuleFactory *Create_Module_Factory() override;
+    ThingFactory *Create_Thing_Factory() override;
+    FunctionLexicon *Create_Function_Lexicon() override;
+    Radar *Create_Radar() override;
+    WebBrowser *Create_Web_Browser() override;
+    ParticleSystemManager *Create_Particle_System_Manager() override;
+    AudioManager *Create_Audio_Manager() override;
+    NetworkInterface *Create_Network() override;
 
 private:
     void Handle_Window_Event(SDL_Event *ev);

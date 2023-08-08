@@ -23,10 +23,10 @@ public:
     CommandList() {}
 
     // SubsystemInterface implementations
-    virtual ~CommandList() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    ~CommandList() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     void Append_Message_List(GameMessage *list);
 

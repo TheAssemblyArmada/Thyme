@@ -31,31 +31,31 @@ class W3DFileSystem : public FileFactoryClass
 {
 public:
     W3DFileSystem();
-    virtual ~W3DFileSystem();
+    ~W3DFileSystem() override;
 
-    virtual FileClass *Get_File(const char *filename) override;
-    virtual void Return_File(FileClass *file) override;
+    FileClass *Get_File(const char *filename) override;
+    void Return_File(FileClass *file) override;
 };
 
 class GameFileClass : public FileClass
 {
 public:
     GameFileClass(const char *filename = nullptr);
-    virtual ~GameFileClass();
+    ~GameFileClass() override;
 
-    virtual const char *File_Name() override;
-    virtual const char *Set_Name(const char *filename) override;
-    virtual bool Create() override;
-    virtual bool Delete() override;
-    virtual bool Is_Available(bool forced = false) override;
-    virtual bool Is_Open() override;
-    virtual bool Open(const char *filename, int rights = FM_READ) override;
-    virtual bool Open(int rights = FM_READ) override;
-    virtual int Read(void *buffer, int length) override;
-    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
-    virtual off_t Size() override;
-    virtual int Write(void const *buffer, int size) override;
-    virtual void Close() override;
+    const char *File_Name() override;
+    const char *Set_Name(const char *filename) override;
+    bool Create() override;
+    bool Delete() override;
+    bool Is_Available(bool forced = false) override;
+    bool Is_Open() override;
+    bool Open(const char *filename, int rights = FM_READ) override;
+    bool Open(int rights = FM_READ) override;
+    int Read(void *buffer, int length) override;
+    off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
+    off_t Size() override;
+    int Write(void const *buffer, int size) override;
+    void Close() override;
 
 private:
     File *m_theFile;

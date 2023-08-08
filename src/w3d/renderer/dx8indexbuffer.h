@@ -71,7 +71,7 @@ public:
 
 public:
     IndexBufferClass(unsigned int type_, unsigned short index_count_);
-    ~IndexBufferClass();
+    ~IndexBufferClass() override;
     void Add_Engine_Ref() const;
     void Release_Engine_Ref();
     void Copy(unsigned short *indices, unsigned int first_index, unsigned int count);
@@ -101,7 +101,7 @@ public:
         USAGE_SOFTWAREPROCESSING
     };
     DX8IndexBufferClass(unsigned short index_count_, UsageType usage);
-    ~DX8IndexBufferClass();
+    ~DX8IndexBufferClass() override;
 #ifdef BUILD_WITH_D3D8
     IDirect3DIndexBuffer8 *Get_DX8_Index_Buffer() { return m_indexBuffer; }
 #endif
@@ -124,7 +124,7 @@ class SortingIndexBufferClass : public IndexBufferClass
     ALLOW_HOOKING
 public:
     SortingIndexBufferClass(unsigned short index_count_);
-    ~SortingIndexBufferClass();
+    ~SortingIndexBufferClass() override;
     unsigned short *Get_Sorting_Index_Buffer() { return m_indexBuffer; }
 
 private:
@@ -161,7 +161,7 @@ public:
 
 public:
     DynamicIBAccessClass(unsigned short type_, unsigned short index_count_);
-    ~DynamicIBAccessClass();
+    ~DynamicIBAccessClass() override;
     void Allocate_Sorting_Dynamic_Buffer();
     void Allocate_DX8_Dynamic_Buffer();
     static void Deinit();

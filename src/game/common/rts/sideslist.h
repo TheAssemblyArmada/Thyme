@@ -31,17 +31,17 @@ class SidesList : public SubsystemInterface, public SnapShot
 
 public:
     SidesList() : m_numSides(0), m_numSkirmishSides(0), m_teamRec(), m_skirmishTeamsRec() {}
-    virtual ~SidesList() {}
+    ~SidesList() override {}
 
     // Subsystem interface methods.
-    virtual void Init() override{};
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override{};
+    void Reset() override;
+    void Update() override {}
 
     // Snapshot interface methods.
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Clear();
     void Empty_Teams();

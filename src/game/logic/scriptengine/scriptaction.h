@@ -380,7 +380,7 @@ public:
     };
 
 protected:
-    virtual ~ScriptAction() override;
+    ~ScriptAction() override;
 
 public:
     ScriptAction();

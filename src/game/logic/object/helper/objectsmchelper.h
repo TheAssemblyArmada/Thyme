@@ -30,12 +30,12 @@ class ObjectSMCHelper : public ObjectHelper
 public:
     ObjectSMCHelper(Thing *thing, const ModuleData *module_data);
 
-    virtual ~ObjectSMCHelper() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~ObjectSMCHelper() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual UpdateSleepTime Update() override;
+    UpdateSleepTime Update() override;
 };

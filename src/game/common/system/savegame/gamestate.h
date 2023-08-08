@@ -74,17 +74,17 @@ class GameState : public SubsystemInterface, public SnapShot
 {
 public:
     GameState();
-    virtual ~GameState();
+    ~GameState() override;
 
     // SubsystemInterface implementations.
-    virtual void Init();
-    virtual void Reset();
-    virtual void Update() {}
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
     // SnapShot implementations.
-    virtual void CRC_Snapshot(Xfer *xfer) {}
-    virtual void Xfer_Snapshot(Xfer *xfer);
-    virtual void Load_Post_Process() {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Clear_Available_Games();
 

@@ -185,16 +185,16 @@ class GameAssetManager final : public W3DAssetManager
 {
 public:
     GameAssetManager(){};
-    virtual ~GameAssetManager();
-    virtual bool Load_3D_Assets(const char *filename);
-    virtual RenderObjClass *Create_Render_Obj(const char *name);
-    virtual HAnimClass *Get_HAnim(const char *name);
-    virtual TextureClass *Get_Texture(const char *filename,
+    ~GameAssetManager() override;
+    bool Load_3D_Assets(const char *filename) override;
+    RenderObjClass *Create_Render_Obj(const char *name) override;
+    HAnimClass *Get_HAnim(const char *name) override;
+    TextureClass *Get_Texture(const char *filename,
         MipCountType mip_level_count = MIP_LEVELS_ALL,
         WW3DFormat texture_format = WW3D_FORMAT_UNKNOWN,
         bool allow_compression = true,
         TexAssetType asset_type = ASSET_STANDARD,
-        bool allow_reduction = true);
+        bool allow_reduction = true) override;
     virtual RenderObjClass *Create_Render_Obj(
         const char *name, float scale, uint32_t colour, const char *old_texture, const char *new_texture);
     bool Replace_Prototype_Texture(RenderObjClass *robj, const char *old_name, const char *new_name);
@@ -227,11 +227,11 @@ class W3DPrototypeClass final : public MemoryPoolObject, public PrototypeClass
 
 public:
     W3DPrototypeClass(RenderObjClass *proto, const char *name);
-    virtual const char *Get_Name() const override { return m_name.Str(); }
-    virtual int32_t Get_Class_ID() const override;
-    virtual RenderObjClass *Create() override;
-    virtual void Delete_Self() override { this->Delete_Instance(); };
-    virtual ~W3DPrototypeClass() override;
+    const char *Get_Name() const override { return m_name.Str(); }
+    int32_t Get_Class_ID() const override;
+    RenderObjClass *Create() override;
+    void Delete_Self() override { this->Delete_Instance(); };
+    ~W3DPrototypeClass() override;
 
 private:
     RenderObjClass *m_proto;

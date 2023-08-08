@@ -25,38 +25,38 @@ class IMEManager : public IMEManagerInterface
 public:
     IMEManager();
 
-    virtual ~IMEManager() override;
+    ~IMEManager() override;
 
-    virtual void Init() override;
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override {}
+    void Update() override {}
 
-    virtual void Attach(GameWindow *window) override;
-    virtual void Detach() override;
+    void Attach(GameWindow *window) override;
+    void Detach() override;
 
-    virtual void Enable() override;
-    virtual void Disable() override;
-    virtual bool Is_Enabled() const override;
+    void Enable() override;
+    void Disable() override;
+    bool Is_Enabled() const override;
 
-    virtual bool Is_Attached_To(GameWindow *window) const override;
-    virtual GameWindow *Get_Window() const override;
+    bool Is_Attached_To(GameWindow *window) const override;
+    GameWindow *Get_Window() const override;
 
-    virtual bool Is_Composing() const override;
-    virtual void Get_Composition_String(Utf16String &string) override;
-    virtual int Get_Composition_Cursor_Position() const override;
+    bool Is_Composing() const override;
+    void Get_Composition_String(Utf16String &string) override;
+    int Get_Composition_Cursor_Position() const override;
 
-    virtual int Get_Index_Base() const override;
+    int Get_Index_Base() const override;
 
-    virtual int Get_Candidate_Count() const override;
-    virtual Utf16String *Get_Candidate(int index) override;
-    virtual int Get_Selected_Candidate_Index() const override;
+    int Get_Candidate_Count() const override;
+    Utf16String *Get_Candidate(int index) override;
+    int Get_Selected_Candidate_Index() const override;
 
-    virtual int Get_Candidate_Page_Size() const override;
-    virtual int Get_Candidate_Page_Start() const override;
+    int Get_Candidate_Page_Size() const override;
+    int Get_Candidate_Page_Start() const override;
 
-    virtual bool Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param) override;
+    bool Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param) override;
 
-    virtual int Result() const override;
+    int Result() const override;
 
 private:
     int m_result;

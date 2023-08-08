@@ -24,18 +24,18 @@ class BinkVideoPlayer final : public VideoPlayer
     ALLOW_HOOKING
 public:
     BinkVideoPlayer();
-    virtual ~BinkVideoPlayer();
+    ~BinkVideoPlayer() override;
 
     // Subsystem interface methods
-    virtual void Init() override;
-    virtual void Reset() override { VideoPlayer::Reset(); }
-    virtual void Update() override { VideoPlayer::Update(); }
+    void Init() override;
+    void Reset() override { VideoPlayer::Reset(); }
+    void Update() override { VideoPlayer::Update(); }
 
     // Video player methods
-    virtual void Deinit() override;
-    virtual VideoStream *Open(Utf8String title) override;
-    virtual VideoStream *Load(Utf8String title) override;
-    virtual void Notify_Player_Of_New_Provider(bool unk) override;
+    void Deinit() override;
+    VideoStream *Open(Utf8String title) override;
+    VideoStream *Load(Utf8String title) override;
+    void Notify_Player_Of_New_Provider(bool unk) override;
     virtual void Initialise_Bink_With_Miles(); // Original has this virtual, unclear why though.
 
 private:

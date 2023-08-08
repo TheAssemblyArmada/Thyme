@@ -22,11 +22,11 @@ class DisplayStringManager : public SubsystemInterface
 {
 public:
     DisplayStringManager();
-    virtual ~DisplayStringManager();
+    ~DisplayStringManager() override;
 
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
     virtual DisplayString *New_Display_String() = 0;
     virtual void Free_Display_String(DisplayString *string) = 0;
     virtual DisplayString *Get_Group_Numeral_String(int num) = 0;

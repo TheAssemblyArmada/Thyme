@@ -23,7 +23,7 @@ class Utf16String;
 class IMEManagerInterface : public SubsystemInterface
 {
 public:
-    virtual ~IMEManagerInterface() {}
+    ~IMEManagerInterface() override {}
 
     virtual void Attach(GameWindow *window) = 0;
     virtual void Detach() = 0;

@@ -140,12 +140,12 @@ protected:
 
 public:
     Mouse();
-    virtual ~Mouse();
+    ~Mouse() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
-    virtual void Draw() override {}
+    void Init() override;
+    void Reset() override;
+    void Update() override;
+    void Draw() override {}
 
     virtual void Parse_INI();
     virtual void Init_Cursor_Resources() = 0;

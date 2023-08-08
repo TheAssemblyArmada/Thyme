@@ -221,10 +221,10 @@ public:
     bool operator!=(const DynamicVectorClass &src) { return true; }
     DynamicVectorClass<T> &operator=(DynamicVectorClass<T> const &rvalue);
 
-    virtual bool Resize(int newsize, const T *array = nullptr) override;
-    virtual void Clear() override;
-    virtual int ID(const T *ptr) override { return VectorClass<T>::ID(ptr); };
-    virtual int ID(const T &ptr) override;
+    bool Resize(int newsize, const T *array = nullptr) override;
+    void Clear() override;
+    int ID(const T *ptr) override { return VectorClass<T>::ID(ptr); };
+    int ID(const T &ptr) override;
 
     void Reset_Active() { m_activeCount = 0; }
     void Set_Active(int count) { m_activeCount = count; }

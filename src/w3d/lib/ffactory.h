@@ -54,9 +54,9 @@ class SimpleFileFactoryClass : public FileFactoryClass
 {
 public:
     SimpleFileFactoryClass();
-    virtual ~SimpleFileFactoryClass(){};
-    virtual FileClass *Get_File(const char *filename);
-    virtual void Return_File(FileClass *file);
+    ~SimpleFileFactoryClass() override{};
+    FileClass *Get_File(const char *filename) override;
+    void Return_File(FileClass *file) override;
     void Append_Sub_Directory(const char *sub_directory);
     void Set_Strip_Path(bool strip) { m_isStripPath = strip; }
     bool Get_Strip_Path() const { return m_isStripPath; }

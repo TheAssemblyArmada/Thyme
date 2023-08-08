@@ -20,7 +20,7 @@ class W3DScienceModelDrawModuleData : public W3DModelDrawModuleData
 {
 public:
     W3DScienceModelDrawModuleData() : m_requiredScience(SCIENCE_INVALID) {}
-    virtual ~W3DScienceModelDrawModuleData() override {}
+    ~W3DScienceModelDrawModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -35,13 +35,13 @@ class W3DScienceModelDraw : public W3DModelDraw
 public:
     W3DScienceModelDraw(Thing *thing, ModuleData const *module_data) : W3DModelDraw(thing, module_data) {}
 
-    virtual ~W3DScienceModelDraw() override {}
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
+    ~W3DScienceModelDraw() override {}
+    NameKeyType Get_Module_Name_Key() const override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);

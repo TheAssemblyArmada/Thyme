@@ -41,7 +41,7 @@ public:
         m_renderTarget(render_target)
     {
     }
-    virtual ~DX8TextureTrackerClass() {}
+    ~DX8TextureTrackerClass() override {}
     virtual void Recreate();
 
 public:

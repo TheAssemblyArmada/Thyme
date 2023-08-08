@@ -33,11 +33,11 @@ class ScienceStore : public SubsystemInterface
 {
 public:
     ScienceStore() {}
-    virtual ~ScienceStore() {}
+    ~ScienceStore() override {}
 
-    virtual void Init() override { m_infoVec.clear(); }
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override { m_infoVec.clear(); }
+    void Reset() override;
+    void Update() override {}
 
     ScienceType Lookup_Science(const char *name);
     ScienceType Get_Science_From_Internal_Name(const Utf8String &name) const;
@@ -65,7 +65,7 @@ class ScienceInfo : public Overridable
     IMPLEMENT_POOL(ScienceInfo);
 
 protected:
-    virtual ~ScienceInfo() override {}
+    ~ScienceInfo() override {}
 
 public:
     ScienceInfo();

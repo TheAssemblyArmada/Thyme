@@ -35,7 +35,7 @@ public:
     }
 
     // zh: 0x0061B730 wb: 0x008A3584
-    virtual ~ExperienceTracker() override {}
+    ~ExperienceTracker() override {}
 
     int32_t Get_Experience_Value(const Object *killer) const;
     bool Is_Trainable() const;
@@ -50,9 +50,9 @@ public:
     void Set_Experience_And_Level(int32_t experience_gain, bool unk);
     VeterancyLevel Get_Current_Level() const { return m_currentLevel; }
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     Object *m_parent;

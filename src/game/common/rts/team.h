@@ -72,10 +72,10 @@ class TeamRelationMap : public MemoryPoolObject, public SnapShot
 public:
     TeamRelationMap() {}
 
-    virtual ~TeamRelationMap() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~TeamRelationMap() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 #ifdef GAME_DLL
     TeamRelationMap *Hook_Ctor() { return new (this) TeamRelationMap(); }
@@ -95,14 +95,14 @@ class TeamFactory : public SubsystemInterface, public SnapShot
 {
 public:
     TeamFactory();
-    virtual ~TeamFactory() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
+    ~TeamFactory() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     void Clear();
     void Init_From_Sides(SidesList *sides);
@@ -145,9 +145,9 @@ public:
 
     TeamTemplateInfo(Dict *d);
     ~TeamTemplateInfo() {}
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     TCreateUnitsInfo m_unitsInfo[MAX_UNIT_TYPES];
@@ -195,10 +195,10 @@ class Team : public MemoryPoolObject, public SnapShot
 
 public:
     Team(TeamPrototype *proto, unsigned int id);
-    virtual ~Team() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    ~Team() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     Player *Get_Controlling_Player() const;
     void Get_Team_As_AI_Group(AIGroup *aigroup);
@@ -418,10 +418,10 @@ class TeamPrototype : public MemoryPoolObject, public SnapShot
 public:
     TeamPrototype(
         TeamFactory *tf, const Utf8String &name, Player *owner_player, bool is_singleton, Dict *d, unsigned int id);
-    virtual ~TeamPrototype() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~TeamPrototype() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     Player *Get_Controlling_Player() const;
     Team *Find_Team_By_ID(unsigned int id);

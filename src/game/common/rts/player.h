@@ -57,7 +57,7 @@ class KindOfPercentProductionChange : public MemoryPoolObject
 
 public:
     KindOfPercentProductionChange() {}
-    virtual ~KindOfPercentProductionChange() override {}
+    ~KindOfPercentProductionChange() override {}
 
 private:
     BitFlags<KINDOF_COUNT> m_flags;
@@ -73,7 +73,7 @@ class BattlePlanBonuses : public MemoryPoolObject // not 100% sure on this class
 
 public:
     BattlePlanBonuses() {}
-    virtual ~BattlePlanBonuses() override {}
+    ~BattlePlanBonuses() override {}
 
     float m_armorBonus;
     int m_bombardment;
@@ -132,9 +132,9 @@ public:
     virtual ~Player();
 
     // SnapShot
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
     //~SnapShot
 
     void Init(const PlayerTemplate *pt);
@@ -448,10 +448,10 @@ class PlayerRelationMap : public MemoryPoolObject, public SnapShot
 public:
     PlayerRelationMap() {}
 
-    virtual ~PlayerRelationMap() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~PlayerRelationMap() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 #ifdef THYME_USE_STLPORT
     std::hash_map<int, Relationship> m_relationships;

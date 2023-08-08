@@ -55,12 +55,12 @@ public:
     };
 
     GlobalData();
-    virtual ~GlobalData();
+    ~GlobalData() override;
 
     // m_subsystemInterface implementation
-    virtual void Init() override {}
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override {}
+    void Reset() override;
+    void Update() override {}
 
     bool Set_Time_Of_Day(TimeOfDayType time);
 

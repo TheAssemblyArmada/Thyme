@@ -105,9 +105,9 @@ public:
     View();
     virtual ~View() {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     virtual void Init();
     virtual void Reset() { m_zoomLimited = true; };

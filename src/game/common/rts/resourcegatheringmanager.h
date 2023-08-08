@@ -24,11 +24,11 @@ class ResourceGatheringManager : public MemoryPoolObject, public SnapShot
 
 public:
     ResourceGatheringManager() {}
-    virtual ~ResourceGatheringManager() override;
+    ~ResourceGatheringManager() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) {}
-    virtual void Xfer_Snapshot(Xfer *xfer);
-    virtual void Load_Post_Process() {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     std::list<ObjectID> m_supplyWarehouses;

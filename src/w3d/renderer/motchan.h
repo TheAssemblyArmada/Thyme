@@ -24,7 +24,7 @@ class MotionChannelClass : public W3DMPO
     IMPLEMENT_W3D_POOL(MotionChannelClass)
 public:
     MotionChannelClass();
-    virtual ~MotionChannelClass() override;
+    ~MotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
@@ -86,7 +86,7 @@ class BitChannelClass : public W3DMPO
     IMPLEMENT_W3D_POOL(BitChannelClass)
 public:
     BitChannelClass();
-    virtual ~BitChannelClass() override;
+    ~BitChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
@@ -118,7 +118,7 @@ class TimeCodedMotionChannelClass : W3DMPO
     IMPLEMENT_W3D_POOL(TimeCodedMotionChannelClass)
 public:
     TimeCodedMotionChannelClass();
-    virtual ~TimeCodedMotionChannelClass() override;
+    ~TimeCodedMotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
     int Get_Type() const { return m_type; }
@@ -145,7 +145,7 @@ class TimeCodedBitChannelClass : W3DMPO
     IMPLEMENT_W3D_POOL(TimeCodedBitChannelClass)
 public:
     TimeCodedBitChannelClass();
-    virtual ~TimeCodedBitChannelClass() override;
+    ~TimeCodedBitChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
     int Get_Type() const { return m_type; }
@@ -166,7 +166,7 @@ class AdaptiveDeltaMotionChannelClass : W3DMPO
     IMPLEMENT_W3D_POOL(AdaptiveDeltaMotionChannelClass)
 public:
     AdaptiveDeltaMotionChannelClass();
-    virtual ~AdaptiveDeltaMotionChannelClass() override;
+    ~AdaptiveDeltaMotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
     int Get_Type() const { return m_type; }

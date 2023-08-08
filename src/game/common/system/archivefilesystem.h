@@ -42,7 +42,7 @@ public:
 class ArchiveFileSystem : public SubsystemInterface
 {
 public:
-    virtual ~ArchiveFileSystem();
+    ~ArchiveFileSystem() override;
     virtual ArchiveFile *Open_Archive_File(const char *filename) = 0;
     virtual void Close_Archive_File(const char *filename) = 0;
     virtual void Close_All_Archives() = 0;

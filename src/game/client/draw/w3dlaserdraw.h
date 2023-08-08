@@ -31,7 +31,7 @@ class W3DLaserDrawModuleData : public ModuleData
 
 public:
     W3DLaserDrawModuleData();
-    virtual ~W3DLaserDrawModuleData() override {}
+    ~W3DLaserDrawModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -57,31 +57,31 @@ class W3DLaserDraw : public DrawModule, public LaserDrawInterface
 
 public:
     W3DLaserDraw(Thing *thing, ModuleData const *module_data);
-    virtual ~W3DLaserDraw() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void CRC_Snapshot(Xfer *xfer) override { DrawModule::CRC_Snapshot(xfer); }
-    virtual void Xfer_Snapshot(Xfer *xfer) override
+    ~W3DLaserDraw() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void CRC_Snapshot(Xfer *xfer) override { DrawModule::CRC_Snapshot(xfer); }
+    void Xfer_Snapshot(Xfer *xfer) override
     {
         unsigned char version = 1;
         xfer->xferVersion(&version, 1);
         DrawModule::Xfer_Snapshot(xfer);
     }
-    virtual void Load_Post_Process() override
+    void Load_Post_Process() override
     {
         DrawModule::Load_Post_Process();
         m_setLaserPosition = true;
     }
-    virtual float Get_Laser_Template_Width() const override;
-    virtual void Allocate_Shadows() override {}
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
-    virtual LaserDrawInterface *Get_Laser_Draw_Interface() override { return this; }
-    virtual const LaserDrawInterface *Get_Laser_Draw_Interface() const override { return this; }
-    virtual bool Is_Laser() const override { return true; }
-    virtual void React_To_Geometry_Change() override {}
-    virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override {}
-    virtual void Release_Shadows() override {}
-    virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override {}
-    virtual void Set_Shadows_Enabled(bool enable) override {}
+    float Get_Laser_Template_Width() const override;
+    void Allocate_Shadows() override {}
+    void Do_Draw_Module(const Matrix3D *transform) override;
+    LaserDrawInterface *Get_Laser_Draw_Interface() override { return this; }
+    const LaserDrawInterface *Get_Laser_Draw_Interface() const override { return this; }
+    bool Is_Laser() const override { return true; }
+    void React_To_Geometry_Change() override {}
+    void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override {}
+    void Release_Shadows() override {}
+    void Set_Fully_Obscured_By_Shroud(bool obscured) override {}
+    void Set_Shadows_Enabled(bool enable) override {}
 
     const W3DLaserDrawModuleData *Get_W3D_Laser_Draw_Module_Data() const
     {

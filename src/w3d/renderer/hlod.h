@@ -28,7 +28,7 @@ class SnapPointsClass : public DynamicVectorClass<Vector3>, public RefCountClass
 {
 public:
     W3DErrorType Load_W3D(ChunkLoadClass &cload);
-    virtual ~SnapPointsClass() override {}
+    ~SnapPointsClass() override {}
 };
 
 class ProxyRecordClass
@@ -60,7 +60,7 @@ class ProxyArrayClass : public W3DMPO, public VectorClass<ProxyRecordClass>, pub
 
 public:
     ProxyArrayClass(int size) : VectorClass(size) {}
-    virtual ~ProxyArrayClass() override {}
+    ~ProxyArrayClass() override {}
 };
 
 class ProxyClass
@@ -134,7 +134,7 @@ public:
     HLodDefClass() : m_name(nullptr), m_hierarchyTreeName(nullptr), m_lodCount(0), m_lod(nullptr), m_proxyArray(nullptr) {}
     HLodDefClass(HLodClass &hlod);
     void Initialize(HLodClass &hlod);
-    ~HLodDefClass() { Free(); }
+    ~HLodDefClass() override { Free(); }
 
     void Free();
 
@@ -154,8 +154,8 @@ class HLodLoaderClass : public PrototypeLoaderClass
 public:
     HLodLoaderClass() {}
     ~HLodLoaderClass() {}
-    virtual int32_t Chunk_Type() override { return W3D_CHUNK_HLOD; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int32_t Chunk_Type() override { return W3D_CHUNK_HLOD; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };
 
 class DistLODLoaderClass : public PrototypeLoaderClass
@@ -163,8 +163,8 @@ class DistLODLoaderClass : public PrototypeLoaderClass
 public:
     DistLODLoaderClass() {}
     ~DistLODLoaderClass() {}
-    virtual int32_t Chunk_Type() override { return W3D_CHUNK_LODMODEL; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int32_t Chunk_Type() override { return W3D_CHUNK_LODMODEL; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };
 
 class HModelLoaderClass : public PrototypeLoaderClass
@@ -172,8 +172,8 @@ class HModelLoaderClass : public PrototypeLoaderClass
 public:
     HModelLoaderClass() {}
     ~HModelLoaderClass() {}
-    virtual int32_t Chunk_Type() override { return W3D_CHUNK_HMODEL; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int32_t Chunk_Type() override { return W3D_CHUNK_HMODEL; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };
 
 class CollectionLoaderClass : public PrototypeLoaderClass
@@ -181,8 +181,8 @@ class CollectionLoaderClass : public PrototypeLoaderClass
 public:
     CollectionLoaderClass() {}
     ~CollectionLoaderClass() {}
-    virtual int32_t Chunk_Type() override { return W3D_CHUNK_COLLECTION; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int32_t Chunk_Type() override { return W3D_CHUNK_COLLECTION; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };
 
 class HLodPrototypeClass : public W3DMPO, public PrototypeClass
@@ -194,11 +194,11 @@ private:
 
 public:
     HLodPrototypeClass(HLodDefClass *def) : m_definition(def) {}
-    virtual ~HLodPrototypeClass() override;
-    virtual const char *Get_Name() const override;
-    virtual int32_t Get_Class_ID() const override;
-    virtual RenderObjClass *Create() override;
-    virtual void Delete_Self() override;
+    ~HLodPrototypeClass() override;
+    const char *Get_Name() const override;
+    int32_t Get_Class_ID() const override;
+    RenderObjClass *Create() override;
+    void Delete_Self() override;
 
     HLodDefClass *Get_Definition() { return m_definition; }
 };
@@ -227,7 +227,7 @@ private:
         float m_benefitFactor;
 
         ModelArrayClass() : m_maxScreenSize(FLT_MAX), m_nonPixelCost(0), m_pixelCostPerArea(0), m_benefitFactor(0) {}
-        virtual ~ModelArrayClass() override {}
+        ~ModelArrayClass() override {}
     };
 
     int m_lodCount;
@@ -248,74 +248,73 @@ public:
 
     HLodClass &operator=(const HLodClass &that);
 
-    virtual ~HLodClass() override;
+    ~HLodClass() override;
 
-    virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override;
-    virtual int Get_Num_Polys() const override;
+    RenderObjClass *Clone() const override;
+    int Class_ID() const override;
+    int Get_Num_Polys() const override;
 
-    virtual void Render(RenderInfoClass &rinfo) override;
-    virtual void Special_Render(SpecialRenderInfoClass &rinfo) override;
+    void Render(RenderInfoClass &rinfo) override;
+    void Special_Render(SpecialRenderInfoClass &rinfo) override;
 
-    virtual void Set_Transform(const Matrix3D &m) override;
-    virtual void Set_Position(const Vector3 &v) override;
-    virtual void Notify_Added(SceneClass *scene) override;
-    virtual void Notify_Removed(SceneClass *scene) override;
+    void Set_Transform(const Matrix3D &m) override;
+    void Set_Position(const Vector3 &v) override;
+    void Notify_Added(SceneClass *scene) override;
+    void Notify_Removed(SceneClass *scene) override;
 
-    virtual int Get_Num_Sub_Objects() const override;
-    virtual RenderObjClass *Get_Sub_Object(int index) const override;
-    virtual int Add_Sub_Object(RenderObjClass *subobj) override;
-    virtual int Remove_Sub_Object(RenderObjClass *subobj) override;
-    virtual int Get_Num_Sub_Objects_On_Bone(int bone_index) const override;
-    virtual RenderObjClass *Get_Sub_Object_On_Bone(int index, int bone_index) const override;
-    virtual int Get_Sub_Object_Bone_Index(RenderObjClass *object) const override;
-    virtual int Get_Sub_Object_Bone_Index(int lodindex, int modelindex) const override;
-    virtual int Add_Sub_Object_To_Bone(RenderObjClass *subobj, int bone_index) override;
-    virtual void Update_Sub_Object_Transforms() override;
+    int Get_Num_Sub_Objects() const override;
+    RenderObjClass *Get_Sub_Object(int index) const override;
+    int Add_Sub_Object(RenderObjClass *subobj) override;
+    int Remove_Sub_Object(RenderObjClass *subobj) override;
+    int Get_Num_Sub_Objects_On_Bone(int bone_index) const override;
+    RenderObjClass *Get_Sub_Object_On_Bone(int index, int bone_index) const override;
+    int Get_Sub_Object_Bone_Index(RenderObjClass *object) const override;
+    int Get_Sub_Object_Bone_Index(int lodindex, int modelindex) const override;
+    int Add_Sub_Object_To_Bone(RenderObjClass *subobj, int bone_index) override;
+    void Update_Sub_Object_Transforms() override;
 
-    virtual void Set_Animation() override;
-    virtual void Set_Animation(HAnimClass *motion, float frame, int anim_mode) override;
-    virtual void Set_Animation(
-        HAnimClass *motion0, float frame0, HAnimClass *motion1, float frame1, float percentage) override;
-    virtual void Set_Animation(HAnimComboClass *combo) override;
+    void Set_Animation() override;
+    void Set_Animation(HAnimClass *motion, float frame, int anim_mode) override;
+    void Set_Animation(HAnimClass *motion0, float frame0, HAnimClass *motion1, float frame1, float percentage) override;
+    void Set_Animation(HAnimComboClass *combo) override;
 
-    virtual bool Cast_Ray(RayCollisionTestClass &raytest) override;
-    virtual bool Cast_AABox(AABoxCollisionTestClass &boxtest) override;
-    virtual bool Cast_OBBox(OBBoxCollisionTestClass &boxtest) override;
-    virtual bool Intersect_AABox(AABoxIntersectionTestClass &boxtest) override;
-    virtual bool Intersect_OBBox(OBBoxIntersectionTestClass &boxtest) override;
+    bool Cast_Ray(RayCollisionTestClass &raytest) override;
+    bool Cast_AABox(AABoxCollisionTestClass &boxtest) override;
+    bool Cast_OBBox(OBBoxCollisionTestClass &boxtest) override;
+    bool Intersect_AABox(AABoxIntersectionTestClass &boxtest) override;
+    bool Intersect_OBBox(OBBoxIntersectionTestClass &boxtest) override;
 
-    virtual const SphereClass &Get_Bounding_Sphere() const override;
-    virtual const AABoxClass &Get_Bounding_Box() const override;
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
-    virtual void Update_Obj_Space_Bounding_Volumes() override;
+    const SphereClass &Get_Bounding_Sphere() const override;
+    const AABoxClass &Get_Bounding_Box() const override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    void Update_Obj_Space_Bounding_Volumes() override;
 
-    virtual void Prepare_LOD(CameraClass &camera) override;
-    virtual void Recalculate_Static_LOD_Factors() override;
-    virtual void Increment_LOD() override;
-    virtual void Decrement_LOD() override;
-    virtual float Get_Cost() const override;
-    virtual float Get_Value() const override;
-    virtual float Get_Post_Increment_Value() const override;
-    virtual void Set_LOD_Level(int lod) override;
-    virtual int Get_LOD_Level() const override;
-    virtual int Get_LOD_Count() const override;
-    virtual void Set_LOD_Bias(float bias) override;
-    virtual int Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const override;
-    virtual RenderObjClass *Get_Current_LOD() override;
+    void Prepare_LOD(CameraClass &camera) override;
+    void Recalculate_Static_LOD_Factors() override;
+    void Increment_LOD() override;
+    void Decrement_LOD() override;
+    float Get_Cost() const override;
+    float Get_Value() const override;
+    float Get_Post_Increment_Value() const override;
+    void Set_LOD_Level(int lod) override;
+    int Get_LOD_Level() const override;
+    int Get_LOD_Count() const override;
+    void Set_LOD_Bias(float bias) override;
+    int Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const override;
+    RenderObjClass *Get_Current_LOD() override;
 
-    virtual void Create_Decal(DecalGeneratorClass *generator) override;
-    virtual void Delete_Decal(unsigned long decal_id) override;
+    void Create_Decal(DecalGeneratorClass *generator) override;
+    void Delete_Decal(unsigned long decal_id) override;
 
-    virtual int Get_Num_Snap_Points() override;
-    virtual void Get_Snap_Point(int index, Vector3 *set) override;
+    int Get_Num_Snap_Points() override;
+    void Get_Snap_Point(int index, Vector3 *set) override;
 
-    virtual void Scale(float scale) override;
-    virtual void Scale(float scalex, float scaley, float scalez) override;
+    void Scale(float scale) override;
+    void Scale(float scalex, float scaley, float scalez) override;
 
-    virtual void Set_Hidden(int hidden) override;
-    virtual void Set_HTree(HTreeClass *htree) override;
+    void Set_Hidden(int hidden) override;
+    void Set_HTree(HTreeClass *htree) override;
     virtual void Set_Max_Screen_Size(int lod_index, float size);
     virtual float Get_Max_Screen_Size(int lod_index);
 

@@ -80,9 +80,9 @@ class W3DShroudMaterialPassClass : public MaterialPassClass
 {
 public:
     W3DShroudMaterialPassClass() : m_unk(false) {}
-    virtual ~W3DShroudMaterialPassClass() override {}
-    virtual void Install_Materials() override;
-    virtual void UnInstall_Materials() override;
+    ~W3DShroudMaterialPassClass() override {}
+    void Install_Materials() override;
+    void UnInstall_Materials() override;
 
 private:
     bool m_unk;
@@ -92,9 +92,9 @@ class W3DMaskMaterialPassClass : public MaterialPassClass
 {
 public:
     W3DMaskMaterialPassClass() : m_unk(0), m_resetShader(true) {}
-    virtual ~W3DMaskMaterialPassClass() override {}
-    virtual void Install_Materials() override;
-    virtual void UnInstall_Materials() override;
+    ~W3DMaskMaterialPassClass() override {}
+    void Install_Materials() override;
+    void UnInstall_Materials() override;
     void Reset_Shader(bool b) { m_resetShader = b; }
 
 private:

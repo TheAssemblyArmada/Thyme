@@ -39,7 +39,7 @@ public:
     SurfaceClass(unsigned width, unsigned height, WW3DFormat format);
     SurfaceClass(w3dsurface_t d3d_surface);
     SurfaceClass(const char *name);
-    virtual ~SurfaceClass();
+    ~SurfaceClass() override;
 
     void FindBB(Vector2i *min, Vector2i *max);
     bool Is_Transparent_Column(unsigned column);

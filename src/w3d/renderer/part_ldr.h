@@ -249,11 +249,11 @@ class ParticleEmitterPrototypeClass : public W3DMPO, public PrototypeClass
 
 public:
     ParticleEmitterPrototypeClass(ParticleEmitterDefClass *pdef) { m_pDefinition = pdef; }
-    virtual ~ParticleEmitterPrototypeClass() override { delete m_pDefinition; }
-    virtual const char *Get_Name() const override { return m_pDefinition->Get_Name(); }
-    virtual int Get_Class_ID() const override { return RenderObjClass::CLASSID_PARTICLEEMITTER; }
-    virtual RenderObjClass *Create() override;
-    virtual void Delete_Self() override { delete this; };
+    ~ParticleEmitterPrototypeClass() override { delete m_pDefinition; }
+    const char *Get_Name() const override { return m_pDefinition->Get_Name(); }
+    int Get_Class_ID() const override { return RenderObjClass::CLASSID_PARTICLEEMITTER; }
+    RenderObjClass *Create() override;
+    void Delete_Self() override { delete this; };
     virtual ParticleEmitterDefClass *Get_Definition() const { return m_pDefinition; }
 
 protected:
@@ -263,6 +263,6 @@ protected:
 class ParticleEmitterLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() { return W3D_CHUNK_EMITTER; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &chunk_load);
+    int Chunk_Type() override { return W3D_CHUNK_EMITTER; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &chunk_load) override;
 };

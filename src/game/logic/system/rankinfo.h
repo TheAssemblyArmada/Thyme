@@ -28,11 +28,11 @@ class RankInfoStore : public SubsystemInterface
 {
 public:
     RankInfoStore() {}
-    virtual ~RankInfoStore() {}
+    ~RankInfoStore() override {}
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
     const RankInfo *Get_Rank_Info(int level) const;
     int Get_Rank_Level_Count() const;
@@ -51,7 +51,7 @@ class RankInfo : public Overridable
 protected:
     // #BUGFIX Initialize all members
     RankInfo() : m_rankName(), m_skillPointsNeeded{}, m_sciencePurchasePointsGranted{}, m_sciencesGranted() {}
-    virtual ~RankInfo() override {}
+    ~RankInfo() override {}
 
 private:
     Utf16String m_rankName;

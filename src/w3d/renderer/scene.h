@@ -60,7 +60,7 @@ public:
 
     SceneClass();
 
-    virtual ~SceneClass() {}
+    ~SceneClass() override {}
 
     virtual int Get_Scene_ID() { return 0; }
 
@@ -119,23 +119,23 @@ class SimpleSceneClass : public SceneClass
 {
 public:
     SimpleSceneClass();
-    virtual ~SimpleSceneClass() override {}
+    ~SimpleSceneClass() override {}
 
     virtual int Get_Scene_ID() const { return 1; }
 
-    virtual void Add_Render_Object(RenderObjClass *obj) override;
-    virtual void Remove_Render_Object(RenderObjClass *obj) override;
+    void Add_Render_Object(RenderObjClass *obj) override;
+    void Remove_Render_Object(RenderObjClass *obj) override;
 
-    virtual SceneIterator *Create_Iterator(bool onlyvisible) override;
-    virtual void Destroy_Iterator(SceneIterator *it) override;
+    SceneIterator *Create_Iterator(bool onlyvisible) override;
+    void Destroy_Iterator(SceneIterator *it) override;
 
-    virtual void Register(RenderObjClass *obj, RegType for_what) override;
-    virtual void Unregister(RenderObjClass *obj, RegType for_what) override;
+    void Register(RenderObjClass *obj, RegType for_what) override;
+    void Unregister(RenderObjClass *obj, RegType for_what) override;
 
-    virtual float Compute_Point_Visibility(RenderInfoClass &rinfo, const Vector3 &point) override;
+    float Compute_Point_Visibility(RenderInfoClass &rinfo, const Vector3 &point) override;
 
-    virtual void Customized_Render(RenderInfoClass &rinfo) override;
-    virtual void Post_Render_Processing(RenderInfoClass &rinfo) override;
+    void Customized_Render(RenderInfoClass &rinfo) override;
+    void Post_Render_Processing(RenderInfoClass &rinfo) override;
 
     virtual void Remove_All_Render_Objects();
     virtual void Visibility_Check(CameraClass *);
@@ -157,11 +157,11 @@ public:
         // #BUGFIX Initialize all members
         m_scene = nullptr;
     }
-    virtual ~SimpleSceneIterator() {}
-    virtual void First() { m_robjIterator.First(); }
-    virtual void Next() { m_robjIterator.Next(); };
-    virtual bool Is_Done() { return m_robjIterator.Is_Done(); };
-    virtual RenderObjClass *Current_Item() { return m_robjIterator.Peek_Obj(); };
+    ~SimpleSceneIterator() override {}
+    void First() override { m_robjIterator.First(); }
+    void Next() override { m_robjIterator.Next(); };
+    bool Is_Done() override { return m_robjIterator.Is_Done(); };
+    RenderObjClass *Current_Item() override { return m_robjIterator.Peek_Obj(); };
 
 private:
     RefMultiListIterator<RenderObjClass> m_robjIterator;

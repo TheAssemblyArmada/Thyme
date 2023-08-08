@@ -30,16 +30,16 @@ class FiringTracker : public UpdateModule
 public:
     FiringTracker(Thing *thing, const ModuleData *module_data);
 
-    virtual ~FiringTracker() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual SleepyUpdatePhase Get_Update_Phase() const override;
+    ~FiringTracker() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    SleepyUpdatePhase Get_Update_Phase() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
-    virtual UpdateSleepTime Update() override;
+    BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
+    UpdateSleepTime Update() override;
 
     UpdateSleepTime Calc_Time_To_Sleep();
     void Cool_Down();

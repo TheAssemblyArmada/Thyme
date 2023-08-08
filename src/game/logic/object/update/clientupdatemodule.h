@@ -22,7 +22,7 @@ class ClientUpdateModule : public DrawableModule
     IMPLEMENT_ABSTRACT_POOL(ClientUpdateModule)
 
 protected:
-    virtual ~ClientUpdateModule() override {}
+    ~ClientUpdateModule() override {}
 
 public:
     ClientUpdateModule(Thing *thing, const ModuleData *module_data) : DrawableModule(thing, module_data) {}

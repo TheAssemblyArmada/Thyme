@@ -48,9 +48,9 @@ public:
     AcademyStats() {}
     ~AcademyStats() {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) {}
-    virtual void Xfer_Snapshot(Xfer *xfer);
-    virtual void Load_Post_Process() {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Init(const Player *player);
     void Update();

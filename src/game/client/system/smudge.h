@@ -29,7 +29,7 @@ class Smudge : public DLNodeClass<Smudge>
     IMPLEMENT_W3D_POOL(Smudge)
 public:
     Smudge() {}
-    virtual ~Smudge() override {}
+    ~Smudge() override {}
 
 private:
     Vector3 m_smudgePos;
@@ -45,7 +45,7 @@ class SmudgeSet : public DLNodeClass<SmudgeSet>
     IMPLEMENT_W3D_POOL(SmudgeSet)
 public:
     SmudgeSet();
-    virtual ~SmudgeSet() override;
+    ~SmudgeSet() override;
 
     Smudge *Add_Smudge_To_Set();
     void Remove_Smudge_From_Set(Smudge &smudge);

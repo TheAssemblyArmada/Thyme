@@ -145,7 +145,7 @@ public:
     };
 
 protected:
-    virtual ~Condition() override;
+    ~Condition() override;
 
 public:
     Condition();
@@ -195,7 +195,7 @@ class OrCondition : public MemoryPoolObject
     IMPLEMENT_POOL(OrCondition);
 
 protected:
-    virtual ~OrCondition() override;
+    ~OrCondition() override;
 
 public:
     OrCondition() : m_nextOr(nullptr), m_firstAnd(nullptr) {}

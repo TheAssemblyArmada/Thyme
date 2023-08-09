@@ -366,7 +366,8 @@ void ALAudioManager::Enumerate_Devices()
 
     const ALCchar *device = devices;
     const ALCchar *next = devices + 1;
-    size_t len = 0, idx = 0;
+    size_t len = 0;
+    size_t idx = 0;
     while (device && *device != '\0' && next && *next != '\0' && idx < AL_MAX_PLAYBACK_DEVICES) {
         m_alDevicesList[idx++] = device;
         len = strlen(device);
@@ -1491,8 +1492,10 @@ AudioDataHandle ALAudioManager::Play_Sample(AudioEventRTS *event, PlayingAudio *
 
     if (handle != nullptr) {
         uint8_t *data = nullptr;
-        uint32_t size = 0, freq = 0;
-        uint8_t channels = 1, bits_per_sample = 16;
+        uint32_t size = 0;
+        uint32_t freq = 0;
+        uint8_t channels = 1;
+        uint8_t bits_per_sample = 16;
 #if BUILD_WITH_FFMPEG
         FFmpegAudioFileCache::Get_Wave_Data(handle, data, size, freq, channels, bits_per_sample);
 #endif

@@ -50,6 +50,7 @@ static const FieldParse s_theFXListFieldParse[] = {
 #else
     { "LightPulse",         &LightPulseFXNugget::Parse,        nullptr, 0 },
     { "ViewShake",          &ViewShakeFXNugget::Parse,         nullptr, 0 },
+    { "TerrainScorch",      &TerrainScorchFXNugget::Parse,     nullptr, 0 },
     { "ParticleSystem",     &ParticleSystemFXNugget::Parse,    nullptr, 0 },
 #endif
     { nullptr,              nullptr,                                                                                                        nullptr, 0 },
@@ -202,6 +203,42 @@ void ViewShakeFXNugget::Parse(INI *ini, void *formal, void *, const void *)
     };
 
     ViewShakeFXNugget *nugget = new ViewShakeFXNugget{};
+    ini->Init_From_INI(nugget, _fieldParse);
+    reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
+}
+
+constexpr const char *TerrainScorchTypeNames[] = {
+    "RANDOM",
+    "SCORCH_1",
+    "SCORCH_2",
+    "SCORCH_3",
+    "SCORCH_4",
+    "SCORCH_5",
+    "SCORCH_6",
+    "SCORCH_7",
+    "SCORCH_8",
+    "SCORCH_9",
+    "SCORCH_10",
+    "SCORCH_11",
+    "SCORCH_12",
+    "SCORCH_13",
+    "SCORCH_14",
+    "SCORCH_15",
+    "SCORCH_16",
+    "TERRAIN_MAPPED",
+    nullptr,
+};
+
+// TODO: validate
+void TerrainScorchFXNugget::Parse(INI *ini, void *formal, void *, const void *)
+{
+    static const FieldParse _fieldParse[] = {
+        { "Type", &INI::Parse_Index_List, TerrainScorchTypeNames, offsetof(TerrainScorchFXNugget, m_type) },
+        { "Radius", &INI::Parse_Real, nullptr, offsetof(TerrainScorchFXNugget, m_radius) },
+        { nullptr, nullptr, nullptr, 0 },
+    };
+
+    TerrainScorchFXNugget *nugget = new TerrainScorchFXNugget{};
     ini->Init_From_INI(nugget, _fieldParse);
     reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
 }

@@ -229,3 +229,53 @@ public:
 private:
     ViewShakeType m_type;
 };
+
+// TODO: NOT VALIDATED
+class TerrainScorchFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(TerrainScorchFXNugget);
+
+public:
+    enum TerrainScorchType
+    {
+        RANDOM,
+        SCORCH_1,
+        SCORCH_2,
+        SCORCH_3,
+        SCORCH_4,
+        SCORCH_5,
+        SCORCH_6,
+        SCORCH_7,
+        SCORCH_8,
+        SCORCH_9,
+        SCORCH_10,
+        SCORCH_11,
+        SCORCH_12,
+        SCORCH_13,
+        SCORCH_14,
+        SCORCH_15,
+        SCORCH_16,
+        TERRAIN_MAPPED
+    };
+
+    TerrainScorchFXNugget() : m_type(RANDOM){};
+    virtual ~TerrainScorchFXNugget() override{};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override{
+        // TODO
+    };
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override
+    {
+        // TODO
+    }
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    TerrainScorchType m_type;
+    float m_radius;
+};

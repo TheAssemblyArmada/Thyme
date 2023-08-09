@@ -603,6 +603,18 @@ void INI::Parse_Percent_To_Real(INI *ini, void *formal, void *store, const void 
     *static_cast<float *>(store) = Scan_PercentToReal(ini->Get_Next_Token(ini->m_sepsPercent));
 }
 
+void INI::Parse_Random_Value(INI *ini, void *formal, void *store, const void *user_data)
+{
+    GameLogicRandomVariable *random_val = static_cast<GameLogicRandomVariable *>(store);
+
+    static const char *distributions[] = { "CONSTANT", "UNIFORM", nullptr };
+    int min = Scan_Int(ini->Get_Next_Token());
+    int max = Scan_Int(ini->Get_Next_Token());
+    auto dist = static_cast<GameLogicRandomVariable::DistributionType>(Scan_IndexList(ini->Get_Next_Token(), distributions));
+
+    random_val->Set_Range(min, max, dist);
+}
+
 void INI::Parse_Angle_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float *>(store) = Scan_Real(ini->Get_Next_Token()) * _ANGLE_MULTIPLIER;

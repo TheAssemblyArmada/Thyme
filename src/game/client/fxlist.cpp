@@ -49,6 +49,7 @@ static const FieldParse s_theFXListFieldParse[] = {
     { "FXListAtBonePos",    reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CB8E0, 0x00761D00)) /*&FXListAtBonePosFXNugget::Parse */,   nullptr, 0 },
 #else
     { "LightPulse",         &LightPulseFXNugget::Parse,        nullptr, 0 },
+    { "ViewShake",          &ViewShakeFXNugget::Parse,         nullptr, 0 },
     { "ParticleSystem",     &ParticleSystemFXNugget::Parse,    nullptr, 0 },
 #endif
     { nullptr,              nullptr,                                                                                                        nullptr, 0 },
@@ -178,6 +179,29 @@ void LightPulseFXNugget::Parse(INI *ini, void *formal, void *, const void *)
     };
 
     LightPulseFXNugget *nugget = new LightPulseFXNugget{};
+    ini->Init_From_INI(nugget, _fieldParse);
+    reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
+}
+
+constexpr const char *ViewShakeTypeNames[] = {
+    "SUBTLE",
+    "NORMAL",
+    "STRONG",
+    "SEVERE",
+    "CINE_EXTREME",
+    "CINE_INSANE",
+    nullptr,
+};
+
+// TODO: validate
+void ViewShakeFXNugget::Parse(INI *ini, void *formal, void *, const void *)
+{
+    static const FieldParse _fieldParse[] = {
+        { "Type", &INI::Parse_Index_List, ViewShakeTypeNames, offsetof(ViewShakeFXNugget, m_type) }, // REQUIRED
+        { nullptr, nullptr, nullptr, 0 },
+    };
+
+    ViewShakeFXNugget *nugget = new ViewShakeFXNugget{};
     ini->Init_From_INI(nugget, _fieldParse);
     reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
 }

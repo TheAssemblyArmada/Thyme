@@ -279,3 +279,35 @@ private:
     TerrainScorchType m_type;
     float m_radius;
 };
+
+// TODO: NOT VALIDATED
+class TracerFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(TracerFXNugget);
+
+public:
+    TracerFXNugget(){};
+    virtual ~TracerFXNugget() override{};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override{
+        // TODO
+    };
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override
+    {
+        // TODO
+    }
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    float m_decayAt;
+    float m_length;
+    float m_width;
+    RGBColor m_color;
+    float m_speed;
+    float m_probability;
+};

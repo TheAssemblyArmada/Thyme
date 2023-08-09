@@ -48,6 +48,7 @@ static const FieldParse s_theFXListFieldParse[] = {
     { "ParticleSystem",     reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CAE10, 0x00761350)) /*&ParticleSystemFXNugget::Parse */,    nullptr, 0 },
     { "FXListAtBonePos",    reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CB8E0, 0x00761D00)) /*&FXListAtBonePosFXNugget::Parse */,   nullptr, 0 },
 #else
+    { "Tracer",             &TracerFXNugget::Parse,            nullptr, 0 },
     { "LightPulse",         &LightPulseFXNugget::Parse,        nullptr, 0 },
     { "ViewShake",          &ViewShakeFXNugget::Parse,         nullptr, 0 },
     { "TerrainScorch",      &TerrainScorchFXNugget::Parse,     nullptr, 0 },
@@ -239,6 +240,24 @@ void TerrainScorchFXNugget::Parse(INI *ini, void *formal, void *, const void *)
     };
 
     TerrainScorchFXNugget *nugget = new TerrainScorchFXNugget{};
+    ini->Init_From_INI(nugget, _fieldParse);
+    reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
+}
+
+// TODO: validate
+void TracerFXNugget::Parse(INI *ini, void *formal, void *, const void *)
+{
+    static const FieldParse _fieldParse[] = {
+        { "DecayAt", &INI::Parse_Real, nullptr, offsetof(TracerFXNugget, m_decayAt) },
+        { "Length", &INI::Parse_Real, nullptr, offsetof(TracerFXNugget, m_length) },
+        { "Width", &INI::Parse_Real, nullptr, offsetof(TracerFXNugget, m_width) },
+        { "Color", &INI::Parse_RGB_Color, nullptr, offsetof(TracerFXNugget, m_color) },
+        { "Speed", &INI::Parse_Velocity_Real, nullptr, offsetof(TracerFXNugget, m_speed) },
+        { "Probability", &INI::Parse_Real, nullptr, offsetof(TracerFXNugget, m_probability) },
+        { nullptr, nullptr, nullptr, 0 },
+    };
+
+    TracerFXNugget *nugget = new TracerFXNugget{};
     ini->Init_From_INI(nugget, _fieldParse);
     reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
 }

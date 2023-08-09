@@ -53,6 +53,7 @@ static const FieldParse s_theFXListFieldParse[] = {
     { "ViewShake",          &ViewShakeFXNugget::Parse,         nullptr, 0 },
     { "TerrainScorch",      &TerrainScorchFXNugget::Parse,     nullptr, 0 },
     { "ParticleSystem",     &ParticleSystemFXNugget::Parse,    nullptr, 0 },
+    { "FXListAtBonePos",    &FXListAtBonePosFXNugget::Parse,   nullptr, 0 },
 #endif
     { nullptr,              nullptr,                                                                                                        nullptr, 0 },
 };
@@ -258,6 +259,21 @@ void TracerFXNugget::Parse(INI *ini, void *formal, void *, const void *)
     };
 
     TracerFXNugget *nugget = new TracerFXNugget{};
+    ini->Init_From_INI(nugget, _fieldParse);
+    reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
+}
+
+// TODO: validate
+void FXListAtBonePosFXNugget::Parse(INI *ini, void *formal, void *, const void *)
+{
+    static const FieldParse _fieldParse[] = {
+        { "FX", &INI::Parse_AsciiString, nullptr, offsetof(FXListAtBonePosFXNugget, m_fx) },
+        { "BoneName", &INI::Parse_AsciiString, nullptr, offsetof(FXListAtBonePosFXNugget, m_boneName) },
+        { "OrientToBone", &INI::Parse_Bool, nullptr, offsetof(FXListAtBonePosFXNugget, m_orientToBone) },
+        { nullptr, nullptr, nullptr, 0 },
+    };
+
+    FXListAtBonePosFXNugget *nugget = new FXListAtBonePosFXNugget{};
     ini->Init_From_INI(nugget, _fieldParse);
     reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
 }

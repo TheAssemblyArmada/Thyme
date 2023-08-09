@@ -311,3 +311,32 @@ private:
     float m_speed;
     float m_probability;
 };
+
+// TODO: NOT VALIDATED
+class FXListAtBonePosFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(FXListAtBonePosFXNugget);
+
+public:
+    FXListAtBonePosFXNugget(){};
+    virtual ~FXListAtBonePosFXNugget() override{};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override{
+        // TODO
+    };
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override
+    {
+        // TODO
+    }
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    Utf8String m_fx; // Reference
+    Utf8String m_boneName;
+    bool m_orientToBone;
+};

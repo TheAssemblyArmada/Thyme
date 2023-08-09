@@ -14,6 +14,8 @@
  */
 #pragma once
 
+#include "always.h"
+#include "color.h"
 #include "coord.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
@@ -148,7 +150,45 @@ private:
     GameLogicRandomVariable m_radius;
     GameLogicRandomVariable m_height;
     GameLogicRandomVariable m_initialDelay;
+    float m_rotate[3];
     int m_count;
     bool m_orientToObject;
     bool m_ricochet;
+    bool m_attachToObject;
+    bool m_createAtGroundHeight;
+    bool m_useCallersRadius;
+};
+
+// TODO: NOT VALIDATED
+class LightPulseFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(LightPulseFXNugget);
+
+public:
+    LightPulseFXNugget() : m_radiusAsPercentOfObjectSize(0.0f){};
+    virtual ~LightPulseFXNugget() override{};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override{
+        // TODO
+    };
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override
+    {
+        // TODO
+    }
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    RGBColor m_color;
+    float m_radius;
+    // this is a new option for LightPulse. If present (and nonzero), and the
+    // FXList is applied  to an Object (rather than a Position), it overrides
+    // the value of "Radius" by applying the given percentage of the Object's bounding circle.
+    float m_radiusAsPercentOfObjectSize;
+    unsigned int m_increaseTime;
+    unsigned int m_decreaseTime;
 };

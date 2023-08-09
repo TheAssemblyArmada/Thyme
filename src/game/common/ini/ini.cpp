@@ -603,7 +603,7 @@ void INI::Parse_Percent_To_Real(INI *ini, void *formal, void *store, const void 
     *static_cast<float *>(store) = Scan_PercentToReal(ini->Get_Next_Token(ini->m_sepsPercent));
 }
 
-void INI::Parse_Random_Value(INI *ini, void *formal, void *store, const void *user_data)
+void INI::Parse_Random_Variable(INI *ini, void *formal, void *store, const void *user_data)
 {
     GameLogicRandomVariable *random_val = static_cast<GameLogicRandomVariable *>(store);
 

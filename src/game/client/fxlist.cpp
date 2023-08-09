@@ -48,6 +48,7 @@ static const FieldParse s_theFXListFieldParse[] = {
     { "ParticleSystem",     reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CAE10, 0x00761350)) /*&ParticleSystemFXNugget::Parse */,    nullptr, 0 },
     { "FXListAtBonePos",    reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CB8E0, 0x00761D00)) /*&FXListAtBonePosFXNugget::Parse */,   nullptr, 0 },
 #else
+    { "LightPulse",         &LightPulseFXNugget::Parse,        nullptr, 0 },
     { "ParticleSystem",     &ParticleSystemFXNugget::Parse,    nullptr, 0 },
 #endif
     { nullptr,              nullptr,                                                                                                        nullptr, 0 },
@@ -135,22 +136,48 @@ void SoundFXNugget::Parse(INI *ini, void *formal, void *, const void *)
     reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
 }
 
-// TODO: incomplete
+// TODO: validate
 void ParticleSystemFXNugget::Parse(INI *ini, void *formal, void *, const void *)
 {
     static const FieldParse _fieldParse[] = {
-        { "Name", INI::Parse_AsciiString, nullptr, offsetof(ParticleSystemFXNugget, m_particleSystemName) },
-        { "Offset", INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemFXNugget, m_offset) },
-        { "Radius", INI::Parse_Random_Value, nullptr, offsetof(ParticleSystemFXNugget, m_radius) },
-        { "Height", INI::Parse_Random_Value, nullptr, offsetof(ParticleSystemFXNugget, m_height) },
-        { "InitialDelay", INI::Parse_Random_Value, nullptr, offsetof(ParticleSystemFXNugget, m_initialDelay) },
-        { "Count", INI::Parse_Int, nullptr, offsetof(ParticleSystemFXNugget, m_count) },
-        { "OrientToObject", INI::Parse_Bool, nullptr, offsetof(ParticleSystemFXNugget, m_orientToObject) },
-        { "Ricochet", INI::Parse_Bool, nullptr, offsetof(ParticleSystemFXNugget, m_ricochet) },
+        { "Name", &INI::Parse_AsciiString, nullptr, offsetof(ParticleSystemFXNugget, m_particleSystemName) },
+        { "Offset", &INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemFXNugget, m_offset) },
+        { "Radius", &INI::Parse_Random_Variable, nullptr, offsetof(ParticleSystemFXNugget, m_radius) },
+        { "Height", &INI::Parse_Random_Variable, nullptr, offsetof(ParticleSystemFXNugget, m_height) },
+        { "InitialDelay", &INI::Parse_Random_Variable, nullptr, offsetof(ParticleSystemFXNugget, m_initialDelay) },
+        { "RotateX", &INI::Parse_Angle_Real, nullptr, offsetof(ParticleSystemFXNugget, m_rotate[0]) },
+        { "RotateY", &INI::Parse_Angle_Real, nullptr, offsetof(ParticleSystemFXNugget, m_rotate[1]) },
+        { "RotateZ", &INI::Parse_Angle_Real, nullptr, offsetof(ParticleSystemFXNugget, m_rotate[2]) },
+        { "Count", &INI::Parse_Int, nullptr, offsetof(ParticleSystemFXNugget, m_count) },
+        { "OrientToObject", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemFXNugget, m_orientToObject) },
+        { "Ricochet", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemFXNugget, m_ricochet) },
+        { "AttachToObject", &INI::Parse_Bool, NULL, offsetof(ParticleSystemFXNugget, m_attachToObject) },
+        { "CreateAtGroundHeight", &INI::Parse_Bool, NULL, offsetof(ParticleSystemFXNugget, m_createAtGroundHeight) },
+        { "UseCallersRadius", &INI::Parse_Bool, NULL, offsetof(ParticleSystemFXNugget, m_useCallersRadius) },
         { nullptr, nullptr, nullptr, 0 },
     };
 
     ParticleSystemFXNugget *nugget = new ParticleSystemFXNugget{};
+    ini->Init_From_INI(nugget, _fieldParse);
+    reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
+}
+
+// TODO: validate
+void LightPulseFXNugget::Parse(INI *ini, void *formal, void *, const void *)
+{
+    static const FieldParse _fieldParse[] = {
+        { "Color", &INI::Parse_RGB_Color, nullptr, offsetof(LightPulseFXNugget, m_color) },
+        { "Radius", &INI::Parse_Real, nullptr, offsetof(LightPulseFXNugget, m_radius) },
+        { "RadiusAsPercentOfObjectSize",
+            &INI::Parse_Percent_To_Real,
+            nullptr,
+            offsetof(LightPulseFXNugget, m_radiusAsPercentOfObjectSize) },
+        { "IncreaseTime", &INI::Parse_Unsigned_Int, nullptr, offsetof(LightPulseFXNugget, m_increaseTime) },
+        { "DecreaseTime", &INI::Parse_Unsigned_Int, nullptr, offsetof(LightPulseFXNugget, m_decreaseTime) },
+        { nullptr, nullptr, nullptr, 0 },
+    };
+
+    LightPulseFXNugget *nugget = new LightPulseFXNugget{};
     ini->Init_From_INI(nugget, _fieldParse);
     reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
 }

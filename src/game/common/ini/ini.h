@@ -137,7 +137,7 @@ public:
     static void Parse_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Positive_Non_Zero_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Percent_To_Real(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Random_Value(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Random_Variable(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Angle_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_AsciiString(INI *ini, void *formal, void *store, const void *user_data);

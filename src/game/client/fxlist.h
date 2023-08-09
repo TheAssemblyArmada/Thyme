@@ -14,7 +14,9 @@
  */
 #pragma once
 
+#include "coord.h"
 #include "namekeygenerator.h"
+#include "randomvalue.h"
 #include "rtsutils.h"
 #include "subsysteminterface.h"
 #include <list>
@@ -25,7 +27,6 @@
 #include <unordered_map>
 #endif
 
-class Coord3D;
 class Matrix3D;
 class Object;
 class INI;
@@ -116,4 +117,38 @@ public:
 
 private:
     Utf8String m_soundName;
+};
+
+// TODO: NOT VALIDATED
+class ParticleSystemFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(ParticleSystemFXNugget);
+
+public:
+    ParticleSystemFXNugget() : m_count(1){};
+    virtual ~ParticleSystemFXNugget() override{};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override{
+        // TODO
+    };
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override
+    {
+        // TODO
+    }
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    Utf8String m_particleSystemName;
+    Coord3D m_offset;
+    GameLogicRandomVariable m_radius;
+    GameLogicRandomVariable m_height;
+    GameLogicRandomVariable m_initialDelay;
+    int m_count;
+    bool m_orientToObject;
+    bool m_ricochet;
 };

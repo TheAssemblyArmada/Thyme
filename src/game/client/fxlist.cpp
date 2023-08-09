@@ -47,6 +47,8 @@ static const FieldParse s_theFXListFieldParse[] = {
     { "TerrainScorch",      reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CAC80, 0x00760F20)) /*&TerrainScorchFXNugget::Parse */,     nullptr, 0 },
     { "ParticleSystem",     reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CAE10, 0x00761350)) /*&ParticleSystemFXNugget::Parse */,    nullptr, 0 },
     { "FXListAtBonePos",    reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CB8E0, 0x00761D00)) /*&FXListAtBonePosFXNugget::Parse */,   nullptr, 0 },
+#else
+    { "ParticleSystem",     &ParticleSystemFXNugget::Parse,    nullptr, 0 },
 #endif
     { nullptr,              nullptr,                                                                                                        nullptr, 0 },
 };
@@ -129,6 +131,26 @@ void SoundFXNugget::Parse(INI *ini, void *formal, void *, const void *)
     };
 
     SoundFXNugget *nugget = new SoundFXNugget{};
+    ini->Init_From_INI(nugget, _fieldParse);
+    reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
+}
+
+// TODO: incomplete
+void ParticleSystemFXNugget::Parse(INI *ini, void *formal, void *, const void *)
+{
+    static const FieldParse _fieldParse[] = {
+        { "Name", INI::Parse_AsciiString, nullptr, offsetof(ParticleSystemFXNugget, m_particleSystemName) },
+        { "Offset", INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemFXNugget, m_offset) },
+        { "Radius", INI::Parse_Random_Value, nullptr, offsetof(ParticleSystemFXNugget, m_radius) },
+        { "Height", INI::Parse_Random_Value, nullptr, offsetof(ParticleSystemFXNugget, m_height) },
+        { "InitialDelay", INI::Parse_Random_Value, nullptr, offsetof(ParticleSystemFXNugget, m_initialDelay) },
+        { "Count", INI::Parse_Int, nullptr, offsetof(ParticleSystemFXNugget, m_count) },
+        { "OrientToObject", INI::Parse_Bool, nullptr, offsetof(ParticleSystemFXNugget, m_orientToObject) },
+        { "Ricochet", INI::Parse_Bool, nullptr, offsetof(ParticleSystemFXNugget, m_ricochet) },
+        { nullptr, nullptr, nullptr, 0 },
+    };
+
+    ParticleSystemFXNugget *nugget = new ParticleSystemFXNugget{};
     ini->Init_From_INI(nugget, _fieldParse);
     reinterpret_cast<FXList *>(formal)->Add_FXNugget(nugget);
 }

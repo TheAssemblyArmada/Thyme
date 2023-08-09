@@ -20,7 +20,7 @@
 #include "color.h"
 #include "ini.h"
 
-// NOT VALIDATED
+// TODO: NOT VALIDATED
 class OnlineChatColors
 {
 public:

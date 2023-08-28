@@ -347,6 +347,34 @@ bool ALAudioManager::Is_Currently_Playing(uintptr_t event)
 }
 
 /**
+ * Check for OpenAL errors
+ */
+bool ALAudioManager::Check_AL_Error()
+{
+    ALenum error_code = alGetError();
+    if (error_code != 0) {
+        auto error_msg = alGetString(error_code);
+        captainslog_error("OpenAL error: %s", error_msg);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Check for OpenAL errors
+ */
+bool ALAudioManager::Check_ALC_Error()
+{
+    ALCenum error_code = alcGetError(m_alcDevice);
+    if (error_code != 0) {
+        auto error_msg = alcGetString(m_alcDevice, error_code);
+        captainslog_error("ALC error: %s", error_msg);
+        return false;
+    }
+    return true;
+}
+
+/**
  * Fill list of all supported devices
  */
 void ALAudioManager::Enumerate_Devices()
@@ -395,6 +423,7 @@ void ALAudioManager::Open_Device()
         captainslog_error("Failed to open ALC device");
         return;
     }
+    captainslog_dbgassert(Check_ALC_Error(), "Failed to open ALC device");
 
     ALCint attributes[] = { ALC_FREQUENCY, m_audioSettings->Output_Rate(), 0 /* end-of-list */ };
     m_alcContext = alcCreateContext(m_alcDevice, attributes);
@@ -402,13 +431,17 @@ void ALAudioManager::Open_Device()
         captainslog_error("Failed to create ALC context");
         return;
     }
+    captainslog_dbgassert(Check_ALC_Error(), "Failed to create ALC context");
 
     if (!alcMakeContextCurrent(m_alcContext)) {
         captainslog_error("Failed to make ALC context current");
         return;
     }
+    captainslog_dbgassert(Check_ALC_Error(), "Failed to create ALC context");
 
     Select_Provider(Get_Provider_Index(m_preferredProvider));
+
+    captainslog_dbgassert(Check_AL_Error(), "OpenAL error before starting");
 }
 
 /**
@@ -1390,7 +1423,8 @@ void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
 
     if (audio->openal.buffer)
         alDeleteBuffers(1, &audio->openal.buffer);
-    alDeleteSources(1, &audio->openal.source);
+    if (audio->openal.source)
+        alDeleteSources(1, &audio->openal.source);
     Close_File(audio->openal.file_handle);
 
     if (audio->openal.release_event) {
@@ -1501,9 +1535,12 @@ AudioDataHandle ALAudioManager::Play_Sample(AudioEventRTS *event, PlayingAudio *
 #endif
         auto openal = audio->openal;
         alGenBuffers(1, &openal.buffer);
+        captainslog_dbgassert(Check_AL_Error(), "Failed to generate buffer");
         alBufferData(openal.buffer, Get_AL_Format(channels, bits_per_sample), data, size, freq);
+        captainslog_dbgassert(Check_AL_Error(), "Failed to buffer data");
         alSourcei(openal.source, AL_BUFFER, openal.buffer);
         alSourcePlay(openal.source);
+        captainslog_dbgassert(Check_AL_Error(), "Failed to play source");
     }
 
     return handle;

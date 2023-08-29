@@ -35,6 +35,7 @@ public:
     }
 };
 
+#ifdef BUILD_WITH_OPENAL
 void test_audiomanager(Thyme::ALAudioManager &mngr)
 {
     using namespace std::chrono_literals;
@@ -72,7 +73,6 @@ void test_audiomanager(Thyme::ALAudioManager &mngr)
     mngr.Close_Device();
 }
 
-#ifdef BUILD_WITH_OPENAL
 TEST(audio, alaudiomanager)
 {
     g_theLocalFileSystem = new Win32LocalFileSystem;

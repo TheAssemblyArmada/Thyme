@@ -46,7 +46,7 @@ void test_audiomanager(Thyme::ALAudioManager &mngr)
     EXPECT_FALSE(mngr.Is_Music_Playing());
 
     auto filepath = Utf8String(TESTDATA_PATH) + "/audio/pcm1644m.wav";
-    EXPECT_FLOAT_EQ(mngr.Get_File_Length_MS(filepath), 6687.28);
+    EXPECT_FLOAT_EQ(mngr.Get_File_Length_MS(filepath), 6687.28f);
 
     // Init would be the correct call, but we don't have any INIs we can load
     mngr.Open_Device();
@@ -56,8 +56,7 @@ void test_audiomanager(Thyme::ALAudioManager &mngr)
     static int playing_handle = 0;
     TestAudioEventInfo test_info;
     AudioEventRTS *ev = new AudioEventRTS(Utf8String("testevent"));
-    ev->Set_Event_Info(&test_info);
-    ev->Apply_Filename_From_Info();
+    ev->Set_Event_Info_With_Filename(&test_info);
     ev->Set_Playing_Handle(playing_handle++);
     ev->Set_Next_Play_Portion(1);
     mngr.friend_Force_Play_Audio_Event(ev);

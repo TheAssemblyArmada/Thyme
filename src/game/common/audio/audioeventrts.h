@@ -34,7 +34,6 @@ public:
     AudioEventRTS &operator=(const AudioEventRTS &that);
 
     void Generate_Filename();
-    void Apply_Filename_From_Info();
     void Generate_Play_Info();
     void Decrease_Loop_Count();
     void Advance_Next_Play_Portion();
@@ -44,6 +43,12 @@ public:
     void Set_Current_Sound_Index(int index) const { m_currentSoundIndex = index; }
     void Set_Volume(float volume) { m_volumeAdjustFactor = volume; }
     void Set_Event_Info(AudioEventInfo *info) const { m_eventInfo = info; }
+    // Thyme specific: Directly apply the filename from the info without any extra processing
+    void Set_Event_Info_With_Filename(AudioEventInfo *info)
+    {
+        Set_Event_Info(info);
+        m_filename = m_eventInfo->Get_File_Name();
+    }
     void Set_Player_Index(int index) { m_playerIndex = index; }
     void Set_Next_Play_Portion(int portion) { m_nextPlayPortion = portion; }
     void Set_Handle_To_Kill(int handle) { m_handleToKill = handle; }

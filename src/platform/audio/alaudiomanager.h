@@ -110,6 +110,7 @@ private:
     void Stop_All_Audio_Immediately();
     void Play_Stream(AudioEventRTS *event, ALuint source);
     AudioDataHandle Play_Sample3D(AudioEventRTS *event, PlayingAudio *audio);
+    AudioDataHandle Play_Sample2D(AudioEventRTS *event, PlayingAudio *audio);
     AudioDataHandle Play_Sample(AudioEventRTS *event, PlayingAudio *audio);
     void Adjust_Playing_Volume(PlayingAudio *audio);
     float Get_Effective_Volume(AudioEventRTS *event) const;

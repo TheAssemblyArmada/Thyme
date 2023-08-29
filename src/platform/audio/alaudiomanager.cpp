@@ -52,6 +52,7 @@ void ALAudioManager::Init()
 #if BUILD_WITH_FFMPEG
     m_audioFileCache->Set_Max_Size(m_audioSettings->Get_Audio_Footprint());
 #endif
+    alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
 }
 
 /**
@@ -1237,6 +1238,13 @@ AudioDataHandle ALAudioManager::Play_Sample3D(AudioEventRTS *event, PlayingAudio
 
     if (handle != nullptr) {
         auto openal = audio->openal;
+        if (event->Get_Event_Info()->Get_Visibility() & VISIBILITY_GLOBAL) {
+            alSourcef(openal.source, AL_REFERENCE_DISTANCE, m_audioSettings->Global_Min_Range());
+            alSourcef(openal.source, AL_MAX_DISTANCE, m_audioSettings->Global_Max_Range());
+        } else {
+            alSourcef(openal.source, AL_REFERENCE_DISTANCE, event->Get_Event_Info()->Min_Range());
+            alSourcef(openal.source, AL_MAX_DISTANCE, event->Get_Event_Info()->Max_Range());
+        }
         alSource3f(openal.source, AL_POSITION, pos->x, pos->y, pos->z);
     }
 

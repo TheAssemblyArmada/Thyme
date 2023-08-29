@@ -35,11 +35,10 @@ public:
     }
 };
 
-void test_audiomanager(AudioManager &mngr)
+#ifdef BUILD_WITH_OPENAL
+void test_audiomanager(Thyme::ALAudioManager &mngr)
 {
     using namespace std::chrono_literals;
-    // Init would be the correct call, but we don't have any INIs we can load
-    mngr.Open_Device();
 
     auto empty = mngr.Get_Empty_Audio_Event();
     EXPECT_FALSE(mngr.Is_Playing_Already(empty));
@@ -49,9 +48,14 @@ void test_audiomanager(AudioManager &mngr)
     auto filepath = Utf8String(TESTDATA_PATH) + "/audio/pcm1644m.wav";
     EXPECT_FLOAT_EQ(mngr.Get_File_Length_MS(filepath), 6687.28);
 
+    // Init would be the correct call, but we don't have any INIs we can load
+    mngr.Open_Device();
+    if (!mngr.Is_Device_Open())
+        return;
+
     static int playing_handle = 0;
     TestAudioEventInfo test_info;
-    AudioEventRTS* ev = new AudioEventRTS(Utf8String("testevent"));
+    AudioEventRTS *ev = new AudioEventRTS(Utf8String("testevent"));
     ev->Set_Event_Info(&test_info);
     ev->Apply_Filename_From_Info();
     ev->Set_Playing_Handle(playing_handle++);
@@ -59,8 +63,7 @@ void test_audiomanager(AudioManager &mngr)
     mngr.friend_Force_Play_Audio_Event(ev);
     EXPECT_TRUE(mngr.Is_Currently_Playing(ev->Get_Playing_Handle()));
 
-    while(mngr.Is_Currently_Playing(ev->Get_Playing_Handle()))
-    {
+    while (mngr.Is_Currently_Playing(ev->Get_Playing_Handle())) {
         std::this_thread::sleep_for(200ms);
         mngr.Process_Playing_List();
     }
@@ -70,7 +73,6 @@ void test_audiomanager(AudioManager &mngr)
     mngr.Close_Device();
 }
 
-#ifdef BUILD_WITH_OPENAL
 TEST(audio, alaudiomanager)
 {
     g_theLocalFileSystem = new Win32LocalFileSystem;

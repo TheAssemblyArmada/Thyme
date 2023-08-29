@@ -993,9 +993,9 @@ void ALAudioManager::Process_Playing_List()
     for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end();) {
         if (*it != nullptr) {
             // Check if the audio has finished playing
-            if((*it)->openal.source) {
+            if ((*it)->openal.source) {
                 alGetSourcei((*it)->openal.source, AL_SOURCE_STATE, &source_state);
-                if(source_state == AL_STOPPED)
+                if (source_state == AL_STOPPED)
                     Notify_Of_Audio_Completion((*it)->openal.source, PAT_2DSAMPLE);
             }
 
@@ -1017,9 +1017,9 @@ void ALAudioManager::Process_Playing_List()
     for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end();) {
         if (*it != nullptr) {
             // Check if the audio has finished playing
-            if((*it)->openal.source) {
+            if ((*it)->openal.source) {
                 alGetSourcei((*it)->openal.source, AL_SOURCE_STATE, &source_state);
-                if(source_state == AL_STOPPED)
+                if (source_state == AL_STOPPED)
                     Notify_Of_Audio_Completion((*it)->openal.source, PAT_3DSAMPLE);
             }
 
@@ -1131,11 +1131,11 @@ void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
     if (audio->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SOUND) {
         switch (audio->openal.playing_type) {
             case PAT_2DSAMPLE:
-                if(m_soundManager)
+                if (m_soundManager)
                     m_soundManager->Notify_Of_2D_Sample_Completion();
                 break;
             case PAT_3DSAMPLE:
-                if(m_soundManager)
+                if (m_soundManager)
                     m_soundManager->Notify_Of_3D_Sample_Completion();
                 break;
             default:
@@ -1307,7 +1307,6 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
     return audio->openal.file_handle != nullptr;
 }
 
-
 /**
  * Plays an audio event.
  */
@@ -1443,7 +1442,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
 
                 if (source_handle != 0) {
                     pa->openal.file_handle = Play_Sample(event, pa);
-                    if(m_soundManager)
+                    if (m_soundManager)
                         m_soundManager->Notify_Of_2D_Sample_Start();
                 }
 
@@ -1635,7 +1634,6 @@ float ALAudioManager::Get_Effective_Volume(AudioEventRTS *event) const
     return vol;
 }
 
-
 /**
  * Utility method to get the OpenAL format.
  */
@@ -1653,10 +1651,6 @@ ALenum ALAudioManager::Get_AL_Format(uint8_t channels, uint8_t bits_per_sample)
     captainslog_warn("Unknown OpenAL format: %i channels, %i bits per sample", channels, bits_per_sample);
     return AL_FORMAT_MONO8;
 }
-
-
-
-
 
 /**
  * Gets the position the event is supposed to play at currently.

@@ -97,6 +97,8 @@ public:
     virtual void Process_Fading_List() override;
     virtual void Process_Stopped_List() override;
 
+    bool Is_Device_Open() { return m_alcDevice != nullptr; }
+
     // Only added for testing really
 #ifdef BUILD_WITH_FFMPEG
     void Set_Cache_Max_Size(int byte_size) { m_audioFileCache->Set_Max_Size(byte_size); }

@@ -60,7 +60,7 @@ public:
     virtual bool Is_Currently_Playing(uintptr_t event) override;
     virtual void Open_Device() override;
     virtual void Close_Device() override;
-    virtual void *Get_Device() override { return nullptr; }
+    virtual AudioDevice Get_Device() override { return m_alcDevice; }
     virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) override;
     virtual int Get_Provider_Count() override { return 0; }
     virtual Utf8String Get_Provider_Name(unsigned provider) const override;
@@ -81,7 +81,7 @@ public:
     virtual void Remove_Playing_Audio(Utf8String name) override;
     virtual void Remove_All_Disabled_Audio() override;
     virtual bool Has_3D_Sensitive_Streams_Playing() override;
-    virtual void *Get_Bink_Handle() override;
+    virtual BinkHandle Get_Bink_Handle() override;
     virtual void Release_Bink_Handle() override;
     virtual void friend_Force_Play_Audio_Event(AudioEventRTS *event) override;
     virtual void Process_Request_List() override;
@@ -103,6 +103,8 @@ public:
 #endif
 private:
     void Release_Playing_Audio(PlayingAudio *audio);
+    void Release_OpenAL_Handles(PlayingAudio *audio);
+    void Free_All_OpenAL_Handles();
     void Stop_All_Audio_Immediately();
     void Play_Stream(AudioEventRTS *event, ALuint source);
     AudioDataHandle Play_Sample3D(AudioEventRTS *event, PlayingAudio *audio);

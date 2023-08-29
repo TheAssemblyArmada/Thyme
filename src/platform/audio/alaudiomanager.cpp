@@ -42,6 +42,9 @@ ALAudioManager::~ALAudioManager()
     delete m_audioFileCache;
 }
 
+/**
+ * Initialise the subsystem.
+ */
 void ALAudioManager::Init()
 {
     AudioManager::Init();
@@ -51,6 +54,9 @@ void ALAudioManager::Init()
 #endif
 }
 
+/**
+ * Reset the subsystem.
+ */
 void ALAudioManager::Reset()
 {
     // Worldbuilder is a debug build and has code to dump a list of audio assets here.
@@ -60,6 +66,9 @@ void ALAudioManager::Reset()
     Remove_Level_Specific_Audio_Event_Infos();
 }
 
+/**
+ * Update the subsystem.
+ */
 void ALAudioManager::Update()
 {
     AudioManager::Update();
@@ -70,6 +79,9 @@ void ALAudioManager::Update()
     Process_Stopped_List();
 }
 
+/**
+ * Iterates playing audio lists and stops the streams for the specified affects.
+ */
 void ALAudioManager::Stop_Audio(AudioAffect affect)
 {
     if (affect & AUDIOAFFECT_SOUND) {
@@ -347,64 +359,6 @@ bool ALAudioManager::Is_Currently_Playing(uintptr_t event)
 }
 
 /**
- * Check for OpenAL errors
- */
-bool ALAudioManager::Check_AL_Error()
-{
-    ALenum error_code = alGetError();
-    if (error_code != 0) {
-        auto error_msg = alGetString(error_code);
-        captainslog_error("OpenAL error: %s", error_msg);
-        return false;
-    }
-    return true;
-}
-
-/**
- * Check for OpenAL errors
- */
-bool ALAudioManager::Check_ALC_Error()
-{
-    ALCenum error_code = alcGetError(m_alcDevice);
-    if (error_code != 0) {
-        auto error_msg = alcGetString(m_alcDevice, error_code);
-        captainslog_error("ALC error: %s", error_msg);
-        return false;
-    }
-    return true;
-}
-
-/**
- * Fill list of all supported devices
- */
-void ALAudioManager::Enumerate_Devices()
-{
-    const ALCchar *devices = NULL;
-    if (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") == AL_TRUE) {
-        devices = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
-        if ((devices == nullptr || *devices == '\0') && alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT") == AL_TRUE) {
-            devices = alcGetString(NULL, ALC_DEVICE_SPECIFIER);
-        }
-    }
-
-    if (devices == nullptr) {
-        captainslog_warn("Enumerating OpenAL devices is not supported");
-        return;
-    }
-
-    const ALCchar *device = devices;
-    const ALCchar *next = devices + 1;
-    size_t len = 0;
-    size_t idx = 0;
-    while (device && *device != '\0' && next && *next != '\0' && idx < AL_MAX_PLAYBACK_DEVICES) {
-        m_alDevicesList[idx++] = device;
-        len = strlen(device);
-        device += (len + 1);
-        next += (len + 2);
-    }
-}
-
-/**
  * Opens an audio device for playing audio.
  */
 void ALAudioManager::Open_Device()
@@ -440,6 +394,7 @@ void ALAudioManager::Open_Device()
     captainslog_dbgassert(Check_ALC_Error(), "Failed to create ALC context");
 
     Select_Provider(Get_Provider_Index(m_preferredProvider));
+    Refresh_Cached_Variables();
 
     captainslog_dbgassert(Check_AL_Error(), "OpenAL error before starting");
 }
@@ -463,9 +418,9 @@ void ALAudioManager::Close_Device()
 /**
  * Handles audio completion.
  */
-void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
+void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned type)
 {
-    PlayingAudio *playing = Find_Playing_Audio_From(handle, unk2);
+    PlayingAudio *playing = Find_Playing_Audio_From(handle, type);
 
     if (playing == nullptr) {
         return;
@@ -509,11 +464,11 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
             }
         }
 
-        if (playing->openal.playing_type != PAT_STREAM
-            || playing->openal.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC) {
-            playing->openal.stopped = 1;
-        } else {
+        if (playing->openal.playing_type == PAT_STREAM
+            && playing->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
             Play_Stream(playing->openal.audio_event, playing->openal.source);
+        } else {
+            playing->openal.stopped = 1;
         }
     }
 }
@@ -523,6 +478,10 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
  */
 Utf8String ALAudioManager::Get_Provider_Name(unsigned provider) const
 {
+    if (Is_On(AUDIOAFFECT_3DSOUND) && provider < (unsigned)m_alMaxDevicesIndex) {
+        // TODO: return the provider
+    }
+
     return Utf8String::s_emptyString;
 }
 
@@ -810,6 +769,10 @@ void ALAudioManager::Remove_All_Disabled_Audio()
  */
 bool ALAudioManager::Has_3D_Sensitive_Streams_Playing()
 {
+    if (m_streamList.empty()) {
+        return false;
+    }
+
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
         if (*it != nullptr
             && ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
@@ -824,7 +787,7 @@ bool ALAudioManager::Has_3D_Sensitive_Streams_Playing()
 /**
  * Gets an audio handle for use by the video player.
  */
-void *ALAudioManager::Get_Bink_Handle()
+BinkHandle ALAudioManager::Get_Bink_Handle()
 {
     // If we don't already have a playing audio for bink, make one.
     if (m_binkPlayingAudio == nullptr) {
@@ -843,7 +806,7 @@ void *ALAudioManager::Get_Bink_Handle()
         m_binkPlayingAudio = pap;
     }
 
-    return reinterpret_cast<void *>(m_binkPlayingAudio->openal.source);
+    return reinterpret_cast<BinkHandle>(m_binkPlayingAudio->openal.source);
 }
 
 /**
@@ -885,270 +848,6 @@ void ALAudioManager::Process_Request_List()
                 ++it;
             }
         }
-    }
-}
-
-/**
- * Check if a request should be processed this frame.
- *
- * Inlined.
- */
-bool ALAudioManager::Process_Request_This_Frame(AudioRequest *request)
-{
-    if (request->m_isAdding) {
-        return request->m_event.object->Get_Delay() < MSEC_PER_LOGICFRAME_REAL;
-    }
-
-    return true;
-}
-
-/**
- * Reduced the delay until this request should be played by one frame.
- *
- * Inlined.
- */
-void ALAudioManager::Adjust_Request(AudioRequest *request)
-{
-    if (request->m_isAdding) {
-        request->m_event.object->Decrement_Delay(MSEC_PER_LOGICFRAME_REAL);
-        request->m_isProcessed = true;
-    }
-}
-
-/**
- * Checks the status of a request to determine if it should be processed.
- *
- * Inlined.
- */
-bool ALAudioManager::Check_For_Sample(AudioRequest *request)
-{
-    if (request->m_isAdding) {
-        return true;
-    }
-
-    // If the object doesn't have info, try and retrieve it.
-    if (request->m_event.object->Get_Event_Info() == nullptr) {
-        Get_Info_For_Audio_Event(request->m_event.object);
-    }
-
-    if (request->m_event.object->Get_Event_Info()->Get_Visibility() == VISIBILITY_WORLD) {
-        return m_soundManager->Can_Play_Now(request->m_event.object);
-    }
-
-    return true;
-}
-
-/**
- * Plays an audio event.
- */
-void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
-{
-    const AudioEventInfo *aud_info = event->Get_Event_Info();
-
-    if (aud_info == nullptr) {
-        return;
-    }
-
-    uintptr_t kill_handle = event->Get_Handle_To_Kill();
-    ALuint source_handle = 0;
-    Utf8String name = event->Get_File_Name();
-    PlayingAudio *pa = new PlayingAudio;
-    Init_Playing_Audio(pa);
-    pa->openal.stopped = false;
-
-    switch (aud_info->Get_Event_Type()) {
-        case EVENT_SPEECH:
-            if (event->Should_Play_Locally()) {
-                Stop_All_Speech();
-            }
-            // Fallthrough
-        case EVENT_MUSIC: {
-            float volume = 1.0f;
-
-            if (aud_info->Get_Event_Type() == EVENT_SPEECH) {
-                volume = m_speechVolume;
-            } else {
-                volume = m_musicVolume;
-            }
-
-            volume *= event->Get_Volume();
-            bool killed = false;
-
-            if (kill_handle != 0) {
-                for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
-                    if (*it != nullptr && (*it)->openal.audio_event != nullptr
-                        && (*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
-                        Release_Playing_Audio(*it);
-                        m_streamList.erase(it);
-                        killed = true;
-                        break;
-                    }
-                }
-            }
-
-            if (kill_handle != 0 && !killed) {
-                source_handle = 0;
-            } else {
-                alGenSources(1, &source_handle);
-            }
-
-            pa->openal.audio_event = event;
-            pa->openal.source = source_handle;
-            pa->openal.playing_type = PAT_STREAM;
-            break;
-        }
-        case EVENT_SOUND:
-            if (event->Is_Positional_Audio()) {
-                bool killed = false;
-
-                if (kill_handle != 0) {
-                    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
-                        if ((*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
-                            Release_Playing_Audio(*it);
-                            m_positionalAudioList.erase(it);
-                            killed = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (kill_handle != 0 && !killed) {
-                    source_handle = 0;
-                } else {
-                    alGenSources(1, &source_handle);
-                }
-
-                pa->openal.audio_event = event;
-                pa->openal.source = source_handle;
-                pa->openal.playing_type = PAT_3DSAMPLE;
-                pa->openal.file_handle = nullptr;
-                m_positionalAudioList.push_back(pa);
-
-                if (source_handle != 0) {
-                    pa->openal.file_handle = Play_Sample3D(event, pa);
-                    m_soundManager->Notify_Of_3D_Sample_Start();
-                }
-
-                if (pa->openal.file_handle == nullptr) {
-                    m_positionalAudioList.pop_back();
-                } else {
-                    pa = nullptr;
-                }
-            } else {
-                bool killed = false;
-
-                if (kill_handle != 0) {
-                    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
-                        if ((*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
-                            Release_Playing_Audio(*it);
-                            m_globalAudioList.erase(it);
-                            killed = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (kill_handle != 0 && !killed) {
-                    source_handle = 0;
-                } else {
-                    alGenSources(1, &source_handle);
-                }
-
-                pa->openal.audio_event = event;
-                pa->openal.source = source_handle;
-                pa->openal.playing_type = PAT_2DSAMPLE;
-                pa->openal.file_handle = nullptr;
-                m_globalAudioList.push_back(pa);
-
-                if (source_handle != 0) {
-                    pa->openal.file_handle = Play_Sample(event, pa);
-                    m_soundManager->Notify_Of_2D_Sample_Start();
-                }
-
-                if (pa->openal.file_handle == nullptr) {
-                    m_globalAudioList.pop_back();
-                } else {
-                    pa = nullptr;
-                }
-            }
-            break;
-        default:
-            break;
-    }
-
-    if (pa != nullptr) {
-        Release_Playing_Audio(pa);
-    }
-}
-
-/**
- * Pauses an audio event from a handle.
- */
-void ALAudioManager::Pause_Audio_Event(uintptr_t handle)
-{
-    // Unimplemented
-}
-
-/**
- * Stops an audio event from a handle.
- */
-void ALAudioManager::Stop_Audio_Event(uintptr_t handle)
-{
-    if (handle == 4 || handle == 5) {
-        for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
-            if ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
-                if (handle == 5) {
-                    m_fadingList.push_back(*it);
-                } else {
-                    Release_Playing_Audio(*it);
-                }
-
-                m_streamList.erase(it);
-                break;
-            }
-        }
-    }
-
-    for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
-        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
-            (*it)->openal.disable_loops = true;
-            Notify_Of_Audio_Completion((uintptr_t)(*it)->openal.source, 2);
-            break;
-        }
-    }
-
-    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
-        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
-            (*it)->openal.disable_loops = true;
-            break;
-        }
-    }
-
-    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
-        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
-            (*it)->openal.disable_loops = true;
-            break;
-        }
-    }
-}
-
-/**
- * Process an audio request.
- */
-void ALAudioManager::Process_Request(AudioRequest *request)
-{
-    switch (request->m_requestType) {
-        case AR_PLAY:
-            Play_Audio_Event(request->m_event.object);
-            break;
-        case AR_PAUSE:
-            Pause_Audio_Event(request->m_event.handle);
-            break;
-        case AR_STOP:
-            Stop_Audio_Event(request->m_event.handle);
-            break;
-        default:
-            break;
     }
 }
 
@@ -1249,59 +948,6 @@ void ALAudioManager::Set_Device_Listener_Position()
 }
 
 /**
- * Gets the effective volume of the event.s
- */
-float ALAudioManager::Get_Effective_Volume(AudioEventRTS *event) const
-{
-    float vol = event->Get_Volume() * event->Get_Volume_Shift() * 1.0f;
-
-    // Handle easy cases for none positional stuff.
-    if (event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
-        return vol * m_musicVolume;
-    } else if (event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
-        return vol * m_speechVolume;
-    } else if (!event->Is_Positional_Audio()) {
-        return vol * m_soundVolume;
-    }
-
-    // Coord3D being used as Vector3 essentially here.
-    Coord3D *event_pos = event->Get_Current_Pos();
-    Coord3D difference = m_listenerPosition;
-    vol *= m_3dSoundVolume;
-
-    if (event_pos == nullptr) {
-        return vol;
-    }
-
-    // Get a vector representing the difference between listerner and sound.
-    difference.Sub(event_pos);
-    float min_dist;
-    float max_dist;
-
-    if (event->Get_Event_Info()->Get_Visibility() & VISIBILITY_GLOBAL) {
-        min_dist = Get_Audio_Settings()->Global_Min_Range();
-        max_dist = Get_Audio_Settings()->Global_Max_Range();
-    } else {
-        min_dist = event->Get_Event_Info()->Min_Range();
-        max_dist = event->Get_Event_Info()->Max_Range();
-    }
-
-    // Calculate distance from our vector between source and listener.
-    float dist = difference.Length();
-
-    // Based on distance and range limits, calculate volume.
-    if (dist > min_dist) {
-        vol *= 1.0f / (float)(dist / min_dist);
-    }
-
-    if (dist >= max_dist) {
-        vol = 0.0f;
-    }
-
-    return vol;
-}
-
-/**
  * Finds a playing audio that uses a given handle and is a given type.
  */
 PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned type)
@@ -1343,6 +989,80 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
  */
 void ALAudioManager::Process_Playing_List()
 {
+    ALint source_state;
+    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end();) {
+        if (*it != nullptr) {
+            // Check if the audio has finished playing
+            if((*it)->openal.source) {
+                alGetSourcei((*it)->openal.source, AL_SOURCE_STATE, &source_state);
+                if(source_state == AL_STOPPED)
+                    Notify_Of_Audio_Completion((*it)->openal.source, PAT_2DSAMPLE);
+            }
+
+            if ((*it)->openal.stopped == 1) {
+                Release_Playing_Audio(*it);
+                it = m_globalAudioList.erase(it);
+            } else {
+                if (m_volumeSet) {
+                    Adjust_Playing_Volume(*it);
+                }
+
+                ++it;
+            }
+        } else {
+            it = m_globalAudioList.erase(it);
+        }
+    }
+
+    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end();) {
+        if (*it != nullptr) {
+            // Check if the audio has finished playing
+            if((*it)->openal.source) {
+                alGetSourcei((*it)->openal.source, AL_SOURCE_STATE, &source_state);
+                if(source_state == AL_STOPPED)
+                    Notify_Of_Audio_Completion((*it)->openal.source, PAT_3DSAMPLE);
+            }
+
+            if ((*it)->openal.stopped == 1) {
+                Release_Playing_Audio(*it);
+                it = m_positionalAudioList.erase(it);
+            } else {
+                if (m_volumeSet) {
+                    Adjust_Playing_Volume(*it);
+                }
+
+                Coord3D *current_pos = (*it)->openal.audio_event->Get_Current_Pos();
+
+                if (current_pos != nullptr) {
+                    if ((*it)->openal.audio_event->Get_Event_Type() == EVENT_UNKVAL3) {
+                        Stop_Audio_Event((*it)->openal.audio_event->Get_Playing_Handle());
+                        ++it;
+                    } else {
+                        float sample_vol = Get_Effective_Volume((*it)->openal.audio_event);
+                        // Is this conditional check incorrect? Original does this but makes no sense.
+                        // BUGFIX TODO should be m3dSoundVolume for the result as well?
+                        sample_vol /= m_3dSoundVolume > 0.0f ? m_soundVolume : 1.0f;
+
+                        if (sample_vol < m_audioSettings->Get_Min_Sample_Vol()
+                            && !(((*it)->openal.audio_event->Get_Event_Info()->Get_Visibility() & VISIBILITY_GLOBAL)
+                                || ((*it)->openal.audio_event->Get_Event_Info()->Get_Priority() == 4))) {
+                            Release_Playing_Audio(*it);
+                            it = m_positionalAudioList.erase(it);
+                        } else {
+                            alSource3f((*it)->openal.source, AL_POSITION, current_pos->x, current_pos->y, current_pos->z);
+                            ++it;
+                        }
+                    }
+                } else {
+                    Release_Playing_Audio(*it);
+                    it = m_positionalAudioList.erase(it);
+                }
+            }
+        } else {
+            it = m_positionalAudioList.erase(it);
+        }
+    }
+
     for (auto it = m_streamList.begin(); it != m_streamList.end();) {
         if (*it != nullptr) {
             if ((*it)->openal.stopped == 1) {
@@ -1411,20 +1131,19 @@ void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
     if (audio->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SOUND) {
         switch (audio->openal.playing_type) {
             case PAT_2DSAMPLE:
-                m_soundManager->Notify_Of_2D_Sample_Completion();
+                if(m_soundManager)
+                    m_soundManager->Notify_Of_2D_Sample_Completion();
                 break;
             case PAT_3DSAMPLE:
-                m_soundManager->Notify_Of_3D_Sample_Completion();
+                if(m_soundManager)
+                    m_soundManager->Notify_Of_3D_Sample_Completion();
                 break;
             default:
                 break;
         }
     }
 
-    if (audio->openal.buffer)
-        alDeleteBuffers(1, &audio->openal.buffer);
-    if (audio->openal.source)
-        alDeleteSources(1, &audio->openal.source);
+    Release_OpenAL_Handles(audio);
     Close_File(audio->openal.file_handle);
 
     if (audio->openal.release_event) {
@@ -1432,6 +1151,31 @@ void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
     }
 
     delete audio;
+}
+
+/**
+ * Stops the playing audio sample.
+ */
+void ALAudioManager::Release_OpenAL_Handles(PlayingAudio *audio)
+{
+    if (audio->openal.buffer)
+        alDeleteBuffers(1, &audio->openal.buffer);
+    if (audio->openal.source)
+        alDeleteSources(1, &audio->openal.source);
+
+    audio->openal.playing_type = PAT_NONE;
+}
+
+/**
+ * Frees memory holding audio samples.
+ */
+void ALAudioManager::Free_All_OpenAL_Handles()
+{
+    Stop_All_Audio_Immediately();
+
+    m_2dSampleCount = 0;
+    m_3dSampleCount = 0;
+    m_streamCount = 0;
 }
 
 /**
@@ -1475,24 +1219,6 @@ void ALAudioManager::Play_Stream(AudioEventRTS *event, ALuint source)
 
     // TODO: stream file
     alSourcePlay(source);
-}
-
-/**
- * Utility method to get the OpenAL format.
- */
-ALenum ALAudioManager::Get_AL_Format(uint8_t channels, uint8_t bits_per_sample)
-{
-    if (channels == 1 && bits_per_sample == 8)
-        return AL_FORMAT_MONO8;
-    if (channels == 1 && bits_per_sample == 16)
-        return AL_FORMAT_MONO16;
-    if (channels == 2 && bits_per_sample == 8)
-        return AL_FORMAT_STEREO8;
-    if (channels == 2 && bits_per_sample == 16)
-        return AL_FORMAT_STEREO16;
-
-    captainslog_warn("Unknown OpenAL format: %i channels, %i bits per sample", channels, bits_per_sample);
-    return AL_FORMAT_MONO8;
 }
 
 /**
@@ -1547,30 +1273,11 @@ AudioDataHandle ALAudioManager::Play_Sample(AudioEventRTS *event, PlayingAudio *
 }
 
 /**
- * Stops all speech playing audio.
- */
-void ALAudioManager::Stop_All_Speech()
-{
-    auto it = m_streamList.begin();
-
-    while (it != m_streamList.end()) {
-        if (*it != nullptr) {
-            if ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
-                Release_Playing_Audio(*it);
-                it = m_streamList.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    }
-}
-
-/**
  * Attempts to start another loop of a playing audio file, return indicates success.
  */
 bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
 {
-    // Close_File(audio->openal.file_handle);
+    Close_File(audio->openal.file_handle);
     audio->openal.file_handle = nullptr;
 
     if (audio->openal.disable_loops || !audio->openal.audio_event->Has_More_Loops()) {
@@ -1579,7 +1286,7 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
 
     audio->openal.audio_event->Generate_Filename();
 
-    if (audio->openal.audio_event->Get_Delay() > 33.333333f) {
+    if (audio->openal.audio_event->Get_Delay() > MSEC_PER_LOGICFRAME_REAL) {
         audio->openal.release_event = false;
         audio->openal.disable_loops = true;
         audio->openal.stopped = 1;
@@ -1598,6 +1305,252 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
     }
 
     return audio->openal.file_handle != nullptr;
+}
+
+
+/**
+ * Plays an audio event.
+ */
+void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
+{
+    const AudioEventInfo *aud_info = event->Get_Event_Info();
+
+    if (aud_info == nullptr) {
+        return;
+    }
+
+    uintptr_t kill_handle = event->Get_Handle_To_Kill();
+    ALuint source_handle = 0;
+    Utf8String name = event->Get_File_Name();
+    PlayingAudio *pa = new PlayingAudio;
+    Init_Playing_Audio(pa);
+    pa->openal.stopped = false;
+
+    switch (aud_info->Get_Event_Type()) {
+        case EVENT_SPEECH:
+            if (event->Should_Play_Locally()) {
+                Stop_All_Speech();
+            }
+            // Fallthrough
+        case EVENT_MUSIC: {
+            float volume = 1.0f;
+
+            if (aud_info->Get_Event_Type() == EVENT_SPEECH) {
+                volume = m_speechVolume;
+            } else {
+                volume = m_musicVolume;
+            }
+
+            volume *= event->Get_Volume();
+            bool killed = false;
+
+            if (kill_handle != 0) {
+                for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+                    if (*it != nullptr && (*it)->openal.audio_event != nullptr
+                        && (*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
+                        Release_Playing_Audio(*it);
+                        m_streamList.erase(it);
+                        killed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (kill_handle != 0 && !killed) {
+                source_handle = 0;
+            } else {
+                alGenSources(1, &source_handle);
+            }
+
+            pa->openal.audio_event = event;
+            pa->openal.source = source_handle;
+            pa->openal.playing_type = PAT_STREAM;
+
+            if (source_handle != 0) {
+                if (aud_info->Get_Event_Type() == EVENT_SPEECH && event->Should_Play_Locally()) {
+                    m_unkSpeech = true;
+                }
+
+                Play_Stream(event, source_handle);
+                m_streamList.push_back(pa);
+                pa = nullptr;
+            }
+            break;
+        }
+        case EVENT_SOUND:
+            if (event->Is_Positional_Audio()) {
+                bool killed = false;
+
+                if (kill_handle != 0) {
+                    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
+                        if ((*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
+                            Release_Playing_Audio(*it);
+                            m_positionalAudioList.erase(it);
+                            killed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (kill_handle != 0 && !killed) {
+                    source_handle = 0;
+                } else {
+                    alGenSources(1, &source_handle);
+                }
+
+                pa->openal.audio_event = event;
+                pa->openal.source = source_handle;
+                pa->openal.playing_type = PAT_3DSAMPLE;
+                pa->openal.file_handle = nullptr;
+                m_positionalAudioList.push_back(pa);
+
+                if (source_handle != 0) {
+                    pa->openal.file_handle = Play_Sample3D(event, pa);
+                    m_soundManager->Notify_Of_3D_Sample_Start();
+                }
+
+                if (pa->openal.file_handle == nullptr) {
+                    m_positionalAudioList.pop_back();
+                } else {
+                    pa = nullptr;
+                }
+            } else {
+                bool killed = false;
+
+                if (kill_handle != 0) {
+                    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
+                        if ((*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
+                            Release_Playing_Audio(*it);
+                            m_globalAudioList.erase(it);
+                            killed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (kill_handle != 0 && !killed) {
+                    source_handle = 0;
+                } else {
+                    alGenSources(1, &source_handle);
+                    captainslog_dbgassert(Check_AL_Error(), "Failed to generate source");
+                }
+
+                pa->openal.audio_event = event;
+                pa->openal.source = source_handle;
+                pa->openal.playing_type = PAT_2DSAMPLE;
+                pa->openal.file_handle = nullptr;
+                m_globalAudioList.push_back(pa);
+
+                if (source_handle != 0) {
+                    pa->openal.file_handle = Play_Sample(event, pa);
+                    if(m_soundManager)
+                        m_soundManager->Notify_Of_2D_Sample_Start();
+                }
+
+                if (pa->openal.file_handle == nullptr) {
+                    m_globalAudioList.pop_back();
+                } else {
+                    pa = nullptr;
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    if (pa != nullptr) {
+        Release_Playing_Audio(pa);
+    }
+}
+
+/**
+ * Pauses an audio event from a handle.
+ */
+void ALAudioManager::Pause_Audio_Event(uintptr_t handle)
+{
+    // Unimplemented
+}
+
+/**
+ * Stops an audio event from a handle.
+ */
+void ALAudioManager::Stop_Audio_Event(uintptr_t handle)
+{
+    if (handle == 4 || handle == 5) {
+        for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+            if ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+                if (handle == 5) {
+                    m_fadingList.push_back(*it);
+                } else {
+                    Release_Playing_Audio(*it);
+                }
+
+                m_streamList.erase(it);
+                break;
+            }
+        }
+    }
+
+    for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
+            (*it)->openal.disable_loops = true;
+            Notify_Of_Audio_Completion((uintptr_t)(*it)->openal.source, 2);
+            break;
+        }
+    }
+
+    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
+            (*it)->openal.disable_loops = true;
+            break;
+        }
+    }
+
+    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
+            (*it)->openal.disable_loops = true;
+            break;
+        }
+    }
+}
+
+/**
+ * Process an audio request.
+ */
+void ALAudioManager::Process_Request(AudioRequest *request)
+{
+    switch (request->m_requestType) {
+        case AR_PLAY:
+            Play_Audio_Event(request->m_event.object);
+            break;
+        case AR_PAUSE:
+            Pause_Audio_Event(request->m_event.handle);
+            break;
+        case AR_STOP:
+            Stop_Audio_Event(request->m_event.handle);
+            break;
+        default:
+            break;
+    }
+}
+
+/**
+ * Stops all speech playing audio.
+ */
+void ALAudioManager::Stop_All_Speech()
+{
+    auto it = m_streamList.begin();
+
+    while (it != m_streamList.end()) {
+        if (*it != nullptr) {
+            if ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
+                Release_Playing_Audio(*it);
+                it = m_streamList.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
 }
 
 /**
@@ -1630,6 +1583,82 @@ void ALAudioManager::Adjust_Playing_Volume(PlayingAudio *audio)
 }
 
 /**
+ * Gets the effective volume of the event.s
+ */
+float ALAudioManager::Get_Effective_Volume(AudioEventRTS *event) const
+{
+    float vol = event->Get_Volume() * event->Get_Volume_Shift() * 1.0f;
+
+    // Handle easy cases for none positional stuff.
+    if (event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+        return vol * m_musicVolume;
+    } else if (event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
+        return vol * m_speechVolume;
+    } else if (!event->Is_Positional_Audio()) {
+        return vol * m_soundVolume;
+    }
+
+    // Coord3D being used as Vector3 essentially here.
+    Coord3D *event_pos = event->Get_Current_Pos();
+    Coord3D difference = m_listenerPosition;
+    vol *= m_3dSoundVolume;
+
+    if (event_pos == nullptr) {
+        return vol;
+    }
+
+    // Get a vector representing the difference between listerner and sound.
+    difference.Sub(event_pos);
+    float min_dist;
+    float max_dist;
+
+    if (event->Get_Event_Info()->Get_Visibility() & VISIBILITY_GLOBAL) {
+        min_dist = Get_Audio_Settings()->Global_Min_Range();
+        max_dist = Get_Audio_Settings()->Global_Max_Range();
+    } else {
+        min_dist = event->Get_Event_Info()->Min_Range();
+        max_dist = event->Get_Event_Info()->Max_Range();
+    }
+
+    // Calculate distance from our vector between source and listener.
+    float dist = difference.Length();
+
+    // Based on distance and range limits, calculate volume.
+    if (dist > min_dist) {
+        vol *= 1.0f / (float)(dist / min_dist);
+    }
+
+    if (dist >= max_dist) {
+        vol = 0.0f;
+    }
+
+    return vol;
+}
+
+
+/**
+ * Utility method to get the OpenAL format.
+ */
+ALenum ALAudioManager::Get_AL_Format(uint8_t channels, uint8_t bits_per_sample)
+{
+    if (channels == 1 && bits_per_sample == 8)
+        return AL_FORMAT_MONO8;
+    if (channels == 1 && bits_per_sample == 16)
+        return AL_FORMAT_MONO16;
+    if (channels == 2 && bits_per_sample == 8)
+        return AL_FORMAT_STEREO8;
+    if (channels == 2 && bits_per_sample == 16)
+        return AL_FORMAT_STEREO16;
+
+    captainslog_warn("Unknown OpenAL format: %i channels, %i bits per sample", channels, bits_per_sample);
+    return AL_FORMAT_MONO8;
+}
+
+
+
+
+
+/**
  * Gets the position the event is supposed to play at currently.
  */
 Coord3D *ALAudioManager::Get_Current_Position_From_Event(AudioEventRTS *event)
@@ -1656,4 +1685,113 @@ void ALAudioManager::Init_Playing_Audio(PlayingAudio *audio)
         audio->openal.time_fading = 0;
     }
 }
+
+/**
+ * Check if a request should be processed this frame.
+ *
+ * Inlined.
+ */
+bool ALAudioManager::Process_Request_This_Frame(AudioRequest *request)
+{
+    if (request->m_isAdding) {
+        return request->m_event.object->Get_Delay() < MSEC_PER_LOGICFRAME_REAL;
+    }
+
+    return true;
+}
+
+/**
+ * Reduced the delay until this request should be played by one frame.
+ *
+ * Inlined.
+ */
+void ALAudioManager::Adjust_Request(AudioRequest *request)
+{
+    if (request->m_isAdding) {
+        request->m_event.object->Decrement_Delay(MSEC_PER_LOGICFRAME_REAL);
+        request->m_isProcessed = true;
+    }
+}
+
+/**
+ * Checks the status of a request to determine if it should be processed.
+ *
+ * Inlined.
+ */
+bool ALAudioManager::Check_For_Sample(AudioRequest *request)
+{
+    if (request->m_isAdding) {
+        return true;
+    }
+
+    // If the object doesn't have info, try and retrieve it.
+    if (request->m_event.object->Get_Event_Info() == nullptr) {
+        Get_Info_For_Audio_Event(request->m_event.object);
+    }
+
+    if (request->m_event.object->Get_Event_Info()->Get_Visibility() == VISIBILITY_WORLD) {
+        return m_soundManager->Can_Play_Now(request->m_event.object);
+    }
+
+    return true;
+}
+
+/**
+ * Check for OpenAL errors
+ */
+bool ALAudioManager::Check_AL_Error()
+{
+    ALenum error_code = alGetError();
+    if (error_code != 0) {
+        auto error_msg = alGetString(error_code);
+        captainslog_error("OpenAL error: %s", error_msg);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Check for OpenAL errors
+ */
+bool ALAudioManager::Check_ALC_Error()
+{
+    ALCenum error_code = alcGetError(m_alcDevice);
+    if (error_code != 0) {
+        auto error_msg = alcGetString(m_alcDevice, error_code);
+        captainslog_error("ALC error: %s", error_msg);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Fill list of all supported devices
+ */
+void ALAudioManager::Enumerate_Devices()
+{
+    const ALCchar *devices = NULL;
+    if (alcIsExtensionPresent(NULL, "ALC_ENUMERATE_ALL_EXT") == AL_TRUE) {
+        devices = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+        if ((devices == nullptr || *devices == '\0') && alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT") == AL_TRUE) {
+            devices = alcGetString(NULL, ALC_DEVICE_SPECIFIER);
+        }
+    }
+
+    if (devices == nullptr) {
+        captainslog_warn("Enumerating OpenAL devices is not supported");
+        return;
+    }
+
+    const ALCchar *device = devices;
+    const ALCchar *next = devices + 1;
+    size_t len = 0;
+    size_t idx = 0;
+    while (device && *device != '\0' && next && *next != '\0' && idx < AL_MAX_PLAYBACK_DEVICES) {
+        m_alDevicesList[idx++] = device;
+        len = strlen(device);
+        device += (len + 1);
+        next += (len + 2);
+    }
+}
+
 } // namespace Thyme

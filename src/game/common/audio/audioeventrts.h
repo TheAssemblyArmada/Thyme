@@ -34,6 +34,7 @@ public:
     AudioEventRTS &operator=(const AudioEventRTS &that);
 
     void Generate_Filename();
+    void Apply_Filename_From_Info();
     void Generate_Play_Info();
     void Decrease_Loop_Count();
     void Advance_Next_Play_Portion();

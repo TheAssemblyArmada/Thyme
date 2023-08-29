@@ -78,7 +78,7 @@ public:
     // Wave helpers
     static void Fill_Wave_Data(FFmpegOpenAudioFile *open_audio);
     static void Get_Wave_Data(AudioDataHandle wave_data,
-        uint8_t *data,
+        uint8_t *&data,
         uint32_t &size,
         uint32_t &freq,
         uint8_t &channels,

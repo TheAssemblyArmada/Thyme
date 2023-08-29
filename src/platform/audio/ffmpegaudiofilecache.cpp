@@ -263,7 +263,7 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
  * Parse wave data and return the parameters
  */
 void FFmpegAudioFileCache::Get_Wave_Data(
-    AudioDataHandle wave_data, uint8_t *data, uint32_t &size, uint32_t &freq, uint8_t &channels, uint8_t &bits_per_sample)
+    AudioDataHandle wave_data, uint8_t *&data, uint32_t &size, uint32_t &freq, uint8_t &channels, uint8_t &bits_per_sample)
 {
     WavHeader *header = reinterpret_cast<WavHeader *>(wave_data);
     data = static_cast<uint8_t *>(wave_data) + sizeof(WavHeader);

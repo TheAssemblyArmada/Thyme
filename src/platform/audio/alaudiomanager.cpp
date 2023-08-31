@@ -23,14 +23,15 @@
 namespace Thyme
 {
 ALAudioManager::ALAudioManager() :
-    m_2dSampleCount(0),
-    m_3dSampleCount(0),
-    m_streamCount(0),
+    m_alMaxDevicesIndex(0),
+    m_speakerType(0),
 #ifdef BUILD_WITH_FFMPEG
     m_audioFileCache(new FFmpegAudioFileCache),
 #endif
     m_binkPlayingAudio(nullptr),
-    m_speakerType(0)
+    m_2dSampleCount(0),
+    m_3dSampleCount(0),
+    m_streamCount(0)
 {
 }
 
@@ -407,7 +408,7 @@ void ALAudioManager::Close_Device()
 {
     Unselect_Provider();
 
-    alcMakeContextCurrent(NULL);
+    alcMakeContextCurrent(nullptr);
 
     if (m_alcContext)
         alcDestroyContext(m_alcContext);
@@ -956,7 +957,7 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
     switch (type) {
         case PAT_2DSAMPLE:
             for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
-                if (*it != nullptr && (*it)->openal.source == (int)handle) {
+                if (*it != nullptr && (*it)->openal.source == (ALuint)handle) {
                     return *it;
                 }
             }
@@ -964,7 +965,7 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
             break;
         case PAT_3DSAMPLE:
             for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
-                if (*it != nullptr && (*it)->openal.source == (int)handle) {
+                if (*it != nullptr && (*it)->openal.source == (ALuint)handle) {
                     return *it;
                 }
             }
@@ -972,7 +973,7 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
             break;
         case PAT_STREAM:
             for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
-                if (*it != nullptr && (*it)->openal.source == (int)handle) {
+                if (*it != nullptr && (*it)->openal.source == (ALuint)handle) {
                     return *it;
                 }
             }
@@ -1794,6 +1795,8 @@ void ALAudioManager::Enumerate_Devices()
         device += (len + 1);
         next += (len + 2);
     }
+
+    m_alMaxDevicesIndex = idx;
 }
 
 } // namespace Thyme

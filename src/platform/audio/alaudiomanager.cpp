@@ -53,7 +53,7 @@ void ALAudioManager::Init()
 #if BUILD_WITH_FFMPEG
     m_audioFileCache->Set_Max_Size(m_audioSettings->Get_Audio_Footprint());
 #endif
-    alDistanceModel(AL_LINEAR_DISTANCE_CLAMPED);
+    alDistanceModel(AL_INVERSE_DISTANCE_CLAMPED);
 }
 
 /**

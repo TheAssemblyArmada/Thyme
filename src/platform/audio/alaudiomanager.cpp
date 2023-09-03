@@ -142,7 +142,9 @@ void ALAudioManager::Pause_Audio(AudioAffect affect)
     if (affect & (AUDIOAFFECT_MUSIC | AUDIOAFFECT_SPEECH)) {
         for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
             if (*it != nullptr) {
-                if (affect & AUDIOAFFECT_MUSIC) {
+                if ((affect & AUDIOAFFECT_MUSIC)
+                    || ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
+                        && (affect & AUDIOAFFECT_SPEECH))) {
                     alSourcePause((*it)->openal.source);
                 }
             }
@@ -183,7 +185,11 @@ void ALAudioManager::Resume_Audio(AudioAffect affect)
     if (affect & (AUDIOAFFECT_MUSIC | AUDIOAFFECT_SPEECH)) {
         for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
             if (*it != nullptr) {
-                alSourcePlay((*it)->openal.source);
+                if ((affect & AUDIOAFFECT_MUSIC)
+                    || ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
+                        && (affect & AUDIOAFFECT_SPEECH))) {
+                    alSourcePlay((*it)->openal.source);
+                }
             }
         }
     }
@@ -447,7 +453,7 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned type)
             switch (playing->openal.playing_type) {
                 case PAT_2DSAMPLE:
                     Close_File(playing->openal.file_handle);
-                    playing->openal.file_handle = Play_Sample(playing->openal.audio_event, playing);
+                    playing->openal.file_handle = Play_Sample2D(playing->openal.audio_event, playing);
 
                     if (playing->openal.file_handle != nullptr) {
                         return;
@@ -827,6 +833,33 @@ void ALAudioManager::Release_Bink_Handle()
  */
 void ALAudioManager::friend_Force_Play_Audio_Event(AudioEventRTS *event)
 {
+    if (event->Get_Event_Info() == nullptr) {
+        Get_Info_For_Audio_Event(event);
+        if (event->Get_Event_Info() == nullptr) {
+            captainslog_warn("No info for forced audio event '%s'", event->Get_Event_Name().Str());
+            return;
+        }
+    }
+    switch (event->Get_Event_Info()->Get_Event_Type()) {
+        case EVENT_MUSIC:
+            if (!Is_On(AUDIOAFFECT_MUSIC)) {
+                return;
+            }
+            break;
+        case EVENT_SPEECH:
+            if (!Is_On(AUDIOAFFECT_SPEECH)) {
+                return;
+            }
+            break;
+        case EVENT_SOUND:
+            if (!Is_On(AUDIOAFFECT_SOUND) || !Is_On(AUDIOAFFECT_3DSOUND)) {
+                return;
+            }
+            break;
+        default:
+            break;
+    }
+
     captainslog_warn("ALAudioManager just forwards Force_Play_Audio_Event to regular Play_Audio_Event");
     Play_Audio_Event(event);
 }
@@ -1224,7 +1257,7 @@ void ALAudioManager::Play_Stream(AudioEventRTS *event, ALuint source)
 }
 
 /**
- * Loads a file an attached it to an OpenAL source. Returns a pointer to the file data.
+ * Loads a file and attach it to an OpenAL source. Returns a pointer to the file data.
  */
 AudioDataHandle ALAudioManager::Play_Sample3D(AudioEventRTS *event, PlayingAudio *audio)
 {
@@ -1253,7 +1286,23 @@ AudioDataHandle ALAudioManager::Play_Sample3D(AudioEventRTS *event, PlayingAudio
 }
 
 /**
- * Loads a file an attached it to an OpenAL source. Returns a pointer to the file data.
+ * Loads a file and attach it to an OpenAL source. Returns a pointer to the file data.
+ */
+AudioDataHandle ALAudioManager::Play_Sample2D(AudioEventRTS *event, PlayingAudio *audio)
+{
+    // We can just reuse our existing function
+    AudioDataHandle handle = Play_Sample(event, audio);
+
+    if (handle != nullptr) {
+        auto openal = audio->openal;
+        alSourcei(openal.source, AL_SOURCE_RELATIVE, AL_TRUE);
+        alSource3f(openal.source, AL_POSITION, 0.0f, 0.0f, 0.0f);
+    }
+    return handle;
+}
+
+/**
+ * Loads a file and attach it to an OpenAL source. Returns a pointer to the file data.
  */
 AudioDataHandle ALAudioManager::Play_Sample(AudioEventRTS *event, PlayingAudio *audio)
 {
@@ -1310,7 +1359,7 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
     if (audio->openal.playing_type == PAT_3DSAMPLE) {
         audio->openal.file_handle = Play_Sample3D(audio->openal.audio_event, audio);
     } else {
-        audio->openal.file_handle = Play_Sample(audio->openal.audio_event, audio);
+        audio->openal.file_handle = Play_Sample2D(audio->openal.audio_event, audio);
     }
 
     return audio->openal.file_handle != nullptr;
@@ -1450,7 +1499,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
                 m_globalAudioList.push_back(pa);
 
                 if (source_handle != 0) {
-                    pa->openal.file_handle = Play_Sample(event, pa);
+                    pa->openal.file_handle = Play_Sample2D(event, pa);
                     if (m_soundManager)
                         m_soundManager->Notify_Of_2D_Sample_Start();
                 }

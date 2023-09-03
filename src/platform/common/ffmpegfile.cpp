@@ -55,16 +55,16 @@ bool FFmpegFile::Open(File *file)
         return false;
     }
 
-    size_t avio_ctx_buffer_size = 0x10000;
+    constexpr size_t avio_ctx_buffer_size = 0x10000;
     uint8_t *buffer = static_cast<uint8_t *>(av_malloc(avio_ctx_buffer_size));
-    if (!buffer) {
+    if (buffer == nullptr) {
         captainslog_error("Failed to alloc AVIOContextBuffer");
         Close();
         return false;
     }
 
     m_avio_ctx = avio_alloc_context(buffer, avio_ctx_buffer_size, 0, file, &Read_Packet, nullptr, nullptr);
-    if (!m_avio_ctx) {
+    if (m_avio_ctx == nullptr) {
         captainslog_error("Failed to alloc AVIOContext");
         Close();
         return false;
@@ -95,7 +95,7 @@ bool FFmpegFile::Open(File *file)
     m_streams.resize(m_fmt_ctx->nb_streams);
     for (unsigned int stream_idx = 0; stream_idx < m_fmt_ctx->nb_streams; stream_idx++) {
         const AVCodec *input_codec = avcodec_find_decoder(m_fmt_ctx->streams[stream_idx]->codecpar->codec_id);
-        if (!input_codec) {
+        if (input_codec == nullptr) {
             captainslog_error(
                 "Codec not supported: '%s'", avcodec_get_name(m_fmt_ctx->streams[stream_idx]->codecpar->codec_id));
             Close();
@@ -103,7 +103,7 @@ bool FFmpegFile::Open(File *file)
         }
 
         AVCodecContext *codec_ctx = avcodec_alloc_context3(input_codec);
-        if (!codec_ctx) {
+        if (codec_ctx == nullptr) {
             captainslog_error("Could not allocate codec context");
             Close();
             return false;
@@ -159,30 +159,31 @@ int FFmpegFile::Read_Packet(void *opaque, uint8_t *buf, int buf_size)
  */
 void FFmpegFile::Close()
 {
-    if (m_fmt_ctx) {
+    if (m_fmt_ctx != nullptr) {
         avformat_close_input(&m_fmt_ctx);
     }
 
     for (auto &stream : m_streams) {
-        if (stream.codec_ctx) {
+        if (stream.codec_ctx != nullptr) {
             avcodec_free_context(&stream.codec_ctx);
             av_frame_free(&stream.frame);
         }
     }
+    m_streams.clear();
 
-    if (m_avio_ctx && m_avio_ctx->buffer) {
+    if (m_avio_ctx != nullptr && m_avio_ctx->buffer != nullptr) {
         av_freep(&m_avio_ctx->buffer);
     }
 
-    if (m_avio_ctx) {
+    if (m_avio_ctx != nullptr) {
         avio_context_free(&m_avio_ctx);
     }
 
-    if (m_packet) {
+    if (m_packet != nullptr) {
         av_packet_free(&m_packet);
     }
 
-    if (m_file) {
+    if (m_file != nullptr) {
         m_file->Close();
         m_file = nullptr;
     }
@@ -190,11 +191,16 @@ void FFmpegFile::Close()
 
 bool FFmpegFile::Decode_Packet()
 {
+    captainslog_assert(m_fmt_ctx != nullptr);
+    captainslog_assert(m_packet != nullptr);
+
     int result = av_read_frame(m_fmt_ctx, m_packet);
     if (result == AVERROR_EOF) // EOF
         return false;
 
-    int stream_idx = m_packet->stream_index;
+    const int stream_idx = m_packet->stream_index;
+    captainslog_assert(m_streams.size() > stream_idx);
+
     auto &stream = m_streams[stream_idx];
     AVCodecContext *codec_ctx = stream.codec_ctx;
     result = avcodec_send_packet(codec_ctx, m_packet);
@@ -224,14 +230,29 @@ bool FFmpegFile::Decode_Packet()
         return false;
     }
 
-    if (m_frame_callback) {
+    if (m_frame_callback != nullptr) {
         m_frame_callback(stream.frame, stream_idx, stream.stream_type, m_user_data);
     }
 
     return true;
 }
 
-FFmpegFile::FFmpegStream *FFmpegFile::Find_Match(int type)
+void FFmpegFile::Seek_Frame(int frame_idx)
+{
+    // Note: not tested, since not used ingame
+    for (auto &stream : m_streams) {
+        int64_t timestamp = av_q2d(m_fmt_ctx->streams[stream.stream_idx]->time_base) * frame_idx
+            * av_q2d(m_fmt_ctx->streams[stream.stream_idx]->avg_frame_rate);
+        int result = av_seek_frame(m_fmt_ctx, stream.stream_idx, timestamp, AVSEEK_FLAG_ANY);
+        if (result < 0) {
+            char error_buffer[1024];
+            av_strerror(result, error_buffer, sizeof(error_buffer));
+            captainslog_error("Failed 'av_seek_frame': %s", error_buffer);
+        }
+    }
+}
+
+const FFmpegFile::FFmpegStream *FFmpegFile::Find_Match(int type) const
 {
     for (auto &candidate : m_streams) {
         if (candidate.stream_type == type)
@@ -241,81 +262,81 @@ FFmpegFile::FFmpegStream *FFmpegFile::Find_Match(int type)
     return nullptr;
 }
 
-int FFmpegFile::Get_Num_Channels()
+int FFmpegFile::Get_Num_Channels() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
-    if (!stream)
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (stream == nullptr)
         return 0;
 
     return stream->codec_ctx->channels;
 }
 
-int FFmpegFile::Get_Sample_Rate()
+int FFmpegFile::Get_Sample_Rate() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
-    if (!stream)
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (stream == nullptr)
         return 0;
 
     return stream->codec_ctx->sample_rate;
 }
 
-int FFmpegFile::Get_Bytes_Per_Sample()
+int FFmpegFile::Get_Bytes_Per_Sample() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
-    if (!stream)
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (stream == nullptr)
         return 0;
 
     return av_get_bytes_per_sample(stream->codec_ctx->sample_fmt);
 }
 
-int FFmpegFile::Get_Size_For_Samples(int numSamples)
+int FFmpegFile::Get_Size_For_Samples(int numSamples) const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
-    if (!stream)
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    if (stream == nullptr)
         return 0;
 
     return av_samples_get_buffer_size(NULL, stream->codec_ctx->channels, numSamples, stream->codec_ctx->sample_fmt, 1);
 }
 
-int FFmpegFile::Get_Height()
+int FFmpegFile::Get_Height() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
-    if (!stream)
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (stream == nullptr)
         return 0;
 
     return stream->codec_ctx->height;
 }
 
-int FFmpegFile::Get_Width()
+int FFmpegFile::Get_Width() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
-    if (!stream)
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (stream == nullptr)
         return 0;
 
     return stream->codec_ctx->width;
 }
 
-int FFmpegFile::Get_Num_Frames()
+int FFmpegFile::Get_Num_Frames() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
-    if (!m_fmt_ctx || !stream || !m_fmt_ctx->streams[stream->stream_idx])
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (m_fmt_ctx == nullptr || stream == nullptr || m_fmt_ctx->streams[stream->stream_idx] == nullptr)
         return 0;
 
     return (m_fmt_ctx->duration / (double)AV_TIME_BASE) * av_q2d(m_fmt_ctx->streams[stream->stream_idx]->avg_frame_rate);
 }
 
-int FFmpegFile::Get_Current_Frame()
+int FFmpegFile::Get_Current_Frame() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
-    if (!m_fmt_ctx || !stream || !stream->frame || (stream->frame->format == -1))
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (m_fmt_ctx == nullptr || stream == nullptr || stream->frame == nullptr || (stream->frame->format == AV_PIX_FMT_NONE))
         return 0;
     return stream->codec_ctx->frame_number;
 }
 
-int FFmpegFile::Get_Pixel_Format()
+int FFmpegFile::Get_Pixel_Format() const
 {
-    FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
-    if (!stream)
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (stream = nullptr)
         return AV_PIX_FMT_NONE;
 
     return stream->codec_ctx->pix_fmt;

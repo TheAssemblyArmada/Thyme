@@ -41,19 +41,20 @@ public:
     void Set_User_Data(void *user_data) { m_user_data = user_data; }
     // Read & decode a packet from the container. Note that we could/should split this step
     bool Decode_Packet();
+    void Seek_Frame(int frame_idx);
 
     // Audio specific
-    int Get_Size_For_Samples(int numSamples);
-    int Get_Num_Channels();
-    int Get_Sample_Rate();
-    int Get_Bytes_Per_Sample();
+    int Get_Size_For_Samples(int numSamples) const;
+    int Get_Num_Channels() const;
+    int Get_Sample_Rate() const;
+    int Get_Bytes_Per_Sample() const;
 
     // Video specific
-    int Get_Width();
-    int Get_Height();
-    int Get_Num_Frames();
-    int Get_Current_Frame();
-    int Get_Pixel_Format();
+    int Get_Width() const;
+    int Get_Height() const;
+    int Get_Num_Frames() const;
+    int Get_Current_Frame() const;
+    int Get_Pixel_Format() const;
 
 private:
     struct FFmpegStream
@@ -66,7 +67,7 @@ private:
     };
 
     static int Read_Packet(void *opaque, uint8_t *buf, int buf_size);
-    FFmpegStream *Find_Match(int type);
+    const FFmpegStream *Find_Match(int type) const;
 
     FFmpegFrameCallback m_frame_callback = nullptr;
     AVFormatContext *m_fmt_ctx = nullptr;

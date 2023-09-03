@@ -67,10 +67,11 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             return;
         }
 
-        int frame_data_size = file->ffmpeg_file->Get_Size_For_Samples(frame->nb_samples);
+        const int frame_data_size = file->ffmpeg_file->Get_Size_For_Samples(frame->nb_samples);
         file->wave_data = static_cast<uint8_t *>(av_realloc(file->wave_data, file->data_size + frame_data_size));
         memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
         file->data_size += frame_data_size;
+        file->total_samples += frame->nb_samples;
     };
 
     file->ffmpeg_file->Set_Frame_Callback(on_frame);
@@ -80,35 +81,10 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
     while (file->ffmpeg_file->Decode_Packet()) {
     }
 
-    av_packet_free(&packet);
-    av_frame_free(&frame);
-
     // Calculate the duration in MS
-    file->duration = (total_samples / (float)file->codec_ctx->sample_rate) * 1000.0f;
+    file->duration = (file->total_samples / (float)file->ffmpeg_file->Get_Sample_Rate()) * 1000.0f;
 
     return true;
-}
-
-/**
- * Close all the open FFmpeg handles for an open file.
- */
-void FFmpegAudioFileCache::Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio)
-{
-    if (open_audio->fmt_ctx) {
-        avformat_close_input(&open_audio->fmt_ctx);
-    }
-
-    if (open_audio->codec_ctx) {
-        avcodec_free_context(&open_audio->codec_ctx);
-    }
-
-    if (open_audio->avio_ctx->buffer) {
-        av_freep(&open_audio->avio_ctx->buffer);
-    }
-
-    if (open_audio->avio_ctx) {
-        avio_context_free(&open_audio->avio_ctx);
-    }
 }
 
 /**
@@ -120,7 +96,7 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
     wav.chunk_size = open_audio->data_size - (offsetof(WavHeader, chunk_size) + sizeof(uint32_t));
     wav.subchunk2_size = open_audio->data_size - (offsetof(WavHeader, subchunk2_size) + sizeof(uint32_t));
     wav.channels = open_audio->ffmpeg_file->Get_Num_Channels();
-    wav.bits_per_sample = open_audio->ffmpeg_file->Get_Bytes_Per_Sample();
+    wav.bits_per_sample = open_audio->ffmpeg_file->Get_Bytes_Per_Sample() * 8;
     wav.samples_per_sec = open_audio->ffmpeg_file->Get_Sample_Rate();
     wav.bytes_per_sec = open_audio->ffmpeg_file->Get_Sample_Rate() * open_audio->ffmpeg_file->Get_Num_Channels()
         * open_audio->ffmpeg_file->Get_Bytes_Per_Sample();

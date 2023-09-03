@@ -18,7 +18,7 @@
 namespace Thyme
 {
 
-SWVideoBuffer::SWVideoBuffer(Type type) : VideoBuffer(type), m_data(nullptr), m_locked(false) {}
+SWVideoBuffer::SWVideoBuffer(Type type) : VideoBuffer(type), m_locked(false), m_data(nullptr) {}
 
 SWVideoBuffer::~SWVideoBuffer()
 {
@@ -27,29 +27,26 @@ SWVideoBuffer::~SWVideoBuffer()
 
 bool SWVideoBuffer::Allocate(unsigned width, unsigned height)
 {
+    if (m_format != VideoBuffer::TYPE_X8R8G8B8 && m_format != VideoBuffer::TYPE_R8G8B8) {
+        return false;
+    }
+
     Free();
     m_width = width;
     m_height = height;
     m_textureWidth = width;
     m_textureHeight = height;
 
-    if (m_format != VideoBuffer::TYPE_X8R8G8B8 && m_format != VideoBuffer::TYPE_R8G8B8) {
-        return false;
-    }
-
     int bytes_per_pixel = (m_format == VideoBuffer::TYPE_X8R8G8B8) ? 4 : 3;
     m_pitch = bytes_per_pixel * m_width;
-    m_data = new uint8_t[m_pitch * m_height];
-    std::memset(m_data, 0, m_pitch * m_height);
+    m_data = new uint8_t[m_pitch * m_height]();
     return true;
 }
 
 void SWVideoBuffer::Free()
 {
-    if (m_data != nullptr) {
-        delete[] m_data;
-        m_data = nullptr;
-    }
+    delete[] m_data;
+    m_data = nullptr;
     VideoBuffer::Free();
 }
 

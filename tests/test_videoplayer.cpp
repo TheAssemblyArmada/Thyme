@@ -38,12 +38,11 @@ TEST(video, ffmpegvideoplayer)
     EXPECT_EQ(stream->Height(), 120);
     EXPECT_EQ(stream->Width(), 96);
 
-    int idx = stream->Frame_Index();
-    int count = stream->Frame_Count();
+    const int count = stream->Frame_Count();
     VideoBuffer *buffer = new Thyme::SWVideoBuffer(W3DVideoBuffer::TYPE_X8R8G8B8);
     ASSERT_TRUE(buffer->Allocate(stream->Width(), stream->Height()));
-    while (idx < count) {
-        EXPECT_EQ(stream->Frame_Index(), idx++);
+    for (int idx = stream->Frame_Index(); idx < count; ++idx) {
+        EXPECT_EQ(stream->Frame_Index(), idx);
         stream->Render_Frame(buffer);
         stream->Next_Frame();
     }

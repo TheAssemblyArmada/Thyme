@@ -14,6 +14,7 @@ namespace Thyme
 
 FFmpegVideoStream::FFmpegVideoStream(FFmpegFile *file) : m_ffmpegFile(file)
 {
+    captainslog_assert(m_ffmpegFile != nullptr);
     file->Set_Frame_Callback(On_Frame);
     file->Set_User_Data(this);
     // Decode until we have our first video frame
@@ -23,15 +24,8 @@ FFmpegVideoStream::FFmpegVideoStream(FFmpegFile *file) : m_ffmpegFile(file)
 
 FFmpegVideoStream::~FFmpegVideoStream()
 {
-    if (m_swsContext != nullptr) {
-        sws_freeContext(m_swsContext);
-        m_swsContext = nullptr;
-    }
-
-    if (m_ffmpegFile != nullptr) {
-        delete m_ffmpegFile;
-        m_ffmpegFile = nullptr;
-    }
+    sws_freeContext(m_swsContext);
+    delete m_ffmpegFile;
 }
 
 void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type, void *user_data)
@@ -105,7 +99,7 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
     m_swsContext = sws_getCachedContext(m_swsContext,
         Width(),
         Height(),
-        (enum AVPixelFormat)m_frame->format,
+        static_cast<AVPixelFormat>(m_frame->format),
         buffer->Get_Width(),
         buffer->Get_Height(),
         dst_pix_fmt,
@@ -169,7 +163,7 @@ int FFmpegVideoStream::Frame_Count()
  */
 void FFmpegVideoStream::Goto_Frame(int frame)
 {
-    // TODO: seeking
+    m_ffmpegFile->Seek_Frame(frame);
 }
 
 /**

@@ -39,7 +39,10 @@ void FFmpegVideoPlayer::Init()
 /**
  * Uninitilise the class.
  */
-void FFmpegVideoPlayer::Deinit() {}
+void FFmpegVideoPlayer::Deinit()
+{
+    VideoPlayer::Deinit();
+}
 
 /**
  * Opens a video stream from a video title.
@@ -55,10 +58,20 @@ VideoStream *FFmpegVideoPlayer::Open(Utf8String title)
     File *file = nullptr;
     Utf8String path;
 
+    // First check the custom user "mod" directory if set.
+    if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_userModDirectory.Is_Not_Empty()) {
+        path.Format(
+            "%s%s/%s.%s", g_theWriteableGlobalData->m_userModDirectory.Str(), "Data/Movies", vid->file_name.Str(), "bik");
+        // Load the file from disk
+        file = g_theFileSystem->Open_File(path.Str(), File::READ | File::BINARY | File::BUFFERED);
+    }
+
     // Check for a language specific directoy Data/%language%/Movies.
-    path.Format("Data/%s/Movies/%s.%s", Get_Registry_Language().Str(), vid->file_name.Str(), "bik");
-    // Load the file from disk
-    file = g_theFileSystem->Open_File(path.Str(), File::READ | File::BINARY | File::BUFFERED);
+    if (file == nullptr) {
+        path.Format("Data/%s/Movies/%s.%s", Get_Registry_Language().Str(), vid->file_name.Str(), "bik");
+        // Load the file from disk
+        file = g_theFileSystem->Open_File(path.Str(), File::READ | File::BINARY | File::BUFFERED);
+    }
 
     // Finally check Data/Movies.
     if (file == nullptr) {

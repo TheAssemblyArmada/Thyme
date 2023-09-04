@@ -16,6 +16,7 @@
 
 #include "coltest.h"
 #include "w3d.h"
+#include "w3d_file.h"
 
 SegmentedLineClass::SegmentedLineClass() : m_maxSubdivisionLevels(0), m_normalizedScreenArea(0) {}
 
@@ -29,8 +30,9 @@ SegmentedLineClass::SegmentedLineClass(const SegmentedLineClass &src) :
 
 SegmentedLineClass &SegmentedLineClass::operator=(const SegmentedLineClass &that)
 {
+    RenderObjClass::operator=(that);
+
     if (this != &that) {
-        RenderObjClass::operator=(that);
         m_maxSubdivisionLevels = that.m_maxSubdivisionLevels;
         m_normalizedScreenArea = that.m_normalizedScreenArea;
         m_pointLocations = that.m_pointLocations;
@@ -49,12 +51,16 @@ void SegmentedLineClass::Reset_Line()
 
 void SegmentedLineClass::Set_Points(unsigned int num_points, Vector3 *locs)
 {
-    m_pointLocations.Delete_All();
-    Invalidate_Cached_Bounding_Volumes();
-    if (num_points != 0 && locs != nullptr) {
+    if (num_points >= 2 && locs != nullptr) {
+        m_pointLocations.Delete_All();
+
         for (unsigned int i = 0; i < num_points; ++i) {
-            m_pointLocations.Add(locs[i]);
+            m_pointLocations.Add(locs[i], num_points);
         }
+
+        Invalidate_Cached_Bounding_Volumes();
+    } else {
+        captainslog_dbgassert(false, "0");
     }
 }
 
@@ -88,7 +94,9 @@ void SegmentedLineClass::Add_Point(const Vector3 &location)
 
 void SegmentedLineClass::Delete_Point(unsigned int point_idx)
 {
-    m_pointLocations.Delete(point_idx);
+    if (point_idx < static_cast<unsigned int>(m_pointLocations.Count())) {
+        m_pointLocations.Delete(point_idx);
+    }
 }
 
 TextureClass *SegmentedLineClass::Get_Texture()
@@ -283,7 +291,6 @@ void SegmentedLineClass::Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) cons
 
 void SegmentedLineClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
 {
-
     int count = m_pointLocations.Count();
     if (count >= 2) {
         Vector3 max_pos = m_pointLocations[0];
@@ -294,9 +301,9 @@ void SegmentedLineClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
             min_pos.Update_Min(m_pointLocations[i]);
         }
 
-        float width = m_lineRenderer.Get_Width() * 0.5f;
+        float bounds_width = m_lineRenderer.Get_Width() * 0.5f;
 
-        Vector3 scale_factor(width, width, width);
+        Vector3 scale_factor(bounds_width, bounds_width, bounds_width);
         max_pos += scale_factor;
         min_pos -= scale_factor;
 
@@ -312,8 +319,8 @@ void SegmentedLineClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
             }
 
             float amplitude = m_lineRenderer.Get_Noise_Amplitude();
-            width += amplitude + amplitude;
-            scale_factor.Set(width, width, width);
+            bounds_width += amplitude + amplitude;
+            scale_factor.Set(bounds_width, bounds_width, bounds_width);
             max_pos_2 += scale_factor;
             min_pos_2 -= scale_factor;
 
@@ -364,7 +371,7 @@ float SegmentedLineClass::Get_Cost() const
 
 float SegmentedLineClass::Get_Value() const
 {
-    if (!m_lineRenderer.Get_Current_Subdivision_Level()) {
+    if (m_lineRenderer.Get_Current_Subdivision_Level() == 0) {
         return AT_MIN_LOD;
     }
 
@@ -428,7 +435,7 @@ bool SegmentedLineClass::Cast_Ray(RayCollisionTestClass &raytest)
         }
         if (retval) {
             raytest.m_result->fraction = fraction;
-            raytest.m_result->surface_type = 13; // TODO resolve
+            raytest.m_result->surface_type = SURFACE_TYPE_DEFAULT;
             raytest.m_collidedRenderObj = this;
             return true;
         }

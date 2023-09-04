@@ -165,7 +165,7 @@ int ShaderClass::Guess_Sort_Level() const
 /**
  * Debug function to get readout of what options are set in the current shader.
  */
-void ShaderClass::Get_Description(StringClass &desc)
+StringClass &ShaderClass::Get_Description(StringClass &desc) const
 {
     desc = "";
     switch (Get_Depth_Compare()) {
@@ -395,8 +395,10 @@ void ShaderClass::Get_Description(StringClass &desc)
             desc += "DETAILCOLOR_MODALPHAADDCOLOR";
             break;
         default:
-            return;
+            break;
     }
+
+    return desc;
 }
 
 /**

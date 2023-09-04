@@ -245,7 +245,7 @@ public:
     void Enable_Fog(const char *source);
     StaticSortCategoryType Get_Static_Sort_Category() const;
     int Guess_Sort_Level() const;
-    void Get_Description(StringClass &desc); // new function in ZH
+    StringClass &Get_Description(StringClass &desc) const; // new function in ZH
 
     uint32_t Get_Bits() const { return m_shaderBits; }
 

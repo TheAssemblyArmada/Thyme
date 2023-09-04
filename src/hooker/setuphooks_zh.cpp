@@ -1495,7 +1495,7 @@ void Setup_Hooks()
     Hook_Any(0x00885AB0, SegLineRendererClass::Get_Texture);
     Hook_Any(0x00885AC0, SegLineRendererClass::Set_Texture_Tile_Factor);
     Hook_Any(0x00885B10, SegLineRendererClass::Reset_Line);
-    Hook_Any(0x00885B30, SegLineRendererClass::Render);
+    // Hook_Any(0x00885B30, SegLineRendererClass::Render); // Disabled due to function being incomplete
     Hook_Any(0x008898C0, SegLineRendererClass::Scale);
 
     // gamelogic.h

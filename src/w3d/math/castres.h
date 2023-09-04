@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "vector3.h"
+#include "w3d_file.h"
 
 struct CastResultStruct
 {
@@ -26,7 +27,7 @@ struct CastResultStruct
         start_bad = false;
         fraction = 1.0f;
         normal.Set(0.0f, 0.0f, 0.0f);
-        surface_type = 0;
+        surface_type = SURFACE_TYPE_LIGHT_METAL;
         compute_contact_point = false;
         contact_point.Set(0.0f, 0.0f, 0.0f);
     }

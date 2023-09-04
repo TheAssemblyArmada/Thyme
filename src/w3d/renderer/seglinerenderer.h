@@ -140,7 +140,7 @@ private:
         float *subdiv_tex_v,
         Vector4 *base_color_v,
         Vector4 *subdiv_color_v);
-    VertexFormatXYZDUV1 *Get_Vertex_Buffer(int count);
+    VertexFormatXYZDUV1 *Get_Vertex_Buffer(unsigned int count);
 
     TextureClass *m_texture;
     ShaderClass m_shader;
@@ -155,7 +155,7 @@ private:
     Vector2 m_currentUVOffset;
     Vector2 m_UVOffsetDeltaPerMS;
     unsigned int m_bits;
-    int m_vertexCount;
+    unsigned int m_vertexCount;
     VertexFormatXYZDUV1 *m_vertexBuffer;
 
     friend class SegmentedLineClass;
@@ -163,7 +163,7 @@ private:
 
 inline SegLineRendererClass::TextureMapMode SegLineRendererClass::Get_Texture_Mapping_Mode() const
 {
-    return (TextureMapMode)((m_bits & TEXTURE_MAP_MODE_MASK) >> TEXTURE_MAP_MODE_OFFSET);
+    return static_cast<TextureMapMode>((m_bits & TEXTURE_MAP_MODE_MASK) >> TEXTURE_MAP_MODE_OFFSET);
 }
 
 inline void SegLineRendererClass::Set_Texture_Mapping_Mode(SegLineRendererClass::TextureMapMode mode)

@@ -54,7 +54,7 @@ public: \
     void *operator new(size_t size) { return Allocate_From_Pool(Get_Class_Pool(), sizeof(classname)); } \
     void *operator new(size_t size, void *where) { return where; } \
     void operator delete(void *p, void *where) {} \
-    void operator delete(void *ptr) { return Free_From_Pool(Get_Class_Pool(), ptr); } \
+    void operator delete(void *ptr) { Free_From_Pool(Get_Class_Pool(), ptr); } \
     virtual int glueEnforcer() { return 4; }; \
 \
 private:

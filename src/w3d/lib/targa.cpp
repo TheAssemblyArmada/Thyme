@@ -36,12 +36,12 @@ TargaImage::~TargaImage()
 {
     Close();
 
-    if (m_palette != nullptr && m_flags & 2) {
+    if (m_palette != nullptr && (m_flags & TGA_FLAG_PAL_ALLOC)) {
         free(m_palette);
         m_palette = nullptr;
     }
 
-    if (m_image != nullptr && m_flags & 1) {
+    if (m_image != nullptr && (m_flags & TGA_FLAG_IMAGE_ALLOC)) {
         free(m_image);
         m_image = nullptr;
     }
@@ -54,7 +54,7 @@ int TargaImage::Open(const char *name, int mode)
     }
 
     Close();
-    m_flags &= ~8;
+    m_flags &= ~TGA_FLAG_INVALID;
     m_access = mode;
 
     TGA2Footer footer;
@@ -77,14 +77,14 @@ int TargaImage::Open(const char *name, int mode)
 
             // If we don't have the correct footer info, not a TGA file.
             if (strncasecmp(footer.signature, "TRUEVISION-XFILE", sizeof(footer.signature)) == 0 && footer.extension != 0) {
-                m_flags |= 8;
+                m_flags |= TGA_FLAG_INVALID;
             }
 
             footer.extension = le32toh(footer.extension);
 
             // If we can't seek to the extension offset or we can't read enough data,
             // not a TGA file.
-            if ((m_flags & 8) != 0
+            if ((m_flags & TGA_FLAG_INVALID) != 0
                 && (File_Seek(footer.extension, FileSeekType::FS_SEEK_START) != -1
                     || File_Read(&m_extension, sizeof(m_extension) != sizeof(m_extension)))) {
                 Close();
@@ -189,7 +189,7 @@ int TargaImage::Load(const char *name, int flags, bool invert_image)
                 return TGA_RET_OUT_OF_MEMORY;
             }
 
-            m_flags |= 2;
+            m_flags |= TGA_FLAG_PAL_ALLOC;
         }
     }
 
@@ -211,7 +211,7 @@ int TargaImage::Load(const char *name, int flags, bool invert_image)
                 return TGA_RET_OUT_OF_MEMORY;
             }
 
-            m_flags |= 1;
+            m_flags |= TGA_FLAG_IMAGE_ALLOC;
         }
     }
 

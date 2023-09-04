@@ -120,6 +120,7 @@ enum TGAFlags
     TGA_FLAG_IMAGE_ALLOC = 1,
     TGA_FLAG_PAL_ALLOC = 2,
     TGA_FLAG_COMPRESS = 4,
+    TGA_FLAG_INVALID = 8,
 };
 
 class TargaImage

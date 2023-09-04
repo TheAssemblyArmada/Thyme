@@ -27,6 +27,7 @@
 #include "terraintex.h"
 #include "terrainvisual.h"
 #include "tri.h"
+#include "w3d_file.h"
 #include "w3dbibbuffer.h"
 #include "w3dbridgebuffer.h"
 #include "w3dpropbuffer.h"
@@ -532,7 +533,7 @@ bool BaseHeightMapRenderObjClass::Cast_Ray(RayCollisionTestClass &raytest)
                 hit |= CollisionMath::Collide(raytest.m_ray, tri, raytest.m_result);
 
                 if (hit) {
-                    raytest.m_result->surface_type = 13;
+                    raytest.m_result->surface_type = SURFACE_TYPE_DEFAULT;
                 }
             }
         }

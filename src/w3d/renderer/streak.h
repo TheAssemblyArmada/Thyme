@@ -2,6 +2,7 @@
  * @file
  *
  * @author Jonathan Wilson
+ * @author tomsons26
  *
  * @brief Streak Line
  *
@@ -91,8 +92,12 @@ public:
     void Render_Seg_Line(RenderInfoClass &rinfo);
     void Render_Streak_Line(RenderInfoClass &rinfo);
 
+#if GAME_DLL
+    StreakLineClass *Hook_Ctor() { return new (this) StreakLineClass; }
+#endif
+
 private:
-    int m_maxSubdivisionLevels;
+    unsigned int m_maxSubdivisionLevels;
     unsigned int *m_unk;
     float m_normalizedScreenArea;
     SimpleDynVecClass<Vector3> m_pointLocations;

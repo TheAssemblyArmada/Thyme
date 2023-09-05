@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "alaudiomanager.h"
+#include "alaudiostream.h"
 #include "filesystem.h"
 #include "gamemath.h"
 #include "globaldata.h"
@@ -28,7 +29,6 @@ ALAudioManager::ALAudioManager() :
 #ifdef BUILD_WITH_FFMPEG
     m_audioFileCache(new FFmpegAudioFileCache),
 #endif
-    m_binkPlayingAudio(nullptr),
     m_2dSampleCount(0),
     m_3dSampleCount(0),
     m_streamCount(0)
@@ -405,6 +405,7 @@ void ALAudioManager::Open_Device()
     Refresh_Cached_Variables();
 
     captainslog_dbgassert(Check_AL_Error(), "OpenAL error before starting");
+    captainslog_dbgassert(Supports_Float_Samples(), "OpenAL implementation doesn't support float samples");
 }
 
 /**
@@ -797,24 +798,17 @@ bool ALAudioManager::Has_3D_Sensitive_Streams_Playing()
  */
 BinkHandle ALAudioManager::Get_Bink_Handle()
 {
-    // If we don't already have a playing audio for bink, make one.
-    if (m_binkPlayingAudio == nullptr) {
-        PlayingAudio *pap = new PlayingAudio;
-        Init_Playing_Audio(pap);
-        pap->openal.stopped = false;
-        pap->openal.audio_event = new AudioEventRTS("BinkHandle");
-        Get_Info_For_Audio_Event(pap->openal.audio_event);
-        pap->openal.playing_type = PAT_2DSAMPLE;
+    // If we don't already have an audio stream for bink, make one.
+    if (m_binkAudio == nullptr) {
+        // NOTE / BUG: miles retrieves that event, but doesn't seem to use it anywhere. Just like us.
+        AudioEventRTS *audio_event = new AudioEventRTS("BinkHandle");
+        Get_Info_For_Audio_Event(audio_event);
+        delete audio_event;
 
-        if (pap->openal.source == 0) {
-            Release_Playing_Audio(pap);
-            return nullptr;
-        }
-
-        m_binkPlayingAudio = pap;
+        m_binkAudio = new ALAudioStream();
     }
 
-    return reinterpret_cast<BinkHandle>(m_binkPlayingAudio->openal.source);
+    return static_cast<BinkHandle>(m_binkAudio);
 }
 
 /**
@@ -822,10 +816,7 @@ BinkHandle ALAudioManager::Get_Bink_Handle()
  */
 void ALAudioManager::Release_Bink_Handle()
 {
-    if (m_binkPlayingAudio != nullptr) {
-        Release_Playing_Audio(m_binkPlayingAudio);
-        m_binkPlayingAudio = nullptr;
-    }
+    delete m_binkAudio;
 }
 
 /**
@@ -1388,6 +1379,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
             if (event->Should_Play_Locally()) {
                 Stop_All_Speech();
             }
+            [[fallthrough]];
             // Fallthrough
         case EVENT_MUSIC: {
             float volume = 1.0f;
@@ -1701,10 +1693,14 @@ ALenum ALAudioManager::Get_AL_Format(uint8_t channels, uint8_t bits_per_sample)
         return AL_FORMAT_MONO8;
     if (channels == 1 && bits_per_sample == 16)
         return AL_FORMAT_MONO16;
+    if (channels == 1 && bits_per_sample == 32)
+        return AL_FORMAT_MONO_FLOAT32;
     if (channels == 2 && bits_per_sample == 8)
         return AL_FORMAT_STEREO8;
     if (channels == 2 && bits_per_sample == 16)
         return AL_FORMAT_STEREO16;
+    if (channels == 2 && bits_per_sample == 32)
+        return AL_FORMAT_STEREO_FLOAT32;
 
     captainslog_warn("Unknown OpenAL format: %i channels, %i bits per sample", channels, bits_per_sample);
     return AL_FORMAT_MONO8;

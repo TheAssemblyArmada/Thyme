@@ -67,6 +67,11 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             return;
         }
 
+        if (av_sample_fmt_is_planar(static_cast<AVSampleFormat>(frame->format))) {
+            captainslog_error("Not supporting planar audio samples yet");
+            return;
+        }
+
         const int frame_data_size = file->ffmpeg_file->Get_Size_For_Samples(frame->nb_samples);
         file->wave_data = static_cast<uint8_t *>(av_realloc(file->wave_data, file->data_size + frame_data_size));
         memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);

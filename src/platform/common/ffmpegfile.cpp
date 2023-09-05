@@ -340,10 +340,18 @@ int FFmpegFile::Get_Current_Frame() const
 int FFmpegFile::Get_Pixel_Format() const
 {
     const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
-    if (stream = nullptr)
+    if (stream == nullptr)
         return AV_PIX_FMT_NONE;
 
     return stream->codec_ctx->pix_fmt;
+}
+
+unsigned int FFmpegFile::Get_Frame_Time() const
+{
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
+    if (stream == nullptr)
+        return 0;
+    return 1000 / av_q2d(m_fmt_ctx->streams[stream->stream_idx]->avg_frame_rate);
 }
 
 } // namespace Thyme

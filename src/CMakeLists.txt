@@ -636,7 +636,9 @@ if(USE_ALSOFT)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_OPENAL)
 
     list(APPEND GAMEENGINE_SRC 
-        platform/audio/alaudiomanager.cpp)
+        platform/audio/alaudiomanager.cpp
+        platform/audio/alaudiostream.cpp
+    )
 endif()
 
 if(USE_GAMEMATH)

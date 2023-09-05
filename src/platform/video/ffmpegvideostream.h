@@ -28,7 +28,7 @@ class FFmpegVideoStream final : public VideoStream
     friend class FFmpegVideoPlayer;
 
 public:
-    FFmpegVideoStream(FFmpegFile *file);
+    FFmpegVideoStream(VideoPlayer *player, VideoStream *next, FFmpegFile *file);
     virtual ~FFmpegVideoStream();
 
     virtual void Update() override;
@@ -49,6 +49,8 @@ private:
     SwsContext *m_swsContext = nullptr;
     FFmpegFile *m_ffmpegFile = nullptr;
     bool m_good = true;
-    bool m_got_frame = false;
+    bool m_gotFrame = false;
+    unsigned int m_lastFrameTime = 0;
+    uint8_t *m_audio_buffer = nullptr;
 };
 } // namespace Thyme

@@ -35,7 +35,7 @@ public:
     virtual void Deinit() override;
     virtual VideoStream *Open(Utf8String title) override;
     virtual VideoStream *Load(Utf8String title) override;
-    virtual void Notify_Player_Of_New_Provider(bool unk) override;
+    virtual void Notify_Player_Of_New_Provider(bool initialise) override;
     virtual void Initialise_Bink_With_Miles(); // Original has this virtual, unclear why though.
 
 private:

@@ -1,29 +1,38 @@
-#include "ffmpegvideostream.h"
-#include "ffmpegfile.h"
-#include "videobuffer.h"
-
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
 }
+
+#include "ffmpegfile.h"
+#include "ffmpegvideoplayer.h"
+#include "ffmpegvideostream.h"
+#include "videobuffer.h"
+
+#ifdef BUILD_WITH_OPENAL
+#include "alaudiomanager.h"
+#include "alaudiostream.h"
+#endif
 
 #include <captainslog.h>
 
 namespace Thyme
 {
 
-FFmpegVideoStream::FFmpegVideoStream(FFmpegFile *file) : m_ffmpegFile(file)
+FFmpegVideoStream::FFmpegVideoStream(VideoPlayer *player, VideoStream *next, FFmpegFile *file) : m_ffmpegFile(file)
 {
-    captainslog_assert(m_ffmpegFile != nullptr);
+    m_player = player;
+    captainslog_assert(m_player != nullptr);
+    m_next = next;
     file->Set_Frame_Callback(On_Frame);
     file->Set_User_Data(this);
     // Decode until we have our first video frame
-    while (m_good && m_got_frame == false)
+    while (m_good && m_gotFrame == false)
         m_good = m_ffmpegFile->Decode_Packet();
 }
 
 FFmpegVideoStream::~FFmpegVideoStream()
 {
+    av_freep(&m_audio_buffer);
     av_frame_free(&m_frame);
     sws_freeContext(m_swsContext);
     delete m_ffmpegFile;
@@ -35,8 +44,45 @@ void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type
     if (stream_type == AVMEDIA_TYPE_VIDEO) {
         av_frame_free(&stream->m_frame);
         stream->m_frame = av_frame_clone(frame);
-        stream->m_got_frame = true;
+        stream->m_gotFrame = true;
     }
+#ifdef BUILD_WITH_OPENAL
+    else if (stream_type == AVMEDIA_TYPE_AUDIO) {
+        FFmpegVideoPlayer *player = static_cast<FFmpegVideoPlayer *>(stream->m_player);
+        ALAudioStream *audio_stream = player->Get_Audio();
+        if (audio_stream == nullptr) {
+            captainslog_info("Skipping audio packet inside video - no audio stream");
+            return;
+        }
+        stream->Update();
+        AVSampleFormat sample_fmt = static_cast<AVSampleFormat>(frame->format);
+        const int bytes_per_sample = av_get_bytes_per_sample(sample_fmt);
+        const int frame_size = av_samples_get_buffer_size(NULL, frame->channels, frame->nb_samples, sample_fmt, 1);
+        uint8_t *frame_data = frame->data[0];
+        // The format is planar - convert it to interleaved
+        if (av_sample_fmt_is_planar(sample_fmt)) {
+            stream->m_audio_buffer = static_cast<uint8_t *>(av_realloc(stream->m_audio_buffer, frame_size));
+            if (stream->m_audio_buffer == nullptr) {
+                captainslog_error("Failed to allocate audio buffer");
+                return;
+            }
+
+            // Write the samples into our audio buffer
+            for (int sample_idx = 0; sample_idx < frame->nb_samples; sample_idx++) {
+                int byte_offset = sample_idx * bytes_per_sample;
+                for (int channel_idx = 0; channel_idx < frame->channels; channel_idx++) {
+                    uint8_t *dst = &stream->m_audio_buffer[byte_offset * 2 + channel_idx * bytes_per_sample];
+                    uint8_t *src = &frame->data[channel_idx][byte_offset];
+                    memcpy(dst, src, bytes_per_sample);
+                }
+            }
+            frame_data = stream->m_audio_buffer;
+        }
+
+        ALenum format = ALAudioManager::Get_AL_Format(frame->channels, bytes_per_sample * 8);
+        audio_stream->BufferData(frame_data, frame_size, format, frame->sample_rate);
+    }
+#endif
 }
 
 /**
@@ -44,7 +90,11 @@ void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type
  */
 void FFmpegVideoStream::Update()
 {
-    // BinkWait(m_binkHandle);
+#ifdef BUILD_WITH_OPENAL
+    FFmpegVideoPlayer *player = static_cast<FFmpegVideoPlayer *>(m_player);
+    ALAudioStream *stream = player->Get_Audio();
+    stream->Update();
+#endif
 }
 
 /**
@@ -52,7 +102,9 @@ void FFmpegVideoStream::Update()
  */
 bool FFmpegVideoStream::Is_Frame_Ready()
 {
-    return m_frame != nullptr;
+    unsigned int time = rts::Get_Time();
+    bool ready = (time - m_lastFrameTime) >= m_ffmpegFile->Get_Frame_Time();
+    return ready;
 }
 
 /**
@@ -131,9 +183,18 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
  */
 void FFmpegVideoStream::Next_Frame()
 {
-    m_got_frame = false;
+#ifdef BUILD_WITH_OPENAL
+    FFmpegVideoPlayer *player = static_cast<FFmpegVideoPlayer *>(m_player);
+    ALAudioStream *stream = player->Get_Audio();
+    if (stream->IsPlaying() == false) {
+        stream->Play();
+    }
+#endif
+
+    m_lastFrameTime = rts::Get_Time();
+    m_gotFrame = false;
     // Decode until we have our next video frame
-    while (m_good && m_got_frame == false)
+    while (m_good && m_gotFrame == false)
         m_good = m_ffmpegFile->Decode_Packet();
 }
 

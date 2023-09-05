@@ -55,6 +55,7 @@ public:
     int Get_Num_Frames() const;
     int Get_Current_Frame() const;
     int Get_Pixel_Format() const;
+    unsigned int Get_Frame_Time() const;
 
 private:
     struct FFmpegStream

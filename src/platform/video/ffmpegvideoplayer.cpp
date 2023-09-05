@@ -19,6 +19,10 @@
 #include "globaldata.h"
 #include "registry.h"
 
+#ifdef BUILD_WITH_OPENAL
+#include "alaudiostream.h"
+#endif
+
 namespace Thyme
 {
 FFmpegVideoPlayer::FFmpegVideoPlayer() {}
@@ -34,6 +38,7 @@ FFmpegVideoPlayer::~FFmpegVideoPlayer()
 void FFmpegVideoPlayer::Init()
 {
     VideoPlayer::Init();
+    Initialise_FFmpeg_With_OpenAL();
 }
 
 /**
@@ -97,11 +102,27 @@ VideoStream *FFmpegVideoPlayer::Load(Utf8String title)
 void FFmpegVideoPlayer::Notify_Player_Of_New_Provider(bool initialise)
 {
     if (initialise) {
-        // Initialise_Bink_With_Miles();
+        Initialise_FFmpeg_With_OpenAL();
     }
 
     Deinit();
-    // BinkSetSoundTrack(0, nullptr);
+}
+
+/**
+ * Performs a specific initilisation assuming OpenALA is the audio sound system.
+ */
+void FFmpegVideoPlayer::Initialise_FFmpeg_With_OpenAL()
+{
+#ifdef BUILD_WITH_OPENAL
+    BinkHandle handle = g_theAudio->Get_Bink_Handle();
+
+    // If we don't have a miles handle or we fail to set the sound system from it, set to have no audio tracks.
+    if (handle == nullptr) {
+        return;
+    }
+
+    m_audio_stream = static_cast<ALAudioStream *>(handle);
+#endif
 }
 
 /**
@@ -120,12 +141,13 @@ VideoStream *FFmpegVideoPlayer::Create_Stream(File *file)
     }
 
     // This takes ownership of FFmpegFile
-    FFmpegVideoStream *stream = new FFmpegVideoStream(ffmpegFile);
-    stream->m_next = m_firstStream;
-    stream->m_player = this;
+    FFmpegVideoStream *stream = new FFmpegVideoStream(this, m_firstStream, ffmpegFile);
     m_firstStream = stream;
 
-    // float vol = g_theAudio->Get_Volume(AUDIOAFFECT_SPEECH);
+#ifdef BUILD_WITH_OPENAL
+    float vol = g_theAudio->Get_Volume(AUDIOAFFECT_SPEECH);
+    m_audio_stream->SetVolume(vol);
+#endif
 
     return stream;
 }

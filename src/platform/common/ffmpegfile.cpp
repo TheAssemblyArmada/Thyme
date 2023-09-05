@@ -217,21 +217,25 @@ bool FFmpegFile::Decode_Packet()
     }
     av_packet_unref(m_packet);
 
-    result = avcodec_receive_frame(codec_ctx, stream.frame);
-    // Check if we need more data
-    if (result == AVERROR(EAGAIN))
-        return true;
+    // Get all frames in this packet
+    while (result >= 0) {
+        result = avcodec_receive_frame(codec_ctx, stream.frame);
 
-    // Handle any other errors
-    if (result < 0) {
-        char error_buffer[1024];
-        av_strerror(result, error_buffer, sizeof(error_buffer));
-        captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
-        return false;
-    }
+        // Check if we need more data
+        if (result == AVERROR(EAGAIN))
+            return true;
 
-    if (m_frame_callback != nullptr) {
-        m_frame_callback(stream.frame, stream_idx, stream.stream_type, m_user_data);
+        // Handle any other errors
+        if (result < 0) {
+            char error_buffer[1024];
+            av_strerror(result, error_buffer, sizeof(error_buffer));
+            captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
+            return false;
+        }
+
+        if (m_frame_callback != nullptr) {
+            m_frame_callback(stream.frame, stream_idx, stream.stream_type, m_user_data);
+        }
     }
 
     return true;
@@ -328,7 +332,7 @@ int FFmpegFile::Get_Num_Frames() const
 int FFmpegFile::Get_Current_Frame() const
 {
     const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
-    if (m_fmt_ctx == nullptr || stream == nullptr || stream->frame == nullptr || (stream->frame->format == AV_PIX_FMT_NONE))
+    if (m_fmt_ctx == nullptr || stream == nullptr)
         return 0;
     return stream->codec_ctx->frame_number;
 }

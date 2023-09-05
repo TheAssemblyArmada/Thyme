@@ -49,5 +49,6 @@ private:
     SwsContext *m_swsContext = nullptr;
     FFmpegFile *m_ffmpegFile = nullptr;
     bool m_good = true;
+    bool m_got_frame = false;
 };
 } // namespace Thyme

@@ -18,12 +18,13 @@ FFmpegVideoStream::FFmpegVideoStream(FFmpegFile *file) : m_ffmpegFile(file)
     file->Set_Frame_Callback(On_Frame);
     file->Set_User_Data(this);
     // Decode until we have our first video frame
-    while (m_good && m_frame == nullptr)
+    while (m_good && m_got_frame == false)
         m_good = m_ffmpegFile->Decode_Packet();
 }
 
 FFmpegVideoStream::~FFmpegVideoStream()
 {
+    av_frame_free(&m_frame);
     sws_freeContext(m_swsContext);
     delete m_ffmpegFile;
 }
@@ -32,7 +33,9 @@ void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type
 {
     FFmpegVideoStream *stream = static_cast<FFmpegVideoStream *>(user_data);
     if (stream_type == AVMEDIA_TYPE_VIDEO) {
-        stream->m_frame = frame;
+        av_frame_free(&stream->m_frame);
+        stream->m_frame = av_frame_clone(frame);
+        stream->m_got_frame = true;
     }
 }
 
@@ -49,7 +52,7 @@ void FFmpegVideoStream::Update()
  */
 bool FFmpegVideoStream::Is_Frame_Ready()
 {
-    return m_good && m_frame != nullptr;
+    return m_frame != nullptr;
 }
 
 /**
@@ -128,9 +131,9 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
  */
 void FFmpegVideoStream::Next_Frame()
 {
-    m_frame = nullptr;
+    m_got_frame = false;
     // Decode until we have our next video frame
-    while (m_good && m_frame == nullptr)
+    while (m_good && m_got_frame == false)
         m_good = m_ffmpegFile->Decode_Packet();
 }
 

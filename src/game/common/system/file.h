@@ -68,7 +68,7 @@ public:
     };
 
 protected:
-    virtual ~File() override;
+    ~File() override;
 
 public:
     virtual bool Open(const char *filename, int mode);

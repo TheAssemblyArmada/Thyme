@@ -32,7 +32,7 @@ class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
     IMPLEMENT_NAMED_POOL(ParticleSystem, ParticleSystemPool);
 
 protected:
-    virtual ~ParticleSystem() override;
+    ~ParticleSystem() override;
 
 public:
     ParticleSystem(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves);
@@ -40,9 +40,9 @@ public:
     virtual bool Update(int index);
     virtual Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     ParticleSystemID Get_System_ID() const { return m_systemID; }
     void Set_Control_Particle(Particle *particle) { m_controlParticle = particle; }

@@ -21,7 +21,7 @@ class Player;
 class VictoryConditionsInterface : public SubsystemInterface
 {
 public:
-    virtual ~VictoryConditionsInterface() override;
+    ~VictoryConditionsInterface() override;
     virtual bool Has_Achieved_Victory(Player *player) = 0;
     virtual bool Has_Been_Defeated(Player *player) = 0;
     virtual bool Has_Single_Player_Been_Defeated(Player *player) = 0;

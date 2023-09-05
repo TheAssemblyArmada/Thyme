@@ -27,7 +27,7 @@ class Campaign : public MemoryPoolObject
     IMPLEMENT_POOL(Campaign)
 
 public:
-    virtual ~Campaign() override;
+    ~Campaign() override;
 
 private:
     Utf8String m_name;
@@ -44,9 +44,9 @@ private:
 class CampaignManager : public SnapShot
 {
 public:
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     Campaign *Get_Current_Campaign() { return m_currentCampaign; }
     void Set_Is_Victory(bool set) { m_isVictory = set; }

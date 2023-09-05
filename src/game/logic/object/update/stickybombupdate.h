@@ -20,7 +20,7 @@
 struct StickyBombUpdateModuleData : public UpdateModuleData
 {
 public:
-    virtual ~StickyBombUpdateModuleData() override;
+    ~StickyBombUpdateModuleData() override;
 
 private:
     Utf8String m_attachToBone;
@@ -34,13 +34,13 @@ class StickyBombUpdate : public UpdateModule
     IMPLEMENT_POOL(StickyBombUpdate);
 
 public:
-    virtual ~StickyBombUpdate() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void On_Object_Created() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
-    virtual UpdateSleepTime Update() override;
+    ~StickyBombUpdate() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void On_Object_Created() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
+    UpdateSleepTime Update() override;
 
     unsigned int Get_Die_Frame() const { return m_dieFrame; }
     bool Has_Die_Frame() const { return m_dieFrame != 0; }

@@ -41,10 +41,10 @@ public:
     BuildAssistant();
     BuildAssistant *Hook_Ctor() { return new (this) BuildAssistant(); }
 
-    virtual ~BuildAssistant() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    ~BuildAssistant() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
     virtual Object *Build_Object_Now(
         Object *constructor_object, const ThingTemplate *what, const Coord3D *pos, float angle, Player *owning_player);
     virtual void Build_Object_Line_Now(Object *constructor_object,

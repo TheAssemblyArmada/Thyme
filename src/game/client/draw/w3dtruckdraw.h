@@ -28,7 +28,7 @@ public:
         m_powerslideRotationAddition(0.0f)
     {
     }
-    virtual ~W3DTruckDrawModuleData() {}
+    ~W3DTruckDrawModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -62,18 +62,18 @@ class W3DTruckDraw : public W3DModelDraw
 public:
     W3DTruckDraw(Thing *thing, ModuleData const *module_data);
 
-    virtual ~W3DTruckDraw() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
-    virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override;
-    virtual void React_To_Geometry_Change() override {}
-    virtual void On_Render_Obj_Recreated() override;
+    ~W3DTruckDraw() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
+    void Set_Fully_Obscured_By_Shroud(bool obscured) override;
+    void React_To_Geometry_Change() override {}
+    void On_Render_Obj_Recreated() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void Set_Hidden(bool hidden) override;
+    void Set_Hidden(bool hidden) override;
 
     void Toss_Emitters();
     void Create_Emitters();

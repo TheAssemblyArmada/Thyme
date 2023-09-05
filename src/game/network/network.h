@@ -22,7 +22,7 @@ class Transport;
 
 class NetworkInterface : public SubsystemInterface
 {
-    virtual ~NetworkInterface() override;
+    ~NetworkInterface() override;
     virtual void Lite_Update() = 0;
     virtual void Set_Local_Address(unsigned int ip, unsigned int port) = 0;
     virtual bool Is_Frame_Data_Ready() = 0;
@@ -83,56 +83,56 @@ class Network : public NetworkInterface
 {
 
 public:
-    virtual ~Network() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
-    virtual void Lite_Update() override;
-    virtual void Set_Local_Address(unsigned int ip, unsigned int port) override;
-    virtual bool Is_Frame_Data_Ready() override;
-    virtual void Parse_User_List(GameInfo const *game) override;
-    virtual void Start_Game() override;
-    virtual unsigned int Get_Run_Ahead() override;
-    virtual unsigned int Get_Frame_Rate() override;
-    virtual unsigned int Get_Packet_Arrival_Cushion() override;
-    virtual void Send_Chat(Utf16String text, int player_mask) override;
-    virtual void Send_Disconnect_Chat(Utf16String text) override;
-    virtual void Send_File(Utf8String name, unsigned char c, unsigned short s) override;
-    virtual unsigned short Send_File_Announce(Utf8String name, unsigned char c) override;
-    virtual int Get_File_Transfer_Progress(int i, Utf8String name) override;
-    virtual bool Are_All_Queues_Empty() override;
-    virtual void Quit_Game() override;
-    virtual void Self_Destruct_Player(int slot) override;
-    virtual void Vote_For_Player_Disconnect(int slot) override;
-    virtual bool Is_Packet_Router() override;
-    virtual float Get_Incoming_Bytes_Per_Second() override;
-    virtual float Get_Incoming_Packets_Per_Second() override;
-    virtual float Get_Outgoing_Bytes_Per_Second() override;
-    virtual float Get_Outgoing_Packets_Per_Second() override;
-    virtual float Get_Unknown_Bytes_Per_Second() override;
-    virtual float Get_Unknown_Packets_Per_Second() override;
-    virtual void Update_Load_Progress(int percent) override;
-    virtual void Load_Progress_Complete() override;
-    virtual void Send_Time_Out_Game_Start() override;
-    virtual unsigned int Get_Local_Player_ID() override;
-    virtual Utf16String Get_Player_Name(int slot) override;
-    virtual int Get_Num_Players() override;
-    virtual int Get_Average_FPS() override;
-    virtual int Get_Slot_Average_FPS(int slot) override;
-    virtual void Attach_Transport(Transport *transport) override;
-    virtual void Init_Transport() override;
-    virtual bool Saw_CRC_Mismatch() override;
-    virtual void Set_Saw_CRC_Mismatch() override;
-    virtual bool Is_Player_Connected(int slot) override;
-    virtual void Notify_Others_Of_Current_Frame() override;
-    virtual void Notify_Others_Of_New_Frame(unsigned int frame) override;
-    virtual int Get_Execution_Frame() override;
+    ~Network() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
+    void Lite_Update() override;
+    void Set_Local_Address(unsigned int ip, unsigned int port) override;
+    bool Is_Frame_Data_Ready() override;
+    void Parse_User_List(GameInfo const *game) override;
+    void Start_Game() override;
+    unsigned int Get_Run_Ahead() override;
+    unsigned int Get_Frame_Rate() override;
+    unsigned int Get_Packet_Arrival_Cushion() override;
+    void Send_Chat(Utf16String text, int player_mask) override;
+    void Send_Disconnect_Chat(Utf16String text) override;
+    void Send_File(Utf8String name, unsigned char c, unsigned short s) override;
+    unsigned short Send_File_Announce(Utf8String name, unsigned char c) override;
+    int Get_File_Transfer_Progress(int i, Utf8String name) override;
+    bool Are_All_Queues_Empty() override;
+    void Quit_Game() override;
+    void Self_Destruct_Player(int slot) override;
+    void Vote_For_Player_Disconnect(int slot) override;
+    bool Is_Packet_Router() override;
+    float Get_Incoming_Bytes_Per_Second() override;
+    float Get_Incoming_Packets_Per_Second() override;
+    float Get_Outgoing_Bytes_Per_Second() override;
+    float Get_Outgoing_Packets_Per_Second() override;
+    float Get_Unknown_Bytes_Per_Second() override;
+    float Get_Unknown_Packets_Per_Second() override;
+    void Update_Load_Progress(int percent) override;
+    void Load_Progress_Complete() override;
+    void Send_Time_Out_Game_Start() override;
+    unsigned int Get_Local_Player_ID() override;
+    Utf16String Get_Player_Name(int slot) override;
+    int Get_Num_Players() override;
+    int Get_Average_FPS() override;
+    int Get_Slot_Average_FPS(int slot) override;
+    void Attach_Transport(Transport *transport) override;
+    void Init_Transport() override;
+    bool Saw_CRC_Mismatch() override;
+    void Set_Saw_CRC_Mismatch() override;
+    bool Is_Player_Connected(int slot) override;
+    void Notify_Others_Of_Current_Frame() override;
+    void Notify_Others_Of_New_Frame(unsigned int frame) override;
+    int Get_Execution_Frame() override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual void Toggle_Enabled() override; // not 100% identified yet
+    void Toggle_Enabled() override; // not 100% identified yet
 #endif
-    virtual unsigned int Get_Ping_Frame() override;
-    virtual int Get_Pings_Sent() override;
-    virtual int Get_Pings_Recieved() override;
+    unsigned int Get_Ping_Frame() override;
+    int Get_Pings_Sent() override;
+    int Get_Pings_Recieved() override;
 
 private:
     ConnectionManager *m_conMgr;

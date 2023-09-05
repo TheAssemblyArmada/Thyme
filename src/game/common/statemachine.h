@@ -86,7 +86,7 @@ public:
 
     State(StateMachine *machine, Utf8String name);
 
-    virtual ~State() override {}
+    ~State() override {}
     virtual StateReturnType On_Enter() { return STATE_CONTINUE; }
     virtual void On_Exit(StateExitType status) {}
     virtual StateReturnType Update() = 0;
@@ -135,7 +135,7 @@ public:
 #endif
     StateMachine(Object *owner, Utf8String name);
 
-    virtual ~StateMachine() override;
+    ~StateMachine() override;
     virtual StateReturnType Update_State_Machine();
     virtual void Clear();
     virtual StateReturnType Reset_To_Default_State();
@@ -146,9 +146,9 @@ public:
     virtual Utf8String Get_Current_State_Name();
 #endif
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Define_State(unsigned int id,
         State *state,

@@ -51,10 +51,10 @@ class ArmorStore : public SubsystemInterface
 {
 public:
     ArmorStore() { m_armorTemplates.clear(); }
-    virtual ~ArmorStore() override { m_armorTemplates.clear(); }
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~ArmorStore() override { m_armorTemplates.clear(); }
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
 private:
     armormap_t m_armorTemplates;

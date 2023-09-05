@@ -28,12 +28,12 @@ class SequentialScript : public MemoryPoolObject, public SnapShot
 
 public:
     SequentialScript();
-    virtual ~SequentialScript() override {}
+    ~SequentialScript() override {}
 
     // Snapshot virtuals
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer);
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     Team *m_teamToExecOn;

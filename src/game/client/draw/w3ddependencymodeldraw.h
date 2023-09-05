@@ -20,7 +20,7 @@ class W3DDependencyModelDrawModuleData : public W3DModelDrawModuleData
 {
 public:
     W3DDependencyModelDrawModuleData() {}
-    virtual ~W3DDependencyModelDrawModuleData() {}
+    ~W3DDependencyModelDrawModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -38,16 +38,16 @@ public:
     {
     }
 
-    virtual ~W3DDependencyModelDraw() override {}
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
-    virtual void Adjust_Transform_Mtx(Matrix3D &transform) const;
+    ~W3DDependencyModelDraw() override {}
+    NameKeyType Get_Module_Name_Key() const override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
+    void Adjust_Transform_Mtx(Matrix3D &transform) const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void Notify_Draw_Module_Dependency_Cleared() override { m_doDrawModule = true; }
+    void Notify_Draw_Module_Dependency_Cleared() override { m_doDrawModule = true; }
 
     const W3DDependencyModelDrawModuleData *Get_W3D_Dependency_Model_Draw_Module_Data() const
     {

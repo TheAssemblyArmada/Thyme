@@ -32,20 +32,20 @@ class StandardFile : public LocalFile
     friend class StdLocalFileSystem;
 
 protected:
-    virtual ~StandardFile() override;
+    ~StandardFile() override;
 
 private:
     StandardFile();
 
 public:
-    virtual bool Open(const char *filename, int mode) override;
-    virtual int Read(void *dst, int bytes) override;
-    virtual int Write(void const *src, int bytes) override;
-    virtual int Seek(int offset, File::SeekMode mode) override;
-    virtual void Next_Line(char *dst, int bytes) override;
-    virtual bool Scan_Int(int &integer) override;
-    virtual bool Scan_Real(float &real) override;
-    virtual bool Scan_String(Utf8String &string) override;
+    bool Open(const char *filename, int mode) override;
+    int Read(void *dst, int bytes) override;
+    int Write(void const *src, int bytes) override;
+    int Seek(int offset, File::SeekMode mode) override;
+    void Next_Line(char *dst, int bytes) override;
+    bool Scan_Int(int &integer) override;
+    bool Scan_Real(float &real) override;
+    bool Scan_String(Utf8String &string) override;
 
 private:
     FILE *m_file;

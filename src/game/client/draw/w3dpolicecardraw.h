@@ -26,15 +26,15 @@ public:
     W3DPoliceCarDraw(Thing *thing, ModuleData const *module_data);
 
 protected:
-    virtual ~W3DPoliceCarDraw() override;
+    ~W3DPoliceCarDraw() override;
 
 public:
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     W3DDynamicLight *Create_Dynamic_Light();
 

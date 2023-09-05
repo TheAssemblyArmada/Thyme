@@ -43,7 +43,7 @@ class MapObject : public MemoryPoolObject
     IMPLEMENT_POOL(MapObject)
 
 protected:
-    virtual ~MapObject() override;
+    ~MapObject() override;
 
 public:
     static MapObject *Get_First_Map_Object() { return s_theMapObjectListPtr; }

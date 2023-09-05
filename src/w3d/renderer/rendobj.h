@@ -123,7 +123,7 @@ public:
     RenderObjClass(const RenderObjClass &src);
     RenderObjClass &operator=(const RenderObjClass &that);
 
-    virtual ~RenderObjClass();
+    ~RenderObjClass() override;
 
     virtual RenderObjClass *Clone() const = 0;
     virtual int Class_ID() const { return CLASSID_UNKNOWN; }
@@ -317,8 +317,8 @@ public:
 #ifdef GAME_DLL
     virtual const PersistFactoryClass &Get_Factory() const;
 #endif
-    virtual bool Save(ChunkSaveClass &csave);
-    virtual bool Load(ChunkLoadClass &cload);
+    bool Save(ChunkSaveClass &csave) override;
+    bool Load(ChunkLoadClass &cload) override;
     const Matrix3D &Get_Transform() const;
     const Matrix3D &Get_Transform(bool &is_transform_identity) const;
     const Matrix3D &Get_Transform_No_Validity_Check() const;

@@ -47,7 +47,7 @@ public:
     AABTreeClass();
     AABTreeClass(AABTreeBuilderClass *builder);
     AABTreeClass(const AABTreeClass &that);
-    ~AABTreeClass();
+    ~AABTreeClass() override;
 
     void Load_W3D(ChunkLoadClass &cload);
 

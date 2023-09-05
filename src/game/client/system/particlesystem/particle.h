@@ -28,14 +28,14 @@ class Particle : public MemoryPoolObject, public ParticleInfo
     friend class ParticleSystemManager;
 
 protected:
-    virtual ~Particle() override;
+    ~Particle() override;
 
 public:
     Particle(ParticleSystem *system, const ParticleInfo &info);
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     void Compute_Alpha_Rate();
     void Compute_Color_Rate();

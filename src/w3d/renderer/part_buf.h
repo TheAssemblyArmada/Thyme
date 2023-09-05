@@ -56,33 +56,33 @@ public:
 
     ParticleBufferClass(const ParticleBufferClass &src);
     ParticleBufferClass &operator=(const ParticleBufferClass &);
-    virtual ~ParticleBufferClass();
-    virtual RenderObjClass *Clone() const;
-    virtual int Class_ID() const { return CLASSID_PARTICLEBUFFER; }
+    ~ParticleBufferClass() override;
+    RenderObjClass *Clone() const override;
+    int Class_ID() const override { return CLASSID_PARTICLEBUFFER; }
 
-    virtual int Get_Num_Polys() const;
+    int Get_Num_Polys() const override;
     int Get_Particle_Count() const;
-    virtual void Render(RenderInfoClass &rinfo);
-    virtual void Scale(float scale);
-    virtual void On_Frame_Update();
+    void Render(RenderInfoClass &rinfo) override;
+    void Scale(float scale) override;
+    void On_Frame_Update() override;
 
-    virtual void Notify_Added(SceneClass *scene);
-    virtual void Notify_Removed(SceneClass *scene);
+    void Notify_Added(SceneClass *scene) override;
+    void Notify_Removed(SceneClass *scene) override;
 
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
 
-    virtual void Prepare_LOD(CameraClass &camera);
-    virtual void Increment_LOD();
-    virtual void Decrement_LOD();
-    virtual float Get_Cost() const;
-    virtual float Get_Value() const;
-    virtual float Get_Post_Increment_Value() const;
-    virtual void Set_LOD_Level(int lod);
-    virtual int Get_LOD_Level() const;
-    virtual int Get_LOD_Count() const;
-    virtual void Set_LOD_Bias(float bias) { m_lodBias = std::max(bias, 0.0f); }
-    virtual int Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const;
+    void Prepare_LOD(CameraClass &camera) override;
+    void Increment_LOD() override;
+    void Decrement_LOD() override;
+    float Get_Cost() const override;
+    float Get_Value() const override;
+    float Get_Post_Increment_Value() const override;
+    void Set_LOD_Level(int lod) override;
+    int Get_LOD_Level() const override;
+    int Get_LOD_Count() const override;
+    void Set_LOD_Bias(float bias) override { m_lodBias = std::max(bias, 0.0f); }
+    int Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const override;
     void Reset_Colors(ParticlePropertyStruct<Vector3> &new_props);
     void Reset_Opacity(ParticlePropertyStruct<float> &new_props);
     void Reset_Size(ParticlePropertyStruct<float> &new_props);
@@ -91,7 +91,7 @@ public:
     void Reset_Blur_Times(ParticlePropertyStruct<float> &new_blur_times);
     void Emitter_Is_Dead();
     void Set_Emitter(ParticleEmitterClass *emitter);
-    virtual bool Is_Complete() { return m_isEmitterDead && !m_nonNewNum && !m_newNum; }
+    bool Is_Complete() override { return m_isEmitterDead && !m_nonNewNum && !m_newNum; }
     NewParticleStruct *Add_Uninitialized_New_Particle();
 
     void Set_Acceleration(const Vector3 &acceleration)
@@ -148,7 +148,7 @@ public:
     static float Get_LOD_Max_Screen_Size(int lod_level);
 
 protected:
-    virtual void Update_Cached_Bounding_Volumes() const;
+    void Update_Cached_Bounding_Volumes() const override;
     void Render_Particles(RenderInfoClass &rinfo);
     void Render_Line(RenderInfoClass &rinfo);
     void Render_Line_Group(RenderInfoClass &rinfo);

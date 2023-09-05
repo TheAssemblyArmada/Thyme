@@ -39,9 +39,9 @@ public:
     ParticleInfo();
     ParticleInfo(const ParticleInfo &that);
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 protected:
     Coord3D m_vel;

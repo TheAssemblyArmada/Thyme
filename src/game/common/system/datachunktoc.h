@@ -28,7 +28,7 @@ class DataChunkTableOfContents
         friend class DataChunkTableOfContents;
 
     protected:
-        virtual ~Mapping() override {}
+        ~Mapping() override {}
 
     private:
         Mapping() : m_next(nullptr), m_name(), m_id(0) {}

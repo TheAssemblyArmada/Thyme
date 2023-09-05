@@ -66,7 +66,7 @@ public:
 
     MeshGeometryClass();
     MeshGeometryClass(const MeshGeometryClass &that);
-    virtual ~MeshGeometryClass() override;
+    ~MeshGeometryClass() override;
 
     MeshGeometryClass &operator=(const MeshGeometryClass &that);
     void Reset_Geometry(int polycount, int vertcount);

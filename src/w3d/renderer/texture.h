@@ -101,14 +101,14 @@ public:
         bool allow_reduction);
     TextureClass(SurfaceClass *surface, MipCountType mip_level_count);
     TextureClass(w3dbasetexture_t d3d_texture);
-    virtual ~TextureClass() {}
+    ~TextureClass() override {}
 
-    virtual int Get_Asset_Type() override { return 0; }
-    virtual unsigned Get_Texture_Memory_Usage() override;
-    virtual void Init() override;
-    virtual void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) override;
-    virtual void Apply(unsigned stage) override;
-    virtual TextureClass *As_Texture() override { return this; }
+    int Get_Asset_Type() override { return 0; }
+    unsigned Get_Texture_Memory_Usage() override;
+    void Init() override;
+    void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) override;
+    void Apply(unsigned stage) override;
+    TextureClass *As_Texture() override { return this; }
 
     SurfaceClass *Get_Surface_Level(unsigned level);
     w3dsurface_t Get_D3D_Surface_Level(unsigned level);

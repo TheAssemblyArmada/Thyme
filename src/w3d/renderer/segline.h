@@ -27,7 +27,7 @@ public:
     SegmentedLineClass();
     SegmentedLineClass(const SegmentedLineClass &src);
     SegmentedLineClass &operator=(const SegmentedLineClass &that);
-    virtual ~SegmentedLineClass();
+    ~SegmentedLineClass() override;
 
     void Reset_Line();
 
@@ -70,26 +70,26 @@ public:
     void Set_Disable_Sorting(int onoff);
     void Set_End_Caps(int onoff);
 
-    virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override { return CLASSID_SEGLINE; }
-    virtual int Get_Num_Polys() const override;
+    RenderObjClass *Clone() const override;
+    int Class_ID() const override { return CLASSID_SEGLINE; }
+    int Get_Num_Polys() const override;
 
-    virtual void Render(RenderInfoClass &rinfo) override;
+    void Render(RenderInfoClass &rinfo) override;
 
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
 
-    virtual void Prepare_LOD(CameraClass &camera) override;
-    virtual void Increment_LOD() override;
-    virtual void Decrement_LOD() override;
-    virtual float Get_Cost() const override;
-    virtual float Get_Value() const override;
-    virtual float Get_Post_Increment_Value() const override;
-    virtual void Set_LOD_Level(int lod) override;
-    virtual int Get_LOD_Level() const override;
-    virtual int Get_LOD_Count() const override;
+    void Prepare_LOD(CameraClass &camera) override;
+    void Increment_LOD() override;
+    void Decrement_LOD() override;
+    float Get_Cost() const override;
+    float Get_Value() const override;
+    float Get_Post_Increment_Value() const override;
+    void Set_LOD_Level(int lod) override;
+    int Get_LOD_Level() const override;
+    int Get_LOD_Count() const override;
 
-    virtual bool Cast_Ray(RayCollisionTestClass &raytest) override;
+    bool Cast_Ray(RayCollisionTestClass &raytest) override;
 
 #if GAME_DLL
     SegmentedLineClass *Hook_Ctor() { return new (this) SegmentedLineClass; }

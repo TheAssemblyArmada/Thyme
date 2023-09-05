@@ -24,10 +24,10 @@ class PolygonTrigger : public MemoryPoolObject, public SnapShot
 
 public:
     PolygonTrigger(int initial_allocation);
-    virtual ~PolygonTrigger() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~PolygonTrigger() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     int Get_Num_Points() const { return m_numPoints; }
     int Get_River_Start() const { return m_riverStart; }

@@ -24,9 +24,9 @@ class MouseThreadClass : public ThreadClass
 {
 public:
     MouseThreadClass(const char *thread_name) : ThreadClass(thread_name, nullptr) {}
-    virtual ~MouseThreadClass() {}
+    ~MouseThreadClass() override {}
 
-    virtual void Thread_Function() override;
+    void Thread_Function() override;
 };
 
 class W3DMouse final : public Win32Mouse
@@ -34,12 +34,12 @@ class W3DMouse final : public Win32Mouse
 public:
     W3DMouse();
 
-    virtual ~W3DMouse() override;
+    ~W3DMouse() override;
 
-    virtual void Init() override;
-    virtual void Draw() override;
-    virtual void Set_Cursor(MouseCursor cursor) override;
-    virtual void Set_Redraw_Mode(RedrawMode mode) override;
+    void Init() override;
+    void Draw() override;
+    void Set_Cursor(MouseCursor cursor) override;
+    void Set_Redraw_Mode(RedrawMode mode) override;
 
     static void Set_Is_Drawing(bool isDrawing) { s_mouseThreadIsDrawing = isDrawing; }
 

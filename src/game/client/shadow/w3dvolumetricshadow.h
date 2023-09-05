@@ -101,7 +101,7 @@ class W3DShadowGeometry : public RefCountClass, public HashableClass
 public:
     W3DShadowGeometry();
 
-    virtual ~W3DShadowGeometry() {}
+    ~W3DShadowGeometry() override {}
 
     const char *Get_Key() override { return m_name; }
 
@@ -152,7 +152,7 @@ class W3DShadowGeometryManagerIterator : public HashTableIteratorClass
 {
 public:
     W3DShadowGeometryManagerIterator(W3DShadowGeometryManager &manager) : HashTableIteratorClass(*manager.m_geomPtrTable) {}
-    virtual ~W3DShadowGeometryManagerIterator() {}
+    ~W3DShadowGeometryManagerIterator() override {}
 
     W3DShadowGeometry *Get_Current_Geom();
 };

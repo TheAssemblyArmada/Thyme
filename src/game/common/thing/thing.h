@@ -37,7 +37,7 @@ class Thing : public MemoryPoolObject
     };
 
 protected:
-    virtual ~Thing() override {}
+    ~Thing() override {}
 
 public:
     Thing(const ThingTemplate *thing_template);

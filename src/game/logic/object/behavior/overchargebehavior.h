@@ -30,28 +30,27 @@ class OverchargeBehavior : public UpdateModule, public DamageModuleInterface, pu
     IMPLEMENT_POOL(OverchargeBehavior);
 
 public:
-    virtual ~OverchargeBehavior() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void On_Delete() override;
-    virtual void On_Capture(Player *player1, Player *player2) override;
+    ~OverchargeBehavior() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void On_Delete() override;
+    void On_Capture(Player *player1, Player *player2) override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual DamageModuleInterface *Get_Damage() override;
-    virtual OverchargeBehaviorInterface *Get_Overcharge_Behavior_Interface() override;
+    DamageModuleInterface *Get_Damage() override;
+    OverchargeBehaviorInterface *Get_Overcharge_Behavior_Interface() override;
 
-    virtual UpdateSleepTime Update() override;
+    UpdateSleepTime Update() override;
 
-    virtual void On_Damage(DamageInfo *info) override;
-    virtual void On_Healing(DamageInfo *info) override;
-    virtual void On_Body_Damage_Change_State(
-        const DamageInfo *info, BodyDamageType old_type, BodyDamageType new_type) override;
+    void On_Damage(DamageInfo *info) override;
+    void On_Healing(DamageInfo *info) override;
+    void On_Body_Damage_Change_State(const DamageInfo *info, BodyDamageType old_type, BodyDamageType new_type) override;
 
-    virtual void Toggle() override;
-    virtual void Enable(bool enable) override;
-    virtual bool Is_Overcharge_Active() override;
+    void Toggle() override;
+    void Enable(bool enable) override;
+    bool Is_Overcharge_Active() override;
 
 private:
     bool m_overchargeActive;

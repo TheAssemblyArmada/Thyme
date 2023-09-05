@@ -35,11 +35,11 @@ class RayEffectSystem : public SubsystemInterface
 
 public:
     RayEffectSystem();
-    ~RayEffectSystem() {}
+    ~RayEffectSystem() override {}
 
-    virtual void Init();
-    virtual void Reset();
-    virtual void Update() {}
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
     void Add_Ray_Effect(Drawable const *drawable, Coord3D const *start_loc, Coord3D const *end_loc);
     void Delete_Ray_Effect(Drawable const *drawable);

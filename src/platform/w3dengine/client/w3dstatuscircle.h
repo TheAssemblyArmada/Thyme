@@ -28,13 +28,13 @@ public:
     W3DStatusCircle(const W3DStatusCircle &src);
     W3DStatusCircle &operator=(const W3DStatusCircle &that);
 
-    virtual ~W3DStatusCircle() override;
-    virtual int Class_ID() const override;
-    virtual RenderObjClass *Clone() const override;
-    virtual void Render(RenderInfoClass &rinfo) override;
-    virtual bool Cast_Ray(RayCollisionTestClass &raytest) override;
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    ~W3DStatusCircle() override;
+    int Class_ID() const override;
+    RenderObjClass *Clone() const override;
+    void Render(RenderInfoClass &rinfo) override;
+    bool Cast_Ray(RayCollisionTestClass &raytest) override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
 
     int Free_Map_Resources();
     int Init_Data();

@@ -33,10 +33,10 @@ public:
     };
 
     HAnimClass() : m_embeddedSoundBoneIndex(-1) {}
-    virtual ~HAnimClass(){};
+    ~HAnimClass() override{};
     virtual const char *Get_Name() const = 0;
     virtual const char *Get_HName() const = 0;
-    virtual const char *Get_Key() { return Get_Name(); }
+    const char *Get_Key() override { return Get_Name(); }
     virtual int Get_Num_Frames() = 0;
     virtual float Get_Frame_Rate() = 0;
     virtual float Get_Total_Time() = 0;

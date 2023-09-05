@@ -155,7 +155,7 @@ public:
     AudioEventRTS m_event;
     DynamicAudioEventRTS() {}
     DynamicAudioEventRTS(const DynamicAudioEventRTS &that) : m_event(that.m_event) {}
-    virtual ~DynamicAudioEventRTS() override {}
+    ~DynamicAudioEventRTS() override {}
     DynamicAudioEventRTS &operator=(const DynamicAudioEventRTS &that)
     {
         MemoryPoolObject::operator=(that);

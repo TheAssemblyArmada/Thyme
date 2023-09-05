@@ -28,11 +28,11 @@ class AIGroup : public MemoryPoolObject, public SnapShot
 
 public:
     AIGroup();
-    virtual ~AIGroup() override;
+    ~AIGroup() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     int Get_ID();
     float Get_Speed();

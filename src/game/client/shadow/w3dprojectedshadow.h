@@ -37,9 +37,9 @@ class W3DShadowTexture : public RefCountClass, public HashableClass
 {
 public:
     W3DShadowTexture();
-    virtual ~W3DShadowTexture() override;
+    ~W3DShadowTexture() override;
 
-    virtual char const *Get_Key() override { return m_name; }
+    char const *Get_Key() override { return m_name; }
     int Init(RenderObjClass *robj);
     void Update_Bounds(Vector3 &light_pos, RenderObjClass *robj);
 
@@ -105,7 +105,7 @@ class W3DShadowTextureManagerIterator : public HashTableIteratorClass
 public:
     W3DShadowTextureManagerIterator(W3DShadowTextureManager &manager) : HashTableIteratorClass(*manager.m_texturePtrTable) {}
     W3DShadowTexture *Get_Current_Texture() { return static_cast<W3DShadowTexture *>(Get_Current()); }
-    virtual ~W3DShadowTextureManagerIterator() override {}
+    ~W3DShadowTextureManagerIterator() override {}
 };
 
 class W3DProjectedShadow : public Shadow
@@ -114,10 +114,9 @@ public:
     W3DProjectedShadow();
     ~W3DProjectedShadow();
 
-    virtual void Release() override;
+    void Release() override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual void Gather_Draw_Stats(
-        DebugDrawStats *stats) override; // name of this funcion and data type of its parameter unknown
+    void Gather_Draw_Stats(DebugDrawStats *stats) override; // name of this funcion and data type of its parameter unknown
 #endif
 
     void Init();
@@ -161,9 +160,9 @@ class W3DProjectedShadowManager : ProjectedShadowManager
 {
 public:
     W3DProjectedShadowManager();
-    virtual ~W3DProjectedShadowManager() override;
-    virtual Shadow *Add_Decal(Shadow::ShadowTypeInfo *shadow_info) override;
-    virtual Shadow *Add_Decal(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info) override;
+    ~W3DProjectedShadowManager() override;
+    Shadow *Add_Decal(Shadow::ShadowTypeInfo *shadow_info) override;
+    Shadow *Add_Decal(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info) override;
 
     bool Re_Acquire_Resources();
     void Release_Resources();

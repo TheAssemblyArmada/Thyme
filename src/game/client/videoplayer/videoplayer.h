@@ -33,11 +33,11 @@ class VideoPlayer : public SubsystemInterface
 {
 public:
     VideoPlayer() : m_videosAvailableToPlay(), m_firstStream(nullptr) {}
-    virtual ~VideoPlayer();
+    ~VideoPlayer() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     virtual void Deinit() {}
     virtual void Lose_Focus() {}

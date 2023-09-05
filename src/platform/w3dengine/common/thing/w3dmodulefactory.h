@@ -20,8 +20,8 @@
 class W3DModuleFactory : public ModuleFactory
 {
 public:
-    virtual ~W3DModuleFactory() {}
-    virtual void Init() override;
+    ~W3DModuleFactory() override {}
+    void Init() override;
 };
 
 #ifdef GAME_DLL

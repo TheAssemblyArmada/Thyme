@@ -29,11 +29,11 @@ class DamageModule : public BehaviorModule, public DamageModuleInterface
     IMPLEMENT_ABSTRACT_POOL(DamageModule)
 
 public:
-    virtual ~DamageModule() override;
+    ~DamageModule() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual DamageModuleInterface *Get_Damage() override;
+    DamageModuleInterface *Get_Damage() override;
 };

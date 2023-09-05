@@ -55,7 +55,7 @@ class FontCharsClass : public W3DMPO, public RefCountClass
 
 public:
     FontCharsClass();
-    virtual ~FontCharsClass();
+    ~FontCharsClass() override;
 
     void Initialize_GDI_Font(const char *font_name, int point_size, bool is_bold);
     bool Is_Font(const char *font_name, int point_size, bool is_bold);

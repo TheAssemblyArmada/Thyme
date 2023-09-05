@@ -35,10 +35,10 @@ private:
 class RecorderClass : public SubsystemInterface
 {
 public:
-    virtual ~RecorderClass() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    ~RecorderClass() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     bool Playback_File(Utf8String name);
     bool Is_Multiplayer();

@@ -30,20 +30,20 @@ class SwayClientUpdate : public ClientUpdateModule
 protected:
     SwayClientUpdate(Thing *thing, const ModuleData *module_data);
 
-    virtual ~SwayClientUpdate() override {}
+    ~SwayClientUpdate() override {}
 
 public:
     static SwayClientUpdate *Friend_New_Module_Instance(Thing *thing, const ModuleData *module_data);
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
+    void CRC_Snapshot(Xfer *xfer) override;
 
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
 
-    virtual void Load_Post_Process() override;
+    void Load_Post_Process() override;
 
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void Client_Update() override;
+    void Client_Update() override;
 
 private:
     void Update_Sway();

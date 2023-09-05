@@ -156,7 +156,7 @@ class WeaponBonusSet : public MemoryPoolObject
     friend class GlobalData;
 
 protected:
-    virtual ~WeaponBonusSet() override {}
+    ~WeaponBonusSet() override {}
 
 public:
     static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, const void *user_data);
@@ -196,7 +196,7 @@ public:
     WeaponTemplate *Hook_Ctor() { return new (this) WeaponTemplate(); }
 #endif
 
-    virtual ~WeaponTemplate() override;
+    ~WeaponTemplate() override;
 
     void Reset();
     void Post_Process_Load();
@@ -404,10 +404,10 @@ public:
     Weapon(const WeaponTemplate *tmpl, WeaponSlotType wslot);
     Weapon(const Weapon &that);
 
-    virtual ~Weapon() override {}
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    ~Weapon() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     Weapon &operator=(const Weapon &that);
 
@@ -579,11 +579,11 @@ public:
 
     WeaponStore() {}
 
-    virtual ~WeaponStore() override;
-    virtual void Init() override {}
-    virtual void PostProcessLoad() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    ~WeaponStore() override;
+    void Init() override {}
+    void PostProcessLoad() override;
+    void Reset() override;
+    void Update() override;
 
     void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmplate, const Object *source_obj, const Coord3D *victim_pos);
     const WeaponTemplate *Find_Weapon_Template(Utf8String name) const;

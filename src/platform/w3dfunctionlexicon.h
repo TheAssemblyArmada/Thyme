@@ -20,9 +20,9 @@ class W3DFunctionLexicon : public FunctionLexicon
 {
 public:
     W3DFunctionLexicon() {}
-    virtual ~W3DFunctionLexicon() {}
+    ~W3DFunctionLexicon() override {}
 
-    virtual void Init() override;
-    virtual void Reset() override { FunctionLexicon::Reset(); }
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override { FunctionLexicon::Reset(); }
+    void Update() override {}
 };

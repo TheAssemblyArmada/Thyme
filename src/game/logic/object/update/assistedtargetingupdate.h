@@ -22,14 +22,14 @@ class AssistedTargetingUpdate : public UpdateModule
     IMPLEMENT_POOL(AssistedTargetingUpdate);
 
 public:
-    virtual ~AssistedTargetingUpdate() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~AssistedTargetingUpdate() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual UpdateSleepTime Update() override;
+    UpdateSleepTime Update() override;
 
     bool Is_Free_To_Assist() const;
     void Assist_Attack(const Object *source_obj, Object *target_obj);

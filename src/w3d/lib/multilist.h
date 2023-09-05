@@ -121,7 +121,7 @@ template<typename T> class MultiListClass : public GenericMultiListClass
 public:
     MultiListClass() : GenericMultiListClass(){};
 
-    virtual ~MultiListClass()
+    ~MultiListClass() override
     {
         while (!Is_Empty()) {
             Remove_Head();
@@ -190,7 +190,7 @@ template<typename T> class RefMultiListClass : public GenericMultiListClass
 public:
     RefMultiListClass() : GenericMultiListClass(){};
 
-    virtual ~RefMultiListClass()
+    ~RefMultiListClass() override
     {
         while (!Is_Empty()) {
             Release_Head();

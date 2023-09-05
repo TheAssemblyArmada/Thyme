@@ -21,7 +21,7 @@ class LaserUpdateModuleData : public ModuleData
 {
 public:
     LaserUpdateModuleData();
-    virtual ~LaserUpdateModuleData() override;
+    ~LaserUpdateModuleData() override;
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -37,12 +37,12 @@ class LaserUpdate : public ClientUpdateModule
 
 public:
     LaserUpdate(Thing *thing, ModuleData const *module_data);
-    virtual ~LaserUpdate() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Client_Update() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    ~LaserUpdate() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void Client_Update() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);

@@ -19,15 +19,15 @@
 class Win32BIGFile : public ArchiveFile
 {
 public:
-    virtual ~Win32BIGFile() override {}
+    ~Win32BIGFile() override {}
 
-    virtual bool Get_File_Info(Utf8String const &name, FileInfo *info) const override;
-    virtual File *Open_File(const char *filename, int mode) override;
-    virtual void Close_All_Files() override {}
-    virtual Utf8String Get_Name() override { return m_fileName; }
-    virtual Utf8String Get_Path() override { return m_filePath; }
-    virtual void Set_Search_Priority(int priority) override {}
-    virtual void Close() override {}
+    bool Get_File_Info(Utf8String const &name, FileInfo *info) const override;
+    File *Open_File(const char *filename, int mode) override;
+    void Close_All_Files() override {}
+    Utf8String Get_Name() override { return m_fileName; }
+    Utf8String Get_Path() override { return m_filePath; }
+    void Set_Search_Priority(int priority) override {}
+    void Close() override {}
 
 private:
     Utf8String m_fileName;

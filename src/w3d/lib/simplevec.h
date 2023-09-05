@@ -102,7 +102,7 @@ template<typename T> class SimpleDynVecClass : public SimpleVecClass<T>
 
 public:
     SimpleDynVecClass(int size = 0) : SimpleVecClass<T>(size), m_activeCount(0) {}
-    virtual ~SimpleDynVecClass(void)
+    ~SimpleDynVecClass(void) override
     {
         if (m_vector != nullptr) {
             delete[] m_vector;
@@ -120,7 +120,7 @@ public:
         captainslog_assert(index < m_activeCount);
         return m_vector[index];
     }
-    virtual bool Resize(int newsize)
+    bool Resize(int newsize) override
     {
         if (SimpleVecClass<T>::Resize(newsize)) {
             if (m_vectorMax < m_activeCount)

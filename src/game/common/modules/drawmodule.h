@@ -100,7 +100,7 @@ class DrawModule : public DrawableModule
 
 public:
     DrawModule(Thing *thing, const ModuleData *module_data) : DrawableModule(thing, module_data) {}
-    virtual ~DrawModule() override {}
+    ~DrawModule() override {}
     virtual void Do_Draw_Module(const Matrix3D *transform) = 0;
     virtual void Set_Shadows_Enabled(bool enable) = 0;
     virtual void Release_Shadows() = 0;
@@ -127,16 +127,16 @@ public:
     virtual LaserDrawInterface *Get_Laser_Draw_Interface() { return nullptr; }
     virtual const LaserDrawInterface *Get_Laser_Draw_Interface() const { return nullptr; }
 
-    virtual void CRC_Snapshot(Xfer *xfer) override { DrawableModule::CRC_Snapshot(xfer); }
+    void CRC_Snapshot(Xfer *xfer) override { DrawableModule::CRC_Snapshot(xfer); }
 
-    virtual void Xfer_Snapshot(Xfer *xfer) override
+    void Xfer_Snapshot(Xfer *xfer) override
     {
         unsigned char version = 1;
         xfer->xferVersion(&version, 1);
         DrawableModule::Xfer_Snapshot(xfer);
     }
 
-    virtual void Load_Post_Process() override { DrawableModule::Load_Post_Process(); }
+    void Load_Post_Process() override { DrawableModule::Load_Post_Process(); }
 
     static ModuleType Get_Module_Type() { return MODULE_DRAW; }
     static int Get_Interface_Mask() { return MODULEINTERFACE_DRAW; }

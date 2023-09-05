@@ -24,7 +24,7 @@ class SpecialPowerTemplate : public Overridable
     IMPLEMENT_POOL(SpecialPowerTemplate)
 
 public:
-    virtual ~SpecialPowerTemplate() override;
+    ~SpecialPowerTemplate() override;
 
     const SpecialPowerTemplate *Get_FO() const;
 
@@ -59,10 +59,10 @@ class SpecialPowerStore : public SubsystemInterface
 {
 public:
     SpecialPowerStore() : m_nextSpecialPowerID(0) {}
-    virtual ~SpecialPowerStore() override;
-    virtual void Init() override {}
-    virtual void Reset() override;
-    virtual void Update() override {}
+    ~SpecialPowerStore() override;
+    void Init() override {}
+    void Reset() override;
+    void Update() override {}
 
     bool Can_Use_Special_Power(Object *obj, const SpecialPowerTemplate *special_power_template);
     const SpecialPowerTemplate *Find_Special_Power_Template_By_ID(unsigned int id);

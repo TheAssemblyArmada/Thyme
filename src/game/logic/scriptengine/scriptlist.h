@@ -36,15 +36,15 @@ class ScriptList : public MemoryPoolObject, public SnapShot
     };
 
 protected:
-    virtual ~ScriptList() override;
+    ~ScriptList() override;
 
 public:
     ScriptList() : m_firstGroup(nullptr), m_firstScript(nullptr) {}
 
     // Snapshot interface methods.
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     ScriptList *Duplicate();
     ScriptList *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);

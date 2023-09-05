@@ -22,7 +22,7 @@ class ObjectIterator : public MemoryPoolObject
 {
 public:
     ObjectIterator() {}
-    virtual ~ObjectIterator() override {}
+    ~ObjectIterator() override {}
     virtual Object *First() = 0;
     virtual Object *Next() = 0;
 };
@@ -34,7 +34,7 @@ class SimpleObjectIterator : public ObjectIterator
     struct Clump : public MemoryPoolObject
     {
         Clump();
-        ~Clump() {}
+        ~Clump() override {}
         IMPLEMENT_NAMED_POOL(Clump, SimpleObjectIteratorClumpPool);
         Clump *m_nextClump;
         Object *m_obj;
@@ -44,9 +44,9 @@ class SimpleObjectIterator : public ObjectIterator
 public:
     SimpleObjectIterator();
 
-    virtual ~SimpleObjectIterator() override;
-    virtual Object *First() override { return First_With_Numeric(nullptr); }
-    virtual Object *Next() override { return Next_With_Numeric(nullptr); }
+    ~SimpleObjectIterator() override;
+    Object *First() override { return First_With_Numeric(nullptr); }
+    Object *Next() override { return Next_With_Numeric(nullptr); }
 
     void Insert(Object *obj, float numeric);
     void Make_Empty();

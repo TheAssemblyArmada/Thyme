@@ -32,7 +32,7 @@ class ScriptActionsInterface : public SubsystemInterface
 {
 public:
     ScriptActionsInterface() {}
-    virtual ~ScriptActionsInterface() override {}
+    ~ScriptActionsInterface() override {}
     virtual void Execute_Action(ScriptAction *action) = 0;
     virtual void Close_Windows(bool close) = 0;
     virtual void Do_Enable_Or_Disable_Object_Difficulty_Bonuses(bool enable) = 0;
@@ -47,13 +47,13 @@ public:
 #endif
 
     ScriptActions();
-    virtual ~ScriptActions() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
-    virtual void Execute_Action(ScriptAction *action) override;
-    virtual void Close_Windows(bool close) override;
-    virtual void Do_Enable_Or_Disable_Object_Difficulty_Bonuses(bool enable) override;
+    ~ScriptActions() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
+    void Execute_Action(ScriptAction *action) override;
+    void Close_Windows(bool close) override;
+    void Do_Enable_Or_Disable_Object_Difficulty_Bonuses(bool enable) override;
 
     void Do_Quick_Victory();
     void Do_Set_Infantry_Lighting_Override(float override);

@@ -36,39 +36,39 @@ class MeshClass : public W3DMPO, public RenderObjClass
 public:
     MeshClass();
     MeshClass(const MeshClass &src);
-    virtual ~MeshClass() override;
+    ~MeshClass() override;
 
-    virtual RenderObjClass *Clone() const override;
+    RenderObjClass *Clone() const override;
 
-    virtual int Class_ID() const override { return CLASSID_MESH; }
+    int Class_ID() const override { return CLASSID_MESH; }
 
-    virtual const char *Get_Name() const override;
-    virtual void Set_Name(const char *name) override;
+    const char *Get_Name() const override;
+    void Set_Name(const char *name) override;
 
-    virtual int Get_Num_Polys() const override;
+    int Get_Num_Polys() const override;
 
-    virtual void Render(RenderInfoClass &rinfo) override;
-    virtual void Special_Render(SpecialRenderInfoClass &rinfo) override;
+    void Render(RenderInfoClass &rinfo) override;
+    void Special_Render(SpecialRenderInfoClass &rinfo) override;
 
-    virtual bool Cast_Ray(RayCollisionTestClass &raytest) override;
-    virtual bool Cast_AABox(AABoxCollisionTestClass &boxtest) override;
-    virtual bool Cast_OBBox(OBBoxCollisionTestClass &boxtest) override;
+    bool Cast_Ray(RayCollisionTestClass &raytest) override;
+    bool Cast_AABox(AABoxCollisionTestClass &boxtest) override;
+    bool Cast_OBBox(OBBoxCollisionTestClass &boxtest) override;
 
-    virtual bool Intersect_AABox(AABoxIntersectionTestClass &boxtest) override;
-    virtual bool Intersect_OBBox(OBBoxIntersectionTestClass &boxtest) override;
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    bool Intersect_AABox(AABoxIntersectionTestClass &boxtest) override;
+    bool Intersect_OBBox(OBBoxIntersectionTestClass &boxtest) override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
 
-    virtual void Scale(float scale) override;
-    virtual void Scale(float scalex, float scaley, float scalez) override;
+    void Scale(float scale) override;
+    void Scale(float scalex, float scaley, float scalez) override;
 
-    virtual MaterialInfoClass *Get_Material_Info() override;
+    MaterialInfoClass *Get_Material_Info() override;
 
-    virtual int Get_Sort_Level() const override;
-    virtual void Set_Sort_Level(int level) override;
+    int Get_Sort_Level() const override;
+    void Set_Sort_Level(int level) override;
 
-    virtual void Create_Decal(DecalGeneratorClass *generator) override;
-    virtual void Delete_Decal(unsigned long decal_id) override;
+    void Create_Decal(DecalGeneratorClass *generator) override;
+    void Delete_Decal(unsigned long decal_id) override;
 
     MeshClass &operator=(const MeshClass &);
 
@@ -110,8 +110,8 @@ public:
 
 protected:
     unsigned Get_Debug_Id() const { return m_meshDebugId; }
-    virtual void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false) override;
-    virtual void Update_Cached_Bounding_Volumes() const override;
+    void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false) override;
+    void Update_Cached_Bounding_Volumes() const override;
     void Free();
     int Get_Draw_Call_Count() const;
     void Set_Debugger_Disable(bool b) { m_isDisabledByDebugger = b; }
@@ -141,11 +141,11 @@ public:
         proto->Add_Ref();
     }
 
-    virtual ~PrimitivePrototypeClass() override { m_proto->Release_Ref(); }
-    virtual const char *Get_Name() const override { return m_proto->Get_Name(); }
-    virtual int Get_Class_ID() const override { return m_proto->Class_ID(); }
-    virtual RenderObjClass *Create() override { return m_proto->Clone(); }
-    virtual void Delete_Self() override { delete this; };
+    ~PrimitivePrototypeClass() override { m_proto->Release_Ref(); }
+    const char *Get_Name() const override { return m_proto->Get_Name(); }
+    int Get_Class_ID() const override { return m_proto->Class_ID(); }
+    RenderObjClass *Create() override { return m_proto->Clone(); }
+    void Delete_Self() override { delete this; };
 
 private:
     RenderObjClass *m_proto;
@@ -154,6 +154,6 @@ private:
 class MeshLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_MESH; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int Chunk_Type() override { return W3D_CHUNK_MESH; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

@@ -32,7 +32,7 @@ class TransportStatus : public MemoryPoolObject
 
 public:
     TransportStatus() : m_nextStatus(nullptr), m_objID(0), m_frameNumber(0), m_unitCount(0) {}
-    virtual ~TransportStatus() override {}
+    ~TransportStatus() override {}
 
     TransportStatus *m_nextStatus;
     unsigned int m_objID;
@@ -44,7 +44,7 @@ class ScriptConditionsInterface : public SubsystemInterface
 {
 public:
     ScriptConditionsInterface() {}
-    virtual ~ScriptConditionsInterface() override {}
+    ~ScriptConditionsInterface() override {}
     virtual bool Evaluate_Condition(Condition *condition) = 0;
     virtual bool Evaluate_Skirmish_Command_Button_Is_Ready(
         Parameter *param1, Parameter *param2, Parameter *param3, bool b) = 0;
@@ -60,14 +60,13 @@ public:
 #endif
 
     ScriptConditions() {}
-    virtual ~ScriptConditions() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
-    virtual bool Evaluate_Condition(Condition *condition) override;
-    virtual bool Evaluate_Skirmish_Command_Button_Is_Ready(
-        Parameter *param1, Parameter *param2, Parameter *param3, bool b) override;
-    virtual bool Evaluate_Team_Is_Contained(Parameter *param, bool b) override;
+    ~ScriptConditions() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
+    bool Evaluate_Condition(Condition *condition) override;
+    bool Evaluate_Skirmish_Command_Button_Is_Ready(Parameter *param1, Parameter *param2, Parameter *param3, bool b) override;
+    bool Evaluate_Team_Is_Contained(Parameter *param, bool b) override;
 
     Player *Player_From_Param(Parameter *param);
     void Object_Types_From_Param(Parameter *param, ObjectTypes *types);

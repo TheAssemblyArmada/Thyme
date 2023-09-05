@@ -113,8 +113,8 @@ public:
         {
         }
 
-        virtual ~W3DTreeTextureClass() override {} // WB 0x00654AB0
-        virtual void Apply(unsigned stage) override { TextureClass::Apply(stage); } // WB 0x0064EF38
+        ~W3DTreeTextureClass() override {} // WB 0x00654AB0
+        void Apply(unsigned stage) override { TextureClass::Apply(stage); } // WB 0x0064EF38
 
         int Update(W3DTreeBuffer *buffer); // WB 0x0064ECA4
         void Set_Lod(int LOD) const; // WB 0x0064EEF9
@@ -128,9 +128,9 @@ public:
     W3DTreeBuffer(); // WB 0x00651917
     ~W3DTreeBuffer(); // WB 0x006517FD
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {} // WB 0x006544E0
-    virtual void Xfer_Snapshot(Xfer *xfer) override; // WB 0x006544ED
-    virtual void Load_Post_Process() override {} // WB 0x006549F6
+    void CRC_Snapshot(Xfer *xfer) override {} // WB 0x006544E0
+    void Xfer_Snapshot(Xfer *xfer) override; // WB 0x006544ED
+    void Load_Post_Process() override {} // WB 0x006549F6
 
     void Cull(const CameraClass *camera); // WB 0x0064EF8D
     int Get_Partition_Bucket(const Coord3D *loc) const; // WB 0x0064F133

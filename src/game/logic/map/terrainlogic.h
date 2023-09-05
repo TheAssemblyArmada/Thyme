@@ -66,7 +66,7 @@ class Bridge : public MemoryPoolObject
     IMPLEMENT_POOL(Bridge)
 
 protected:
-    virtual ~Bridge() override;
+    ~Bridge() override;
 
 public:
     Bridge(BridgeInfo &info, Dict *props, Utf8String bridge_template_name);
@@ -106,7 +106,7 @@ class Waypoint : public MemoryPoolObject
     IMPLEMENT_POOL(Waypoint)
 
 protected:
-    virtual ~Waypoint() override;
+    ~Waypoint() override;
 
 public:
     Waypoint(WaypointID id,
@@ -179,15 +179,15 @@ class TerrainLogic : public SnapShot, public SubsystemInterface
 {
 public:
     TerrainLogic();
-    virtual ~TerrainLogic() override;
+    ~TerrainLogic() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     virtual bool Load_Map(Utf8String filename, bool query);
     virtual void New_Map(bool b);

@@ -34,30 +34,30 @@ class W3DRopeDraw : public DrawModule, public RopeDrawInterface
 public:
     W3DRopeDraw(Thing *thing, ModuleData const *module_data);
 
-    virtual ~W3DRopeDraw() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(const Matrix3D *transform) override;
-    virtual void Set_Shadows_Enabled(bool enable) override {}
-    virtual void Release_Shadows() override {}
-    virtual void Allocate_Shadows() override {}
-    virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override {}
-    virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override {}
-    virtual void React_To_Geometry_Change() override {}
-    virtual RopeDrawInterface *Get_Rope_Draw_Interface() { return this; }
-    virtual const RopeDrawInterface *Get_Rope_Draw_Interface() const { return this; }
+    ~W3DRopeDraw() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void Do_Draw_Module(const Matrix3D *transform) override;
+    void Set_Shadows_Enabled(bool enable) override {}
+    void Release_Shadows() override {}
+    void Allocate_Shadows() override {}
+    void Set_Fully_Obscured_By_Shroud(bool obscured) override {}
+    void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override {}
+    void React_To_Geometry_Change() override {}
+    RopeDrawInterface *Get_Rope_Draw_Interface() override { return this; }
+    const RopeDrawInterface *Get_Rope_Draw_Interface() const override { return this; }
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void Init_Rope_Params(float height,
+    void Init_Rope_Params(float height,
         float width,
         const RGBColor &color,
         float wobble_len,
         float wobble_amplitude,
         float wobble_rate) override;
-    virtual void Set_Rope_Cur_Len(float length) override;
-    virtual void Set_Rope_Speed(float initial_speed, float max_speed, float gravity) override;
+    void Set_Rope_Cur_Len(float length) override;
+    void Set_Rope_Speed(float initial_speed, float max_speed, float gravity) override;
 
     void Build_Segments();
     void Toss_Segments();

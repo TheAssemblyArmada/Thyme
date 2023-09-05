@@ -62,7 +62,7 @@ class MeshModelClass : public MeshGeometryClass
 public:
     MeshModelClass();
     MeshModelClass(const MeshModelClass &that);
-    virtual ~MeshModelClass() override;
+    ~MeshModelClass() override;
 
     MeshModelClass &operator=(const MeshModelClass &that);
     void Reset(int polycount, int vertcount, int passcount);
@@ -150,7 +150,7 @@ public:
     void Make_UV_Array_Unique(int pass = 0, int stage = 0);
     void Make_Color_Array_Unique(int array_index = 0);
 
-    virtual W3DErrorType Load_W3D(ChunkLoadClass &cload) override;
+    W3DErrorType Load_W3D(ChunkLoadClass &cload) override;
 
     void Enable_Alternate_Material_Description(bool onoff);
     bool Is_Alternate_Material_Description_Enabled();

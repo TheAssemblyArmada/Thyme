@@ -21,9 +21,9 @@ class CrashPreferences : public UserPreferences
 {
 public:
     CrashPreferences();
-    virtual ~CrashPreferences() {}
+    ~CrashPreferences() override {}
 
-    virtual bool Load(Utf8String filename) override;
+    bool Load(Utf8String filename) override;
 
     Utf8String Get_Upload_URL();
     bool Upload_Allowed();

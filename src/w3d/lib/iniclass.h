@@ -44,7 +44,7 @@ class INIEntry : public Node<INIEntry *>
 {
 public:
     INIEntry(const char *name, const char *value) : m_key(strdup(name)), m_value(strdup(value)) {}
-    ~INIEntry();
+    ~INIEntry() override;
 
     const char *Get_Name() { return m_key; }
     void Set_Name(const char *name);
@@ -61,7 +61,7 @@ class INISection : public Node<INISection *>
 {
 public:
     INISection(const char *name) : m_sectionName(strdup(name)) {}
-    ~INISection();
+    ~INISection() override;
 
     INIEntry *Find_Entry(const char *entry) const;
     const char *Get_Name() const { return m_sectionName; }

@@ -33,12 +33,12 @@ class TerrainTracksRenderObjClass : public W3DMPO, public RenderObjClass
 
 public:
     TerrainTracksRenderObjClass();
-    virtual ~TerrainTracksRenderObjClass() override {}
-    virtual RenderObjClass *Clone() const override { return nullptr; }
-    virtual int Class_ID() const override { return CLASSID_TERRAINTRACKS; }
-    virtual void Render(RenderInfoClass &rinfo) override;
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    ~TerrainTracksRenderObjClass() override {}
+    RenderObjClass *Clone() const override { return nullptr; }
+    int Class_ID() const override { return CLASSID_TERRAINTRACKS; }
+    void Render(RenderInfoClass &rinfo) override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
     int Free_Terrain_Tracks_Resources();
     void Add_Cap_Edge_To_Track(float x, float y);
     void Add_Edge_To_Track(float x, float y);

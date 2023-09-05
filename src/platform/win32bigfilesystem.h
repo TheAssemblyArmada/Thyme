@@ -24,17 +24,17 @@ class Win32BIGFileSystem : public ArchiveFileSystem
     };
 
 public:
-    virtual ~Win32BIGFileSystem() {}
+    ~Win32BIGFileSystem() override {}
 
     // SubsystemInterface implementations
-    virtual void Init() override;
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override {}
+    void Update() override {}
 
     // ArchiveFileSystem implementations
-    virtual ArchiveFile *Open_Archive_File(const char *filename) override;
-    virtual void Close_Archive_File(const char *filename) override;
-    virtual void Close_All_Archives() override {}
-    virtual void Close_All_Files() override {}
-    virtual bool Load_Big_Files_From_Directory(Utf8String dir, Utf8String filter, bool overwrite) override;
+    ArchiveFile *Open_Archive_File(const char *filename) override;
+    void Close_Archive_File(const char *filename) override;
+    void Close_All_Archives() override {}
+    void Close_All_Files() override {}
+    bool Load_Big_Files_From_Directory(Utf8String dir, Utf8String filter, bool overwrite) override;
 };

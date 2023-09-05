@@ -34,7 +34,7 @@ public:
     };
 
     TintEnvelope();
-    virtual ~TintEnvelope() override {}
+    ~TintEnvelope() override {}
 
     void CRC_Snapshot(Xfer *xfer) override {}
     void Xfer_Snapshot(Xfer *xfer) override;

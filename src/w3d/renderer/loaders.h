@@ -20,20 +20,20 @@
 class AggregateLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_AGGREGATE; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int Chunk_Type() override { return W3D_CHUNK_AGGREGATE; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };
 
 class RingLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_RING; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int Chunk_Type() override { return W3D_CHUNK_RING; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };
 
 class SphereLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_SPHERE; }
-    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
+    int Chunk_Type() override { return W3D_CHUNK_SPHERE; }
+    PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

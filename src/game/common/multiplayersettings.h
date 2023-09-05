@@ -82,10 +82,10 @@ public:
 #endif
 
     // Subsystem interface implementation.
-    virtual ~MultiplayerSettings() override {}
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~MultiplayerSettings() override {}
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
     MultiplayerColorDefinition *Find_Multiplayer_Color_Definition_By_Name(Utf8String name);
     MultiplayerColorDefinition *New_Multiplayer_Color_Definition(Utf8String name);

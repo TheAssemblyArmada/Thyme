@@ -22,12 +22,12 @@ class BufferedFileClass : public RawFileClass
 public:
     BufferedFileClass();
     BufferedFileClass(const char *filename);
-    virtual ~BufferedFileClass();
+    ~BufferedFileClass() override;
 
-    virtual int Write(void const *buffer, int size) override;
-    virtual int Read(void *buffer, int size) override;
-    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
-    virtual void Close() override;
+    int Write(void const *buffer, int size) override;
+    int Read(void *buffer, int size) override;
+    off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
+    void Close() override;
 
     void Reset_Buffer();
 

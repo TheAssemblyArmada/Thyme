@@ -89,14 +89,14 @@ public:
     WaterRenderObjClass *Hook_Ctor() { return new (this) WaterRenderObjClass(); }
 #endif
 
-    virtual ~WaterRenderObjClass() override;
-    virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override;
-    virtual void Render(RenderInfoClass &rinfo) override;
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
-    virtual int Get_Sort_Level() const override;
-    virtual void Set_Sort_Level(int level) override;
+    ~WaterRenderObjClass() override;
+    RenderObjClass *Clone() const override;
+    int Class_ID() const override;
+    void Render(RenderInfoClass &rinfo) override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    int Get_Sort_Level() const override;
+    void Set_Sort_Level(int level) override;
 
     void Re_Acquire_Resources();
     void Release_Resources();
@@ -122,9 +122,9 @@ public:
     void Update_Render_Target_Textures(CameraClass *cam);
 
 protected:
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
     void Draw_River_Water(PolygonTrigger *ptrig);
     void Draw_Sea(RenderInfoClass &rinfo);
     void Draw_Trapezoid_Water(Vector3 *const points);

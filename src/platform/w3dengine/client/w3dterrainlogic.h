@@ -20,24 +20,24 @@ class W3DTerrainLogic : public TerrainLogic
 {
 public:
     W3DTerrainLogic();
-    virtual ~W3DTerrainLogic() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    ~W3DTerrainLogic() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual bool Load_Map(Utf8String filename, bool query) override;
-    virtual void New_Map(bool b) override;
-    virtual float Get_Ground_Height(float x, float y, Coord3D *n) const override;
-    virtual float Get_Layer_Height(float x, float y, PathfindLayerEnum layer, Coord3D *n, bool b) const override;
-    virtual void Get_Extent(Region3D *extent) const override;
-    virtual void Get_Extent_Including_Border(Region3D *extent) const override;
-    virtual void Get_Maximum_Pathfind_Extent(Region3D *extent) const override;
-    virtual bool Is_Clear_Line_Of_Sight(const Coord3D &pos1, const Coord3D &pos2) const override;
-    virtual bool Is_Cliff_Cell(float x, float y) const override;
+    bool Load_Map(Utf8String filename, bool query) override;
+    void New_Map(bool b) override;
+    float Get_Ground_Height(float x, float y, Coord3D *n) const override;
+    float Get_Layer_Height(float x, float y, PathfindLayerEnum layer, Coord3D *n, bool b) const override;
+    void Get_Extent(Region3D *extent) const override;
+    void Get_Extent_Including_Border(Region3D *extent) const override;
+    void Get_Maximum_Pathfind_Extent(Region3D *extent) const override;
+    bool Is_Clear_Line_Of_Sight(const Coord3D &pos1, const Coord3D &pos2) const override;
+    bool Is_Cliff_Cell(float x, float y) const override;
 
 private:
     float m_mapMinZ;

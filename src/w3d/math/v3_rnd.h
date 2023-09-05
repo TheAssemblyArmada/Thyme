@@ -50,12 +50,12 @@ class Vector3SolidBoxRandomizer : public Vector3Randomizer
 public:
     Vector3SolidBoxRandomizer(const Vector3 &extents);
     Vector3SolidBoxRandomizer(const Vector3SolidBoxRandomizer &that);
-    virtual ~Vector3SolidBoxRandomizer() {}
-    virtual unsigned int Class_ID() const { return CLASSID_SOLIDBOX; }
-    virtual void Get_Vector(Vector3 &vector);
-    virtual float Get_Maximum_Extent();
-    virtual void Scale(float scale);
-    virtual Vector3Randomizer *Clone() const;
+    ~Vector3SolidBoxRandomizer() override {}
+    unsigned int Class_ID() const override { return CLASSID_SOLIDBOX; }
+    void Get_Vector(Vector3 &vector) override;
+    float Get_Maximum_Extent() override;
+    void Scale(float scale) override;
+    Vector3Randomizer *Clone() const override;
     virtual const Vector3 &Get_Extents() const { return m_extents; }
 
 private:
@@ -67,12 +67,12 @@ class Vector3SolidSphereRandomizer : public Vector3Randomizer
 public:
     Vector3SolidSphereRandomizer(float radius);
     Vector3SolidSphereRandomizer(const Vector3SolidSphereRandomizer &that);
-    virtual ~Vector3SolidSphereRandomizer() {}
-    virtual unsigned int Class_ID() const { return CLASSID_SOLIDSPHERE; }
-    virtual void Get_Vector(Vector3 &vector);
-    virtual float Get_Maximum_Extent();
-    virtual void Scale(float scale);
-    virtual Vector3Randomizer *Clone() const;
+    ~Vector3SolidSphereRandomizer() override {}
+    unsigned int Class_ID() const override { return CLASSID_SOLIDSPHERE; }
+    void Get_Vector(Vector3 &vector) override;
+    float Get_Maximum_Extent() override;
+    void Scale(float scale) override;
+    Vector3Randomizer *Clone() const override;
     virtual float Get_Radius() const { return m_radius; }
 
 private:
@@ -84,12 +84,12 @@ class Vector3HollowSphereRandomizer : public Vector3Randomizer
 public:
     Vector3HollowSphereRandomizer(float radius);
     Vector3HollowSphereRandomizer(const Vector3HollowSphereRandomizer &that);
-    virtual ~Vector3HollowSphereRandomizer() {}
-    virtual unsigned int Class_ID() const { return CLASSID_HOLLOWSPHERE; }
-    virtual void Get_Vector(Vector3 &vector);
-    virtual float Get_Maximum_Extent();
-    virtual void Scale(float scale);
-    virtual Vector3Randomizer *Clone() const;
+    ~Vector3HollowSphereRandomizer() override {}
+    unsigned int Class_ID() const override { return CLASSID_HOLLOWSPHERE; }
+    void Get_Vector(Vector3 &vector) override;
+    float Get_Maximum_Extent() override;
+    void Scale(float scale) override;
+    Vector3Randomizer *Clone() const override;
     virtual float Get_Radius() const { return m_radius; }
 
 private:
@@ -101,12 +101,12 @@ class Vector3SolidCylinderRandomizer : public Vector3Randomizer
 public:
     Vector3SolidCylinderRandomizer(float extent, float radius);
     Vector3SolidCylinderRandomizer(const Vector3SolidCylinderRandomizer &that);
-    virtual ~Vector3SolidCylinderRandomizer() {}
-    virtual unsigned int Class_ID() const { return CLASSID_SOLIDCYLINDER; }
-    virtual void Get_Vector(Vector3 &vector);
-    virtual float Get_Maximum_Extent();
-    virtual void Scale(float scale);
-    virtual Vector3Randomizer *Clone() const;
+    ~Vector3SolidCylinderRandomizer() override {}
+    unsigned int Class_ID() const override { return CLASSID_SOLIDCYLINDER; }
+    void Get_Vector(Vector3 &vector) override;
+    float Get_Maximum_Extent() override;
+    void Scale(float scale) override;
+    Vector3Randomizer *Clone() const override;
     virtual float Get_Radius() const { return m_radius; }
     virtual float Get_Height() const { return m_extent; }
 

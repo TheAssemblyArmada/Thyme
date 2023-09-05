@@ -40,7 +40,7 @@ class UpgradeTemplate : public MemoryPoolObject
     IMPLEMENT_POOL(UpgradeTemplate);
 
 public:
-    virtual ~UpgradeTemplate() override;
+    ~UpgradeTemplate() override;
     UpgradeTemplate *Friend_Get_Next() { return m_next; }
     UpgradeTemplate *Friend_Get_Prev() { return m_prev; }
     const UpgradeTemplate *Friend_Get_Next() const { return m_next; }
@@ -73,10 +73,10 @@ class UpgradeCenter : public SubsystemInterface
 {
 public:
     UpgradeCenter();
-    virtual ~UpgradeCenter() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override {}
+    ~UpgradeCenter() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
     UpgradeTemplate *Find_Veterancy_Upgrade(VeterancyLevel level);
 
@@ -98,10 +98,10 @@ class Upgrade : public MemoryPoolObject, public SnapShot
 public:
     Upgrade(const UpgradeTemplate *upgrade_template);
 
-    virtual ~Upgrade() override {}
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~Upgrade() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     Upgrade *Friend_Get_Next() const { return m_next; }
     Upgrade *Friend_Get_Prev() const { return m_prev; }

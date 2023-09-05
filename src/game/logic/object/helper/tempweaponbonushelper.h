@@ -30,15 +30,15 @@ class TempWeaponBonusHelper : public ObjectHelper
 public:
     TempWeaponBonusHelper(Thing *thing, const ModuleData *module_data);
 
-    virtual ~TempWeaponBonusHelper() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~TempWeaponBonusHelper() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
-    virtual UpdateSleepTime Update() override;
+    BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
+    UpdateSleepTime Update() override;
 
     void Clear_Temp_Weapon_Bonus();
     void Do_Temp_Weapon_Bonus(WeaponBonusConditionType bonus, unsigned int frame);

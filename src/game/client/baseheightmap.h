@@ -95,14 +95,14 @@ class BaseHeightMapRenderObjClass : public RenderObjClass, public DX8_CleanupHoo
 public:
     BaseHeightMapRenderObjClass();
 
-    virtual ~BaseHeightMapRenderObjClass() override;
-    virtual RenderObjClass *Clone() const override { return nullptr; }
-    virtual int Class_ID() const override { return CLASSID_HEIGHTMAP; }
-    virtual void On_Frame_Update() override {}
-    virtual void Notify_Added(SceneClass *scene) override;
-    virtual bool Cast_Ray(RayCollisionTestClass &raytest) override;
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    ~BaseHeightMapRenderObjClass() override;
+    RenderObjClass *Clone() const override { return nullptr; }
+    int Class_ID() const override { return CLASSID_HEIGHTMAP; }
+    void On_Frame_Update() override {}
+    void Notify_Added(SceneClass *scene) override;
+    bool Cast_Ray(RayCollisionTestClass &raytest) override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
     virtual int Init_Height_Data(
         int x, int y, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights, bool update_shoreline);
     virtual int Free_Map_Resources();
@@ -117,12 +117,12 @@ public:
     virtual int Update_Block(
         int x0, int y0, int x, int y, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights) = 0;
 
-    virtual void Release_Resources() override;
-    virtual void Re_Acquire_Resources() override;
+    void Release_Resources() override;
+    void Re_Acquire_Resources() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     int Get_Static_Diffuse(int x, int y);
     float Get_Max_Cell_Height(float x, float y) const;

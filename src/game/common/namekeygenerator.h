@@ -34,7 +34,7 @@ class Bucket : public MemoryPoolObject
     IMPLEMENT_NAMED_POOL(Bucket, NameKeyBucketPool);
 
 protected:
-    virtual ~Bucket() override {}
+    ~Bucket() override {}
 
 public:
     Bucket() : m_nextInSocket(nullptr), m_key(NAMEKEY_INVALID), m_nameString() {}
@@ -54,12 +54,12 @@ class NameKeyGenerator : public SubsystemInterface
 
 public:
     NameKeyGenerator();
-    virtual ~NameKeyGenerator();
+    ~NameKeyGenerator() override;
 
     // SubsystemInterface implementation
-    virtual void Init();
-    virtual void Reset();
-    virtual void Update() {}
+    void Init() override;
+    void Reset() override;
+    void Update() override {}
 
     // Key to name functions
     Utf8String Key_To_Name(NameKeyType key);

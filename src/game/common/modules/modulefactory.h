@@ -44,15 +44,15 @@ class ModuleFactory : public SubsystemInterface, public SnapShot
     };
 
 public:
-    virtual ~ModuleFactory() {}
+    ~ModuleFactory() override {}
 
-    virtual void Init() override;
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override {}
+    void Update() override {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     int Find_Module_Interface_Mask(const Utf8String &name, ModuleType type);
     Module *New_Module(Thing *thing, const Utf8String &name, const ModuleData *data, ModuleType type);

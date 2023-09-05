@@ -23,9 +23,9 @@ class ShellMenuSchemeManager;
 class Shell : public SubsystemInterface
 {
 public:
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     void Push(Utf8String filename, bool b);
     WindowLayout *Top();

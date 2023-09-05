@@ -44,7 +44,7 @@ class CullableClass : public RefCountClass
 {
 public:
     CullableClass();
-    virtual ~CullableClass();
+    ~CullableClass() override;
 
     inline const AABoxClass &Get_Cull_Box() const { return m_cullBox; }
     void Set_Cull_Box(const AABoxClass &box, bool just_loaded = false);

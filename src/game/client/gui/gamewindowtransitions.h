@@ -43,12 +43,12 @@ class GameWindowTransitionsHandler : public SubsystemInterface
 {
 public:
     GameWindowTransitionsHandler();
-    virtual ~GameWindowTransitionsHandler();
+    ~GameWindowTransitionsHandler() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
-    virtual void Draw() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
+    void Draw() override;
 
     void Set_Group(Utf8String str, bool b);
     bool Is_Finished();

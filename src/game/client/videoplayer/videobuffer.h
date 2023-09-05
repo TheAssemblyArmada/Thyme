@@ -66,12 +66,12 @@ class W3DVideoBuffer : public VideoBuffer
 {
 public:
     W3DVideoBuffer(Type type);
-    virtual ~W3DVideoBuffer() override;
-    virtual bool Allocate(unsigned width, unsigned height) override;
-    virtual void Free() override;
-    virtual void *Lock() override;
-    virtual void Unlock() override;
-    virtual bool Valid() override;
+    ~W3DVideoBuffer() override;
+    bool Allocate(unsigned width, unsigned height) override;
+    void Free() override;
+    void *Lock() override;
+    void Unlock() override;
+    bool Valid() override;
 
     TextureClass *Get_Texture() { return m_texture; }
     static WW3DFormat Type_To_W3D_Format(Type type);

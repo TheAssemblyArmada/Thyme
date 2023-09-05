@@ -32,9 +32,9 @@ class WorldHeightMap;
 class TerrainVisual : public SnapShot, public SubsystemInterface
 {
 public:
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
     virtual bool Load(Utf8String);
     virtual void Get_Terrain_Color_At(float, float, RGBColor *) = 0;

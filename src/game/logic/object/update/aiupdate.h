@@ -556,8 +556,8 @@ public:
 class AIUpdateModuleData : public UpdateModuleData
 {
 public:
-    virtual ~AIUpdateModuleData() override;
-    virtual bool Is_AI_Module_Data() const override;
+    ~AIUpdateModuleData() override;
+    bool Is_AI_Module_Data() const override;
 
     static void Parse_Locomotor_Set(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Turret(INI *ini, void *formal, void *store, const void *user_data);
@@ -585,10 +585,10 @@ public:
         ANGLE,
     };
 
-    virtual ~AIUpdateInterface() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void On_Object_Created() override;
-    virtual SleepyUpdatePhase Get_Update_Phase() const override;
+    ~AIUpdateInterface() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void On_Object_Created() override;
+    SleepyUpdatePhase Get_Update_Phase() const override;
 
     virtual void Private_Move_To_Position(const Coord3D *pos, CommandSourceType cmd_source);
     virtual void Private_Move_To_Object(Object *obj, CommandSourceType cmd_source);
@@ -705,13 +705,13 @@ public:
     virtual bool Get_Treat_As_Aircraft_For_Loco_Dist_To_Goal() const;
     virtual void Friend_Notify_State_Machine_Changed();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
-    virtual AIUpdateInterface *Get_AI_Update_Interface() override;
-    virtual UpdateSleepTime Update() override;
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
-    virtual void AI_Do_Command(const AICommandParms *params) override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
+    AIUpdateInterface *Get_AI_Update_Interface() override;
+    UpdateSleepTime Update() override;
+    BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
+    void AI_Do_Command(const AICommandParms *params) override;
 
     float Get_Cur_Locomotor_Speed() const;
     bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch) const;

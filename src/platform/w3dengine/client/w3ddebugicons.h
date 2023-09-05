@@ -39,7 +39,7 @@ public:
 
     W3DDebugIcons &operator=(const W3DDebugIcons &that) = delete;
 
-    virtual ~W3DDebugIcons();
+    ~W3DDebugIcons() override;
 
     int Class_ID() const override { return -1; }
 

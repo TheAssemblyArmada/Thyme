@@ -39,8 +39,8 @@ public:
         m_increaseFrameCount = 0;
         m_targetRange = 0.0f;
     }
-    virtual ~W3DDynamicLight() override {}
-    virtual void On_Frame_Update() override;
+    ~W3DDynamicLight() override {}
+    void On_Frame_Update() override;
 
     void Set_Frame_Fade(unsigned int frame_increase_time, unsigned int decay_frame_time);
 

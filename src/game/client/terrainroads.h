@@ -36,7 +36,7 @@ class TerrainRoadType : public MemoryPoolObject
     IMPLEMENT_POOL(TerrainRoadType);
 
 protected:
-    virtual ~TerrainRoadType() override {}
+    ~TerrainRoadType() override {}
 
 public:
     TerrainRoadType();
@@ -108,11 +108,11 @@ class TerrainRoadCollection : public SubsystemInterface
 {
 public:
     TerrainRoadCollection() : m_roadList(nullptr), m_bridgeList(nullptr) { s_idCounter = 1; }
-    virtual ~TerrainRoadCollection();
+    ~TerrainRoadCollection() override;
 
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
     TerrainRoadType *New_Road(Utf8String name);
     TerrainRoadType *New_Bridge(Utf8String name);

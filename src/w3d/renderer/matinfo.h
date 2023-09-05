@@ -29,7 +29,7 @@ class MaterialInfoClass : public W3DMPO, public RefCountClass
     IMPLEMENT_W3D_POOL(MaterialInfoClass)
 public:
     MaterialInfoClass() {}
-    ~MaterialInfoClass();
+    ~MaterialInfoClass() override;
 
     MaterialInfoClass(const MaterialInfoClass &src);
 

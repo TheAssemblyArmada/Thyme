@@ -38,15 +38,15 @@ class SDL2Mouse : public Mouse
 public:
     SDL2Mouse();
 
-    virtual ~SDL2Mouse() override{};
+    ~SDL2Mouse() override{};
 
-    virtual void Init() override;
-    virtual void Init_Cursor_Resources() override;
-    virtual void Set_Cursor(MouseCursor cursor) override;
-    virtual void Capture() override{};
-    virtual void Release_Capture() override{};
-    virtual void Set_Visibility(bool visibility) override;
-    virtual uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) override;
+    void Init() override;
+    void Init_Cursor_Resources() override;
+    void Set_Cursor(MouseCursor cursor) override;
+    void Capture() override{};
+    void Release_Capture() override{};
+    void Set_Visibility(bool visibility) override;
+    uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) override;
 
     void Add_SDL2_Event(SDL_Event *ev);
 

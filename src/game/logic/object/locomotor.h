@@ -75,7 +75,7 @@ class LocomotorTemplate : public Overridable
 
 public:
     LocomotorTemplate();
-    virtual ~LocomotorTemplate() override {}
+    ~LocomotorTemplate() override {}
 
     void Validate();
 
@@ -153,11 +153,11 @@ class LocomotorStore : public SubsystemInterface
 {
 public:
     LocomotorStore() {}
-    virtual ~LocomotorStore() override;
+    ~LocomotorStore() override;
 
-    virtual void Init() override {}
-    virtual void Reset() override;
-    virtual void Update() override {}
+    void Init() override {}
+    void Reset() override;
+    void Update() override {}
 
 #ifdef GAME_DLL
     LocomotorStore *Hook_Ctor() { return new (this) LocomotorStore; }
@@ -203,10 +203,10 @@ public:
     Locomotor(const Locomotor &that);
     Locomotor &operator=(const Locomotor &that);
 
-    virtual ~Locomotor() override {}
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~Locomotor() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     float Get_Max_Speed_For_Condition(BodyDamageType condition) const;
     float Get_Max_Turn_Rate(BodyDamageType condition) const;
@@ -363,9 +363,9 @@ public:
 #endif
 
     virtual ~LocomotorSet();
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Xfer_Self_And_Cur_Loco_Ptr(Xfer *xfer, Locomotor **loco);
 

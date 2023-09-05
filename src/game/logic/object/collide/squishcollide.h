@@ -20,12 +20,12 @@ class SquishCollide : public CollideModule
 {
     IMPLEMENT_POOL(SquishCollide);
 
-    virtual ~SquishCollide() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~SquishCollide() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) override;
+    void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) override;
 };

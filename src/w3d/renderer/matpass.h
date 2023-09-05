@@ -29,7 +29,7 @@ public:
     };
 
     MaterialPassClass();
-    virtual ~MaterialPassClass();
+    ~MaterialPassClass() override;
 
     virtual void Install_Materials();
     virtual void UnInstall_Materials() {}

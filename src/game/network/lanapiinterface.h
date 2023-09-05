@@ -142,7 +142,7 @@ public:
     };
 
 public:
-    virtual ~LANAPIInterface() { static_assert(sizeof(LANMessage) == 471, "LANMessage not expected size"); }
+    ~LANAPIInterface() override { static_assert(sizeof(LANMessage) == 471, "LANMessage not expected size"); }
 
     virtual void Set_Is_Active(bool active) = 0;
     virtual void Request_Locations() = 0;

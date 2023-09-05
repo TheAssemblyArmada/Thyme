@@ -24,7 +24,7 @@ class WeatherSetting : public Overridable
     IMPLEMENT_POOL(WeatherSetting);
 
 protected:
-    virtual ~WeatherSetting() override {}
+    ~WeatherSetting() override {}
 
 public:
     WeatherSetting();

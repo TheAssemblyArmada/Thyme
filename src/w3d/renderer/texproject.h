@@ -33,7 +33,7 @@ class TexProjectClass : public ProjectorClass, public CullableClass, public Mult
 {
 public:
     TexProjectClass();
-    virtual ~TexProjectClass() override;
+    ~TexProjectClass() override;
 
     void Set_Texture_Size(int size);
     int Get_Texture_Size();
@@ -55,8 +55,8 @@ public:
     void Enable_Depth_Gradient(bool onoff);
     bool Is_Depth_Gradient_Enabled(bool onoff);
 
-    virtual void Set_Perspective_Projection(float hfov, float vfov, float znear, float zfar) override;
-    virtual void Set_Ortho_Projection(float xmin, float xmax, float ymin, float ymax, float znear, float zfar) override;
+    void Set_Perspective_Projection(float hfov, float vfov, float znear, float zfar) override;
+    void Set_Ortho_Projection(float xmin, float xmax, float ymin, float ymax, float znear, float zfar) override;
 
     void Set_Texture(TextureClass *texture);
     TextureClass *Get_Texture() const;
@@ -86,7 +86,7 @@ public:
 protected:
     void Set_Flag(uint32_t flag, bool onoff);
     bool Get_Flag(uint32_t flag) const;
-    virtual void Update_WS_Bounding_Volume();
+    void Update_WS_Bounding_Volume() override;
     void Configure_Camera(CameraClass &camera);
 
     enum FlagsType

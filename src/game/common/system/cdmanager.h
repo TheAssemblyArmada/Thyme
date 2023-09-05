@@ -22,7 +22,7 @@ class CDManagerInterface : public SubsystemInterface
 {
 public:
     CDManagerInterface() {}
-    virtual ~CDManagerInterface() override {}
+    ~CDManagerInterface() override {}
     virtual int Drive_Count() = 0;
     virtual CDDriveInterface *Get_Drive() = 0;
     virtual CDDriveInterface *New_Drive(const char *drive) = 0;

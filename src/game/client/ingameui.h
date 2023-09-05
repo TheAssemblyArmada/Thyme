@@ -72,11 +72,11 @@ enum WorldAnimationOptions
 class InGameUI : public SubsystemInterface, public SnapShot
 {
 public:
-    virtual ~InGameUI() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
-    virtual void Draw() override = 0;
+    ~InGameUI() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
+    void Draw() override = 0;
     virtual void Popup_Message(Utf8String const &message, int i1, int i2, int i3, bool b1, bool b2);
     virtual void Popup_Message(Utf8String const &message, int i1, int i2, int i3, int i4, bool b1, bool b2);
     virtual void Message_Color(RGBColor const *color, wchar_t const *message);

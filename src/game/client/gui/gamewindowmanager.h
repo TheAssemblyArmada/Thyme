@@ -42,11 +42,11 @@ class GameWindowManager : public SubsystemInterface
 
 public:
     GameWindowManager();
-    virtual ~GameWindowManager();
+    ~GameWindowManager() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     virtual GameWindow *Allocate_New_Window() = 0;
 

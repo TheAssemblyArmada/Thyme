@@ -36,12 +36,12 @@ class GameEngine : public SubsystemInterface
 {
 public:
     GameEngine();
-    virtual ~GameEngine();
+    ~GameEngine() override;
 
     // SubsystemInterface implementations
-    virtual void Init() {}
-    virtual void Reset();
-    virtual void Update();
+    void Init() override {}
+    void Reset() override;
+    void Update() override;
 
     // GameEngine interface
     virtual void Init(int argc, char *argv[]);

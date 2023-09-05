@@ -60,11 +60,11 @@ class HAnimIterator : public AssetIterator
 {
 public:
     HAnimIterator() : m_iterator(W3DAssetManager::Get_Instance()->m_hAnimManager) {}
-    virtual ~HAnimIterator() override {}
-    virtual void First() override { m_iterator.First(); }
-    virtual void Next() override { m_iterator.Next(); }
-    virtual bool Is_Done() const override { return m_iterator.Is_Done(); }
-    virtual const char *Current_Item_Name() const override
+    ~HAnimIterator() override {}
+    void First() override { m_iterator.First(); }
+    void Next() override { m_iterator.Next(); }
+    bool Is_Done() const override { return m_iterator.Is_Done(); }
+    const char *Current_Item_Name() const override
     {
         return static_cast<HAnimClass *>(m_iterator.Get_Current())->Get_Name();
     }
@@ -75,10 +75,10 @@ private:
 
 class RObjIterator : public RenderObjIterator
 {
-    virtual ~RObjIterator() override {}
-    virtual bool Is_Done() const override { return m_index >= W3DAssetManager::Get_Instance()->m_prototypes.Count(); }
+    ~RObjIterator() override {}
+    bool Is_Done() const override { return m_index >= W3DAssetManager::Get_Instance()->m_prototypes.Count(); }
 
-    virtual const char *Current_Item_Name() const override
+    const char *Current_Item_Name() const override
     {
         if (Is_Done()) {
             return nullptr;
@@ -87,7 +87,7 @@ class RObjIterator : public RenderObjIterator
         return W3DAssetManager::Get_Instance()->m_prototypes[m_index]->Get_Name();
     }
 
-    virtual int Current_Item_Class_ID() override
+    int Current_Item_Class_ID() override
     {
         if (Is_Done()) {
             return RenderObjClass::CLASSID_UNKNOWN;

@@ -52,11 +52,11 @@ public:
 
 public:
     FunctionLexicon();
-    virtual ~FunctionLexicon() {}
+    ~FunctionLexicon() override {}
 
-    virtual void Init() override;
-    virtual void Reset() override { Init(); }
-    virtual void Update() override {}
+    void Init() override;
+    void Reset() override { Init(); }
+    void Update() override {}
 
     void *Find_Function(NameKeyType key, TableIndex index);
     drawfunc_t Game_Win_Draw_Func(NameKeyType key, TableIndex index);

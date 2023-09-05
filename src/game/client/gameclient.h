@@ -53,7 +53,7 @@ public:
         m_objective(0), m_teamExists(false), m_clickDownCoord(), m_clickUpCoord(), m_clickDownTime(0), m_clickUpTime(0)
     {
     }
-    virtual ~CommandTranslator() override {}
+    ~CommandTranslator() override {}
 
     GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
 
@@ -88,15 +88,15 @@ class GameClient : public SubsystemInterface, public SnapShot
 
 public:
     GameClient();
-    virtual ~GameClient();
+    ~GameClient() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
     void Load_Post_Process() override;
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
     virtual void Set_Frame(uint32_t frame) { m_frame = frame; }
 
@@ -189,6 +189,6 @@ class GameClientMessageDispatcher : public GameMessageTranslator
 {
 public:
     GameClientMessageDispatcher() {}
-    virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg);
-    virtual ~GameClientMessageDispatcher() {}
+    GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
+    ~GameClientMessageDispatcher() override {}
 };

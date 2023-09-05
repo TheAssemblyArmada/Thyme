@@ -31,7 +31,7 @@ class PhysicsBehaviorModuleData : public UpdateModuleData
 {
 public:
     PhysicsBehaviorModuleData();
-    virtual ~PhysicsBehaviorModuleData() {}
+    ~PhysicsBehaviorModuleData() override {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
@@ -80,23 +80,23 @@ class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
 public:
     PhysicsBehavior(Thing *thing, const ModuleData *module_data);
 
-    virtual ~PhysicsBehavior() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void On_Object_Created() override;
-    virtual SleepyUpdatePhase Get_Update_Phase() const override;
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
-    virtual CollideModuleInterface *Get_Collide() override;
-    virtual UpdateSleepTime Update() override;
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
-    virtual void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) override;
-    virtual bool Would_Like_To_Collide_With(Object const *other) override;
-    virtual bool Is_Hijacked_Vehicle_Crate_Collide() override;
-    virtual bool Is_Sabotage_Building_Crate_Collide() override;
-    virtual bool Is_Car_Bomb_Crate_Collide() override;
-    virtual bool Is_Railroad() override;
-    virtual bool Is_Salvage_Crate_Collide() override;
+    ~PhysicsBehavior() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void On_Object_Created() override;
+    SleepyUpdatePhase Get_Update_Phase() const override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
+    CollideModuleInterface *Get_Collide() override;
+    UpdateSleepTime Update() override;
+    BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
+    void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) override;
+    bool Would_Like_To_Collide_With(Object const *other) override;
+    bool Is_Hijacked_Vehicle_Crate_Collide() override;
+    bool Is_Sabotage_Building_Crate_Collide() override;
+    bool Is_Car_Bomb_Crate_Collide() override;
+    bool Is_Railroad() override;
+    bool Is_Salvage_Crate_Collide() override;
 
     void Add_Overlap(Object *obj);
     void Add_Velocity_To(const Coord3D *velocity);

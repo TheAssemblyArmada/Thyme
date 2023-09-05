@@ -59,24 +59,24 @@ public:
     CameraClass();
     CameraClass(const CameraClass &src);
 
-    virtual ~CameraClass() {}
+    ~CameraClass() override {}
 
     CameraClass &operator=(const CameraClass &);
 
-    virtual RenderObjClass *Clone() const;
+    RenderObjClass *Clone() const override;
 
-    virtual int Class_ID() const { return CLASSID_CAMERA; }
+    int Class_ID() const override { return CLASSID_CAMERA; }
 
     // Rendering
-    virtual void Render(RenderInfoClass &rinfo) {}
+    void Render(RenderInfoClass &rinfo) override {}
 
     // Scene
-    virtual void Set_Transform(const Matrix3D &m);
-    virtual void Set_Position(const Vector3 &v);
+    void Set_Transform(const Matrix3D &m) override;
+    void Set_Position(const Vector3 &v) override;
 
     // Bounding
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
 
     // Depth
     float Get_Depth() const;

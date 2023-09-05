@@ -23,32 +23,32 @@ public:
     RawFileClass();
     RawFileClass(const char *filename);
 
-    virtual ~RawFileClass() override { Reset(); };
-    virtual const char *File_Name() override { return m_filename; };
-    virtual const char *Set_Name(const char *filename) override;
-    virtual bool Create() override;
-    virtual bool Delete() override;
-    virtual bool Is_Available(bool forced = false) override;
+    ~RawFileClass() override { Reset(); };
+    const char *File_Name() override { return m_filename; };
+    const char *Set_Name(const char *filename) override;
+    bool Create() override;
+    bool Delete() override;
+    bool Is_Available(bool forced = false) override;
 #ifdef PLATFORM_WINDOWS
     virtual bool Is_Open() override { return m_handle != (HANDLE)(LONG_PTR)-1; };
 #else
-    virtual bool Is_Open() override { return m_handle != -1; };
+    bool Is_Open() override { return m_handle != -1; };
 #endif
-    virtual bool Open(const char *filename, int rights = FM_READ) override;
-    virtual bool Open(int rights = FM_READ) override;
-    virtual int Read(void *buffer, int length) override;
-    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
-    virtual off_t Tell() override { return Seek(0, FS_SEEK_CURRENT); }
-    virtual off_t Size() override;
-    virtual int Write(void const *buffer, int length) override;
-    virtual void Close() override;
-    virtual time_t Get_Date_Time() override;
-    virtual bool Set_Date_Time(time_t date_time) override;
+    bool Open(const char *filename, int rights = FM_READ) override;
+    bool Open(int rights = FM_READ) override;
+    int Read(void *buffer, int length) override;
+    off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
+    off_t Tell() override { return Seek(0, FS_SEEK_CURRENT); }
+    off_t Size() override;
+    int Write(void const *buffer, int length) override;
+    void Close() override;
+    time_t Get_Date_Time() override;
+    bool Set_Date_Time(time_t date_time) override;
     virtual void Error(int error, bool can_retry = false, const char *filename = nullptr);
 #ifdef PLATFORM_WINDOWS
     virtual HANDLE Get_File_Handle() override { return m_handle; }
 #else
-    virtual int Get_File_Handle() override { return m_handle; }
+    int Get_File_Handle() override { return m_handle; }
 #endif
     virtual void Bias(int start, int length = -1);
 #ifdef PLATFORM_WINDOWS

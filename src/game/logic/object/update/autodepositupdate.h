@@ -21,14 +21,14 @@ class Player;
 class AutoDepositUpdate : public UpdateModule
 {
 public:
-    virtual ~AutoDepositUpdate() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~AutoDepositUpdate() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual UpdateSleepTime Update() override;
+    UpdateSleepTime Update() override;
 
     void Award_Initial_Capture_Bonus(Player *p);
 };

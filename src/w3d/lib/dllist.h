@@ -61,7 +61,7 @@ template<typename T> class DLNodeClass : public W3DMPO
 
 public:
     DLNodeClass() : m_succ(0), m_pred(0), m_list(0) {}
-    virtual ~DLNodeClass() { Remove(); }
+    ~DLNodeClass() override { Remove(); }
 
     void Insert_Before(DLNodeClass<T> *n);
     void Insert_After(DLNodeClass<T> *n);

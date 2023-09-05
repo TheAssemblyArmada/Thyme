@@ -69,13 +69,13 @@ class AIStateMachine : public StateMachine
     IMPLEMENT_POOL(AIStateMachine)
 
 public:
-    virtual ~AIStateMachine() override;
-    virtual StateReturnType Update_State_Machine() override;
-    virtual void Clear() override;
-    virtual StateReturnType Reset_To_Default_State() override;
-    virtual StateReturnType Set_State(unsigned int new_state_id) override;
+    ~AIStateMachine() override;
+    StateReturnType Update_State_Machine() override;
+    void Clear() override;
+    StateReturnType Reset_To_Default_State() override;
+    StateReturnType Set_State(unsigned int new_state_id) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual Utf8String Get_Current_State_Name() override;
+    Utf8String Get_Current_State_Name() override;
 #endif
 
     int Get_Goal_Path_Count() const { return m_goalPath.size(); }
@@ -109,13 +109,13 @@ public:
     {
     }
 
-    virtual StateReturnType On_Enter() override;
-    virtual void On_Exit(StateExitType status) override;
-    virtual StateReturnType Update() override;
+    StateReturnType On_Enter() override;
+    void On_Exit(StateExitType status) override;
+    StateReturnType Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
 private:
     NotifyWeaponFiredInterface *m_att;

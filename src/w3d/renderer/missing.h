@@ -24,8 +24,8 @@ class MissingTextureClass : public HashableClass
 {
 public:
     MissingTextureClass(const char *name) : m_name(name) {}
-    virtual ~MissingTextureClass(){};
-    virtual const char *Get_Key() override { return m_name.Peek_Buffer(); };
+    ~MissingTextureClass() override{};
+    const char *Get_Key() override { return m_name.Peek_Buffer(); };
 
 private:
     StringClass m_name;

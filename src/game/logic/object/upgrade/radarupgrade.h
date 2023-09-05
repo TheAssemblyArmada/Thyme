@@ -19,7 +19,7 @@
 class RadarUpgradeModuleData : public ModuleData
 {
 public:
-    virtual ~RadarUpgradeModuleData() override;
+    ~RadarUpgradeModuleData() override;
 
 private:
     bool m_disableProof;
@@ -31,17 +31,17 @@ class RadarUpgrade : public UpgradeModule
     IMPLEMENT_POOL(RadarUpgrade)
 
 public:
-    virtual ~RadarUpgrade() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void On_Delete() override;
-    virtual void On_Capture(Player *player1, Player *player2) override;
+    ~RadarUpgrade() override;
+    NameKeyType Get_Module_Name_Key() const override;
+    void On_Delete() override;
+    void On_Capture(Player *player1, Player *player2) override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual bool Is_Sub_Objects_Upgrade() override;
-    virtual void Upgrade_Implementation() override;
+    bool Is_Sub_Objects_Upgrade() override;
+    void Upgrade_Implementation() override;
 
     const RadarUpgradeModuleData *Get_Radar_Upgrade_Module_Data() const
     {

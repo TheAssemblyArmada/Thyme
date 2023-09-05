@@ -24,7 +24,7 @@ class GameMessageParserArgumentType : public MemoryPoolObject
 
 public:
     GameMessageParserArgumentType(ArgumentDataType type, int arg_count);
-    virtual ~GameMessageParserArgumentType() {}
+    ~GameMessageParserArgumentType() override {}
 
     GameMessageParserArgumentType *Get_Next() { return m_next; }
     void Set_Next(GameMessageParserArgumentType *next) { m_next = next; }
@@ -42,7 +42,7 @@ class GameMessageParser : public MemoryPoolObject
     IMPLEMENT_POOL(GameMessageParser);
 
 protected:
-    virtual ~GameMessageParser() override;
+    ~GameMessageParser() override;
 
 public:
     GameMessageParser();

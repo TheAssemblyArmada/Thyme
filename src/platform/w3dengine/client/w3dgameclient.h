@@ -19,27 +19,27 @@
 class W3DGameClient : public GameClient
 {
 public:
-    virtual ~W3DGameClient() override;
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
-    virtual RayEffectData *Create_Ray_Effect_From_Template(
+    ~W3DGameClient() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
+    RayEffectData *Create_Ray_Effect_From_Template(
         const Coord3D *src, const Coord3D *dst, const ThingTemplate *temp) override;
-    virtual void Add_Scorch(Coord3D *pos, float scale, Scorches scorch) override;
-    virtual Drawable *Create_Drawable(const ThingTemplate *temp, DrawableStatus status) override;
-    virtual void Set_Time_Of_Day(TimeOfDayType time) override;
-    virtual void Set_Team_Color(int red, int blue, int green) override;
-    virtual void Adjust_LOD(int lod) override;
-    virtual int Notify_Terrain_Object_Moved(Object *obj) override;
-    virtual Display *Create_GameDisplay() override;
-    virtual InGameUI *Create_InGameUI() override;
-    virtual GameWindowManager *Create_WindowManager() override;
-    virtual FontLibrary *Create_FontLibrary() override;
-    virtual DisplayStringManager *Create_DisplayStringManager() override;
-    virtual VideoPlayer *Create_VideoPlayer() override;
-    virtual TerrainVisual *Create_TerrainVisual() override;
-    virtual Keyboard *Create_Keyboard() override;
-    virtual Mouse *Create_Mouse() override;
-    virtual SnowManager *Create_SnowManager() override;
-    virtual void Set_Frame_Rate(float fps) override;
+    void Add_Scorch(Coord3D *pos, float scale, Scorches scorch) override;
+    Drawable *Create_Drawable(const ThingTemplate *temp, DrawableStatus status) override;
+    void Set_Time_Of_Day(TimeOfDayType time) override;
+    void Set_Team_Color(int red, int blue, int green) override;
+    void Adjust_LOD(int lod) override;
+    int Notify_Terrain_Object_Moved(Object *obj) override;
+    Display *Create_GameDisplay() override;
+    InGameUI *Create_InGameUI() override;
+    GameWindowManager *Create_WindowManager() override;
+    FontLibrary *Create_FontLibrary() override;
+    DisplayStringManager *Create_DisplayStringManager() override;
+    VideoPlayer *Create_VideoPlayer() override;
+    TerrainVisual *Create_TerrainVisual() override;
+    Keyboard *Create_Keyboard() override;
+    Mouse *Create_Mouse() override;
+    SnowManager *Create_SnowManager() override;
+    void Set_Frame_Rate(float fps) override;
 };

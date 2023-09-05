@@ -32,9 +32,9 @@ class GeometryInfo : public SnapShot
 public:
     GeometryInfo(GeometryType type, bool little, float height, float major_radius, float minor_radius);
 
-    virtual void CRC_Snapshot(Xfer *xfer) {}
-    virtual void Xfer_Snapshot(Xfer *xfer);
-    virtual void Load_Post_Process() {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Set(GeometryType type, bool little, float height, float major_radius, float minor_radius);
     void Calc_Bounding_Stuff();

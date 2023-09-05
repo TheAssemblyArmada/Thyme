@@ -36,12 +36,12 @@ public:
     void Hook_Dtor() { ObjectTypes::~ObjectTypes(); }
 #endif
 
-    virtual ~ObjectTypes() override {}
+    ~ObjectTypes() override {}
 
     // Snapshot virtuals
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer);
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     unsigned int Get_List_Count() const { return m_objectTypes.size(); }
     Utf8String Get_Nth_In_List(unsigned int i) const;

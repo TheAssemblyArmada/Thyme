@@ -32,15 +32,15 @@ class Win32Mouse : public Mouse
 public:
     Win32Mouse();
 
-    virtual ~Win32Mouse() { g_theWin32Mouse = nullptr; };
+    ~Win32Mouse() override { g_theWin32Mouse = nullptr; };
 
-    virtual void Init() override;
-    virtual void Init_Cursor_Resources() override;
-    virtual void Set_Cursor(MouseCursor cursor) override;
-    virtual void Capture() override{};
-    virtual void Release_Capture() override{};
-    virtual void Set_Visibility(bool visibility) override;
-    virtual uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) override;
+    void Init() override;
+    void Init_Cursor_Resources() override;
+    void Set_Cursor(MouseCursor cursor) override;
+    void Capture() override{};
+    void Release_Capture() override{};
+    void Set_Visibility(bool visibility) override;
+    uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) override;
 
     void Add_Win32_Event(uint32_t msg, uint32_t wParam, uint32_t lParam, uint32_t wheel_position);
     void Set_Ignore_Events(bool state) { m_unknownbool = state; }

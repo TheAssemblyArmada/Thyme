@@ -30,60 +30,57 @@ class W3DDisplay final : public Display
 {
 public:
     W3DDisplay();
-    ~W3DDisplay();
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Draw() override;
-    virtual void Set_Width(uint32_t width) override;
-    virtual void Set_Height(uint32_t height) override;
-    virtual bool Set_Display_Mode(uint32_t width, uint32_t height, uint32_t bits, bool windowed) override;
-    virtual int Get_Display_Mode_Count() override;
-    virtual void Get_Display_Mode_Description(int id, int *width, int *height, int *bit_depth) override;
-    virtual void Set_Gamma(float gamma, float bright, float contrast, bool calibrate) override;
-    virtual void Do_Smart_Asset_Purge_And_Preload(const char *) override;
+    ~W3DDisplay() override;
+    void Init() override;
+    void Reset() override;
+    void Draw() override;
+    void Set_Width(uint32_t width) override;
+    void Set_Height(uint32_t height) override;
+    bool Set_Display_Mode(uint32_t width, uint32_t height, uint32_t bits, bool windowed) override;
+    int Get_Display_Mode_Count() override;
+    void Get_Display_Mode_Description(int id, int *width, int *height, int *bit_depth) override;
+    void Set_Gamma(float gamma, float bright, float contrast, bool calibrate) override;
+    void Do_Smart_Asset_Purge_And_Preload(const char *) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual void Write_Asset_Usage(const char *str) override;
+    void Write_Asset_Usage(const char *str) override;
 #endif
-    virtual VideoBuffer *Create_VideoBuffer() override;
-    virtual void Set_Clip_Region(IRegion2D *region) override;
-    virtual bool Is_Clipping_Enabled() override { return m_isClippedEnabled; }
-    virtual void Enable_Clipping(bool isEnabled) override { m_isClippedEnabled = isEnabled; }
-    virtual void Set_Time_Of_Day(TimeOfDayType time) override;
-    virtual void Create_Light_Pulse(const Coord3D *pos,
+    VideoBuffer *Create_VideoBuffer() override;
+    void Set_Clip_Region(IRegion2D *region) override;
+    bool Is_Clipping_Enabled() override { return m_isClippedEnabled; }
+    void Enable_Clipping(bool isEnabled) override { m_isClippedEnabled = isEnabled; }
+    void Set_Time_Of_Day(TimeOfDayType time) override;
+    void Create_Light_Pulse(const Coord3D *pos,
         const RGBColor *color,
         float far_start,
         float far_dist,
         unsigned frame_increase_time,
         unsigned decay_frame_time) override;
-    virtual void Draw_Line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, float width, uint32_t color) override;
-    virtual void Draw_Line(
-        int32_t x1, int32_t y1, int32_t x2, int32_t y2, float width, uint32_t color1, uint32_t color2) override;
-    virtual void Draw_Open_Rect(
-        int32_t x, int32_t y, int32_t width, int32_t height, float border_width, uint32_t color) override;
-    virtual void Draw_Fill_Rect(int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color) override;
-    virtual void Draw_Rect_Clock(
+    void Draw_Line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, float width, uint32_t color) override;
+    void Draw_Line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, float width, uint32_t color1, uint32_t color2) override;
+    void Draw_Open_Rect(int32_t x, int32_t y, int32_t width, int32_t height, float border_width, uint32_t color) override;
+    void Draw_Fill_Rect(int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color) override;
+    void Draw_Rect_Clock(int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color) override;
+    void Draw_Remaining_Rect_Clock(
         int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color) override;
-    virtual void Draw_Remaining_Rect_Clock(
-        int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color) override;
-    virtual void Draw_Image(
+    void Draw_Image(
         Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode) override;
-    virtual void Draw_VideoBuffer(VideoBuffer *vb, int32_t x1, int32_t y1, int32_t x2, int32_t y2) override;
-    virtual void Set_Shroud_Level(int, int, CellShroudStatus) override;
-    virtual void Clear_Shroud() override{};
-    virtual void Set_Border_Shroud_Level(uint8_t level) override;
+    void Draw_VideoBuffer(VideoBuffer *vb, int32_t x1, int32_t y1, int32_t x2, int32_t y2) override;
+    void Set_Shroud_Level(int, int, CellShroudStatus) override;
+    void Clear_Shroud() override{};
+    void Set_Border_Shroud_Level(uint8_t level) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual void Write_Model_And_Texture_Usage(const char *filename) override;
+    void Write_Model_And_Texture_Usage(const char *filename) override;
 #endif
-    virtual void Preload_Model_Assets(Utf8String model) override;
-    virtual void Preload_Texture_Assets(Utf8String texture) override;
-    virtual void Take_ScreenShot() override;
-    virtual void Toggle_Movie_Capture() override;
-    virtual void Toggle_LetterBox() override;
-    virtual void Enable_LetterBox(bool enable) override;
-    virtual bool Is_LetterBox_Fading() override;
-    virtual bool Is_LetterBoxed() override { return m_letterBoxEnabled; }
-    virtual float Get_Average_FPS() override { return m_averageFps; }
-    virtual int Get_Last_Frame_Draw_Calls() override;
+    void Preload_Model_Assets(Utf8String model) override;
+    void Preload_Texture_Assets(Utf8String texture) override;
+    void Take_ScreenShot() override;
+    void Toggle_Movie_Capture() override;
+    void Toggle_LetterBox() override;
+    void Enable_LetterBox(bool enable) override;
+    bool Is_LetterBox_Fading() override;
+    bool Is_LetterBoxed() override { return m_letterBoxEnabled; }
+    float Get_Average_FPS() override { return m_averageFps; }
+    int Get_Last_Frame_Draw_Calls() override;
     void Init_Assets() {}
     void Init_2D_Scene() {}
     void Init_3D_Scene() {}

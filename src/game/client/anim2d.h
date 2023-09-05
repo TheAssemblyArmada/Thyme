@@ -36,7 +36,7 @@ class Anim2DTemplate : public MemoryPoolObject
 
 public:
     Anim2DTemplate(Utf8String name);
-    virtual ~Anim2DTemplate() override;
+    ~Anim2DTemplate() override;
 
     void Allocate_Images(unsigned short count);
     Image *Get_Frame(unsigned short frame);
@@ -81,10 +81,10 @@ class Anim2D : public MemoryPoolObject, public SnapShot
 
 public:
     Anim2D(Anim2DTemplate *tmplate, Anim2DCollection *collection);
-    virtual ~Anim2D() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    ~Anim2D() override;
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Draw(int x, int y, int width, int height);
     int Get_Current_Frame_Height();
@@ -127,10 +127,10 @@ class Anim2DCollection : public SubsystemInterface
 public:
     Anim2DCollection();
 
-    virtual ~Anim2DCollection() override;
-    virtual void Init() override;
-    virtual void Reset() override {}
-    virtual void Update() override;
+    ~Anim2DCollection() override;
+    void Init() override;
+    void Reset() override {}
+    void Update() override;
 
     Anim2DTemplate *Find_Template(Utf8String const &name);
     Anim2DTemplate *Get_Next_Template(Anim2DTemplate *tmplate);

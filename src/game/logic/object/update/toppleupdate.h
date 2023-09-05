@@ -21,24 +21,24 @@ class ToppleUpdate : public UpdateModule, public CollideModuleInterface
     IMPLEMENT_POOL(ToppleUpdate)
 
 public:
-    virtual ~ToppleUpdate() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~ToppleUpdate() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual CollideModuleInterface *Get_Collide() override;
+    CollideModuleInterface *Get_Collide() override;
 
-    virtual UpdateSleepTime Update() override;
+    UpdateSleepTime Update() override;
 
-    virtual void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) override;
-    virtual bool Would_Like_To_Collide_With(Object const *other) override;
-    virtual bool Is_Hijacked_Vehicle_Crate_Collide() override;
-    virtual bool Is_Sabotage_Building_Crate_Collide() override;
-    virtual bool Is_Car_Bomb_Crate_Collide() override;
-    virtual bool Is_Railroad() override;
-    virtual bool Is_Salvage_Crate_Collide() override;
+    void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) override;
+    bool Would_Like_To_Collide_With(Object const *other) override;
+    bool Is_Hijacked_Vehicle_Crate_Collide() override;
+    bool Is_Sabotage_Building_Crate_Collide() override;
+    bool Is_Car_Bomb_Crate_Collide() override;
+    bool Is_Railroad() override;
+    bool Is_Salvage_Crate_Collide() override;
 
     bool Is_Able_To_Be_Toppled() const;
     void Apply_Toppling_Force(const Coord3D *topple_direction, float topple_speed, unsigned int options);

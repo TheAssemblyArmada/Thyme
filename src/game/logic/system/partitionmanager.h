@@ -78,9 +78,9 @@ class PartitionFilterRelationship : public PartitionFilter
 {
 public:
     PartitionFilterRelationship(Object *obj, int unk) : m_object(obj), m_unk(unk) {}
-    virtual bool Allow(Object *obj) override;
+    bool Allow(Object *obj) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual const char *Get_Name() override { return "PartitionFilterRelationship"; }
+    const char *Get_Name() override { return "PartitionFilterRelationship"; }
 #endif
 private:
     Object *m_object;
@@ -90,9 +90,9 @@ private:
 class PartitionFilterAlive : public PartitionFilter
 {
 public:
-    virtual bool Allow(Object *obj) override;
+    bool Allow(Object *obj) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual const char *Get_Name() override { return "PartitionFilterAlive"; }
+    const char *Get_Name() override { return "PartitionFilterAlive"; }
 #endif
 };
 
@@ -100,9 +100,9 @@ class PartitionFilterSameMapStatus : public PartitionFilter
 {
 public:
     PartitionFilterSameMapStatus(Object *obj) : m_object(obj) {}
-    virtual bool Allow(Object *obj) override;
+    bool Allow(Object *obj) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual const char *Get_Name() override { return "PartitionFilterSameMapStatus"; }
+    const char *Get_Name() override { return "PartitionFilterSameMapStatus"; }
 #endif
 private:
     Object *m_object;
@@ -116,9 +116,9 @@ public:
     {
     }
 
-    virtual bool Allow(Object *obj) override;
+    bool Allow(Object *obj) override;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual const char *Get_Name() override { return "PartitionFilterAcceptByKindOf"; }
+    const char *Get_Name() override { return "PartitionFilterAcceptByKindOf"; }
 #endif
 
 private:
@@ -169,9 +169,9 @@ class PartitionCell : public SnapShot
 public:
     ~PartitionCell();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override{};
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override{};
 
 private:
     CellAndObjectIntersection *m_firstCoilInCell;
@@ -190,7 +190,7 @@ class PartitionData : public MemoryPoolObject
     IMPLEMENT_NAMED_POOL(PartitionData, PartitionDataPool);
 
 public:
-    virtual ~PartitionData() override;
+    ~PartitionData() override;
 
     void Remove_From_Dirty_Modules(PartitionData **dirtyModules);
     void Make_Dirty(bool b);
@@ -222,13 +222,13 @@ class SightingInfo : public MemoryPoolObject, public SnapShot
     IMPLEMENT_POOL(SightingInfo);
 
 public:
-    virtual ~SightingInfo() override{};
+    ~SightingInfo() override{};
     // zh: 0x00541930 wb: 0x00824207
     SightingInfo() { Reset(); }
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override{};
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override{};
 
     void Reset();
     // zh: 0x00541A20 wb: 0x008242C1
@@ -246,16 +246,16 @@ private:
 class PartitionManager : public SubsystemInterface, public SnapShot
 {
 public:
-    virtual ~PartitionManager() override { Shutdown(); };
+    ~PartitionManager() override { Shutdown(); };
     PartitionManager();
 
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    void Init() override;
+    void Reset() override;
+    void Update() override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override{};
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override{};
 
     bool Geom_Collides_With_Geom(Coord3D const *position,
         GeometryInfo const &geometry,

@@ -28,7 +28,7 @@ class ThumbnailManagerClass : public DLNodeClass<ThumbnailManagerClass>
 
 public:
     ThumbnailManagerClass(const char *thumbfilename, const char *mixfilename);
-    virtual ~ThumbnailManagerClass();
+    ~ThumbnailManagerClass() override;
     ThumbnailClass *Peek_Thumbnail_Instance(const StringClass &texture);
     void Insert_To_Hash(ThumbnailClass *thumbnail);
     ThumbnailClass *Get_From_Hash(const StringClass &texture);

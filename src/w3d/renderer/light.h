@@ -39,24 +39,24 @@ public:
 
     LightClass(LightType type = POINT);
     LightClass(const LightClass &src);
-    virtual ~LightClass() {}
+    ~LightClass() override {}
 
     LightClass &operator=(const LightClass &);
 
-    virtual RenderObjClass *Clone() const override;
+    RenderObjClass *Clone() const override;
 
-    virtual int Class_ID() const override { return CLASSID_LIGHT; }
+    int Class_ID() const override { return CLASSID_LIGHT; }
 
     // Rendering
-    virtual void Render(RenderInfoClass &rinfo) override {}
+    void Render(RenderInfoClass &rinfo) override {}
 
     // Scene
-    virtual void Notify_Added(SceneClass *scene) override;
-    virtual void Notify_Removed(SceneClass *scene) override;
+    void Notify_Added(SceneClass *scene) override;
+    void Notify_Removed(SceneClass *scene) override;
 
     // Bounding
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
+    void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
+    void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
 
     // Lights are vertex processors
     virtual bool Is_Vertex_Processor() { return true; }
@@ -145,8 +145,8 @@ public:
 #ifdef GAME_DLL
     virtual const PersistFactoryClass &Get_Factory() const override;
 #endif
-    virtual bool Save(ChunkSaveClass &csave) override;
-    virtual bool Load(ChunkLoadClass &cload) override;
+    bool Save(ChunkSaveClass &csave) override;
+    bool Load(ChunkLoadClass &cload) override;
 
 protected:
     LightType m_type;

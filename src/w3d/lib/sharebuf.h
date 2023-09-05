@@ -46,7 +46,7 @@ public:
         }
     }
 
-    ~ShareBufferClass()
+    ~ShareBufferClass() override
     {
         if (m_array) {
             delete[] m_array;

@@ -21,14 +21,14 @@ class SpecialPowerCompletionDie : public DieModule
     IMPLEMENT_POOL(SpecialPowerCompletionDie)
 
 public:
-    virtual ~SpecialPowerCompletionDie() override;
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~SpecialPowerCompletionDie() override;
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void On_Die(DamageInfo *damage_info) override;
+    void On_Die(DamageInfo *damage_info) override;
 
     void Notify_Script_Engine();
     void Set_Creator(ObjectID id);

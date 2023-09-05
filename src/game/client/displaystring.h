@@ -26,7 +26,7 @@ class DisplayString : public MemoryPoolObject
     friend class DisplayStringManager;
 
 protected:
-    virtual ~DisplayString() override;
+    ~DisplayString() override;
 
 public:
     DisplayString();

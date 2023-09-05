@@ -34,7 +34,7 @@ private:
     float m_scaleFactor;
 
 public:
-    virtual ~HTreeClass();
+    ~HTreeClass() override;
 
     HTreeClass();
     HTreeClass(HTreeClass const &src);

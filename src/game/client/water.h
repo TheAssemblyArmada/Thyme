@@ -51,7 +51,7 @@ class WaterTransparencySetting : public Overridable
     IMPLEMENT_POOL(WaterTransparencySetting);
 
 protected:
-    virtual ~WaterTransparencySetting() override {}
+    ~WaterTransparencySetting() override {}
 
 public:
     WaterTransparencySetting();

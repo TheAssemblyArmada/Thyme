@@ -28,7 +28,7 @@ class DecalMeshClass : public RefCountClass
 {
 public:
     DecalMeshClass(MeshClass *parent, DecalSystemClass *system);
-    virtual ~DecalMeshClass();
+    ~DecalMeshClass() override;
 
     MeshClass *Peek_Parent() { return m_parent; }
     DecalSystemClass *Peek_System() { return m_decalSystem; }

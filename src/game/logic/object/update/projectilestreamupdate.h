@@ -28,14 +28,14 @@ class ProjectileStreamUpdate : public UpdateModule
 public:
     ProjectileStreamUpdate(Thing *thing, ModuleData const *module_data);
 
-    virtual ~ProjectileStreamUpdate() override {}
-    virtual NameKeyType Get_Module_Name_Key() const override;
+    ~ProjectileStreamUpdate() override {}
+    NameKeyType Get_Module_Name_Key() const override;
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual UpdateSleepTime Update() override;
+    UpdateSleepTime Update() override;
 
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);
 

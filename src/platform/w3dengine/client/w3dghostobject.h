@@ -25,9 +25,9 @@ public:
     W3DRenderObjectSnapshot(RenderObjClass *robj, DrawableInfo *info, bool copy_render_obj);
     ~W3DRenderObjectSnapshot();
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Update(RenderObjClass *robj, DrawableInfo *info, bool copy_render_obj);
 
@@ -41,14 +41,14 @@ class W3DGhostObject : public GhostObject
 {
 public:
     W3DGhostObject();
-    ~W3DGhostObject();
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    ~W3DGhostObject() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
 
-    virtual void SnapShot(int player) override;
-    virtual void Update_Parent_Object(Object *obj, PartitionData *data) override;
-    virtual void Free_SnapShot(int player) override;
+    void SnapShot(int player) override;
+    void Update_Parent_Object(Object *obj, PartitionData *data) override;
+    void Free_SnapShot(int player) override;
 
     void Remove_Parent_Object();
     void Restore_Parent_Object();
@@ -69,17 +69,17 @@ class W3DGhostObjectManager : public GhostObjectManager
 {
 public:
     W3DGhostObjectManager();
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
-    virtual ~W3DGhostObjectManager() override;
-    virtual void Reset() override;
-    virtual GhostObject *Add_Ghost_Object(Object *obj, PartitionData *data) override;
-    virtual void Remove_Ghost_Object(GhostObject *obj) override;
-    virtual void Set_Local_Player_Index(int index) override;
-    virtual void Update_Orphaned_Objects(int *unk, int unk2) override;
-    virtual void Release_Partition_Data() override;
-    virtual void Restore_Partition_Data() override;
+    void CRC_Snapshot(Xfer *xfer) override;
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override;
+    ~W3DGhostObjectManager() override;
+    void Reset() override;
+    GhostObject *Add_Ghost_Object(Object *obj, PartitionData *data) override;
+    void Remove_Ghost_Object(GhostObject *obj) override;
+    void Set_Local_Player_Index(int index) override;
+    void Update_Orphaned_Objects(int *unk, int unk2) override;
+    void Release_Partition_Data() override;
+    void Restore_Partition_Data() override;
 
 private:
     W3DGhostObject *m_freeObjectList;

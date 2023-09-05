@@ -27,7 +27,7 @@ class GameFont : public MemoryPoolObject
     IMPLEMENT_POOL(GameFont);
 
 protected:
-    virtual ~GameFont() override {}
+    ~GameFont() override {}
 
 public:
     // #BUGFIX Initialize important members
@@ -45,11 +45,11 @@ class FontLibrary : public SubsystemInterface
 {
 public:
     FontLibrary();
-    virtual ~FontLibrary() override;
+    ~FontLibrary() override;
 
-    virtual void Init() {}
-    virtual void Reset();
-    virtual void Update() {}
+    void Init() override {}
+    void Reset() override;
+    void Update() override {}
 
     virtual bool Load_Font_Data(GameFont *font) = 0;
     virtual void Release_Font_Data(GameFont *font) {}

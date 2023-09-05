@@ -50,24 +50,24 @@ struct NodeMotionStruct
 class HRawAnimClass : public HAnimClass
 {
 public:
-    virtual ~HRawAnimClass() override;
-    virtual const char *Get_Name() const override { return m_name; }
-    virtual const char *Get_HName() const override { return m_hierarchyName; }
-    virtual int Get_Num_Frames() override { return m_numFrames; }
-    virtual float Get_Frame_Rate() override { return m_frameRate; }
-    virtual float Get_Total_Time() override { return (float)m_numFrames / m_frameRate; }
-    virtual void Get_Translation(Vector3 &trans, int pividx, float frame) const override;
-    virtual void Get_Orientation(Quaternion &q, int pividx, float frame) const override;
-    virtual void Get_Transform(Matrix3D &mtx, int pividx, float frame) const override;
-    virtual bool Get_Visibility(int pividx, float frame) override;
-    virtual int Get_Num_Pivots() const override { return m_numNodes; }
-    virtual bool Is_Node_Motion_Present(int pividx) override;
-    virtual bool Has_X_Translation(int pividx) override;
-    virtual bool Has_Y_Translation(int pividx) override;
-    virtual bool Has_Z_Translation(int pividx) override;
-    virtual bool Has_Rotation(int pividx) override;
-    virtual bool Has_Visibility(int pividx) override;
-    virtual int Class_ID() const override { return CLASSID_RAW; }
+    ~HRawAnimClass() override;
+    const char *Get_Name() const override { return m_name; }
+    const char *Get_HName() const override { return m_hierarchyName; }
+    int Get_Num_Frames() override { return m_numFrames; }
+    float Get_Frame_Rate() override { return m_frameRate; }
+    float Get_Total_Time() override { return (float)m_numFrames / m_frameRate; }
+    void Get_Translation(Vector3 &trans, int pividx, float frame) const override;
+    void Get_Orientation(Quaternion &q, int pividx, float frame) const override;
+    void Get_Transform(Matrix3D &mtx, int pividx, float frame) const override;
+    bool Get_Visibility(int pividx, float frame) override;
+    int Get_Num_Pivots() const override { return m_numNodes; }
+    bool Is_Node_Motion_Present(int pividx) override;
+    bool Has_X_Translation(int pividx) override;
+    bool Has_Y_Translation(int pividx) override;
+    bool Has_Z_Translation(int pividx) override;
+    bool Has_Rotation(int pividx) override;
+    bool Has_Visibility(int pividx) override;
+    int Class_ID() const override { return CLASSID_RAW; }
     HRawAnimClass();
     W3DErrorType Load_W3D(ChunkLoadClass &cload);
     void Free();

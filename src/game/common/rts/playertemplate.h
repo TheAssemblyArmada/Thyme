@@ -129,11 +129,11 @@ class PlayerTemplateStore : public SubsystemInterface
 {
 public:
     PlayerTemplateStore() {}
-    virtual ~PlayerTemplateStore() {}
+    ~PlayerTemplateStore() override {}
 
-    virtual void Init() override { m_playerTemplates.clear(); }
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    void Init() override { m_playerTemplates.clear(); }
+    void Reset() override {}
+    void Update() override {}
 
     int Get_Template_Number_By_Name(Utf8String name);
     PlayerTemplate *Find_Player_Template(NameKeyType key);

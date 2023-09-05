@@ -21,14 +21,14 @@ class GameStateMap : public SubsystemInterface, public SnapShot
 {
 public:
     GameStateMap() {}
-    virtual ~GameStateMap() override;
-    virtual void Init() override {}
-    virtual void Reset() override {}
-    virtual void Update() override {}
+    ~GameStateMap() override;
+    void Init() override {}
+    void Reset() override {}
+    void Update() override {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override {}
+    void CRC_Snapshot(Xfer *xfer) override {}
+    void Xfer_Snapshot(Xfer *xfer) override;
+    void Load_Post_Process() override {}
 
     void Clear_Scratch_Pad_Maps();
 };

@@ -4126,7 +4126,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     MSG msg = {};
 
     while (WM_QUIT != msg.message) {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+        if (GetMessage(&msg, nullptr, 0, 0)) {
             if (!TranslateAccelerator(g_mainwnd, g_accel, &msg)) {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);

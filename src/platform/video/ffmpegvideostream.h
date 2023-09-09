@@ -50,7 +50,7 @@ private:
     FFmpegFile *m_ffmpegFile = nullptr;
     bool m_good = true;
     bool m_gotFrame = false;
-    unsigned int m_lastFrameTime = 0;
+    unsigned int m_startTime = 0;
     uint8_t *m_audio_buffer = nullptr;
 };
 } // namespace Thyme

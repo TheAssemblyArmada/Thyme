@@ -67,9 +67,16 @@ void ALAudioStream::Update()
 
     ALint num_queued;
     alGetSourcei(m_source, AL_BUFFERS_QUEUED, &num_queued);
+    captainslog_info("Having %i buffers queued", num_queued);
     if (num_queued == 1) {
         // TODO: we could invoke a callback here, asking for more audio data
     }
+}
+
+void ALAudioStream::Reset()
+{
+    alSourceRewind(m_source);
+    alSourcei(m_source, AL_BUFFER, 0);
 }
 
 bool ALAudioStream::IsPlaying()

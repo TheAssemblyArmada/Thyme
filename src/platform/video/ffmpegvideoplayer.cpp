@@ -140,6 +140,10 @@ VideoStream *FFmpegVideoPlayer::Create_Stream(File *file)
         return nullptr;
     }
 
+#ifdef BUILD_WITH_OPENAL
+    m_audio_stream->Reset();
+#endif
+
     // This takes ownership of FFmpegFile
     FFmpegVideoStream *stream = new FFmpegVideoStream(this, m_firstStream, ffmpegFile);
     m_firstStream = stream;

@@ -28,6 +28,16 @@ FFmpegVideoStream::FFmpegVideoStream(VideoPlayer *player, VideoStream *next, FFm
     // Decode until we have our first video frame
     while (m_good && m_gotFrame == false)
         m_good = m_ffmpegFile->Decode_Packet();
+
+    m_startTime = rts::Get_Time();
+#ifdef BUILD_WITH_OPENAL
+    // Start audio playback
+    FFmpegVideoPlayer *ffmpeg_player = static_cast<FFmpegVideoPlayer *>(m_player);
+    ALAudioStream *stream = ffmpeg_player->Get_Audio();
+    if (stream->IsPlaying() == false) {
+        stream->Play();
+    }
+#endif
 }
 
 FFmpegVideoStream::~FFmpegVideoStream()
@@ -71,7 +81,7 @@ void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type
             for (int sample_idx = 0; sample_idx < frame->nb_samples; sample_idx++) {
                 int byte_offset = sample_idx * bytes_per_sample;
                 for (int channel_idx = 0; channel_idx < frame->channels; channel_idx++) {
-                    uint8_t *dst = &stream->m_audio_buffer[byte_offset * 2 + channel_idx * bytes_per_sample];
+                    uint8_t *dst = &stream->m_audio_buffer[byte_offset * frame->channels + channel_idx * bytes_per_sample];
                     uint8_t *src = &frame->data[channel_idx][byte_offset];
                     memcpy(dst, src, bytes_per_sample);
                 }
@@ -103,7 +113,7 @@ void FFmpegVideoStream::Update()
 bool FFmpegVideoStream::Is_Frame_Ready()
 {
     unsigned int time = rts::Get_Time();
-    bool ready = (time - m_lastFrameTime) >= m_ffmpegFile->Get_Frame_Time();
+    bool ready = (time - m_startTime) >= m_ffmpegFile->Get_Frame_Time() * Frame_Index();
     return ready;
 }
 
@@ -183,15 +193,6 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
  */
 void FFmpegVideoStream::Next_Frame()
 {
-#ifdef BUILD_WITH_OPENAL
-    FFmpegVideoPlayer *player = static_cast<FFmpegVideoPlayer *>(m_player);
-    ALAudioStream *stream = player->Get_Audio();
-    if (stream->IsPlaying() == false) {
-        stream->Play();
-    }
-#endif
-
-    m_lastFrameTime = rts::Get_Time();
     m_gotFrame = false;
     // Decode until we have our next video frame
     while (m_good && m_gotFrame == false)

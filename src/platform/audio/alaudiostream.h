@@ -30,6 +30,7 @@ public:
     bool BufferData(uint8_t *data, size_t data_size, ALenum format, int samplerate);
     bool IsPlaying();
     void Update();
+    void Reset();
 
     void Play() { alSourcePlay(m_source); }
     void Pause() { alSourcePause(m_source); }

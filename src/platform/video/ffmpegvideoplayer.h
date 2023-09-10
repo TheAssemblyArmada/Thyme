@@ -42,11 +42,5 @@ public:
     void Initialise_FFmpeg_With_OpenAL();
 
     VideoStream *Create_Stream(File *file);
-#ifdef BUILD_WITH_OPENAL
-    ALAudioStream *Get_Audio() { return m_audio_stream; }
-
-protected:
-    ALAudioStream *m_audio_stream = nullptr;
-#endif
 };
 } // namespace Thyme

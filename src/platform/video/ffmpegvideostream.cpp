@@ -22,6 +22,10 @@ FFmpegVideoStream::FFmpegVideoStream(VideoPlayer *player, VideoStream *next, FFm
 {
     m_player = player;
     captainslog_assert(m_player != nullptr);
+#ifdef BUILD_WITH_OPENAL
+    if (m_ffmpegFile->HasAudio())
+        m_audioStream = new ALAudioStream();
+#endif
     m_next = next;
     file->Set_Frame_Callback(On_Frame);
     file->Set_User_Data(this);
@@ -31,12 +35,9 @@ FFmpegVideoStream::FFmpegVideoStream(VideoPlayer *player, VideoStream *next, FFm
 
     m_startTime = rts::Get_Time();
 #ifdef BUILD_WITH_OPENAL
-    // Start audio playback
-    FFmpegVideoPlayer *ffmpeg_player = static_cast<FFmpegVideoPlayer *>(m_player);
-    ALAudioStream *stream = ffmpeg_player->Get_Audio();
-    if (stream->IsPlaying() == false) {
-        stream->Play();
-    }
+    // Start audio playback, if there is any audio
+    if (m_audioStream != nullptr)
+        m_audioStream->Play();
 #endif
 }
 
@@ -46,33 +47,30 @@ FFmpegVideoStream::~FFmpegVideoStream()
     av_frame_free(&m_frame);
     sws_freeContext(m_swsContext);
     delete m_ffmpegFile;
+#ifdef BUILD_WITH_OPENAL
+    delete m_audioStream;
+#endif
 }
 
 void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type, void *user_data)
 {
-    FFmpegVideoStream *stream = static_cast<FFmpegVideoStream *>(user_data);
+    FFmpegVideoStream *video_stream = static_cast<FFmpegVideoStream *>(user_data);
     if (stream_type == AVMEDIA_TYPE_VIDEO) {
-        av_frame_free(&stream->m_frame);
-        stream->m_frame = av_frame_clone(frame);
-        stream->m_gotFrame = true;
+        av_frame_free(&video_stream->m_frame);
+        video_stream->m_frame = av_frame_clone(frame);
+        video_stream->m_gotFrame = true;
     }
 #ifdef BUILD_WITH_OPENAL
     else if (stream_type == AVMEDIA_TYPE_AUDIO) {
-        FFmpegVideoPlayer *player = static_cast<FFmpegVideoPlayer *>(stream->m_player);
-        ALAudioStream *audio_stream = player->Get_Audio();
-        if (audio_stream == nullptr) {
-            captainslog_info("Skipping audio packet inside video - no audio stream");
-            return;
-        }
-        stream->Update();
+        video_stream->m_audioStream->Update();
         AVSampleFormat sample_fmt = static_cast<AVSampleFormat>(frame->format);
         const int bytes_per_sample = av_get_bytes_per_sample(sample_fmt);
         const int frame_size = av_samples_get_buffer_size(NULL, frame->channels, frame->nb_samples, sample_fmt, 1);
         uint8_t *frame_data = frame->data[0];
         // The format is planar - convert it to interleaved
         if (av_sample_fmt_is_planar(sample_fmt)) {
-            stream->m_audio_buffer = static_cast<uint8_t *>(av_realloc(stream->m_audio_buffer, frame_size));
-            if (stream->m_audio_buffer == nullptr) {
+            video_stream->m_audio_buffer = static_cast<uint8_t *>(av_realloc(video_stream->m_audio_buffer, frame_size));
+            if (video_stream->m_audio_buffer == nullptr) {
                 captainslog_error("Failed to allocate audio buffer");
                 return;
             }
@@ -81,16 +79,17 @@ void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type
             for (int sample_idx = 0; sample_idx < frame->nb_samples; sample_idx++) {
                 int byte_offset = sample_idx * bytes_per_sample;
                 for (int channel_idx = 0; channel_idx < frame->channels; channel_idx++) {
-                    uint8_t *dst = &stream->m_audio_buffer[byte_offset * frame->channels + channel_idx * bytes_per_sample];
+                    uint8_t *dst =
+                        &video_stream->m_audio_buffer[byte_offset * frame->channels + channel_idx * bytes_per_sample];
                     uint8_t *src = &frame->data[channel_idx][byte_offset];
                     memcpy(dst, src, bytes_per_sample);
                 }
             }
-            frame_data = stream->m_audio_buffer;
+            frame_data = video_stream->m_audio_buffer;
         }
 
         ALenum format = ALAudioManager::Get_AL_Format(frame->channels, bytes_per_sample * 8);
-        audio_stream->BufferData(frame_data, frame_size, format, frame->sample_rate);
+        video_stream->m_audioStream->BufferData(frame_data, frame_size, format, frame->sample_rate);
     }
 #endif
 }
@@ -101,9 +100,8 @@ void FFmpegVideoStream::On_Frame(AVFrame *frame, int stream_idx, int stream_type
 void FFmpegVideoStream::Update()
 {
 #ifdef BUILD_WITH_OPENAL
-    FFmpegVideoPlayer *player = static_cast<FFmpegVideoPlayer *>(m_player);
-    ALAudioStream *stream = player->Get_Audio();
-    stream->Update();
+    if (m_audioStream)
+        m_audioStream->Update();
 #endif
 }
 
@@ -156,7 +154,7 @@ void FFmpegVideoStream::Render_Frame(VideoBuffer *buffer)
             break;
         case VideoBuffer::TYPE_X1R5G5B5:
             dst_pix_fmt = AV_PIX_FMT_RGB555;
-            return;
+            break;
         default:
             return;
     }

@@ -795,29 +795,18 @@ bool ALAudioManager::Has_3D_Sensitive_Streams_Playing()
 
 /**
  * Gets an audio handle for use by the video player.
+ * For us each videostream holds it's own ALAudioStream
  */
 BinkHandle ALAudioManager::Get_Bink_Handle()
 {
-    // If we don't already have an audio stream for bink, make one.
-    if (m_binkAudio == nullptr) {
-        // NOTE / BUG: miles retrieves that event, but doesn't seem to use it anywhere. Just like us.
-        AudioEventRTS *audio_event = new AudioEventRTS("BinkHandle");
-        Get_Info_For_Audio_Event(audio_event);
-        delete audio_event;
-
-        m_binkAudio = new ALAudioStream();
-    }
-
-    return static_cast<BinkHandle>(m_binkAudio);
+    return nullptr;
 }
 
 /**
  * Releases the audio handle for use by the video player.
+ * For us each videostream holds it's own ALAudioStream
  */
-void ALAudioManager::Release_Bink_Handle()
-{
-    delete m_binkAudio;
-}
+void ALAudioManager::Release_Bink_Handle() {}
 
 /**
  * Forces an audio event to be played.

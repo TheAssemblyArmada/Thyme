@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "alaudiostream.h"
+#include "alaudiomanager.h"
 
 #include <captainslog.h>
 
@@ -23,7 +24,7 @@ ALAudioStream::ALAudioStream()
     alGenSources(1, &m_source);
     alGenBuffers(AL_STREAM_BUFFER_COUNT, m_buffers);
 
-    // Make strream ignore positioning
+    // Make stream ignore positioning
     alSource3i(m_source, AL_POSITION, 0, 0, 0);
     alSourcei(m_source, AL_SOURCE_RELATIVE, AL_TRUE);
     alSourcei(m_source, AL_ROLLOFF_FACTOR, 0);
@@ -31,8 +32,15 @@ ALAudioStream::ALAudioStream()
 
 ALAudioStream::~ALAudioStream()
 {
-    alDeleteBuffers(AL_STREAM_BUFFER_COUNT, m_buffers);
+    // Unbind the buffers first
+    alSourceStop(m_source);
+    alSourcei(m_source, AL_BUFFER, 0);
+    captainslog_dbgassert(ALAudioManager::Check_AL_Error(), "Failed to unbind buffers");
     alDeleteSources(1, &m_source);
+    captainslog_dbgassert(ALAudioManager::Check_AL_Error(), "Failed to delete source");
+    // Now delete the buffers
+    alDeleteBuffers(AL_STREAM_BUFFER_COUNT, m_buffers);
+    captainslog_dbgassert(ALAudioManager::Check_AL_Error(), "Failed to delete buffers");
 }
 
 bool ALAudioStream::BufferData(uint8_t *data, size_t data_size, ALenum format, int samplerate)

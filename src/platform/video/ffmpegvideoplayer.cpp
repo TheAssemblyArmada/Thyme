@@ -19,10 +19,6 @@
 #include "globaldata.h"
 #include "registry.h"
 
-#ifdef BUILD_WITH_OPENAL
-#include "alaudiostream.h"
-#endif
-
 namespace Thyme
 {
 FFmpegVideoPlayer::FFmpegVideoPlayer() {}
@@ -54,9 +50,9 @@ void FFmpegVideoPlayer::Deinit()
  */
 VideoStream *FFmpegVideoPlayer::Open(Utf8String title)
 {
-    Video *vid = Get_Video(title);
+    Video *video = Get_Video(title);
 
-    if (vid == nullptr) {
+    if (video == nullptr) {
         return nullptr;
     }
 
@@ -66,21 +62,21 @@ VideoStream *FFmpegVideoPlayer::Open(Utf8String title)
     // First check the custom user "mod" directory if set.
     if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_userModDirectory.Is_Not_Empty()) {
         path.Format(
-            "%s%s/%s.%s", g_theWriteableGlobalData->m_userModDirectory.Str(), "Data/Movies", vid->file_name.Str(), "bik");
+            "%s%s/%s.%s", g_theWriteableGlobalData->m_userModDirectory.Str(), "Data/Movies", video->file_name.Str(), "bik");
         // Load the file from disk
         file = g_theFileSystem->Open_File(path.Str(), File::READ | File::BINARY | File::BUFFERED);
     }
 
     // Check for a language specific directoy Data/%language%/Movies.
     if (file == nullptr) {
-        path.Format("Data/%s/Movies/%s.%s", Get_Registry_Language().Str(), vid->file_name.Str(), "bik");
+        path.Format("Data/%s/Movies/%s.%s", Get_Registry_Language().Str(), video->file_name.Str(), "bik");
         // Load the file from disk
         file = g_theFileSystem->Open_File(path.Str(), File::READ | File::BINARY | File::BUFFERED);
     }
 
     // Finally check Data/Movies.
     if (file == nullptr) {
-        path.Format("Data/Movies/%s.%s", vid->file_name.Str(), "bik");
+        path.Format("Data/Movies/%s.%s", video->file_name.Str(), "bik");
         // Load the file from disk
         file = g_theFileSystem->Open_File(path.Str(), File::READ | File::BINARY | File::BUFFERED);
     }
@@ -114,14 +110,12 @@ void FFmpegVideoPlayer::Notify_Player_Of_New_Provider(bool initialise)
 void FFmpegVideoPlayer::Initialise_FFmpeg_With_OpenAL()
 {
 #ifdef BUILD_WITH_OPENAL
-    BinkHandle handle = g_theAudio->Get_Bink_Handle();
+    AudioDevice device = g_theAudio->Get_Device();
 
     // If we don't have a miles handle or we fail to set the sound system from it, set to have no audio tracks.
-    if (handle == nullptr) {
-        return;
+    if (device == nullptr) {
+        captainslog_error("Audio device is not set");
     }
-
-    m_audio_stream = static_cast<ALAudioStream *>(handle);
 #endif
 }
 
@@ -140,18 +134,9 @@ VideoStream *FFmpegVideoPlayer::Create_Stream(File *file)
         return nullptr;
     }
 
-#ifdef BUILD_WITH_OPENAL
-    m_audio_stream->Reset();
-#endif
-
     // This takes ownership of FFmpegFile
     FFmpegVideoStream *stream = new FFmpegVideoStream(this, m_firstStream, ffmpegFile);
     m_firstStream = stream;
-
-#ifdef BUILD_WITH_OPENAL
-    float vol = g_theAudio->Get_Volume(AUDIOAFFECT_SPEECH);
-    m_audio_stream->SetVolume(vol);
-#endif
 
     return stream;
 }

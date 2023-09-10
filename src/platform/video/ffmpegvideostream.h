@@ -52,5 +52,8 @@ private:
     bool m_gotFrame = false;
     unsigned int m_startTime = 0;
     uint8_t *m_audio_buffer = nullptr;
+#ifdef BUILD_WITH_OPENAL
+    ALAudioStream *m_audioStream = nullptr;
+#endif
 };
 } // namespace Thyme

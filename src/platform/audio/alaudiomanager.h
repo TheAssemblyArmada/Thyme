@@ -157,6 +157,5 @@ private:
 
     ALCdevice *m_alcDevice = nullptr;
     ALCcontext *m_alcContext = nullptr;
-    ALAudioStream *m_binkAudio = nullptr;
 };
 } // namespace Thyme

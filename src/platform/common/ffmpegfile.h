@@ -42,6 +42,7 @@ public:
     // Read & decode a packet from the container. Note that we could/should split this step
     bool Decode_Packet();
     void Seek_Frame(int frame_idx);
+    bool HasAudio() const;
 
     // Audio specific
     int Get_Size_For_Samples(int numSamples) const;

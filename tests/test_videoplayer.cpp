@@ -41,12 +41,7 @@ TEST(video, ffmpegvideoplayer)
     auto filepath = Utf8String(TESTDATA_PATH) + "/video/video.bik";
     auto file = g_theLocalFileSystem->Open_File(filepath.Str(), File::BINARY | File::READ);
     auto stream = player.Create_Stream(file);
-    // Overwrite the volume that was set
-#ifdef BUILD_WITH_OPENAL
-    static_cast<Thyme::ALAudioStream *>(g_theAudio->Get_Bink_Handle())->SetVolume(1.0f);
-#endif
     ASSERT_NE(stream, nullptr);
-
     EXPECT_EQ(stream->Frame_Index(), 0);
     EXPECT_EQ(stream->Frame_Count(), 71);
     EXPECT_EQ(stream->Height(), 120);

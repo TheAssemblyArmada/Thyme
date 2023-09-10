@@ -94,10 +94,10 @@ bool FFmpegFile::Open(File *file)
 
     m_streams.resize(m_fmt_ctx->nb_streams);
     for (unsigned int stream_idx = 0; stream_idx < m_fmt_ctx->nb_streams; stream_idx++) {
-        const AVCodec *input_codec = avcodec_find_decoder(m_fmt_ctx->streams[stream_idx]->codecpar->codec_id);
+        AVStream *av_stream = m_fmt_ctx->streams[stream_idx];
+        const AVCodec *input_codec = avcodec_find_decoder(av_stream->codecpar->codec_id);
         if (input_codec == nullptr) {
-            captainslog_error(
-                "Codec not supported: '%s'", avcodec_get_name(m_fmt_ctx->streams[stream_idx]->codecpar->codec_id));
+            captainslog_error("Codec not supported: '%s'", avcodec_get_name(av_stream->codecpar->codec_id));
             Close();
             return false;
         }
@@ -109,7 +109,7 @@ bool FFmpegFile::Open(File *file)
             return false;
         }
 
-        result = avcodec_parameters_to_context(codec_ctx, m_fmt_ctx->streams[stream_idx]->codecpar);
+        result = avcodec_parameters_to_context(codec_ctx, av_stream->codecpar);
         if (result < 0) {
             char error_buffer[1024];
             av_strerror(result, error_buffer, sizeof(error_buffer));
@@ -127,11 +127,12 @@ bool FFmpegFile::Open(File *file)
             return false;
         }
 
-        m_streams[stream_idx].codec_ctx = codec_ctx;
-        m_streams[stream_idx].codec = input_codec;
-        m_streams[stream_idx].stream_type = input_codec->type;
-        m_streams[stream_idx].stream_idx = stream_idx;
-        m_streams[stream_idx].frame = av_frame_alloc();
+        FFmpegStream &output_stream = m_streams[stream_idx];
+        output_stream.codec_ctx = codec_ctx;
+        output_stream.codec = input_codec;
+        output_stream.stream_type = input_codec->type;
+        output_stream.stream_idx = stream_idx;
+        output_stream.frame = av_frame_alloc();
     }
 
     m_packet = av_packet_alloc();
@@ -256,6 +257,12 @@ void FFmpegFile::Seek_Frame(int frame_idx)
     }
 }
 
+bool FFmpegFile::HasAudio() const
+{
+    const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_AUDIO);
+    return stream != nullptr;
+}
+
 const FFmpegFile::FFmpegStream *FFmpegFile::Find_Match(int type) const
 {
     for (auto &candidate : m_streams) {
@@ -351,7 +358,7 @@ unsigned int FFmpegFile::Get_Frame_Time() const
     const FFmpegStream *stream = Find_Match(AVMEDIA_TYPE_VIDEO);
     if (stream == nullptr)
         return 0;
-    return 1000 / av_q2d(m_fmt_ctx->streams[stream->stream_idx]->avg_frame_rate);
+    return 1000u / av_q2d(m_fmt_ctx->streams[stream->stream_idx]->avg_frame_rate);
 }
 
 } // namespace Thyme

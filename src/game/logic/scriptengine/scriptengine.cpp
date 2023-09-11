@@ -7162,7 +7162,7 @@ void ScriptEngine::Notify_Of_Team_Destruction(Team *team_destroyed)
             m_callingTeam = nullptr;
         }
 
-        if (m_conditionTeam = team_destroyed) {
+        if (m_conditionTeam == team_destroyed) {
             m_conditionTeam = nullptr;
         }
     }

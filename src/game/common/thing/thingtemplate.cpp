@@ -802,7 +802,7 @@ void ThingTemplate::Parse_Arbitrary_FX_Into_Map(INI *ini, void *instance, void *
     std::map<Utf8String, FXList *> *map = static_cast<std::map<Utf8String, FXList *> *>(instance);
     const char *str = ini->Get_Next_Token();
     FXList *list = g_theFXListStore->Find_FXList(str);
-    captainslog_dbgassert(list != nullptr || strcasecmp(str, "None"), "FXList %s not found!", str);
+    captainslog_dbgassert(list != nullptr || strcasecmp(str, "None") != 0, "FXList %s not found!", str);
     Utf8String s(static_cast<const char *>(user_data));
     std::pair<Utf8String, FXList *> pair(s, list);
     map->insert(pair);

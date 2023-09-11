@@ -1754,7 +1754,7 @@ w3dsurface_t DX8Wrapper::Create_Surface(const char *name)
             char *ext = strchr(buf, '.');
 
             if (strlen(ext) == 4) {
-                if (strncasecmp(ext, ".tga", 4)) {
+                if (strncasecmp(ext, ".tga", 4) != 0) {
                     strcpy(ext, ".dds");
                 }
             }

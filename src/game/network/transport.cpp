@@ -62,7 +62,8 @@ bool Transport::Init(uint32_t address, uint16_t port)
     int socket_result = SOCKET_ERROR;
 
     while (rts::Get_Time() - start_time < 1000) {
-        if ((socket_result = m_udpsock->Bind(address, port)) == UDP::OK) {
+        socket_result = m_udpsock->Bind(address, port);
+        if (socket_result == UDP::OK) {
             break;
         }
     }

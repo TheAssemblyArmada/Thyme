@@ -17,6 +17,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "audiomanager.h"
+#include "ffmpegfile.h"
 #include "mutex.h"
 #include "rtsutils.h"
 
@@ -38,14 +39,13 @@ namespace Thyme
 struct FFmpegOpenAudioFile
 {
     // FFmpeg handles
-    AVFormatContext *fmt_ctx = nullptr;
-    AVIOContext *avio_ctx = nullptr;
-    AVCodecContext *codec_ctx = nullptr;
+    FFmpegFile *ffmpeg_file = nullptr;
     uint8_t *wave_data = nullptr;
     float duration = 0.0f;
     int ref_count = 0;
     int data_size = 0;
     const AudioEventInfo *audio_event_info = nullptr;
+    int total_samples = 0;
 };
 
 #ifdef THYME_USE_STLPORT
@@ -59,7 +59,7 @@ typedef std::unordered_map<const Utf8String, FFmpegOpenAudioFile, rts::hash<Utf8
 class FFmpegAudioFileCache
 {
 public:
-    FFmpegAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
+    FFmpegAudioFileCache() : m_currentSize(0), m_maxSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~FFmpegAudioFileCache();
     AudioDataHandle Open_File(AudioEventRTS *file);
     AudioDataHandle Open_File(const Utf8String &filename);
@@ -89,10 +89,7 @@ private:
     void Release_Open_Audio(FFmpegOpenAudioFile *open_audio);
 
     // FFmpeg utilities
-    static bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio, File *file);
     static bool Decode_FFmpeg(FFmpegOpenAudioFile *open_audio);
-    static void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio);
-    static int Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf_size);
 
 private:
     ffmpegaudiocachemap_t m_cacheMap;

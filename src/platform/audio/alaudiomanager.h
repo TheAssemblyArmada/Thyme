@@ -35,6 +35,7 @@ struct PlayingAudio;
 
 namespace Thyme
 {
+class ALAudioStream;
 class ALAudioManager final : public AudioManager
 {
 public:
@@ -97,7 +98,11 @@ public:
     virtual void Process_Fading_List() override;
     virtual void Process_Stopped_List() override;
 
-    bool Is_Device_Open() { return m_alcDevice != nullptr; }
+    bool Is_Device_Open() const { return m_alcDevice != nullptr; }
+    bool Supports_Float_Samples() const { return alIsExtensionPresent("AL_EXT_float32") == AL_TRUE; }
+
+    static ALenum Get_AL_Format(uint8_t channels, uint8_t bits_per_sample);
+    static bool Check_AL_Error();
 
     // Only added for testing really
 #ifdef BUILD_WITH_FFMPEG
@@ -126,9 +131,7 @@ private:
     bool Process_Request_This_Frame(AudioRequest *request);
     void Adjust_Request(AudioRequest *request);
     bool Check_For_Sample(AudioRequest *request);
-    ALenum Get_AL_Format(uint8_t channels, uint8_t bits_per_sample);
     void Enumerate_Devices();
-    bool Check_AL_Error();
     bool Check_ALC_Error();
 
     static void Init_Playing_Audio(PlayingAudio *audio);
@@ -148,7 +151,6 @@ private:
 #ifdef BUILD_WITH_FFMPEG
     Thyme::FFmpegAudioFileCache *m_audioFileCache;
 #endif
-    PlayingAudio *m_binkPlayingAudio;
     int m_2dSampleCount;
     int m_3dSampleCount;
     int m_streamCount;

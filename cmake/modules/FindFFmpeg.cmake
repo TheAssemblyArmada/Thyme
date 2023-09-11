@@ -97,47 +97,41 @@ macro(find_component _component _pkgconfig _library _header)
 
 endmacro()
 
+# Check for all possible component.
+find_component(AVCODEC    libavcodec    avcodec  libavcodec/avcodec.h)
+find_component(AVFORMAT   libavformat   avformat libavformat/avformat.h)
+find_component(AVDEVICE   libavdevice   avdevice libavdevice/avdevice.h)
+find_component(AVUTIL     libavutil     avutil   libavutil/avutil.h)
+find_component(AVFILTER   libavfilter   avfilter libavfilter/avfilter.h)
+find_component(SWSCALE    libswscale    swscale  libswscale/swscale.h)
+find_component(POSTPROC   libpostproc   postproc libpostproc/postprocess.h)
+find_component(SWRESAMPLE libswresample swresample libswresample/swresample.h)
 
-# Check for cached results. If there are skip the costly part.
-if (NOT FFMPEG_LIBRARIES)
-
-  # Check for all possible component.
-  find_component(AVCODEC    libavcodec    avcodec  libavcodec/avcodec.h)
-  find_component(AVFORMAT   libavformat   avformat libavformat/avformat.h)
-  find_component(AVDEVICE   libavdevice   avdevice libavdevice/avdevice.h)
-  find_component(AVUTIL     libavutil     avutil   libavutil/avutil.h)
-  find_component(AVFILTER   libavfilter   avfilter libavfilter/avfilter.h)
-  find_component(SWSCALE    libswscale    swscale  libswscale/swscale.h)
-  find_component(POSTPROC   libpostproc   postproc libpostproc/postprocess.h)
-  find_component(SWRESAMPLE libswresample swresample libswresample/swresample.h)
-
-  # Check if the required components were found and add their stuff to the FFMPEG_* vars.
-  foreach (_component ${FFmpeg_FIND_COMPONENTS})
-    if (${_component}_FOUND)
-      message(STATUS "Required component ${_component} present.")
-      set(FFMPEG_LIBRARIES   ${FFMPEG_LIBRARIES}   ${${_component}_LIBRARIES})
-      set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} ${${_component}_DEFINITIONS})
-      list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
-    else ()
-      message(STATUS "Required component ${_component} missing.")
-    endif ()
-  endforeach ()
-
-  # Build the include path with duplicates removed.
-  if (FFMPEG_INCLUDE_DIRS)
-    list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)
+# Check if the required components were found and add their stuff to the FFMPEG_* vars.
+foreach (_component ${FFmpeg_FIND_COMPONENTS})
+  if (${_component}_FOUND)
+    message(STATUS "Required component ${_component} present.")
+    set(FFMPEG_LIBRARIES   ${FFMPEG_LIBRARIES}   ${${_component}_LIBRARIES})
+    set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} ${${_component}_DEFINITIONS})
+    list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
+  else ()
+    message(STATUS "Required component ${_component} missing.")
   endif ()
+endforeach ()
 
-  # cache the vars.
-  set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "The FFmpeg include directories." FORCE)
-  set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    CACHE STRING "The FFmpeg libraries." FORCE)
-  set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  CACHE STRING "The FFmpeg cflags." FORCE)
-
-  mark_as_advanced(FFMPEG_INCLUDE_DIRS
-                   FFMPEG_LIBRARIES
-                   FFMPEG_DEFINITIONS)
-
+# Build the include path with duplicates removed.
+if (FFMPEG_INCLUDE_DIRS)
+  list(REMOVE_DUPLICATES FFMPEG_INCLUDE_DIRS)
 endif ()
+
+# cache the vars.
+set(FFMPEG_INCLUDE_DIRS ${FFMPEG_INCLUDE_DIRS} CACHE STRING "The FFmpeg include directories." FORCE)
+set(FFMPEG_LIBRARIES    ${FFMPEG_LIBRARIES}    CACHE STRING "The FFmpeg libraries." FORCE)
+set(FFMPEG_DEFINITIONS  ${FFMPEG_DEFINITIONS}  CACHE STRING "The FFmpeg cflags." FORCE)
+
+mark_as_advanced(FFMPEG_INCLUDE_DIRS
+                  FFMPEG_LIBRARIES
+                  FFMPEG_DEFINITIONS)
 
 # Now set the noncached _FOUND vars for the components.
 foreach (_component AVCODEC AVDEVICE AVFORMAT AVUTIL POSTPROCESS SWSCALE)

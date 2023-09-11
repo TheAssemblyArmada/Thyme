@@ -14,6 +14,7 @@ set(TEST_SRCS
   test_audiomanager.cpp
   test_crc.cpp
   test_filesystem.cpp
+  test_videoplayer.cpp
   test_w3d_load.cpp
   test_w3d_math.cpp
 )

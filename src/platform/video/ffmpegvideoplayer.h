@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @author OmniBlade
+ * @author feliwir
  *
- * @brief Video player implementation using Bink video.
+ * @brief Video player implementation using FFmpeg.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -17,14 +17,16 @@
 #include "always.h"
 #include "videoplayer.h"
 
-struct Bink;
-
-class BinkVideoPlayer final : public VideoPlayer
+namespace Thyme
 {
-    ALLOW_HOOKING
+#ifdef BUILD_WITH_OPENAL
+class ALAudioStream;
+#endif
+class FFmpegVideoPlayer final : public VideoPlayer
+{
 public:
-    BinkVideoPlayer();
-    virtual ~BinkVideoPlayer();
+    FFmpegVideoPlayer();
+    virtual ~FFmpegVideoPlayer();
 
     // Subsystem interface methods
     virtual void Init() override;
@@ -36,8 +38,9 @@ public:
     virtual VideoStream *Open(Utf8String title) override;
     virtual VideoStream *Load(Utf8String title) override;
     virtual void Notify_Player_Of_New_Provider(bool initialise) override;
-    virtual void Initialise_Bink_With_Miles(); // Original has this virtual, unclear why though.
 
-private:
-    VideoStream *Create_Stream(Bink *handle);
+    void Initialise_FFmpeg_With_OpenAL();
+
+    VideoStream *Create_Stream(File *file);
 };
+} // namespace Thyme

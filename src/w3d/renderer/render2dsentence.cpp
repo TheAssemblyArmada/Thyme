@@ -22,9 +22,15 @@
 #include <algorithm>
 #include <captainslog.h>
 #include <cstring>
+#include <utility>
 
 #ifdef PLATFORM_WINDOWS
 #include <windows.h>
+#endif
+
+#ifdef BUILD_WITH_FREETYPE
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #endif
 
 FontCharsClass::FontCharsClass() :
@@ -43,12 +49,19 @@ FontCharsClass::FontCharsClass() :
     m_gdiBitmapBits(nullptr),
     m_memDC(nullptr),
 #endif
+#ifdef BUILD_WITH_FREETYPE
+    m_ftLibrary(nullptr),
+    m_ftFace(nullptr),
+#endif
     m_unicodeCharArray(nullptr),
     m_firstUnicodeChar(0xFFFF),
     m_lastUnicodeChar(0),
     m_isBold(false)
 {
     std::memset(m_asciiCharArray, 0, sizeof(m_asciiCharArray));
+#ifdef BUILD_WITH_FREETYPE
+    FT_Init_FreeType(&m_ftLibrary);
+#endif
 }
 
 FontCharsClass::~FontCharsClass()
@@ -207,17 +220,79 @@ void FontCharsClass::Update_Current_Buffer(int char_width)
     }
 }
 
-void FontCharsClass::Create_GDI_Font(const char *font_name)
+bool FontCharsClass::Locate_Font(const char *font_name, StringClass &font_file_path)
 {
 #ifdef PLATFORM_WINDOWS
-    HDC screen_dc = GetDC(W3D::Get_Window());
-    int font_height = -MulDiv(m_pointSize, 96, 72);
+    const char *font_registry_key = "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
+    HKEY hkey;
+    LONG result;
+
+    // Open Windows font registry key
+    result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, font_registry_key, 0, KEY_READ, &hkey);
+    if (result != ERROR_SUCCESS) {
+        return false;
+    }
+
+    DWORD max_value_name_size, max_value_data_size;
+    result = RegQueryInfoKey(hkey, 0, 0, 0, 0, 0, 0, 0, &max_value_name_size, &max_value_data_size, 0, 0);
+    if (result != ERROR_SUCCESS) {
+        return false;
+    }
+
+    DWORD value_index = 0;
+    char *value_name = new char[max_value_name_size];
+    LPBYTE value_data = new BYTE[max_value_data_size];
+    DWORD value_name_size, value_data_size, value_type;
+    StringClass font_file;
+
+    // Look for a matching font name
+    do {
+        value_data_size = max_value_data_size;
+        value_name_size = max_value_name_size;
+
+        result = RegEnumValue(hkey, value_index, value_name, &value_name_size, 0, &value_type, value_data, &value_data_size);
+
+        value_index++;
+
+        if (result != ERROR_SUCCESS || value_type != REG_SZ) {
+            continue;
+        }
+
+        // Found a match
+        DWORD max_count = value_name_size < strlen(font_name) ? value_name_size : strlen(font_name);
+        if (strnicmp(font_name, value_name, max_count) == 0) {
+            font_file = reinterpret_cast<char *>(value_data);
+            break;
+        }
+    } while (result != ERROR_NO_MORE_ITEMS);
+
+    delete[] value_name;
+    delete[] value_data;
+
+    RegCloseKey(hkey);
+
+    if (font_file.Is_Empty()) {
+        return false;
+    }
+
+    // Build full font file path
+    char windows_dir[MAX_PATH];
+    if (GetWindowsDirectory(windows_dir, MAX_PATH) == 0) {
+        return false;
+    }
+
+    font_file_path += windows_dir;
+    font_file_path += "\\Fonts\\";
+    font_file_path += font_file;
+    return true;
+#endif
+}
+
+void FontCharsClass::Create_GDI_Font(const char *font_name)
+{
+    // Original used MulDiv, but that's not cross-platform
+    int font_height = -(m_pointSize * 96) / 72;
     int font_width = 0;
-    DWORD bold = m_isBold ? FW_BOLD : FW_NORMAL;
-    constexpr DWORD italic = 0;
-    constexpr DWORD underline = 0;
-    constexpr DWORD strikeout = 0;
-    constexpr DWORD charset = DEFAULT_CHARSET;
     bool is_generals = false;
 
     if (std::strcmp(font_name, "Generals") == 0) {
@@ -228,6 +303,23 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
     if (is_generals) {
         font_width = ((float)-font_height / 2.5f);
     }
+
+#ifdef BUILD_WITH_FREETYPE
+    StringClass font_file_path;
+    if (!Locate_Font(font_name, font_file_path)) {
+        captainslog_error("Failed to locate font: %s", font_name);
+        Locate_Font("Arial", font_file_path);
+        captainslog_info("Using Arial as a fallback");
+    }
+    FT_New_Face(m_ftLibrary, font_file_path, 0, &m_ftFace);
+#else
+#ifdef PLATFORM_WINDOWS
+    HDC screen_dc = GetDC(W3D::Get_Window());
+    DWORD bold = m_isBold ? FW_BOLD : FW_NORMAL;
+    constexpr DWORD italic = 0;
+    constexpr DWORD underline = 0;
+    constexpr DWORD strikeout = 0;
+    constexpr DWORD charset = DEFAULT_CHARSET;
 
     m_widthReduction = std::clamp(-(font_height / 8), 0, 4);
 
@@ -274,15 +366,23 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
     m_ascent = text_metric.tmAscent;
     m_charHeight = text_metric.tmHeight;
     m_overhang = text_metric.tmOverhang;
-
+#endif
+#endif
     if (is_generals) {
         m_overhang = 0;
     }
-#endif
 }
 
 void FontCharsClass::Free_GDI_Font()
 {
+#ifdef BUILD_WITH_FREETYPE
+    if (m_ftFace != nullptr) {
+        FT_Done_Face(m_ftFace);
+    }
+    if (m_ftLibrary != nullptr) {
+        FT_Done_FreeType(m_ftLibrary);
+    }
+#endif
 #ifdef PLATFORM_WINDOWS
     if (m_gdiFont != nullptr) {
         SelectObject(m_memDC, m_oldGDIFont);

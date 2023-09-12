@@ -181,7 +181,53 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Store_GDI_Char(unichar_t c
     int width = m_pointSize * 2;
     int height = m_pointSize * 2;
     int x_pos = 0;
-#ifdef PLATFORM_WINDOWS
+#if defined BUILD_WITH_FREETYPE
+    captainslog_assert(m_ftFace != nullptr);
+    FT_UInt glyph_index = FT_Get_Char_Index(m_ftFace, ch);
+    // load glyph image into the slot (erase previous one)
+    FT_Error error = FT_Load_Glyph(m_ftFace, glyph_index, FT_LOAD_DEFAULT);
+    if (error) {
+        captainslog_error("Failed to load character(%i) from font", ch);
+        return nullptr;
+    }
+    // convert to an anti-aliased bitmap
+    error = FT_Render_Glyph(m_ftFace->glyph, FT_RENDER_MODE_NORMAL);
+    if (error) {
+        captainslog_error("Failed to render character(%i) from font", ch);
+        return nullptr;
+    }
+    int char_width = m_ftFace->glyph->bitmap.width;
+    Update_Current_Buffer(char_width);
+    uint16_t *curr_buffer = m_bufferList[m_bufferList.Count() - 1]->buffer;
+    curr_buffer += m_currPixelOffset;
+    for (int row = 0; row < m_ftFace->glyph->bitmap.rows; row++) {
+        int index = (row * m_ftFace->glyph->bitmap.pitch);
+        for (int col = 0; col < m_ftFace->glyph->bitmap.width; col++) {
+            uint8_t pixel_value = m_ftFace->glyph->bitmap.buffer[index + col];
+            uint16_t pixel_color = 0;
+
+            if (pixel_value != 0) {
+                pixel_color = 0x0FFF;
+            }
+
+            *curr_buffer++ = pixel_color | ((pixel_value >> 4) << 12);
+        }
+    }
+
+    CharDataStruct *char_data = new CharDataStruct;
+    char_data->value = ch;
+    char_data->width = (int16_t)char_width;
+    char_data->buffer = m_bufferList[m_bufferList.Count() - 1]->buffer + m_currPixelOffset;
+
+    if (ch < 256) {
+        m_asciiCharArray[ch] = char_data;
+    } else {
+        m_unicodeCharArray[ch - m_firstUnicodeChar] = char_data;
+    }
+
+    m_currPixelOffset += (char_width * m_charHeight);
+    return char_data;
+#elif defined PLATFORM_WINDOWS
     RECT rect = { 0, 0, width, height };
 
     if (ch == 'W') {

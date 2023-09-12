@@ -25,4 +25,6 @@ TEST(text, render)
     }
     // Depending on which font is used as a fallback, there might be a slight difference
     EXPECT_NEAR(font.Get_Char_Height(), 18, 1);
+    uint16_t buffer[18 * 18];
+    font.Blit_Char('A', buffer, 18, 0, 0);
 }

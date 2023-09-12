@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "thread.h"
-#include "rtsutils.h"
+#include "rtsutilsw3d.h"
 #include "systimer.h"
 #include "threadtrack.h"
 #include <captainslog.h>

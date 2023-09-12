@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "systimer.h"
-#include "rtsutils.h"
+#include "rtsutilsw3d.h"
 
 #ifndef GAME_DLL
 SysTimeClass g_theSysTimer;

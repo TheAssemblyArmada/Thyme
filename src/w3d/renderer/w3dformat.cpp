@@ -15,7 +15,7 @@
  */
 #include "w3dformat.h"
 #include "dx8wrapper.h"
-#include "rtsutils.h"
+#include "rtsutilsw3d.h"
 #include "targa.h"
 #include "w3d.h"
 #include "wwstring.h"

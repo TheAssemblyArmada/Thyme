@@ -16,10 +16,10 @@
 #include "thumbnail.h"
 #include "bitmaphandler.h"
 #include "ddsfile.h"
+#include "ffactory.h"
 #include "targa.h"
 #include "thumbnailmanager.h"
 #include "vector3.h"
-#include "w3dfilesystem.h"
 
 ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager,
     const char *texture,

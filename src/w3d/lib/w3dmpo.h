@@ -16,9 +16,12 @@
 #pragma once
 
 #include "always.h"
-#include "gamememory.h"
-#include "mempoolobj.h"
 #include <captainslog.h>
+#include <new>
+
+void *Create_W3D_Mem_Pool(char const *name, int size);
+void *Allocate_From_W3D_Mem_Pool(void *pool, int size);
+void Free_From_W3D_Mem_Pool(void *pool, void *data);
 
 // I think this stands for W3DMemoryPoolObject
 class W3DMPO
@@ -38,23 +41,17 @@ private:
 #else
 #define IMPLEMENT_NAMED_W3D_POOL(classname, poolname) \
 private: \
-    static MemoryPool *Get_Class_Pool() \
+    static void *Get_Class_Pool() \
     { \
-        static MemoryPool *const The##classname##Pool = \
-            g_memoryPoolFactory->Create_Memory_Pool(#poolname, sizeof(classname), -1, -1); \
-        captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
-            "Pool %s is wrong size for class (need %d, currently %d)", \
-            #classname, \
-            sizeof(classname), \
-            The##classname##Pool->Get_Alloc_Size()); \
+        static void *const The##classname##Pool = Create_W3D_Mem_Pool(#poolname, sizeof(classname)); \
         return The##classname##Pool; \
     } \
 \
 public: \
-    void *operator new(size_t size) { return Allocate_From_Pool(Get_Class_Pool(), sizeof(classname)); } \
+    void *operator new(size_t size) { return Allocate_From_W3D_Mem_Pool(Get_Class_Pool(), sizeof(classname)); } \
     void *operator new(size_t size, void *where) { return where; } \
     void operator delete(void *p, void *where) {} \
-    void operator delete(void *ptr) { Free_From_Pool(Get_Class_Pool(), ptr); } \
+    void operator delete(void *ptr) { Free_From_W3D_Mem_Pool(Get_Class_Pool(), ptr); } \
     virtual int glueEnforcer() { return 4; }; \
 \
 private:

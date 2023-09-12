@@ -13,8 +13,8 @@
  *            LICENSE
  */
 #include "w3ddefaultdraw.h"
-#include "assetmgr.h"
 #include "drawable.h"
+#include "w3dassetmanager.h"
 #include "w3ddisplay.h"
 #include "w3dscene.h"
 #include "w3dshadow.h"

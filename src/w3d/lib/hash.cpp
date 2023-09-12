@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "hash.h"
-#include "crc.h"
+#include "realcrc.h"
 #include <captainslog.h>
 #include <strings.h>
 
@@ -110,7 +110,7 @@ HashableClass *HashTableClass::Find(const char *key)
  */
 int HashTableClass::Hash(const char *key)
 {
-    return (m_hashTableSize - 1) & CRC::Stringi(key, 0);
+    return (m_hashTableSize - 1) & CRC_Stringi(key, 0);
 }
 
 /**

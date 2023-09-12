@@ -14,7 +14,6 @@
  */
 // TODO figure out 0.0625, heightmap scale?
 #include "w3dwater.h"
-#include "assetmgr.h"
 #include "baseheightmap.h"
 #include "camera.h"
 #include "dx8wrapper.h"
@@ -30,6 +29,7 @@
 #include "surfaceclass.h"
 #include "texture.h"
 #include "vertmaterial.h"
+#include "w3dassetmanager.h"
 #include "w3dpoly.h"
 #include "w3dscene.h"
 #include "w3dshroud.h"

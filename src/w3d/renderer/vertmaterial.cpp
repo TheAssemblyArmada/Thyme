@@ -14,9 +14,9 @@
  */
 #include "vertmaterial.h"
 #include "chunkio.h"
-#include "crc.h"
 #include "dx8wrapper.h"
 #include "iniclass.h"
+#include "realcrc.h"
 #include "w3d_util.h"
 #include "xstraw.h"
 #include <cstdio>
@@ -114,17 +114,17 @@ unsigned long VertexMaterialClass::Compute_CRC() const
     unsigned int crc = 0;
 #ifdef BUILD_WITH_D3D8
     D3DMATERIAL8 *mat = m_material;
-    crc = CRC::Memory(mat, sizeof(*mat), crc);
+    crc = CRC_Memory(mat, sizeof(*mat), crc);
 #endif
-    crc = CRC::Memory(&m_flags, sizeof(m_flags), crc);
-    crc = CRC::Memory(&m_diffuseColorSource, sizeof(m_diffuseColorSource), crc);
-    crc = CRC::Memory(&m_ambientColorSource, sizeof(m_ambientColorSource), crc);
-    crc = CRC::Memory(&m_emissiveColorSource, sizeof(m_emissiveColorSource), crc);
-    crc = CRC::Memory(&m_UVSource, sizeof(m_UVSource), crc);
-    crc = CRC::Memory(&m_useLighting, sizeof(m_useLighting), crc);
-    crc = CRC::Memory(&m_uniqueID, sizeof(m_uniqueID), crc);
+    crc = CRC_Memory(&m_flags, sizeof(m_flags), crc);
+    crc = CRC_Memory(&m_diffuseColorSource, sizeof(m_diffuseColorSource), crc);
+    crc = CRC_Memory(&m_ambientColorSource, sizeof(m_ambientColorSource), crc);
+    crc = CRC_Memory(&m_emissiveColorSource, sizeof(m_emissiveColorSource), crc);
+    crc = CRC_Memory(&m_UVSource, sizeof(m_UVSource), crc);
+    crc = CRC_Memory(&m_useLighting, sizeof(m_useLighting), crc);
+    crc = CRC_Memory(&m_uniqueID, sizeof(m_uniqueID), crc);
     for (int i = 0; i < MAX_STAGES; i++) {
-        crc = CRC::Memory(&m_mapper[i], sizeof(*m_mapper[i]), crc);
+        crc = CRC_Memory(&m_mapper[i], sizeof(*m_mapper[i]), crc);
     }
     return crc;
 }

@@ -15,7 +15,7 @@
 #include "ddsfile.h"
 #include "colorspace.h"
 #include "ffactory.h"
-#include "rtsutils.h"
+#include "rtsutilsw3d.h"
 #include <algorithm>
 #include <cstring>
 

@@ -13,13 +13,13 @@
  *            LICENSE
  */
 #include "w3dghostobject.h"
-#include "assetmgr.h"
 #include "gameclient.h"
 #include "gamelogic.h"
 #include "hlod.h"
 #include "matinfo.h"
 #include "partitionmanager.h"
 #include "playerlist.h"
+#include "w3dassetmanager.h"
 #include "w3ddisplay.h"
 #include "w3dmodeldraw.h"
 #include "w3dscene.h"

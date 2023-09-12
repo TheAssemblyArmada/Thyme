@@ -12,22 +12,18 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "crc.h"
+#pragma once
 
-void CRC::Add_CRC(uint8_t byte)
+#include "always.h"
+#include "array.h"
+#include "bittype.h"
+
+class CRC
 {
-    m_crc = byte + (m_crc >> 31) + 2 * m_crc;
-}
+public:
+    static uint32_t Memory(void const *data, size_t bytes, uint32_t crc);
+    static uint32_t String(const char *string, uint32_t crc);
 
-void CRC::Compute_CRC(void const *data, int bytes)
-{
-    if (data == nullptr) {
-        return;
-    }
-
-    uint8_t const *buff = static_cast<uint8_t const *>(data);
-
-    for (int i = 0; i < bytes; ++i) {
-        Add_CRC(buff[i]);
-    }
-}
+private:
+    static const Array<uint32_t, 256> m_table;
+};

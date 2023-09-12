@@ -33,6 +33,10 @@
 #include FT_FREETYPE_H
 #endif
 
+#ifdef BUILD_WITH_FONTCONFIG
+#include <fontconfig/fontconfig.h>
+#endif
+
 FontCharsClass::FontCharsClass() :
     m_alternateUnicodeFont(nullptr),
     m_currPixelOffset(0),
@@ -60,7 +64,17 @@ FontCharsClass::FontCharsClass() :
 {
     std::memset(m_asciiCharArray, 0, sizeof(m_asciiCharArray));
 #ifdef BUILD_WITH_FREETYPE
-    FT_Init_FreeType(&m_ftLibrary);
+    FT_Error error = FT_Init_FreeType(&m_ftLibrary);
+    if (error != FT_Err_Ok) {
+#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
+        captainslog_error("Failed to init Freetype library: %s", FT_Error_String(error));
+#else
+        captainslog_error("Failed to init Freetype library");
+#endif
+#ifdef BUILD_WITH_FONTCONFIG
+        m_fc = FcInitLoadConfigAndFonts();
+#endif
+    }
 #endif
 }
 
@@ -222,7 +236,26 @@ void FontCharsClass::Update_Current_Buffer(int char_width)
 
 bool FontCharsClass::Locate_Font(const char *font_name, StringClass &font_file_path)
 {
-#ifdef PLATFORM_WINDOWS
+#if defined BUILD_WITH_FONTCONFIG
+    FcPattern *pattern = FcNameParse(reinterpret_cast<const FcChar8 *>(font_name));
+    FcConfigSubstitute(m_fc, pattern, FcMatchPattern);
+    FcDefaultSubstitute(pattern);
+
+    // Find the font
+    FcResult result;
+    FcPattern *font = FcFontMatch(m_fc, pattern, &result);
+    if (font != nullptr) {
+        FcChar8 *file = NULL;
+        if (FcPatternGetString(font, FC_FILE, 0, &file) == FcResultMatch) {
+            // Save the file to another std::string
+            font_file_path = (char *)file;
+        }
+        FcPatternDestroy(font);
+    }
+
+    FcPatternDestroy(pattern);
+    return result == FcResultMatch;
+#elif defined PLATFORM_WINDOWS
     const char *font_registry_key = "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
     HKEY hkey;
     LONG result;
@@ -285,6 +318,8 @@ bool FontCharsClass::Locate_Font(const char *font_name, StringClass &font_file_p
     font_file_path += "\\Fonts\\";
     font_file_path += font_file;
     return true;
+#else
+    return false;
 #endif
 }
 
@@ -308,10 +343,21 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
     StringClass font_file_path;
     if (!Locate_Font(font_name, font_file_path)) {
         captainslog_error("Failed to locate font: %s", font_name);
-        Locate_Font("Arial", font_file_path);
-        captainslog_info("Using Arial as a fallback");
+        captainslog_info("Trying Arial as a fallback");
+        if (Locate_Font("Arial", font_file_path)) {
+            captainslog_error("Failed to find fallback font: %s", font_name);
+            return;
+        }
     }
-    FT_New_Face(m_ftLibrary, font_file_path, 0, &m_ftFace);
+    FT_Error error = FT_New_Face(m_ftLibrary, font_file_path, 0, &m_ftFace);
+    if (error != FT_Err_Ok) {
+#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
+        captainslog_error("Failed to load Freetype face from file: %s", FT_Error_String(error));
+#else
+        captainslog_error("Failed to load Freetype face from file");
+#endif
+        return;
+    }
 #else
 #ifdef PLATFORM_WINDOWS
     HDC screen_dc = GetDC(W3D::Get_Window());
@@ -405,13 +451,11 @@ void FontCharsClass::Free_GDI_Font()
 
 void FontCharsClass::Initialize_GDI_Font(const char *font_name, int point_size, bool is_bold)
 {
-#ifdef PLATFORM_WINDOWS
     m_name.Format("%s%d", font_name, point_size);
     m_gdiFontName = font_name;
     m_pointSize = point_size;
     m_isBold = is_bold;
     Create_GDI_Font(font_name);
-#endif
 }
 
 bool FontCharsClass::Is_Font(const char *font_name, int point_size, bool is_bold)

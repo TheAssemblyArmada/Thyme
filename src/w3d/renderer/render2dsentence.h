@@ -45,6 +45,11 @@ struct FT_FaceRec_;
 typedef struct FT_FaceRec_ *FT_Face;
 #endif
 
+#ifdef BUILD_WITH_FONTCONFIG
+struct _FcConfig;
+typedef struct _FcConfig FcConfig;
+#endif
+
 class FontCharsClass : public W3DMPO, public RefCountClass
 {
     friend class W3DFontLibrary;
@@ -109,6 +114,9 @@ private:
 #ifdef BUILD_WITH_FREETYPE
     FT_Library m_ftLibrary;
     FT_Face m_ftFace;
+#endif
+#ifdef BUILD_WITH_FONTCONFIG
+    FcConfig *m_fc = nullptr;
 #endif
     FontCharsClass::CharDataStruct *m_asciiCharArray[256];
     FontCharsClass::CharDataStruct **m_unicodeCharArray;

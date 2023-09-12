@@ -63,16 +63,25 @@ FontCharsClass::FontCharsClass() :
     m_isBold(false)
 {
     std::memset(m_asciiCharArray, 0, sizeof(m_asciiCharArray));
+    // Use Fontconfig to locate system fonts
+#ifdef BUILD_WITH_FONTCONFIG
+    if (FcInit() == FcTrue) {
+        m_fc = FcInitLoadConfigAndFonts();
+        if (m_fc == nullptr) {
+            captainslog_error("Failed to load Fontconfig config & fonts ");
+        }
+    } else {
+        captainslog_error("Failed to init Fontconfig");
+    }
+#endif
+    // Use Freetype to loader & rasterize fonts
 #ifdef BUILD_WITH_FREETYPE
     FT_Error error = FT_Init_FreeType(&m_ftLibrary);
     if (error != FT_Err_Ok) {
 #ifdef FT_CONFIG_OPTION_ERROR_STRINGS
-        captainslog_error("Failed to init Freetype library: %s", FT_Error_String(error));
+        captainslog_error("Failed to init Freetype: %s", FT_Error_String(error));
 #else
-        captainslog_error("Failed to init Freetype library");
-#endif
-#ifdef BUILD_WITH_FONTCONFIG
-        m_fc = FcInitLoadConfigAndFonts();
+        captainslog_error("Failed to init Freetype");
 #endif
     }
 #endif
@@ -87,6 +96,12 @@ FontCharsClass::~FontCharsClass()
 
     Free_GDI_Font();
     Free_Character_Arrays();
+#ifdef BUILD_WITH_FONTCONFIG
+    if (m_fc != nullptr) {
+        FcConfigDestroy(m_fc);
+    }
+    FcFini();
+#endif
 }
 
 const FontCharsClass::CharDataStruct *FontCharsClass::Get_Char_Data(unichar_t ch)
@@ -237,6 +252,10 @@ void FontCharsClass::Update_Current_Buffer(int char_width)
 bool FontCharsClass::Locate_Font(const char *font_name, StringClass &font_file_path)
 {
 #if defined BUILD_WITH_FONTCONFIG
+    if (m_fc == nullptr) {
+        return false;
+    }
+
     FcPattern *pattern = FcNameParse(reinterpret_cast<const FcChar8 *>(font_name));
     FcConfigSubstitute(m_fc, pattern, FcMatchPattern);
     FcDefaultSubstitute(pattern);
@@ -325,20 +344,12 @@ bool FontCharsClass::Locate_Font(const char *font_name, StringClass &font_file_p
 
 void FontCharsClass::Create_GDI_Font(const char *font_name)
 {
-    // Original used MulDiv, but that's not cross-platform
-    int font_height = -(m_pointSize * 96) / 72;
-    int font_width = 0;
     bool is_generals = false;
 
     if (std::strcmp(font_name, "Generals") == 0) {
         font_name = "Arial";
         is_generals = true;
     }
-
-    if (is_generals) {
-        font_width = ((float)-font_height / 2.5f);
-    }
-
 #ifdef BUILD_WITH_FREETYPE
     StringClass font_file_path;
     if (!Locate_Font(font_name, font_file_path)) {
@@ -358,14 +369,40 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
 #endif
         return;
     }
+
+    // Original calculates with 96 DPI. Do the same
+    error = FT_Set_Char_Size(m_ftFace, 0, m_pointSize * 64, 96, 96);
+    if (error != FT_Err_Ok) {
+#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
+        captainslog_error("Failed to set character size: %s", FT_Error_String(error));
+#else
+        captainslog_error("Failed to set character size");
+#endif
+        return;
+    }
+
+    // Use the same metric calculation as Wine does, in their GDI emulation layer
+    // See https://github.com/NVIDIA/winex_lgpl/blob/master/winex/dlls/gdi/freetype.c#L3027
+    if (FT_IS_SCALABLE(m_ftFace)) {
+        m_ascent = FT_MulFix(m_ftFace->ascender, m_ftFace->size->metrics.y_scale) >> 6;
+        int descent = -FT_MulFix(m_ftFace->descender, m_ftFace->size->metrics.y_scale) >> 6;
+        m_charHeight = m_ascent + descent;
+        m_overhang = 0;
+    }
 #else
 #ifdef PLATFORM_WINDOWS
     HDC screen_dc = GetDC(W3D::Get_Window());
+    int font_height = -MulDiv(m_pointSize, 96, 72);
+    int font_width = 0;
     DWORD bold = m_isBold ? FW_BOLD : FW_NORMAL;
     constexpr DWORD italic = 0;
     constexpr DWORD underline = 0;
     constexpr DWORD strikeout = 0;
     constexpr DWORD charset = DEFAULT_CHARSET;
+
+    if (is_generals) {
+        font_width = ((float)-font_height / 2.5f);
+    }
 
     m_widthReduction = std::clamp(-(font_height / 8), 0, 4);
 

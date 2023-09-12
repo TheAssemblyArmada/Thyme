@@ -12,11 +12,17 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include <render2dsentence.h>
 #include <gtest/gtest.h>
+#include <render2dsentence.h>
 
 TEST(text, render)
 {
     FontCharsClass font;
     font.Initialize_GDI_Font("Arial", 12, false);
+    if (!font.Is_Font("Arial", 12, false)) {
+        captainslog_info("Failed to initialize font. Stopping test");
+        return;
+    }
+    // Depending on which font is used as a fallback, there might be a slight difference
+    EXPECT_NEAR(font.Get_Char_Height(), 18, 1);
 }

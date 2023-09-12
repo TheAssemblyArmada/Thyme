@@ -25,7 +25,7 @@
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
-#include "assetmgr.h"
+#include "w3dassetmanager.h"
 #include "audioeventinfo.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
@@ -287,7 +287,9 @@ void Setup_Hooks()
     Hook_Function(0x00414490, New_New); // operator new[]
     Hook_Function(0x004144D0, New_Delete); // operator delete
     Hook_Function(0x004144F0, New_Delete); // operator delete[]
-    Hook_Function(0x00414B30, Create_Named_Pool);
+    Hook_Function(0x00414B30, Create_W3D_Mem_Pool);
+    Hook_Function(0x00414B60, Allocate_From_W3D_Mem_Pool);
+    Hook_Function(0x00414B90, Free_From_W3D_Mem_Pool);
 
     // Replace pool functions
     Hook_Method(0x00413C10, &MemoryPool::Allocate_Block);

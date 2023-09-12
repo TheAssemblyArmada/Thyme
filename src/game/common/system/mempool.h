@@ -48,6 +48,7 @@ public:
     void Add_To_List(MemoryPool **head);
     void Remove_From_List(MemoryPool **head);
     int Get_Alloc_Size() { return m_allocationSize; }
+    const char *Get_Pool_Name() { return m_poolName; }
 
     void *operator new(size_t size) throw() { return Raw_Allocate(size); }
     void operator delete(void *obj) { Raw_Free(obj); }

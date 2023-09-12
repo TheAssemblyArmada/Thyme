@@ -14,7 +14,6 @@
  */
 
 #include "w3ddisplay.h"
-#include "assetmgr.h"
 #include "baseheightmap.h"
 #include "colorspace.h"
 #include "displaystring.h"
@@ -48,6 +47,7 @@
 #include "sortingrenderer.h"
 #include "videobuffer.h"
 #include "w3d.h"
+#include "w3dassetmanager.h"
 #include "w3ddebugdisplay.h"
 #include "w3ddynamiclight.h"
 #include "w3dfilesystem.h"

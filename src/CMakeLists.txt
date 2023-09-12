@@ -98,6 +98,7 @@ set(GAMEENGINE_SRC
     game/client/terrainvisual.cpp
     game/client/tiledata.cpp
     game/client/view.cpp
+    game/client/w3dassetmanager.cpp
     game/client/water.cpp
     game/client/worldheightmap.cpp
     game/client/draw/drawable.cpp
@@ -398,6 +399,7 @@ set(GAMEENGINE_SRC
     w3d/lib/bufffileclass.cpp
     w3d/lib/chunkio.cpp
     w3d/lib/cpudetect.cpp
+    w3d/lib/crcengine.cpp
     w3d/lib/critsection.cpp
     w3d/lib/ffactory.cpp
     w3d/lib/fileclass.cpp
@@ -412,6 +414,7 @@ set(GAMEENGINE_SRC
     w3d/lib/rawfileclass.cpp
     w3d/lib/rcfile.cpp
     w3d/lib/readline.cpp
+    w3d/lib/realcrc.cpp
     w3d/lib/refcount.cpp
     w3d/lib/straw.cpp
     w3d/lib/systimer.cpp

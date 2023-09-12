@@ -20,6 +20,7 @@
 #include "memdynalloc.h"
 #include "mempool.h"
 #include "mempoolfact.h"
+#include "rawalloc.h"
 
 #ifndef GAME_DLL
 bool g_thePreMainInitFlag = false;
@@ -28,38 +29,46 @@ bool g_theMainInitFlag = false;
 #include "hooker.h"
 #endif
 
-#ifdef GAME_DEBUG
+#ifdef GAME_DLL
+int &g_theLinkChecker = Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368));
+#else
 int g_theLinkChecker = 0;
 #endif
 
 #ifdef GAME_DLL
 void *New_New(size_t bytes)
 {
-    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator new");
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void *New_New_Dbg(size_t bytes, char const *file, int line)
 {
-    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator new");
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void New_Delete(void *ptr)
 {
-    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator delete");
+
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 
 void New_Delete_Dbg(void *ptr, char const *file, int line)
 {
-    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator delete");
+
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 #endif
@@ -70,13 +79,14 @@ void Init_Memory_Manager()
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
-        captainslog_trace("Memory Manager initialising normally.\n");
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;
         g_memoryPoolFactory->Init();
         g_dynamicMemoryAllocator = g_memoryPoolFactory->Create_Dynamic_Memory_Allocator(param_count, params);
         User_Memory_Init_Pools();
         g_thePreMainInitFlag = false;
+    } else {
+        captainslog_dbgassert(g_thePreMainInitFlag, "memory manager is already inited");
     }
 
 #if defined GAME_DEBUG && !defined __SANITIZE_ADDRESS__
@@ -84,17 +94,18 @@ void Init_Memory_Manager()
     // Check that new and delete both use our custom implementation.
     g_theLinkChecker = 0;
 
-    captainslog_info("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
+    captainslog_info("Checking memory manager operators are linked, link checker at %d", g_theLinkChecker);
 
     char *tmp = new char;
     delete tmp;
     char *tmp2 = new char[8];
     delete[] tmp2;
-    SimpleCriticalSectionClass *tmp3 = new SimpleCriticalSectionClass;
+    char *tmp3 = new char;
+    *tmp3 = 1;
     delete tmp3;
 
     if (g_theLinkChecker != 6) {
-        captainslog_fatal("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
+        captainslog_fatal("Wrong operator new/delete linked in! Fix this...");
         exit(-1);
     }
 #endif
@@ -108,7 +119,7 @@ void Init_Memory_Manager_Pre_Main()
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
-        captainslog_trace("Memory Manager initialising prior to WinMain\n");
+        captainslog_trace("Memory Manager initialising prior to main");
 
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;
@@ -122,8 +133,10 @@ void Init_Memory_Manager_Pre_Main()
 void Shutdown_Memory_Manager()
 {
     if (!g_thePreMainInitFlag) {
-        if (g_memoryPoolFactory != nullptr) {
-            if (g_dynamicMemoryAllocator != nullptr) {
+        if (g_dynamicMemoryAllocator != nullptr) {
+            captainslog_dbgassert(g_memoryPoolFactory != nullptr, "hmm, no factory");
+
+            if (g_memoryPoolFactory != nullptr) {
                 g_memoryPoolFactory->Destroy_Dynamic_Memory_Allocator(g_dynamicMemoryAllocator);
                 g_dynamicMemoryAllocator = nullptr;
             }
@@ -136,62 +149,66 @@ void Shutdown_Memory_Manager()
     g_theMainInitFlag = false;
 }
 
-MemoryPool *Create_Named_Pool(const char *name, int size)
+void *Create_W3D_Mem_Pool(char const *name, int size)
 {
-#ifdef GAME_DEBUG
     ++g_theLinkChecker;
-#endif
     Init_Memory_Manager_Pre_Main();
-    return g_memoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
+    MemoryPool *pool = g_memoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
+    captainslog_dbgassert(pool != nullptr && pool->Get_Alloc_Size() == size, "bad w3d pool");
+    return pool;
 }
 
-void *Allocate_From_Pool(MemoryPool *pool, int size)
+void *Allocate_From_W3D_Mem_Pool(void *pool, int size)
 {
-    return pool->Allocate_Block();
+    MemoryPool *mempool = static_cast<MemoryPool *>(pool);
+    captainslog_dbgassert(mempool != nullptr, "pool is null");
+    captainslog_dbgassert(
+        mempool != nullptr && mempool->Get_Alloc_Size() == size, "bad w3d pool size %s", mempool->Get_Pool_Name());
+    return mempool->Allocate_Block();
 }
 
-void Free_From_Pool(MemoryPool *pool, void *memory)
+void Free_From_W3D_Mem_Pool(void *pool, void *data)
 {
-    pool->Free_Block(memory);
+    MemoryPool *mempool = static_cast<MemoryPool *>(pool);
+    captainslog_dbgassert(mempool != nullptr, "pool is null");
+    mempool->Free_Block(data);
 }
 
 // These all override the global news and deletes just by being linked.
 #ifndef __SANITIZE_ADDRESS__
 void *operator new(size_t bytes)
 {
-#ifdef GAME_DEBUG
     ++g_theLinkChecker;
-#endif
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator new");
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void *operator new[](size_t bytes)
 {
-#ifdef GAME_DEBUG
     ++g_theLinkChecker;
-#endif
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator new");
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void operator delete(void *ptr)
 {
-#ifdef GAME_DEBUG
     ++g_theLinkChecker;
-#endif
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator delete");
+
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 
 void operator delete[](void *ptr)
 {
-#ifdef GAME_DEBUG
     ++g_theLinkChecker;
-#endif
     Init_Memory_Manager_Pre_Main();
+    captainslog_dbgassert(g_dynamicMemoryAllocator, "must init memory manager before calling global operator delete");
+
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 #endif

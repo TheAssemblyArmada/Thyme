@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include "crc.h"
+#include "crcengine.h"
 #include "fileclass.h"
 #include "index.h"
 #include "listnode.h"

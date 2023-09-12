@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "w3dmouse.h"
-#include "assetmgr.h"
 #include "camera.h"
 #include "critsection.h"
 #include "dx8wrapper.h"
@@ -21,6 +20,7 @@
 #include "rtsutils.h"
 #include "scene.h"
 #include "texture.h"
+#include "w3dassetmanager.h"
 #include "w3ddisplay.h"
 #include "w3dscene.h"
 #include <cstdio>

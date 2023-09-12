@@ -14,7 +14,6 @@
  */
 #include "w3dmodeldraw.h"
 #include "aiupdate.h"
-#include "assetmgr.h"
 #include "drawable.h"
 #include "fpusetting.h"
 #include "fxlist.h"
@@ -33,6 +32,7 @@
 #include "physicsupdate.h"
 #include "randomvalue.h"
 #include "rendobj.h"
+#include "w3dassetmanager.h"
 #include "w3ddisplay.h"
 #include "w3dprojectedshadow.h"
 #include "w3dscene.h"

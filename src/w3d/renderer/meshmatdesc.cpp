@@ -15,10 +15,10 @@
  *            LICENSE
  */
 #include "meshmatdesc.h"
-#include "crc.h"
 #include "dx8caps.h"
 #include "dx8wrapper.h"
 #include "meshmdl.h"
+#include "realcrc.h"
 #include "refcount.h"
 #include "texture.h"
 #ifdef GAME_DLL
@@ -116,7 +116,7 @@ bool UVBufferClass::Is_Equal_To(const UVBufferClass &that)
 
 void UVBufferClass::Update_CRC(void)
 {
-    m_CRC = CRC::Memory(Get_Array(), Get_Count() * sizeof(Vector2), 0);
+    m_CRC = CRC_Memory(Get_Array(), Get_Count() * sizeof(Vector2), 0);
 }
 
 TextureClass *MeshMatDescClass::Get_Single_Texture(int pass, int stage) const
@@ -558,7 +558,7 @@ void MeshMatDescClass::Make_Color_Array_Unique(int array)
 
 void MeshMatDescClass::Install_UV_Array(int pass, int stage, Vector2 *uvs, int count)
 {
-    unsigned int crc = CRC::Memory(uvs, count * sizeof(Vector2), 0);
+    unsigned int crc = CRC_Memory(uvs, count * sizeof(Vector2), 0);
     bool found = false;
 
     for (int i = 0; i < Get_UV_Array_Count(); i++) {

@@ -13,10 +13,10 @@
  *            LICENSE
  */
 #include "w3ddebrisdraw.h"
-#include "assetmgr.h"
 #include "drawable.h"
 #include "hanim.h"
 #include "hlod.h"
+#include "w3dassetmanager.h"
 #include "w3ddisplay.h"
 #include "w3dscene.h"
 

@@ -17,6 +17,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "endiantype.h"
+#include "rtsutilsw3d.h"
 #include <ctime>
 
 #ifdef PLATFORM_WINDOWS
@@ -80,15 +81,6 @@ template<> struct hash<Utf8String>
     }
 };
 
-template<int a, int b, int c, int d> struct FourCC
-{
-#ifdef SYSTEM_LITTLE_ENDIAN
-    static const uint32_t value = (((((d << 8) | c) << 8) | b) << 8) | a;
-#else
-    static const uint32_t value = (((((a << 8) | b) << 8) | c) << 8) | d;
-#endif
-};
-
 inline uint32_t FourCC_From_String(const char *str)
 {
     char buf[5] = {};
@@ -97,38 +89,6 @@ inline uint32_t FourCC_From_String(const char *str)
     return (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
 #else
     return (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-#endif
-}
-
-inline unsigned Get_Time()
-{
-#ifdef PLATFORM_WINDOWS
-    return timeGetTime();
-#else
-    struct timeval now;
-    gettimeofday(&now, nullptr);
-    return (now.tv_sec * 1000) + (now.tv_usec / 1000);
-#endif
-}
-
-inline void Sleep_Ms(int interval)
-{
-#if defined PLATFORM_WINDOWS
-    ::Sleep(interval);
-#elif defined HAVE_NANOSLEEP
-    struct timespec ts;
-    ts.tv_sec = interval / 1000;
-    ts.tv_nsec = (interval % 1000) * 1000000;
-    nanosleep(&ts, nullptr);
-#elif defined HAVE_USLEEP
-    usleep(1000 * interval);
-#elif defined HAVE_SYS_SELECT_H
-    struct timeval tv;
-    tv.tv_sec = interval / 1000;
-    tv.tv_usec = (interval % 1000) * 1000;
-    select(0, nullptr, nullptr, nullptr, &tv);
-#else
-#error Add sleep function in rtsutil.h
 #endif
 }
 

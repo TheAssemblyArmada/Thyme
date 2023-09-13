@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#include "linegroup.h"
+#include "linegrp.h"
 #include "pointgr.h"
 #include "rendobj.h"
 #include "seglinerenderer.h"

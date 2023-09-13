@@ -35,7 +35,7 @@
 #include "light.h"
 #include "meshproppage.h"
 #include "part_emt.h"
-#include "renderdevicedesc.h"
+#include "rddesc.h"
 #include "resource.h"
 #include "scaledialog.h"
 #include "scenelightdialog.h"

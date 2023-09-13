@@ -81,7 +81,7 @@
 #include "shader.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
-#include "soundmanager.h"
+#include "gamesounds.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "texturebase.h"

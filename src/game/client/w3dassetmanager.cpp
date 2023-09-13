@@ -19,7 +19,6 @@
 #include "dazzle.h"
 #include "dx8renderer.h"
 #include "ffactory.h"
-#include "fileclass.h"
 #include "hanim.h"
 #include "hlod.h"
 #include "loaders.h"
@@ -35,6 +34,7 @@
 #include "vertmaterial.h"
 #include "w3d_file.h"
 #include "w3dexclusionlist.h"
+#include "wwfile.h"
 #include <cmath>
 #include <stdio.h>
 

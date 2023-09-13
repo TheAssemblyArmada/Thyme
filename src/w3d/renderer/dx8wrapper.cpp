@@ -21,7 +21,7 @@
 #include "ffactory.h"
 #include "light.h"
 #include "lightenv.h"
-#include "missing.h"
+#include "missingtexture.h"
 #include "pointgr.h"
 #include "pot.h"
 #include "rect.h"

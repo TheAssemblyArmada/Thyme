@@ -1,4 +1,4 @@
-#include "bufffileclass.h"
+#include "bufffile.h"
 #include "compressionmanager.h"
 #include "rtsutils.h"
 #include <cxxopts.hpp>

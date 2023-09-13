@@ -16,8 +16,8 @@
 #pragma once
 
 #include "always.h"
-#include "fileclass.h"
 #include "straw.h"
+#include "wwfile.h"
 
 int Read_Line(FileClass &file, char *buffer, int length, bool &eof);
 int Read_Line(Straw &straw, char *buffer, int length, bool &eof);

@@ -18,7 +18,6 @@
 #include "always.h"
 #include "chunkio.h"
 #include "hash.h"
-#include "missing.h"
 #include "vector.h"
 #include "w3derr.h"
 #include "wwstring.h"

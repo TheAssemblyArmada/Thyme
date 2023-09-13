@@ -18,7 +18,7 @@
 #include "assetmgr.h"
 #include "dx8texman.h"
 #include "dx8wrapper.h"
-#include "missing.h"
+#include "missingtexture.h"
 #include "textureloader.h"
 #include "textureloadtask.h"
 #include "w3d.h"

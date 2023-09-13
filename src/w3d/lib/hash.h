@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "always.h"
+#include "wwstring.h"
 
 class HashableClass
 {
@@ -78,3 +79,17 @@ private:
     HashableClass *m_currentEntry;
     HashableClass *m_nextEntry;
 };
+
+class MissingTextureClass : public HashableClass
+{
+public:
+    MissingTextureClass(const char *name) : m_name(name) {}
+    virtual ~MissingTextureClass(){};
+    virtual const char *Get_Key() override { return m_name.Peek_Buffer(); };
+
+private:
+    StringClass m_name;
+};
+
+typedef MissingTextureClass MissingAnimClass;
+typedef MissingTextureClass MissingGeomClass;

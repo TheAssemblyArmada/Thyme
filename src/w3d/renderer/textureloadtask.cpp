@@ -18,7 +18,7 @@
 #include "bitmaphandler.h"
 #include "ddsfile.h"
 #include "dx8wrapper.h"
-#include "missing.h"
+#include "missingtexture.h"
 #include "targa.h"
 #include "texture.h"
 #include "textureloader.h"

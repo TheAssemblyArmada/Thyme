@@ -63,7 +63,7 @@
 #include "randomvalue.h"
 #include "rankinfo.h"
 #include "recorder.h"
-#include "registry.h"
+#include "registryget.h"
 #include "science.h"
 #include "scriptengine.h"
 #include "sideslist.h"

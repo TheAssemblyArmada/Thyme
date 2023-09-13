@@ -16,9 +16,9 @@
 #include "alaudiostream.h"
 #include "filesystem.h"
 #include "gamemath.h"
+#include "gamesounds.h"
 #include "globaldata.h"
 #include "playingaudio.h"
-#include "soundmanager.h"
 #include "videoplayer.h"
 
 namespace Thyme

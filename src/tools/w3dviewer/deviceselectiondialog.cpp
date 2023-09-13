@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "deviceselectiondialog.h"
-#include "renderdevicedesc.h"
+#include "rddesc.h"
 #include "resource.h"
 #include "w3d.h"
 #include "w3dview.h"

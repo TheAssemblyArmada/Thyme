@@ -15,7 +15,7 @@
 #pragma once
 
 #include "critsection.h"
-#include "fileclass.h"
+#include "wwfile.h"
 #include "wwstring.h"
 
 class FileFactoryClass

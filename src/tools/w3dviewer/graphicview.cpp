@@ -20,7 +20,7 @@
 #include "mpu.h"
 #include "part_buf.h"
 #include "part_emt.h"
-#include "quaternion.h"
+#include "quat.h"
 #include "rcfile.h"
 #include "resource.h"
 #include "utils.h"

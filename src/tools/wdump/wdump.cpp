@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "always.h"
-#include "bufffileclass.h"
+#include "bufffile.h"
 #include "chunkio.h"
 #include "resource.h"
 #include "simplevec.h"

@@ -15,9 +15,9 @@
 
 #include "hanimmgr.h"
 #include "hanim.h"
+#include "hash.h"
 #include "hcanim.h"
 #include "hrawanim.h"
-#include "missing.h"
 #include "w3d_file.h"
 #include "w3dexclusionlist.h"
 #ifdef GAME_DLL

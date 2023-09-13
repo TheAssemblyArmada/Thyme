@@ -14,7 +14,7 @@
  */
 #pragma once
 #include "w3dafx.h"
-#include "quaternion.h"
+#include "quat.h"
 
 struct AlphaVectorStruct
 {

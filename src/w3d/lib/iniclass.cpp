@@ -16,7 +16,7 @@
 #include "iniclass.h"
 #include "filestraw.h"
 #include "nstrdup.h"
-#include "rawfileclass.h"
+#include "rawfile.h"
 #include "readline.h"
 #include <captainslog.h>
 #include <cctype>

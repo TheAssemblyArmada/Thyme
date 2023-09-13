@@ -14,7 +14,7 @@
  */
 #pragma once
 #include "always.h"
-#include "fileclass.h"
+#include "wwfile.h"
 
 #ifdef PLATFORM_WINDOWS
 #include <Windows.h>

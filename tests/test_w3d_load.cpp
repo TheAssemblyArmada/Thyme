@@ -18,7 +18,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "assetmgr.h"
-#include "bufffileclass.h"
+#include "bufffile.h"
 #include "chunkio.h"
 #include "meshmdl.h"
 #include "w3d_file.h"

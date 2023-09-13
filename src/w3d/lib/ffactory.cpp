@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "ffactory.h"
-#include "bufffileclass.h"
+#include "bufffile.h"
 #include "captainslog.h"
 #include <cstring>
 

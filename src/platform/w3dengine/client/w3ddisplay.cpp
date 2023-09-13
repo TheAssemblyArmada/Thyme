@@ -40,7 +40,7 @@
 #include "network.h"
 #include "particlesysmanager.h"
 #include "physicsupdate.h"
-#include "renderdevicedesc.h"
+#include "rddesc.h"
 #include "rtsutils.h"
 #include "scriptengine.h"
 #include "shadermanager.h"

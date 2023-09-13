@@ -26,8 +26,9 @@ class MapCache;
 WaypointMap *&g_waypoints = Make_Global<WaypointMap *>(PICK_ADDRESS(0x00945AD4, 0x04CAA140));
 MapCache *&g_theMapCache = Make_Global<MapCache *>(PICK_ADDRESS(0x00A2B974, 0x04CAA154));
 
-// weather.cpp
-#include "weather.h"
+// snow.cpp
+#include "snow.h"
+SnowManager *&g_theSnowManager = Make_Global<SnowManager *>(PICK_ADDRESS(0x00A2BF04, 0x00E25CF4));
 Override<WeatherSetting> &g_theWeatherSetting = Make_Global<Override<WeatherSetting>>(PICK_ADDRESS(0x00A2BF00, 0x00E25CF0));
 
 // displaystringmanager.cpp
@@ -747,10 +748,6 @@ GameWindowManager *&g_theWindowManager = Make_Global<GameWindowManager *>(PICK_A
 // terrainvisual.cpp
 class TerrainVisual;
 TerrainVisual *&g_theTerrainVisual = Make_Global<TerrainVisual *>(PICK_ADDRESS(0x00A2C27C, 0x00E25D10));
-
-// w3dsnow.cpp
-class W3DSnowManager;
-W3DSnowManager *&g_theSnowManager = Make_Global<W3DSnowManager *>(PICK_ADDRESS(0x00A2BF04, 0x00E25CF4));
 
 // flatheightmap.cpp
 class FlatHeightMapRenderObjClass;

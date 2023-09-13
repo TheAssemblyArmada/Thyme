@@ -39,12 +39,12 @@
 #include "playertemplate.h"
 #include "rankinfo.h"
 #include "science.h"
+#include "snow.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
 #include "thingfactory.h"
 #include "water.h"
 #include "weapon.h"
-#include "weather.h"
 #include "xfer.h"
 #include <algorithm>
 #include <cctype>
@@ -130,7 +130,7 @@ const BlockParse TheTypeTable[] = {
     {"Video", HOOK_BLOCK(0x005039D0) /*&INI::parseVideoDefinition*/},
     {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},
-    {"Weather", HOOK_BLOCK(0x00502DF0) /*&WeatherSetting::Parse_Weather_Definition*/},
+    {"Weather", &WeatherSetting::Parse_Weather_Definition},
     {"Weapon", WeaponStore::Parse_Weapon_Template_Definition},
     {"WebpageURL", HOOK_BLOCK(0x005028F0) /*&INI::parseWebpageURL*/},
     {"HeaderTemplate", HOOK_BLOCK(0x00501E50) /*&INI::parseHeaderTemplateDefinition*/},

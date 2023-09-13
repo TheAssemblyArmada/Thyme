@@ -18,6 +18,7 @@
 #include "w3ddisplay.h"
 #include "w3dgamefont.h"
 #include "w3dmouse.h"
+#include "w3dsnow.h"
 #include "w3dstatuscircle.h"
 #ifdef BUILD_WITH_FFMPEG
 #include "ffmpegvideoplayer.h"
@@ -62,4 +63,9 @@ VideoPlayer *W3DGameClient::Create_VideoPlayer()
 #else
     return new BinkVideoPlayer();
 #endif
+}
+
+SnowManager *W3DGameClient::Create_SnowManager()
+{
+    return new W3DSnowManager();
 }

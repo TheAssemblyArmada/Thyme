@@ -207,7 +207,8 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Store_Freetype_Char(unicha
     curr_buffer += m_currPixelOffset;
 
     int x_offset = m_ftFace->glyph->bitmap_left;
-    int y_offset = (m_ftFace->glyph->bitmap.rows - m_ftFace->glyph->bitmap_top);
+    int descent = m_charHeight - m_ascent;
+    int y_offset = (m_charHeight - m_ftFace->glyph->bitmap_top) - descent;
 
     // Render the bitmap
     for (unsigned int row = 0; row < m_ftFace->glyph->bitmap.rows; row++) {

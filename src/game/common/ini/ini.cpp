@@ -131,7 +131,7 @@ const BlockParse TheTypeTable[] = {
     {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},
     {"Weather", &WeatherSetting::Parse_Weather_Definition},
-    {"Weapon", WeaponStore::Parse_Weapon_Template_Definition},
+    {"Weapon", &WeaponStore::Parse_Weapon_Template_Definition},
     {"WebpageURL", HOOK_BLOCK(0x005028F0) /*&INI::parseWebpageURL*/},
     {"HeaderTemplate", HOOK_BLOCK(0x00501E50) /*&INI::parseHeaderTemplateDefinition*/},
     {"StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definition},

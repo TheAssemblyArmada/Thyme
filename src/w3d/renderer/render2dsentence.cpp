@@ -196,13 +196,30 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Store_GDI_Char(unichar_t c
         captainslog_error("Failed to render character(%i) from font", ch);
         return nullptr;
     }
-    int char_width = m_ftFace->glyph->bitmap.width;
+    int char_width = m_ftFace->glyph->advance.x >> 6;
+    // Sometimes for some reason the bitmap is wider than the advancement.
+    // This does not work with this font rendering approach
+    if (char_width < m_ftFace->glyph->bitmap.width + m_ftFace->glyph->bitmap_left) {
+        char_width = m_ftFace->glyph->bitmap.width + m_ftFace->glyph->bitmap_left;
+    }
     Update_Current_Buffer(char_width);
     uint16_t *curr_buffer = m_bufferList[m_bufferList.Count() - 1]->buffer;
     curr_buffer += m_currPixelOffset;
-    for (int row = 0; row < m_ftFace->glyph->bitmap.rows; row++) {
+
+    int x_offset = m_ftFace->glyph->bitmap_left;
+    int y_offset = (m_ftFace->glyph->bitmap.rows - m_ftFace->glyph->bitmap_top);
+
+    // Render empty toplevel rows
+    for (int row = 0; row < y_offset; row++) {
+        for (int col = 0; col < char_width; col++) {
+            *curr_buffer++ = 0;
+        }
+    }
+
+    // Render the bitmap
+    for (unsigned int row = 0; row < m_ftFace->glyph->bitmap.rows; row++) {
         int index = (row * m_ftFace->glyph->bitmap.pitch);
-        for (int col = 0; col < m_ftFace->glyph->bitmap.width; col++) {
+        for (unsigned int col = 0u; col < m_ftFace->glyph->bitmap.width; col++) {
             uint8_t pixel_value = m_ftFace->glyph->bitmap.buffer[index + col];
             uint16_t pixel_color = 0;
 
@@ -211,6 +228,14 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Store_GDI_Char(unichar_t c
             }
 
             *curr_buffer++ = pixel_color | ((pixel_value >> 4) << 12);
+        }
+    }
+
+    // Render empty botlevel rows
+    int remaining = m_charHeight - (y_offset + m_ftFace->glyph->bitmap.rows);
+    for (int row = 0; row < remaining; row++) {
+        for (int col = 0; col < char_width; col++) {
+            *curr_buffer++ = 0;
         }
     }
 
@@ -434,6 +459,8 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
         int descent = -FT_MulFix(m_ftFace->descender, m_ftFace->size->metrics.y_scale) >> 6;
         m_charHeight = m_ascent + descent;
         m_overhang = 0;
+    } else {
+        captainslog_error("Require a scalable font");
     }
 #else
 #ifdef PLATFORM_WINDOWS

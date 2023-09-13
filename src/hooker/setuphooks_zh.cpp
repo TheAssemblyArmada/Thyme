@@ -25,7 +25,6 @@
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
-#include "w3dassetmanager.h"
 #include "audioeventinfo.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
@@ -175,6 +174,7 @@
 #include "updatemodule.h"
 #include "vertmaterial.h"
 #include "w3d.h"
+#include "w3dassetmanager.h"
 #include "w3dbibbuffer.h"
 #include "w3dbridgebuffer.h"
 #include "w3dbuffermanager.h"
@@ -193,6 +193,7 @@
 #include "w3dscene.h"
 #include "w3dshroud.h"
 #include "w3dsmudge.h"
+#include "w3dsnow.h"
 #include "w3dterrainbackground.h"
 #include "w3dterraintracks.h"
 #include "w3dtreebuffer.h"
@@ -1972,6 +1973,7 @@ void Setup_Hooks()
     Hook_Any(0x00775050, W3DGameClient::Set_Team_Color);
     Hook_Any(0x00774EA0, W3DGameClient::Create_Drawable);
     Hook_Any(0x007753A0, W3DGameClient::Create_VideoPlayer);
+    Hook_Any(0x00775460, W3DGameClient::Create_SnowManager);
 
     // w3dprojectedshadow.cpp
     Hook_Any(0x0075ECC0, W3DProjectedShadowManager::Hook_Ctor);
@@ -3237,4 +3239,10 @@ void Setup_Hooks()
 
     // sequentialscript.h
     Hook_Any(0x00436980, SequentialScript::Xfer_Snapshot);
+
+    // snow.h
+    Hook_Any(0x00502D60, SnowManager::Set_Visible);
+
+    // w3dsnow.h
+    Hook_Any(0x0079FCC0, W3DSnowManager::Render);
 }

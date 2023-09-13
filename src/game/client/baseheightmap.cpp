@@ -185,7 +185,7 @@ void BaseHeightMapRenderObjClass::Release_Resources()
     }
 
     if (g_theSnowManager != nullptr) {
-        g_theSnowManager->Release_Resources();
+        static_cast<W3DSnowManager *>(g_theSnowManager)->Release_Resources();
     }
 
     W3DShaderManager::Shutdown();
@@ -237,7 +237,7 @@ void BaseHeightMapRenderObjClass::Re_Acquire_Resources()
     }
 
     if (g_theSnowManager != nullptr) {
-        g_theSnowManager->Re_Acquire_Resources();
+        static_cast<W3DSnowManager *>(g_theSnowManager)->Re_Acquire_Resources();
     }
 
     if (m_roadBuffer != nullptr) {

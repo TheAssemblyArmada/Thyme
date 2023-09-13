@@ -71,7 +71,6 @@ set(GAMEENGINE_SRC
     game/crashwrapper.cpp
     game/force_nocd.cpp
     game/maputil.cpp
-    game/weather.cpp
     game/client/baseheightmap.cpp
     game/client/line2d.cpp
     game/client/camerashakesystem.cpp
@@ -93,6 +92,7 @@ set(GAMEENGINE_SRC
     game/client/optionpreferences.cpp
     game/client/parabolicease.cpp
     game/client/shadermanager.cpp
+    game/client/snow.cpp
     game/client/terrainroads.cpp
     game/client/terraintex.cpp
     game/client/terrainvisual.cpp

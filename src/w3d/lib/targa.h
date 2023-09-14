@@ -17,7 +17,7 @@
 
 #include "always.h"
 #include "endiantype.h"
-#include "fileclass.h"
+#include "wwfile.h"
 
 // Pack all the structures to 1 byte alignment
 #pragma pack(push, 1)

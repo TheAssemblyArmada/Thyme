@@ -16,8 +16,8 @@
 #pragma once
 
 #include "always.h"
-#include "fileclass.h"
 #include "straw.h"
+#include "wwfile.h"
 
 class FileStraw : public Straw
 {

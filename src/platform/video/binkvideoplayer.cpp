@@ -16,7 +16,7 @@
 #include "audiomanager.h"
 #include "binkvideostream.h"
 #include "globaldata.h"
-#include "registry.h"
+#include "registryget.h"
 #include <bink.h>
 
 /**

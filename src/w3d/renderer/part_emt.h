@@ -15,7 +15,7 @@
 #pragma once
 
 #include "part_buf.h"
-#include "quaternion.h"
+#include "quat.h"
 #include "random.h"
 #include "rendobj.h"
 #include "v3_rnd.h"

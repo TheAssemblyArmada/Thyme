@@ -17,7 +17,7 @@
 #include "gamemath.h"
 #include "matrix3.h"
 #include "plane.h"
-#include "quaternion.h"
+#include "quat.h"
 
 using GameMath::Atan2;
 using GameMath::Fabs;

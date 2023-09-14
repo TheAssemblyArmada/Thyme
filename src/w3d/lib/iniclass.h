@@ -17,10 +17,10 @@
 
 #include "always.h"
 #include "crcengine.h"
-#include "fileclass.h"
 #include "index.h"
 #include "listnode.h"
 #include "straw.h"
+#include "wwfile.h"
 #include <string.h>
 
 #define SYS_NEW_LINE "\r\n"

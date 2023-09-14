@@ -18,7 +18,7 @@
 #include "critsection.h"
 #include "ddsfile.h"
 #include "dx8wrapper.h"
-#include "missing.h"
+#include "missingtexture.h"
 #include "rtsutilsw3d.h"
 #include "shader.h"
 #include "synctextureloadtasklist.h"

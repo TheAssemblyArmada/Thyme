@@ -14,8 +14,8 @@
  */
 #include "audiomanager.h"
 #include "filesystem.h"
-#include "musicmanager.h"
-#include "soundmanager.h"
+#include "gamemusic.h"
+#include "gamesounds.h"
 #include "terrainlogic.h"
 #include "w3dview.h"
 #include <algorithm>

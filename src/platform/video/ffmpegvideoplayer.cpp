@@ -17,7 +17,7 @@
 #include "ffmpegfile.h"
 #include "ffmpegvideostream.h"
 #include "globaldata.h"
-#include "registry.h"
+#include "registryget.h"
 
 namespace Thyme
 {

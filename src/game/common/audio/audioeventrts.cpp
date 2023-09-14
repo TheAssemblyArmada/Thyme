@@ -20,7 +20,7 @@
 #include "gamelogic.h"
 #include "object.h"
 #include "randomvalue.h"
-#include "registry.h"
+#include "registryget.h"
 
 /**
  * 0x004446B0

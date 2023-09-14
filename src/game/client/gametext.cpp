@@ -15,7 +15,7 @@
 #include "gametext.h"
 #include "filesystem.h"
 #include "main.h" // For g_applicationHWnd
-#include "registry.h"
+#include "registryget.h"
 #include "rtsutils.h"
 #include <algorithm>
 #include <captainslog.h>

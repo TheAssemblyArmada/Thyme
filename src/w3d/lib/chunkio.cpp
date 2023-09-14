@@ -13,7 +13,7 @@
  *           LICENSE
  */
 #include "chunkio.h"
-#include "fileclass.h"
+#include "wwfile.h"
 #include <captainslog.h>
 #include <cstring>
 

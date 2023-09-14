@@ -15,7 +15,7 @@
 #include "globallanguage.h"
 #include "gamemath.h"
 #include "globaldata.h"
-#include "registry.h"
+#include "registryget.h"
 #include <algorithm>
 #include <cstddef>
 

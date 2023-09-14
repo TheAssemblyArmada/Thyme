@@ -16,7 +16,7 @@
 #include "chunkio.h"
 #include "hanim.h"
 #include "hrawanim.h"
-#include "quaternion.h"
+#include "quat.h"
 #include "w3d_file.h"
 #include <cstring>
 #include <strings.h>

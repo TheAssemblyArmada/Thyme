@@ -332,8 +332,8 @@ unsigned long &DX8Wrapper::s_frameCount = Make_Global<unsigned long>(PICK_ADDRES
 bool &DX8Wrapper::s_DX8SingleThreaded = Make_Global<bool>(PICK_ADDRESS(0x00A47F3C, 0x00DEE774));
 DX8_CleanupHook *&DX8Wrapper::s_cleanupHook = Make_Global<DX8_CleanupHook *>(PICK_ADDRESS(0x00A47F74, 0x00DEE7AC));
 
-// missing.cpp
-#include "missing.h"
+// missingtexture.cpp
+#include "missingtexture.h"
 #include "w3dformat.h"
 w3dtexture_t &MissingTexture::s_missingTexture = Make_Global<w3dtexture_t>(PICK_ADDRESS(0x00A522F8, 0x00DF69D8));
 

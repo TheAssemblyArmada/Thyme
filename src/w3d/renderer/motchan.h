@@ -14,7 +14,7 @@
  */
 #pragma once
 #include "always.h"
-#include "quaternion.h"
+#include "quat.h"
 #include "w3d_file.h"
 #include "w3dmpo.h"
 class ChunkLoadClass;

@@ -4,20 +4,22 @@ set(GAMEENGINE_INCLUDES
     game
     game/client
     game/client/draw
+    game/client/drawable/update
     game/client/gui
+    game/client/gui/controlbar
+    game/client/gui/shell
     game/client/input
     game/client/messagestream
-    game/client/shadow
     game/client/shader
     game/client/system
     game/client/system/particlesystem
+    game/client/terrain
     game/client/videoplayer
-    game/client/water
     game/common
     game/common/audio
+    game/common/bezier
     game/common/compression
     game/common/ini
-    game/common/modules
     game/common/rts
     game/common/system
     game/common/system/savegame
@@ -25,27 +27,34 @@ set(GAMEENGINE_INCLUDES
     game/logic/ai
     game/logic/map
     game/logic/object
-    game/logic/object/helper
     game/logic/object/behavior
     game/logic/object/body
     game/logic/object/collide
     game/logic/object/contain
     game/logic/object/damage
     game/logic/object/die
+    game/logic/object/helper
     game/logic/object/update
     game/logic/object/update/aiupdate
     game/logic/object/upgrade
     game/logic/scriptengine
     game/logic/system
     game/network
+    game/network/gamespy
+    game/network/gamespy/thread
     platform
-    platform/audio/
-    platform/common/
-    platform/directx/
-    platform/input/
-    platform/video/
+    platform/audio
+    platform/common
+    platform/video
     platform/w3dengine/client
+    platform/w3dengine/client/drawable/draw
+    platform/w3dengine/client/gui
+    platform/w3dengine/client/shadow
+    platform/w3dengine/client/water
+    platform/w3dengine/common
+    platform/w3dengine/common/system
     platform/w3dengine/common/thing
+    platform/w3dengine/logic
     w3d/lib
     w3d/math
     w3d/renderer
@@ -67,113 +76,88 @@ set(HOOKER_GAME_SRC
 )
 
 set(GAMEENGINE_SRC
-    game/copyprotect.cpp
-    game/crashwrapper.cpp
-    game/force_nocd.cpp
-    game/maputil.cpp
-    game/client/baseheightmap.cpp
-    game/client/line2d.cpp
-    game/client/camerashakesystem.cpp
-    game/client/challengegenerals.cpp
     game/client/crashpreferences.cpp
     game/client/display.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
+    game/client/draw/tintenvelope.cpp
+    game/client/drawable.cpp
+    game/client/drawable/update/swayclientupdate.cpp
     game/client/drawgroupinfo.cpp
     game/client/eva.cpp
-    game/client/flatheightmap.cpp
     game/client/fxlist.cpp
     game/client/gameclient.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
-    game/client/heightmap.cpp
-    game/client/ingameui.cpp
-    game/client/languagefilter.cpp
-    game/client/optionpreferences.cpp
-    game/client/parabolicease.cpp
-    game/client/shadermanager.cpp
-    game/client/snow.cpp
-    game/client/terrainroads.cpp
-    game/client/terraintex.cpp
-    game/client/terrainvisual.cpp
-    game/client/tiledata.cpp
-    game/client/view.cpp
-    game/client/w3dassetmanager.cpp
-    game/client/water.cpp
-    game/client/worldheightmap.cpp
-    game/client/draw/drawable.cpp
-    game/client/draw/w3ddebrisdraw.cpp
-    game/client/draw/w3ddefaultdraw.cpp
-    game/client/draw/w3ddependencymodeldraw.cpp
-    game/client/draw/w3dlaserdraw.cpp
-    game/client/draw/w3dmodeldraw.cpp
-    game/client/draw/w3doverlordaircraftdraw.cpp
-    game/client/draw/w3doverlordtankdraw.cpp
-    game/client/draw/w3doverlordtruckdraw.cpp
-    game/client/draw/w3dpolicecardraw.cpp
-    game/client/draw/w3dprojectilestreamdraw.cpp
-    game/client/draw/w3dpropdraw.cpp
-    game/client/draw/w3dropedraw.cpp
-    game/client/draw/w3dsciencemodeldraw.cpp
-    game/client/draw/w3dsupplydraw.cpp
-    game/client/draw/w3dtankdraw.cpp
-    game/client/draw/w3dtanktruckdraw.cpp
-    game/client/draw/w3dtracerdraw.cpp
-    game/client/draw/w3dtreedraw.cpp
-    game/client/draw/w3dtruckdraw.cpp
-    game/client/draw/tintenvelope.cpp
-    game/client/gui/controlbar.cpp
+    game/client/gui/challengegenerals.cpp
+    game/client/gui/controlbar/controlbar.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/gamewindow.cpp
     game/client/gui/gamewindowmanager.cpp
     game/client/gui/gamewindowtransitions.cpp
-    game/client/gui/imemanagerinterface.cpp
     game/client/gui/imemanager.cpp
+    game/client/gui/imemanagerinterface.cpp
     game/client/gui/loadscreen.cpp
-    game/client/gui/shell.cpp
-    game/client/gui/wininstancedata.cpp
+    game/client/gui/shell/shell.cpp
     game/client/gui/windowlayout.cpp
-    game/client/gui/w3dgamefont.cpp
-    game/client/image.cpp
-    game/client/anim2d.cpp
+    game/client/gui/wininstancedata.cpp
+    game/client/ingameui.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
+    game/client/languagefilter.cpp
+    game/client/line2d.cpp
+    game/client/maputil.cpp
     game/client/messagestream/metaevent.cpp
-    game/client/shadow/w3dbuffermanager.cpp
-    game/client/shadow/w3dprojectedshadow.cpp
-    game/client/shadow/w3dvolumetricshadow.cpp
-    game/client/shadow/w3dshadow.cpp
+    game/client/optionpreferences.cpp
+    game/client/parabolicease.cpp
     game/client/shader/bwfilter.cpp
     game/client/shader/cloudshader.cpp
     game/client/shader/crossfadefilter.cpp
     game/client/shader/defaultfilter.cpp
     game/client/shader/flatshroudshader.cpp
     game/client/shader/flatterrainshader.cpp
-    game/client/shader/motionblurfilter.cpp
     game/client/shader/maskshader.cpp
+    game/client/shader/motionblurfilter.cpp
     game/client/shader/roadshader.cpp
     game/client/shader/shroudshader.cpp
     game/client/shader/terrainshader.cpp
+    game/client/shadermanager.cpp
+    game/client/snow.cpp
+    game/client/system/anim2d.cpp
     game/client/system/campaignmanager.cpp
     game/client/system/debugdisplay.cpp
-    game/client/system/rayeffect.cpp
+    game/client/system/image.cpp
     game/client/system/particlesystem/particle.cpp
     game/client/system/particlesystem/particleinfo.cpp
     game/client/system/particlesystem/particlesys.cpp
     game/client/system/particlesystem/particlesysinfo.cpp
     game/client/system/particlesystem/particlesysmanager.cpp
     game/client/system/particlesystem/particlesystemplate.cpp
+    game/client/system/rayeffect.cpp
     game/client/system/smudge.cpp
+    game/client/terrain/terrainroads.cpp
+    game/client/terrain/terrainvisual.cpp
+    game/client/terraintex.cpp
     game/client/videoplayer/videobuffer.cpp
     game/client/videoplayer/videoplayer.cpp
     game/client/videoplayer/videostream.cpp
-    game/client/water/w3dwater.cpp
-    game/client/water/w3dwatertracks.cpp
-    game/common/bezfwditerator.cpp
-    game/common/beziersegment.cpp
+    game/client/view.cpp
+    game/client/w3dassetmanager.cpp
+    game/client/water.cpp
+    game/common/audio/audioeventinfo.cpp
+    game/common/audio/audioeventrts.cpp
+    game/common/audio/audiomanager.cpp
+    game/common/audio/audiomisc.cpp
+    game/common/audio/audiosettings.cpp
+    game/common/audio/gamemusic.cpp
+    game/common/audio/gamesounds.cpp
+    game/common/bezier/bezfwditerator.cpp
+    game/common/bezier/beziersegment.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp
+    game/common/compression/compressionmanager.cpp
+    game/common/compression/refpack.cpp
     game/common/crc.cpp
     game/common/damagefx.cpp
     game/common/dict.cpp
@@ -183,41 +167,21 @@ set(GAMEENGINE_SRC
     game/common/gamemessage.cpp
     game/common/gamemessagelist.cpp
     game/common/globaldata.cpp
-    game/common/namekeygenerator.cpp
+    game/common/ini/ini.cpp
+    game/common/ini/inidrawgroupinfo.cpp
     game/common/mapobject.cpp
     game/common/messagestream.cpp
     game/common/multiplayersettings.cpp
+    game/common/namekeygenerator.cpp
     game/common/randomvalue.cpp
     game/common/recorder.cpp
-    game/common/registry.cpp
-    game/common/staticnamekey.cpp
-    game/common/statemachine.cpp
-    game/common/statscollector.cpp
-    game/common/terraintypes.cpp
-    game/common/userpreferences.cpp
-    game/common/version.cpp
-    game/common/audio/audioeventinfo.cpp
-    game/common/audio/audioeventrts.cpp
-    game/common/audio/audiomanager.cpp
-    game/common/audio/audiomisc.cpp
-    game/common/audio/audiosettings.cpp
-    game/common/audio/musicmanager.cpp
-    game/common/audio/soundmanager.cpp
-    game/common/compression/compressionmanager.cpp
-    game/common/compression/refpack.cpp
-    game/common/ini/ini.cpp
-    game/common/ini/inidrawgroupinfo.cpp
-    game/common/modules/behaviormodule.cpp
-    game/common/modules/module.cpp
-    game/common/modules/modulefactory.cpp
-    game/common/modules/updatemodule.cpp
     game/common/rts/academystats.cpp
     game/common/rts/actionmanager.cpp
     game/common/rts/buildinfo.cpp
     game/common/rts/energy.cpp
     game/common/rts/handicap.cpp
-    game/common/rts/money.cpp
     game/common/rts/missionstats.cpp
+    game/common/rts/money.cpp
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
     game/common/rts/playertemplate.cpp
@@ -226,10 +190,12 @@ set(GAMEENGINE_SRC
     game/common/rts/science.cpp
     game/common/rts/scorekeeper.cpp
     game/common/rts/sidesinfo.cpp
-    game/common/rts/sideslist.cpp
     game/common/rts/specialpower.cpp
     game/common/rts/team.cpp
     game/common/rts/teamsinfo.cpp
+    game/common/statemachine.cpp
+    game/common/staticnamekey.cpp
+    game/common/statscollector.cpp
     game/common/system/archivefile.cpp
     game/common/system/archivefilesystem.cpp
     game/common/system/asciistring.cpp
@@ -255,6 +221,9 @@ set(GAMEENGINE_SRC
     game/common/system/mempoolfact.cpp
     game/common/system/radar.cpp
     game/common/system/ramfile.cpp
+    game/common/system/registryget.cpp
+    game/common/system/savegame/gamestate.cpp
+    game/common/system/savegame/gamestatemap.cpp
     game/common/system/snapshot.cpp
     game/common/system/stackdump.cpp
     game/common/system/streamingarchivefile.cpp
@@ -263,12 +232,18 @@ set(GAMEENGINE_SRC
     game/common/system/upgrade.cpp
     game/common/system/xfer.cpp
     game/common/system/xfercrc.cpp
-    game/common/system/savegame/gamestate.cpp
-    game/common/system/savegame/gamestatemap.cpp
+    game/common/terraintypes.cpp
+    game/common/thing/module.cpp
+    game/common/thing/modulefactory.cpp
     game/common/thing/moduleinfo.cpp
     game/common/thing/thing.cpp
     game/common/thing/thingfactory.cpp
     game/common/thing/thingtemplate.cpp
+    game/common/userpreferences.cpp
+    game/common/version.cpp
+    game/copyprotect.cpp
+    game/crashwrapper.cpp
+    game/force_nocd.cpp
     game/logic/ai/ai.cpp
     game/logic/ai/aigroup.cpp
     game/logic/ai/aipathfind.cpp
@@ -277,26 +252,24 @@ set(GAMEENGINE_SRC
     game/logic/ai/squad.cpp
     game/logic/ai/turretai.cpp
     game/logic/map/polygontrigger.cpp
+    game/logic/map/sideslist.cpp
     game/logic/map/terrainlogic.cpp
     game/logic/object/armor.cpp
     game/logic/object/armortemplateset.cpp
-    game/logic/object/experiencetracker.cpp
-    game/logic/object/firingtracker.cpp
-    game/logic/object/ghostobject.cpp
-    game/logic/object/locomotor.cpp
-    game/logic/object/object.cpp
-    game/logic/object/objectcreationlist.cpp
-    game/logic/object/objecttypes.cpp
-    game/logic/object/weapon.cpp
-    game/logic/object/weaponset.cpp
-    game/logic/object/weapontemplateset.cpp
     game/logic/object/behavior/autohealbehavior.cpp
+    game/logic/object/behavior/behaviormodule.cpp
     game/logic/object/behavior/bridgebehavior.cpp
     game/logic/object/behavior/bridgetowerbehavior.cpp
     game/logic/object/behavior/overchargebehavior.cpp
     game/logic/object/behavior/rebuildholebehavior.cpp
     game/logic/object/collide/collidemodule.cpp
     game/logic/object/collide/squishcollide.cpp
+    game/logic/object/damage/damagemodule.cpp
+    game/logic/object/die/diemodule.cpp
+    game/logic/object/die/specialpowercompletiondie.cpp
+    game/logic/object/experiencetracker.cpp
+    game/logic/object/firingtracker.cpp
+    game/logic/object/ghostobject.cpp
     game/logic/object/helper/objectdefectionhelper.cpp
     game/logic/object/helper/objecthelper.cpp
     game/logic/object/helper/objectrepulsorhelper.cpp
@@ -305,113 +278,149 @@ set(GAMEENGINE_SRC
     game/logic/object/helper/statusdamagehelper.cpp
     game/logic/object/helper/subdualdamagehelper.cpp
     game/logic/object/helper/tempweaponbonushelper.cpp
+    game/logic/object/locomotor.cpp
+    game/logic/object/object.cpp
+    game/logic/object/objectcreationlist.cpp
+    game/logic/object/objecttypes.cpp
+    game/logic/object/partitionmanager.cpp
+    game/logic/object/simpleobjectiterator.cpp
     game/logic/object/update/aiupdate.cpp
-    game/logic/object/update/autodepositupdate.cpp
+    game/logic/object/update/aiupdate/dozeraiupdate.cpp
     game/logic/object/update/assistedtargetingupdate.cpp
+    game/logic/object/update/autodepositupdate.cpp
     game/logic/object/update/laserupdate.cpp
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp
     game/logic/object/update/specialabilityupdate.cpp
     game/logic/object/update/specialpowerupdatemodule.cpp
     game/logic/object/update/stickybombupdate.cpp
-    game/logic/object/update/swayclientupdate.cpp
     game/logic/object/update/toppleupdate.cpp
-    game/logic/object/update/aiupdate/dozeraiupdate.cpp
+    game/logic/object/update/updatemodule.cpp
     game/logic/object/upgrade/powerplantupgrade.cpp
     game/logic/object/upgrade/radarupgrade.cpp
     game/logic/object/upgrade/upgrademodule.cpp
-    game/logic/object/damage/damagemodule.cpp
-    game/logic/object/die/diemodule.cpp
-    game/logic/object/die/specialpowercompletiondie.cpp
+    game/logic/object/weapon.cpp
+    game/logic/object/weaponset.cpp
+    game/logic/object/weapontemplateset.cpp
     game/logic/scriptengine/script.cpp
-    game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptaction.cpp
     game/logic/scriptengine/scriptactions.cpp
     game/logic/scriptengine/scriptcondition.cpp
     game/logic/scriptengine/scriptconditions.cpp
+    game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptgroup.cpp
     game/logic/scriptengine/scriptlist.cpp
     game/logic/scriptengine/scriptparam.cpp
     game/logic/scriptengine/scripttemplate.cpp
     game/logic/scriptengine/sequentialscript.cpp
     game/logic/scriptengine/victoryconditions.cpp
+    game/logic/system/cavesystem.cpp
+    game/logic/system/cratesystem.cpp
     game/logic/system/damage.cpp
     game/logic/system/gamelogic.cpp
     game/logic/system/gamelogicdispatch.cpp
     game/logic/system/rankinfo.cpp
-    game/logic/system/cavesystem.cpp
-    game/logic/system/cratesystem.cpp
-    game/logic/system/partitionmanager.cpp
-    game/logic/system/simpleobjectiterator.cpp
-    game/network/buddythread.cpp
     game/network/filetransfer.cpp
     game/network/framemetrics.cpp
     game/network/gameinfo.cpp
-    game/network/gameresultsthread.cpp
     game/network/gamemessageparser.cpp
+    game/network/gamespy/peerdefs.cpp
+    game/network/gamespy/stagingroomgameinfo.cpp
+    game/network/gamespy/thread/buddythread.cpp
+    game/network/gamespy/thread/gameresultsthread.cpp
+    game/network/gamespy/thread/threadutils.cpp
     game/network/ipenumeration.cpp
     game/network/lanapi.cpp
     game/network/lanapiinterface.cpp
     game/network/network.cpp
     game/network/networkutil.cpp
-    game/network/peerdefs.cpp
-    game/network/stagingroomgameinfo.cpp
-    game/network/threadutils.cpp
     game/network/transport.cpp
     game/network/udp.cpp
     platform/fpusetting.cpp
-    platform/input/win32mouse.cpp
     platform/standardfile.cpp
-    platform/w3dfilesystem.cpp
-    platform/w3dfunctionlexicon.cpp
-    platform/win32bigfile.cpp
-    platform/win32bigfilesystem.cpp
-    platform/win32gameengine.cpp
-    platform/win32localfile.cpp
-    platform/win32localfilesystem.cpp
+    platform/w3dengine/client/baseheightmap.cpp
+    platform/w3dengine/client/camerashakesystem.cpp
+    platform/w3dengine/client/drawable/draw/w3ddebrisdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3ddefaultdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3ddependencymodeldraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dlaserdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dmodeldraw.cpp
+    platform/w3dengine/client/drawable/draw/w3doverlordaircraftdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3doverlordtankdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3doverlordtruckdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dpolicecardraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dprojectilestreamdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dpropdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dropedraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dsciencemodeldraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dsupplydraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dtankdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dtanktruckdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dtracerdraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dtreedraw.cpp
+    platform/w3dengine/client/drawable/draw/w3dtruckdraw.cpp
+    platform/w3dengine/client/flatheightmap.cpp
+    platform/w3dengine/client/gui/w3dgamefont.cpp
+    platform/w3dengine/client/heightmap.cpp
+    platform/w3dengine/client/shadow/w3dbuffermanager.cpp
+    platform/w3dengine/client/shadow/w3dprojectedshadow.cpp
+    platform/w3dengine/client/shadow/w3dshadow.cpp
+    platform/w3dengine/client/shadow/w3dvolumetricshadow.cpp
+    platform/w3dengine/client/tiledata.cpp
     platform/w3dengine/client/w3dbibbuffer.cpp
     platform/w3dengine/client/w3dbridgebuffer.cpp
     platform/w3dengine/client/w3ddebugdisplay.cpp
     platform/w3dengine/client/w3ddebugicons.cpp
-    platform/w3dengine/client/w3ddynamiclight.cpp
     platform/w3dengine/client/w3ddisplay.cpp
+    platform/w3dengine/client/w3ddynamiclight.cpp
+    platform/w3dengine/client/w3dfilesystem.cpp
     platform/w3dengine/client/w3dgameclient.cpp
     platform/w3dengine/client/w3dgamelogic.cpp
-    platform/w3dengine/client/w3dghostobject.cpp
-    platform/w3dengine/client/w3dpoly.cpp
+    platform/w3dengine/client/w3dmouse.cpp
     platform/w3dengine/client/w3dparticlesys.cpp
+    platform/w3dengine/client/w3dpoly.cpp
     platform/w3dengine/client/w3dpropbuffer.cpp
     platform/w3dengine/client/w3droadbuffer.cpp
+    platform/w3dengine/client/w3dscene.cpp
     platform/w3dengine/client/w3dshroud.cpp
     platform/w3dengine/client/w3dsmudge.cpp
     platform/w3dengine/client/w3dsnow.cpp
     platform/w3dengine/client/w3dstatuscircle.cpp
-    platform/w3dengine/client/w3dscene.cpp
+    platform/w3dengine/client/w3dterrainbackground.cpp
+    platform/w3dengine/client/w3dterraintracks.cpp
     platform/w3dengine/client/w3dtreebuffer.cpp
     platform/w3dengine/client/w3dview.cpp
-    platform/w3dengine/client/w3dmouse.cpp
-    platform/w3dengine/client/w3dterrainbackground.cpp
-    platform/w3dengine/client/w3dterrainlogic.cpp
-    platform/w3dengine/client/w3dterraintracks.cpp
     platform/w3dengine/client/w3dwaypointbuffer.cpp
+    platform/w3dengine/client/water/w3dwater.cpp
+    platform/w3dengine/client/water/w3dwatertracks.cpp
+    platform/w3dengine/client/win32mouse.cpp
+    platform/w3dengine/client/worldheightmap.cpp
+    platform/w3dengine/common/system/w3dfunctionlexicon.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
+    platform/w3dengine/common/win32bigfile.cpp
+    platform/w3dengine/common/win32bigfilesystem.cpp
+    platform/w3dengine/common/win32gameengine.cpp
+    platform/w3dengine/common/win32localfile.cpp
+    platform/w3dengine/common/win32localfilesystem.cpp
+    platform/w3dengine/logic/w3dghostobject.cpp
+    platform/w3dengine/logic/w3dterrainlogic.cpp
     w3d/lib/buff.cpp
-    w3d/lib/bufffileclass.cpp
+    w3d/lib/bufffile.cpp
     w3d/lib/chunkio.cpp
     w3d/lib/cpudetect.cpp
     w3d/lib/crcengine.cpp
     w3d/lib/critsection.cpp
     w3d/lib/ffactory.cpp
-    w3d/lib/fileclass.cpp
     w3d/lib/filestraw.cpp
     w3d/lib/gcd_lcm.cpp
+    w3d/lib/hash.cpp
     w3d/lib/iniclass.cpp
     w3d/lib/mpu.cpp
     w3d/lib/multilist.cpp
     w3d/lib/mutex.cpp
     w3d/lib/nstrdup.cpp
     w3d/lib/random.cpp
-    w3d/lib/rawfileclass.cpp
+    w3d/lib/rawfile.cpp
     w3d/lib/rcfile.cpp
     w3d/lib/readline.cpp
     w3d/lib/realcrc.cpp
@@ -421,8 +430,8 @@ set(GAMEENGINE_SRC
     w3d/lib/targa.cpp
     w3d/lib/thread.cpp
     w3d/lib/threadtrack.cpp
+    w3d/lib/wwfile.cpp
     w3d/lib/wwstring.cpp
-    w3d/lib/hash.cpp
     w3d/lib/xstraw.cpp
     w3d/math/aabox.cpp
     w3d/math/colmath.cpp
@@ -441,22 +450,22 @@ set(GAMEENGINE_SRC
     w3d/math/matrix3.cpp
     w3d/math/matrix3d.cpp
     w3d/math/matrix4.cpp
-    w3d/math/quaternion.cpp
+    w3d/math/quat.cpp
     w3d/math/tri.cpp
     w3d/math/v3_rnd.cpp
     w3d/math/vector4.cpp
     w3d/math/vp.cpp
-    w3d/renderer/animobj.cpp
     w3d/renderer/aabtree.cpp
     w3d/renderer/aabtreebuilder.cpp
+    w3d/renderer/animobj.cpp
     w3d/renderer/assetmgr.cpp
     w3d/renderer/bitmaphandler.cpp
     w3d/renderer/bmp2d.cpp
     w3d/renderer/boxrobj.cpp
     w3d/renderer/bwrender.cpp
     w3d/renderer/camera.cpp
-    w3d/renderer/coltest.cpp
     w3d/renderer/colorspace.cpp
+    w3d/renderer/coltest.cpp
     w3d/renderer/composite.cpp
     w3d/renderer/dazzle.cpp
     w3d/renderer/ddsfile.cpp
@@ -477,19 +486,19 @@ set(GAMEENGINE_SRC
     w3d/renderer/htreemgr.cpp
     w3d/renderer/intersec.cpp
     w3d/renderer/light.cpp
-    w3d/renderer/linegroup.cpp
     w3d/renderer/lightenv.cpp
     w3d/renderer/line3d.cpp
+    w3d/renderer/linegrp.cpp
     w3d/renderer/loaders.cpp
-    w3d/renderer/matinfo.cpp
     w3d/renderer/mapper.cpp
+    w3d/renderer/matinfo.cpp
     w3d/renderer/matpass.cpp
     w3d/renderer/matrixmapper.cpp
     w3d/renderer/mesh.cpp
     w3d/renderer/meshgeometry.cpp
     w3d/renderer/meshmatdesc.cpp
     w3d/renderer/meshmdl.cpp
-    w3d/renderer/missing.cpp
+    w3d/renderer/missingtexture.cpp
     w3d/renderer/motchan.cpp
     w3d/renderer/nullrobj.cpp
     w3d/renderer/part_buf.cpp
@@ -577,7 +586,7 @@ endif()
 
 if(DINPUT8_FOUND)
     list(APPEND GAMEENGINE_GAME_SRC
-        platform/directx/dinputkeybd.cpp
+        platform/w3dengine/client/win32dikeyboard.cpp
     )
 endif()
 

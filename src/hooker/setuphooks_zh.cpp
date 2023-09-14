@@ -46,7 +46,6 @@
 #include "datachunk.h"
 #include "ddsfile.h"
 #include "dict.h"
-#include "dinputkeybd.h"
 #include "display.h"
 #include "drawable.h"
 #include "dx8caps.h"
@@ -71,6 +70,7 @@
 #include "gamememoryinit.h"
 #include "gamemessage.h"
 #include "gamemessageparser.h"
+#include "gamesounds.h"
 #include "gamestate.h"
 #include "gametext.h"
 #include "geometry.h"
@@ -147,7 +147,6 @@
 #include "sideslist.h"
 #include "smudge.h"
 #include "sortingrenderer.h"
-#include "soundmanager.h"
 #include "statemachine.h"
 #include "streak.h"
 #include "surfaceclass.h"
@@ -204,6 +203,7 @@
 #include "weapon.h"
 #include "weaponset.h"
 #include "weapontemplateset.h"
+#include "win32dikeyboard.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include "win32mouse.h"
@@ -906,7 +906,7 @@ void Setup_Hooks()
     Hook_Method(0x00445900, &AudioEventRTS::Is_Positional_Audio);
     Hook_Method(0x00445950, &AudioEventRTS::Get_Volume);
 
-    // soundmanager.h SoundManager
+    // gamesounds.h SoundManager
     Hook_Any(0x00445FF0, SoundManager::Reset);
     Hook_Any(0x00446010, SoundManager::Add_Audio_Event);
     // Hook_Any(0x00446120, SoundManager::Can_Play_Now); // Not implemented.
@@ -1119,7 +1119,7 @@ void Setup_Hooks()
     Hook_Method(0x00805B60, &DX8Wrapper::Get_Back_Buffer_Format);
     Hook_Method(0x00804200, &DX8Wrapper::Set_Light_Environment);
 
-    // dinputkeybd.h
+    // win32dikeyboard.h
     // Hooks all the virtual functions for DirectInputKeyboard.
     Hook_Method(0x007ACC70, &DirectInputKeyboard::Hook_Ctor);
 

@@ -92,12 +92,14 @@ void AudioManager::Init()
     ini.Load("Data/INI/Voice.ini", INI_LOAD_OVERWRITE, nullptr);
     ini.Load("Data/INI/MiscAudio.ini", INI_LOAD_OVERWRITE, nullptr);
 
+#ifdef GAME_DLL
     if (!Is_Music_Already_Loaded()) {
         m_fromCD = true;
         captainslog_dbgassert(false, "Music not detected as loaded, this shouldn't happen with released game data.");
         // Original code prompts to insert disc at this point, but it shouldn't be possible with the shipped
         // installer to install without the audio installed to the hard drive.
     }
+#endif
 
     m_musicManager = new MusicManager;
     m_soundManager = new SoundManager;

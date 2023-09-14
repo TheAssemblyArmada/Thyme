@@ -20,8 +20,17 @@
 #include "sdl2mouse.h"
 #include "w3dfunctionlexicon.h"
 #include "w3dmodulefactory.h"
+#include "w3dparticlesys.h"
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
+
+#ifdef BUILD_WITH_OPENAL
+#include "alaudiomanager.h"
+#endif
+
+#ifdef BUILD_WITH_MILES
+#include "milesaudiomanager.h"
+#endif
 
 #ifdef BUILD_WITH_STDFS
 #include "stdlocalfilesystem.h"
@@ -158,12 +167,18 @@ WebBrowser *SDL2GameEngine::Create_Web_Browser()
 
 ParticleSystemManager *SDL2GameEngine::Create_Particle_System_Manager()
 {
-    return nullptr;
+    return new W3DParticleSystemManager;
 }
 
 AudioManager *SDL2GameEngine::Create_Audio_Manager()
 {
+#ifdef BUILD_WITH_OPENAL
+    return new Thyme::ALAudioManager;
+#elif defined BUILD_WITH_MILES
+    return new MilesAudioManager;
+#else
     return nullptr;
+#endif
 }
 
 NetworkInterface *SDL2GameEngine::Create_Network()

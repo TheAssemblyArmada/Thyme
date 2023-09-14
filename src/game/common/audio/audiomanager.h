@@ -177,6 +177,7 @@ public:
     AudioSettings *Get_Audio_Settings() const { return m_audioSettings; }
     MiscAudio *Get_Misc_Audio() const { return m_miscAudio; }
     AudioEventRTS *Get_Empty_Audio_Event() const { return m_emptyAudioEvent; }
+    void Add_Track_Name(Utf8String const &track) { m_trackList.push_back(track); }
 
 protected:
     Utf8String Next_Track_Name(Utf8String track) const;

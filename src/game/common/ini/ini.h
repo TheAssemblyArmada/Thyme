@@ -171,6 +171,9 @@ public:
 
     // Block Parser functions
     static void Parse_Draw_Group_Info(INI *ini);
+    static void Parse_Control_Bar_Resizer_Definition(INI *ini) {}
+    static void Parse_Map_Data_Definition(INI *ini) {}
+    static void Parse_Online_Chat_Color_Definition(INI *ini);
 
 private:
     void Read_Line();

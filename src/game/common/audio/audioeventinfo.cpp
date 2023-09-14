@@ -103,6 +103,45 @@ void AudioEventInfo::Parse_Audio_Event_Definition(INI *ini)
     }
 }
 
+void AudioEventInfo::Parse_Music_Track_Definition(INI *ini)
+{
+    Utf8String track;
+    track.Set(ini->Get_Next_Token());
+    AudioEventInfo *new_audio_event = g_theAudio->New_Audio_Event_Info(track);
+
+    if (new_audio_event != nullptr) {
+        AudioEventInfo *default_audio_event = g_theAudio->Find_Audio_Event_Info("DefaultMusicTrack");
+
+        if (default_audio_event != nullptr) {
+            *new_audio_event = *default_audio_event;
+            g_theAudio->Add_Track_Name(track);
+        }
+
+        new_audio_event->m_eventName = track;
+        new_audio_event->m_eventType = EVENT_MUSIC;
+        ini->Init_From_INI(new_audio_event, s_audioEventParseTable);
+    }
+}
+
+void AudioEventInfo::Parse_Dialog_Definition(INI *ini)
+{
+    Utf8String track;
+    track.Set(ini->Get_Next_Token());
+    AudioEventInfo *new_audio_event = g_theAudio->New_Audio_Event_Info(track);
+
+    if (new_audio_event != nullptr) {
+        AudioEventInfo *default_audio_event = g_theAudio->Find_Audio_Event_Info("DefaultDialog");
+
+        if (default_audio_event != nullptr) {
+            *new_audio_event = *default_audio_event;
+        }
+
+        new_audio_event->m_eventName = track;
+        new_audio_event->m_eventType = EVENT_SPEECH;
+        ini->Init_From_INI(new_audio_event, s_audioEventParseTable);
+    }
+}
+
 /**
  * Parses a pitch shift field from an INI file instance.
  *

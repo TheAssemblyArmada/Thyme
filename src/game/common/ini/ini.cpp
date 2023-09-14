@@ -17,6 +17,7 @@
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "audiosettings.h"
+#include "challengegenerals.h"
 #include "color.h"
 #include "colorspace.h"
 #include "coord.h"
@@ -39,6 +40,7 @@
 #include "playertemplate.h"
 #include "rankinfo.h"
 #include "science.h"
+#include "scriptengine.h"
 #include "snow.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
@@ -74,23 +76,21 @@ const BlockParse TheTypeTable[] = {
     {"AIData", HOOK_BLOCK(0x00518F00) /*&INI::parseAIDataDefinition*/},
     {"Animation", &Anim2DCollection::Parse_Anim2D_Definition /*&INI::parseAnim2DDefinition*/},
     {"Armor", HOOK_BLOCK(0x004B60A0) /*&INI::parseArmorDefinition*/},
-    //{"AudioEvent", HOOK_BLOCK(0x0044ED70) /*&INI::parseAudioEventDefinition*/},
     {"AudioEvent", AudioEventInfo::Parse_Audio_Event_Definition},
     {"AudioSettings", &AudioSettings::Parse_Audio_Settings_Definition},
     {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definition},
     {"Campaign", HOOK_BLOCK(0x00517490) /*&INI::parseCampaignDefinition*/},
-    {"ChallengeGenerals", HOOK_BLOCK(0x005170B0) /*&INI::parseChallengeModeDefinition*/},
+    {"ChallengeGenerals", ChallengeGenerals::Parse_Challenge_Mode_Definition},
     {"CommandButton", HOOK_BLOCK(0x00516CE0) /*&INI::parseCommandButtonDefinition*/},
     {"CommandMap", HOOK_BLOCK(0x00498480) /*&INI::parseMetaMapDefinition*/},
     {"CommandSet", HOOK_BLOCK(0x00516CD0) /*&INI::parseCommandSetDefinition*/},
     {"ControlBarScheme", HOOK_BLOCK(0x00516BA0) /*&INI::parseControlBarSchemeDefinition*/},
-    {"ControlBarResizer", HOOK_BLOCK(0x0062D610) /*&INI::parseControlBarResizerDefinition*/},
+    {"ControlBarResizer", &INI::Parse_Control_Bar_Resizer_Definition},
     {"CrateData", HOOK_BLOCK(0x00516B90) /*&INI::parseCrateTemplateDefinition*/},
     {"Credits", HOOK_BLOCK(0x00515A20) /*&INI::parseCredits*/},
     {"WindowTransition", HOOK_BLOCK(0x005145F0) /*&INI::parseWindowTransitions*/},
     {"DamageFX", HOOK_BLOCK(0x005145E0) /*&INI::parseDamageFXDefinition*/},
-    {"DialogEvent", HOOK_BLOCK(0x0044EFE0) /*&INI::parseDialogDefinition*/},
-    //{"DrawGroupInfo", HOOK_BLOCK(0x005145B0) /*&INI::parseDrawGroupNumberDefinition*/},
+    {"DialogEvent", &AudioEventInfo::Parse_Dialog_Definition},
     {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
     {"EvaEvent", HOOK_BLOCK(0x00512BE0) /*&INI::parseEvaEvent*/},
     {"FXList", &FXListStore::Parse_FXList_Definition},
@@ -99,29 +99,24 @@ const BlockParse TheTypeTable[] = {
     {"Locomotor", &LocomotorStore::Parse_Locomotor_Template_Definition},
     {"Language", &GlobalLanguage::Parse_Language_Definition},
     {"MapCache", HOOK_BLOCK(0x00506760) /*&INI::parseMapCacheDefinition*/},
-    {"MapData", HOOK_BLOCK(0x0062D610) /*&INI::parseMapDataDefinition*/},
+    {"MapData", &INI::Parse_Map_Data_Definition},
     {"MappedImage", &ImageCollection::Parse_Mapped_Image_Definition},
-    //{ "MiscAudio", HOOK_BLOCK(0x005064F0)/*&INI::parseMiscAudio*/ },
     {"MiscAudio", &MiscAudio::Parse_Misc_Audio},
-    //{ "Mouse", HOOK_BLOCK(0x004041F0)/*&INI::parseMouseDefinition*/ },
     {"Mouse", &Mouse::Parse_Mouse_Definition},
-    //{ "MouseCursor", HOOK_BLOCK(0x00404060)/*&INI::parseMouseCursorDefinition*/ },
     {"MouseCursor", &Mouse::Parse_Cursor_Definition},
     {"MultiplayerColor", &MultiplayerColorDefinition::Parse_Multiplayer_Color_Definition},
     {"MultiplayerStartingMoneyChoice",
         &MultiplayerSettings::Parse_Multiplayer_Starting_Money_Choice_Definition},
-    {"OnlineChatColors", HOOK_BLOCK(0x00504D10) /*&INI::parseOnlineChatColorDefinition*/},
+    {"OnlineChatColors", INI::Parse_Online_Chat_Color_Definition},
     {"MultiplayerSettings", &MultiplayerSettings::Parse_Multiplayer_Settings_Definition},
-    {"MusicTrack", HOOK_BLOCK(0x0044EAF0) /*&INI::parseMusicTrackDefinition*/},
+    {"MusicTrack", &AudioEventInfo::Parse_Music_Track_Definition},
     {"Object", &INI::Parse_Object_Definition},
     {"ObjectCreationList", &ObjectCreationListStore::Parse_Object_Creation_List_Definition },
     {"ObjectReskin", &INI::Parse_Object_Reskin_Definition},
     {"ParticleSystem", &ParticleSystemManager::Parse_Particle_System_Definition},
-    //{ "PlayerTemplate", HOOK_BLOCK(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
     {"PlayerTemplate", &PlayerTemplateStore::Parse_Player_Template_Definition},
     {"Road", &TerrainRoadCollection::Parse_Terrain_Road_Definition},
     {"Science", &ScienceStore::Parse_Science_Definition},
-    //{ "Rank", HOOK_BLOCK(0x00489800)/*&INI::parseRankDefinition*/ },
     {"Rank", &RankInfoStore::Parse_Rank_Definition},
     {"SpecialPower", HOOK_BLOCK(0x00504690) /*&INI::parseSpecialPowerDefinition*/},
     {"ShellMenuScheme", HOOK_BLOCK(0x00503CE0) /*&INI::parseShellMenuSchemeDefinition*/},
@@ -139,8 +134,8 @@ const BlockParse TheTypeTable[] = {
     {"LODPreset", &GameLODManager::Parse_LOD_Preset},
     {"BenchProfile", &GameLODManager::Parse_Bench_Profile},
     {"ReallyLowMHz", &GameLODManager::Parse_Really_Low_MHz},
-    {"ScriptAction", HOOK_BLOCK(0x004221C0) /*&ScriptEngine::parseScriptAction*/},
-    {"ScriptCondition", HOOK_BLOCK(0x00422680) /*&ScriptEngine::parseScriptCondition*/},
+    {"ScriptAction", &ScriptEngine::Parse_Script_Action},
+    {"ScriptCondition", &ScriptEngine::Parse_Script_Condition},
     {nullptr, nullptr}
 };
 // clang-format on

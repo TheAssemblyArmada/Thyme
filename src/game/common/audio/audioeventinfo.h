@@ -101,6 +101,8 @@ public:
     float Max_Range() const { return m_maxRange; }
 
     static void Parse_Audio_Event_Definition(INI *ini);
+    static void Parse_Music_Track_Definition(INI *ini);
+    static void Parse_Dialog_Definition(INI *ini);
 
 private:
     static void Parse_Pitch_Shift(INI *ini, void *formal, void *store, const void *user_data);
@@ -137,6 +139,7 @@ private:
     friend class AudioEventRTS;
     friend class Drawable;
     friend class Object;
+    friend class INI;
 };
 
 class DynamicAudioEventInfo : public AudioEventInfo

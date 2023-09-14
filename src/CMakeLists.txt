@@ -324,6 +324,7 @@ set(GAMEENGINE_SRC
     game/network/framemetrics.cpp
     game/network/gameinfo.cpp
     game/network/gamemessageparser.cpp
+    game/network/gamespy/chat.cpp
     game/network/gamespy/peerdefs.cpp
     game/network/gamespy/stagingroomgameinfo.cpp
     game/network/gamespy/thread/buddythread.cpp

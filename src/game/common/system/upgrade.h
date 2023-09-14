@@ -40,7 +40,8 @@ class UpgradeTemplate : public MemoryPoolObject
     IMPLEMENT_POOL(UpgradeTemplate);
 
 public:
-    virtual ~UpgradeTemplate() override;
+    UpgradeTemplate();
+    virtual ~UpgradeTemplate() override {}
     UpgradeTemplate *Friend_Get_Next() { return m_next; }
     UpgradeTemplate *Friend_Get_Prev() { return m_prev; }
     const UpgradeTemplate *Friend_Get_Next() const { return m_next; }
@@ -50,7 +51,18 @@ public:
     UpgradeType Get_Type() const { return m_type; }
     AcademyClassificationType Get_Academy_Classify() const { return m_academyClassify; }
 
+    void Set_Name(const Utf8String &name) { m_name = name; }
+    void Set_Name_Key(NameKeyType key) { m_nameKey = key; }
+    void Friend_Set_Next(UpgradeTemplate *next) { m_next = next; }
+    void Friend_Set_Prev(UpgradeTemplate *prev) { m_prev = prev; }
+    void Set_Upgrade_Mask(BitFlags<128> mask) { m_upgradeMask = mask; }
+
+    static const FieldParse *Get_Field_Parse() { return s_upgradeFieldParseTable; }
+
     int Calc_Cost_To_Build(Player *player) const { return m_cost; }
+    int Calc_Time_To_Build(Player *player) const;
+    void Friend_Make_Veterancy_Upgrade(VeterancyLevel level);
+    void Cache_Button_Image();
 
 private:
     UpgradeType m_type;
@@ -67,6 +79,8 @@ private:
     UpgradeTemplate *m_prev;
     Utf8String m_buttonImageName;
     Image *m_buttonImage;
+
+    static const FieldParse s_upgradeFieldParseTable[];
 };
 
 class UpgradeCenter : public SubsystemInterface
@@ -78,12 +92,18 @@ public:
     virtual void Reset() override;
     virtual void Update() override {}
 
-    UpgradeTemplate *Find_Veterancy_Upgrade(VeterancyLevel level);
+    const UpgradeTemplate *Find_Veterancy_Upgrade(VeterancyLevel level);
 
     UpgradeTemplate *Get_Upgrade_List() { return m_upgradeList; }
-    UpgradeTemplate *Find_Upgrade(const Utf8String &name);
-    UpgradeTemplate *Find_Upgrade_By_Key(NameKeyType key);
+    const UpgradeTemplate *Find_Upgrade(const Utf8String &name);
+    const UpgradeTemplate *Find_Upgrade_By_Key(NameKeyType key);
+    UpgradeTemplate *Find_Non_Const_Upgrade_By_Key(NameKeyType key);
     bool Can_Afford_Upgrade(Player *player, const UpgradeTemplate *upgrade, bool show_message);
+    UpgradeTemplate *New_Upgrade(const Utf8String &name);
+    void Link_Upgrade(UpgradeTemplate *upgrade);
+    void Unlink_Upgrade(UpgradeTemplate *upgrade);
+    std::vector<Utf8String> Get_Upgrade_Names();
+    static void Parse_Upgrade_Definition(INI *ini);
 
 private:
     UpgradeTemplate *m_upgradeList;

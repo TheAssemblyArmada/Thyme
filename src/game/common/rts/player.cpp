@@ -193,7 +193,7 @@ void Player::Xfer_Snapshot(Xfer *xfer)
     } else {
         for (unsigned short i = 0; i < upgrade_count; i++) {
             xfer->xferAsciiString(&str);
-            UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(str);
+            const UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(str);
             captainslog_relassert(tmplate != nullptr, 6, "Player::xfer - Unable to find upgrade '%s'", str.Str());
             Upgrade *upgrade = Add_Upgrade(tmplate, UPGRADE_STATUS_INVALID);
             xfer->xferSnapshot(upgrade);

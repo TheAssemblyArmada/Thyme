@@ -171,6 +171,7 @@
 #include "tintenvelope.h"
 #include "turretai.h"
 #include "updatemodule.h"
+#include "upgrade.h"
 #include "vertmaterial.h"
 #include "w3d.h"
 #include "w3dassetmanager.h"
@@ -3245,4 +3246,12 @@ void Setup_Hooks()
 
     // w3dsnow.h
     Hook_Any(0x0079FCC0, W3DSnowManager::Render);
+
+    // upgrade.h
+    Hook_Any(0x004AEC30, UpgradeTemplate::Calc_Time_To_Build);
+    Hook_Any(0x004AEC50, UpgradeTemplate::Calc_Cost_To_Build);
+    Hook_Any(0x004AF210, UpgradeCenter::Find_Veterancy_Upgrade);
+    Hook_Any(0x004AF2D0, UpgradeCenter::Find_Upgrade_By_Key);
+    Hook_Any(0x004AF2F0, UpgradeCenter::Find_Upgrade);
+    Hook_Any(0x004AF5F0, UpgradeCenter::Can_Afford_Upgrade);
 }

@@ -921,7 +921,7 @@ bool Object::Is_In_List(Object **list) const
 void Object::On_Veterancy_Level_Changed(VeterancyLevel old_level, VeterancyLevel new_level, bool play_sound)
 {
     Update_Upgrade_Modules();
-    UpgradeTemplate *upgrade = g_theUpgradeCenter->Find_Veterancy_Upgrade(new_level);
+    const UpgradeTemplate *upgrade = g_theUpgradeCenter->Find_Veterancy_Upgrade(new_level);
 
     if (upgrade != nullptr) {
         Give_Upgrade(upgrade);
@@ -3571,7 +3571,7 @@ void Object::Update_Obj_Values_From_Map_Properties(Dict *properties)
         string_param = properties->Get_AsciiString(g_theNameKeyGenerator->Name_To_Key(str.Str()), &exists);
 
         if (exists) {
-            UpgradeTemplate *upgrade = g_theUpgradeCenter->Find_Upgrade(string_param);
+            const UpgradeTemplate *upgrade = g_theUpgradeCenter->Find_Upgrade(string_param);
 
             if (upgrade != nullptr) {
                 Give_Upgrade(upgrade);

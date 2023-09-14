@@ -42,6 +42,7 @@
 #include "science.h"
 #include "scriptengine.h"
 #include "snow.h"
+#include "specialpower.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
 #include "thingfactory.h"
@@ -119,7 +120,7 @@ const BlockParse TheTypeTable[] = {
     {"Road", &TerrainRoadCollection::Parse_Terrain_Road_Definition},
     {"Science", &ScienceStore::Parse_Science_Definition},
     {"Rank", &RankInfoStore::Parse_Rank_Definition},
-    {"SpecialPower", HOOK_BLOCK(0x00504690) /*&INI::parseSpecialPowerDefinition*/},
+    {"SpecialPower", &SpecialPowerStore::Parse_Special_Power_Definition},
     {"ShellMenuScheme", HOOK_BLOCK(0x00503CE0) /*&INI::parseShellMenuSchemeDefinition*/},
     {"Terrain", &TerrainTypeCollection::Parse_Terrain_Definition},
     {"Upgrade", &UpgradeCenter::Parse_Upgrade_Definition},

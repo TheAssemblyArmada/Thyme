@@ -24,7 +24,8 @@ class SpecialPowerTemplate : public Overridable
     IMPLEMENT_POOL(SpecialPowerTemplate)
 
 public:
-    virtual ~SpecialPowerTemplate() override;
+    SpecialPowerTemplate();
+    virtual ~SpecialPowerTemplate() override {}
 
     const SpecialPowerTemplate *Get_FO() const;
 
@@ -36,6 +37,15 @@ public:
     unsigned int Get_Reload_Time() const { return Get_FO()->m_reloadTime; }
     ScienceType Get_Required_Science() const { return m_requiredScience; }
     AcademyClassificationType Get_Academy_Classify() const { return m_academyClassify; }
+    float Get_Radius_Cusror_Radius() const { return Get_FO()->m_radiusCursorRadius; }
+
+    void Set_Name_ID(Utf8String const &name, unsigned int id)
+    {
+        m_name = name;
+        m_id = id;
+    }
+
+    static const FieldParse *Get_Field_Parse() { return s_specialPowerFieldParse; }
 
 private:
     Utf8String m_name;
@@ -53,6 +63,8 @@ private:
     bool m_publicTimer;
     bool m_sharedSyncedTimer;
     bool m_shortcutPower;
+
+    static const FieldParse s_specialPowerFieldParse[];
 };
 
 class SpecialPowerStore : public SubsystemInterface
@@ -65,7 +77,14 @@ public:
     virtual void Update() override {}
 
     bool Can_Use_Special_Power(Object *obj, const SpecialPowerTemplate *special_power_template);
+    SpecialPowerTemplate *Find_Special_Power_Template_Private(Utf8String name);
+    const SpecialPowerTemplate *Find_Special_Power_Template(Utf8String name);
+    const SpecialPowerTemplate *Get_Special_Power_Template_By_Index(unsigned int index);
+    int Get_Num_Special_Powers();
+
     const SpecialPowerTemplate *Find_Special_Power_Template_By_ID(unsigned int id);
+
+    static void Parse_Special_Power_Definition(INI *ini);
 
 private:
     std::vector<SpecialPowerTemplate *> m_specialPowerTemplates;

@@ -147,6 +147,7 @@
 #include "sideslist.h"
 #include "smudge.h"
 #include "sortingrenderer.h"
+#include "specialpower.h"
 #include "statemachine.h"
 #include "streak.h"
 #include "surfaceclass.h"
@@ -3254,4 +3255,8 @@ void Setup_Hooks()
     Hook_Any(0x004AF2D0, UpgradeCenter::Find_Upgrade_By_Key);
     Hook_Any(0x004AF2F0, UpgradeCenter::Find_Upgrade);
     Hook_Any(0x004AF5F0, UpgradeCenter::Can_Afford_Upgrade);
+
+    // specialpower.h
+    Hook_Any(0x0041D050, SpecialPowerStore::Find_Special_Power_Template);
+    Hook_Any(0x004B7C20, SpecialPowerStore::Can_Use_Special_Power);
 }

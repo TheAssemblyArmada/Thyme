@@ -83,4 +83,5 @@ private:
     bool m_inSystemList;
     bool m_inOverallList;
     ParticleSystem *m_systemUnderControl;
+    friend class W3DParticleSystemManager;
 };

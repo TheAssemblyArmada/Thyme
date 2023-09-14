@@ -20,6 +20,7 @@
 #include "w3dfunctionlexicon.h"
 #include "w3dgamelogic.h"
 #include "w3dmodulefactory.h"
+#include "w3dparticlesys.h"
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
@@ -171,12 +172,7 @@ WebBrowser *Win32GameEngine::Create_Web_Browser()
 
 ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()
 {
-#ifdef GAME_DLL
-    // only exists in game exe, not wb exe
-    return Call_Method<ParticleSystemManager *, Win32GameEngine>(0x007421B0, this);
-#else
-    return nullptr;
-#endif
+    return new W3DParticleSystemManager();
 }
 
 AudioManager *Win32GameEngine::Create_Audio_Manager()

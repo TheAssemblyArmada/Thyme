@@ -220,6 +220,7 @@ protected:
     float m_windMotionEndAngleMax;
     bool m_windMotionMovingToEndAngle;
     friend class ScriptEngine;
+    friend class W3DParticleSystemManager;
 };
 
 // no evidence this function exists so we can't be sure its accurate

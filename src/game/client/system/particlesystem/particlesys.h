@@ -90,6 +90,7 @@ public:
     bool Is_Streak() const { return m_particleType == PARTICLE_TYPE_STREAK; }
     unsigned int Is_Volume_Particle() const { return m_particleType != PARTICLE_TYPE_VOLUME_PARTICLE ? 0 : 6; }
     bool Is_Ground_Aligned() const { return m_isGroundAligned; }
+    bool Is_Not_Ground_Aligned() const { return !m_isGroundAligned; }
     bool Is_Destroyed() const { return m_isDestroyed; }
     bool Is_Saveable() const { return m_saveable; }
 

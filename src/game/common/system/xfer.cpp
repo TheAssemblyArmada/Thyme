@@ -426,7 +426,7 @@ void Xfer::xferUpgradeMask(BitFlags<128> *thing)
 
             for (int i = 0; i < count; i++) {
                 xferAsciiString(&name);
-                UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(name);
+                const UpgradeTemplate *tmplate = g_theUpgradeCenter->Find_Upgrade(name);
                 captainslog_relassert(
                     tmplate != nullptr, XFER_STATUS_NOT_FOUND, "Xfer::xferUpgradeMask - Unknown upgrade '%s'", name.Str());
                 thing->Set(tmplate->Get_Upgrade_Mask());

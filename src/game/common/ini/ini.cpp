@@ -45,6 +45,7 @@
 #include "terrainroads.h"
 #include "terraintypes.h"
 #include "thingfactory.h"
+#include "upgrade.h"
 #include "water.h"
 #include "weapon.h"
 #include "xfer.h"
@@ -121,7 +122,7 @@ const BlockParse TheTypeTable[] = {
     {"SpecialPower", HOOK_BLOCK(0x00504690) /*&INI::parseSpecialPowerDefinition*/},
     {"ShellMenuScheme", HOOK_BLOCK(0x00503CE0) /*&INI::parseShellMenuSchemeDefinition*/},
     {"Terrain", &TerrainTypeCollection::Parse_Terrain_Definition},
-    {"Upgrade", HOOK_BLOCK(0x00503BA0) /*&INI::parseUpgradeDefinition*/},
+    {"Upgrade", &UpgradeCenter::Parse_Upgrade_Definition},
     {"Video", HOOK_BLOCK(0x005039D0) /*&INI::parseVideoDefinition*/},
     {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},

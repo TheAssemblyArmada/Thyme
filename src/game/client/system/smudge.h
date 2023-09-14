@@ -38,6 +38,7 @@ private:
     float m_smudgeAlpha;
     SmudgeCoords m_smudgeStructs[5];
     friend class W3DSmudgeManager;
+    friend class W3DParticleSystemManager;
 };
 
 class SmudgeSet : public DLNodeClass<SmudgeSet>

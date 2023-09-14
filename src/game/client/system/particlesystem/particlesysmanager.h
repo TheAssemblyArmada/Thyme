@@ -96,7 +96,7 @@ public:
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
     static void Parse_Particle_System_Definition(INI *ini);
 
-private:
+protected:
     Particle *m_allParticlesHead[PARTICLE_PRIORITY_COUNT];
     Particle *m_allParticlesTail[PARTICLE_PRIORITY_COUNT];
     ParticleSystemID m_uniqueSystemID;

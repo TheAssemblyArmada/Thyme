@@ -14,11 +14,13 @@
  */
 #include "sdl2gameengine.h"
 #include "audiomanager.h"
+#include "lanapiinterface.h"
 #include "main.h"
 #include "messagestream.h"
 #include "sdl2keybd.h"
 #include "sdl2mouse.h"
 #include "w3dfunctionlexicon.h"
+#include "w3dgamelogic.h"
 #include "w3dmodulefactory.h"
 #include "w3dparticlesys.h"
 #include "win32bigfilesystem.h"
@@ -109,11 +111,24 @@ void SDL2GameEngine::Service_Windows_OS()
     }
 } // namespace Thyme
 
-void SDL2GameEngine::Execute()
+void SDL2GameEngine::Update()
 {
-    while (!m_isQuitting) {
+    GameEngine::Update();
+
+    // this code exists in windows but not in mac
+    if (g_applicationWindow != nullptr) {
+        rts::Sleep_Ms(5);
         Service_Windows_OS();
+
+        if (g_theLAN != nullptr) {
+            g_theLAN->Set_Is_Active(Get_Is_Active());
+            g_theLAN->Update();
+        }
+
+        g_theAudio->Set_Volume(g_theAudio->Get_Volume(AUDIOAFFECT_BASEVOL), AUDIOAFFECT_BASEVOL);
     }
+
+    Service_Windows_OS();
 }
 
 LocalFileSystem *SDL2GameEngine::Create_Local_File_System()

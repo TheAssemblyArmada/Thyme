@@ -177,11 +177,18 @@ void GameEngine::Update()
 #endif
 
     // TODO WB has extra subsystem debug stuff here, not implemented yet
-    g_theRadar->Update();
-    g_theAudio->Update();
-    g_theGameClient->Update();
-    g_theMessageStream->Propagate_Messages();
-
+    if (g_theRadar != nullptr) {
+        g_theRadar->Update();
+    }
+    if (g_theAudio != nullptr) {
+        g_theAudio->Update();
+    }
+    if (g_theGameClient != nullptr) {
+        g_theGameClient->Update();
+    }
+    if (g_theMessageStream != nullptr) {
+        g_theMessageStream->Propagate_Messages();
+    }
     if (g_theNetwork != nullptr) {
         g_theNetwork->Update();
     }
@@ -349,9 +356,11 @@ void GameEngine::Real_Init(int argc, char *argv[])
 
     Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
 
+#ifdef GAME_DLL
     if (!g_theAudio->Is_Music_Already_Loaded()) {
         Set_Quitting(true);
     }
+#endif
 
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug(
@@ -439,40 +448,41 @@ void GameEngine::Real_Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
+#ifdef GAME_DLL
     Init_Subsystem(g_theAI, "TheAI", new AI, &xfer, "Data/INI/Default/AIData.ini", "Data/INI/AIData.ini");
     Init_Subsystem(g_theGameLogic, "TheGameLogic", Create_Game_Logic());
+#endif
     Init_Subsystem(g_theTeamFactory, "TheTeamFactory", new TeamFactory);
+#ifdef GAME_DLL
     Init_Subsystem(
         g_theCrateSystem, "TheCrateSystem", new CrateSystem, &xfer, "Data/INI/Default/Crate.ini", "Data/INI/Crate.ini");
     Init_Subsystem(g_thePlayerList, "ThePlayerList", new PlayerList);
     Init_Subsystem(g_theRecorder, "TheRecorder", Create_Recorder());
     Init_Subsystem(g_theRadar, "TheRadar", Create_Radar());
-
     Init_Subsystem(g_theVictoryConditions, "TheVictoryConditions", Create_Victory_Conditions());
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug("----------------------------------------------------------------------------After "
                       "TheVictoryConditions = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
-
     Utf8String name;
     name.Format("Data\\%s\\CommandMap.ini", Get_Registry_Language().Str());
     Init_Subsystem(g_theMetaMap, "TheMetaMap", new MetaMap(), nullptr, name.Str(), "Data\\INI\\CommandMap.ini");
 #ifdef GAME_DEBUG_STRUCTS
     ini.Load("Data\\INI\\CommandMapDebug.ini", INI_LOAD_UNK, nullptr);
 #endif
-
+#endif
     Init_Subsystem(g_theActionManager, "TheActionManager", new ActionManager);
     Init_Subsystem(g_theGameStateMap, "TheGameStateMap", new GameStateMap);
     Init_Subsystem(g_theGameState, "TheGameState", new GameState);
-
+#ifdef GAME_DLL
     Init_Subsystem(g_theGameResultsQueue, "TheGameResultsQueue", GameResultsInterface::Create_New_Game_Results_Interface());
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug("----------------------------------------------------------------------------After "
                       "TheGameResultsQueue = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
-
+#endif
     xfer.Close();
     g_theWriteableGlobalData->m_iniCRC = xfer.Get_CRC();
     captainslog_debug("INI CRC is 0x%8.8X", g_theWriteableGlobalData->m_iniCRC);
@@ -486,11 +496,11 @@ void GameEngine::Real_Init(int argc, char *argv[])
 
 #ifndef GAME_DEBUG_STRUCTS
     if (strcasecmp(g_theArchiveFileSystem->Get_Archive_Filename_For_File("generalsbzh.sec").Str(), "genseczh.big") != 0) {
-        m_isQuitting = true;
+        Set_Quitting(true);
     }
 
     if (strcasecmp(g_theArchiveFileSystem->Get_Archive_Filename_For_File("generalsazh.sec").Str(), "musiczh.big") != 0) {
-        m_isQuitting = true;
+        Set_Quitting(true);
     }
 #endif
 

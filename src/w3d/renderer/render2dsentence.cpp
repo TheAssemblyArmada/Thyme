@@ -31,6 +31,15 @@
 #ifdef BUILD_WITH_FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
+static void LogFtError(const char *text, FT_Error error)
+{
+#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
+    captainslog_error("%s: %s", text, FT_Error_String(error));
+#else
+    captainslog_error(text);
+#endif
+}
 #endif
 
 #ifdef BUILD_WITH_FONTCONFIG
@@ -74,11 +83,7 @@ FontCharsClass::FontCharsClass() :
 #ifdef BUILD_WITH_FREETYPE
     FT_Error error = FT_Init_FreeType(&m_ftLibrary);
     if (error != FT_Err_Ok) {
-#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
-        captainslog_error("Failed to init Freetype: %s", FT_Error_String(error));
-#else
-        captainslog_error("Failed to init Freetype");
-#endif
+        LogFtError("Failed to init Freetype", error);
     }
 #endif
 }
@@ -196,15 +201,21 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Store_Freetype_Char(unicha
         captainslog_error("Failed to render character(%i) from font", ch);
         return nullptr;
     }
-    int char_width = m_ftFace->glyph->advance.x >> 6;
+    int x_pos = 0;
+    if (ch == 'W') {
+        x_pos = 1;
+    }
+    unsigned int char_width = m_ftFace->glyph->advance.x >> 6;
     // Sometimes for some reason the bitmap is wider than the advancement.
     // This does not work with this font rendering approach
     if (char_width < m_ftFace->glyph->bitmap.width + m_ftFace->glyph->bitmap_left) {
         char_width = m_ftFace->glyph->bitmap.width + m_ftFace->glyph->bitmap_left;
     }
+    char_width += m_widthReduction + x_pos;
     Update_Current_Buffer(char_width);
     uint16_t *curr_buffer = m_bufferList[m_bufferList.Count() - 1]->buffer;
     curr_buffer += m_currPixelOffset;
+    // We might need a memset
 
     int x_offset = m_ftFace->glyph->bitmap_left;
     int descent = m_charHeight - m_ascent;
@@ -345,7 +356,7 @@ bool FontCharsClass::Locate_Font_FontConfig(const char *font_name, StringClass &
 #if defined PLATFORM_WINDOWS
 bool FontCharsClass::Locate_Font_WinRegistry(const char *font_name, StringClass &font_file_path)
 {
-    char *font_registry_key = "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
+    const char *font_registry_key = "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
     HKEY hkey;
     LONG result;
 
@@ -438,34 +449,29 @@ void FontCharsClass::Create_Freetype_Font(const char *font_name)
     StringClass font_file_path;
     if (!Locate_Font(font_name, font_file_path)) {
         captainslog_error("Failed to locate font: %s", font_name);
-        captainslog_info("Trying Arial as a fallback");
-        if (Locate_Font("Arial", font_file_path)) {
+        font_name = "Arial";
+        captainslog_info("Trying '%s' as a fallback", font_name);
+        if (Locate_Font(font_name, font_file_path)) {
             captainslog_error("Failed to find fallback font: %s", font_name);
             return;
         }
     }
     FT_Error error = FT_New_Face(m_ftLibrary, font_file_path, 0, &m_ftFace);
     if (error != FT_Err_Ok) {
-#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
-        captainslog_error("Failed to load Freetype face from file: %s", FT_Error_String(error));
-#else
-        captainslog_error("Failed to load Freetype face from file");
-#endif
+        LogFtError("Failed to load Freetype face from file", error);
         return;
     }
 
     // Original calculates with 96 DPI. Do the same
-    error = FT_Set_Char_Size(m_ftFace, 0, m_pointSize * 64, 96, 96);
+    int font_height = FT_MulDiv(m_pointSize, 96, 72);
+    m_widthReduction = std::clamp(font_height / 8, 0, 4);
+    error = FT_Set_Pixel_Sizes(m_ftFace, 0, font_height);
     if (error != FT_Err_Ok) {
-#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
-        captainslog_error("Failed to set character size: %s", FT_Error_String(error));
-#else
-        captainslog_error("Failed to set character size");
-#endif
+        LogFtError("Failed to set character size", error);
         return;
     }
 
-    // Use the same metric calculation as Wine does, in their GDI emulation layer
+    // Use the same metric calculation as Wine does in their GDI emulation layer
     // See https://github.com/NVIDIA/winex_lgpl/blob/master/winex/dlls/gdi/freetype.c#L3027
     if (FT_IS_SCALABLE(m_ftFace)) {
         m_ascent = FT_MulFix(m_ftFace->ascender, m_ftFace->size->metrics.y_scale) >> 6;
@@ -473,7 +479,7 @@ void FontCharsClass::Create_Freetype_Font(const char *font_name)
         m_charHeight = m_ascent + descent;
         m_overhang = 0;
     } else {
-        captainslog_error("Require a scalable font");
+        captainslog_error("Require a scalable font. Font=%s", font_name);
     }
 }
 #endif

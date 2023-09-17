@@ -7,6 +7,7 @@ set(GAMEENGINE_INCLUDES
     game/client/drawable/update
     game/client/gui
     game/client/gui/controlbar
+    game/client/gui/gadget
     game/client/gui/shell
     game/client/input
     game/client/messagestream
@@ -91,6 +92,10 @@ set(GAMEENGINE_SRC
     game/client/globallanguage.cpp
     game/client/gui/challengegenerals.cpp
     game/client/gui/controlbar/controlbar.cpp
+    game/client/gui/gadget/gadgetcombobox.cpp
+    game/client/gui/gadget/gadgetlistbox.cpp
+    game/client/gui/gadget/gadgetstatictext.cpp
+    game/client/gui/gadget/gadgettextentry.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/gamewindow.cpp
     game/client/gui/gamewindowmanager.cpp
@@ -108,6 +113,7 @@ set(GAMEENGINE_SRC
     game/client/line2d.cpp
     game/client/maputil.cpp
     game/client/messagestream/metaevent.cpp
+    game/client/messagestream/selectionxlat.cpp
     game/client/optionpreferences.cpp
     game/client/parabolicease.cpp
     game/client/shader/bwfilter.cpp
@@ -362,6 +368,8 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/drawable/draw/w3dtruckdraw.cpp
     platform/w3dengine/client/flatheightmap.cpp
     platform/w3dengine/client/gui/w3dgamefont.cpp
+    platform/w3dengine/client/gui/w3dgamewindow.cpp
+    platform/w3dengine/client/gui/w3dgamewindowmanager.cpp
     platform/w3dengine/client/heightmap.cpp
     platform/w3dengine/client/shadow/w3dbuffermanager.cpp
     platform/w3dengine/client/shadow/w3dprojectedshadow.cpp

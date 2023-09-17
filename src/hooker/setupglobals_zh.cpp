@@ -819,3 +819,7 @@ Shell *&g_theShell = Make_Global<Shell *>(PICK_ADDRESS(0x00A2C68C, 0x04CA9D74));
 // chat.cpp
 #include "chat.h"
 ARRAY_DEF(PICK_ADDRESS(0x00A2BF78, 0x04CA9BA8), int, g_gameSpyColor, 27);
+
+// selectionxlat.cpp
+class SelectionTranslator;
+SelectionTranslator *&g_theSelectionTranslator = Make_Global<SelectionTranslator *>(PICK_ADDRESS(0x00A2F458, 0x04CAB624));

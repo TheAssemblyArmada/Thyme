@@ -14,17 +14,24 @@
  */
 
 #include "gamewindow.h"
-
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "displaystring.h"
+#include "gadgetcombobox.h"
+#include "gadgetlistbox.h"
+#include "gadgetstatictext.h"
+#include "gadgettextentry.h"
 #include "gamelogic.h"
+#include "gamewindowmanager.h"
+#include "ingameui.h"
+#include "selectionxlat.h"
+#include "view.h"
+#include "windowlayout.h"
 
-#if 0
 GameWindow::GameWindow() :
     m_status(0),
     m_size{ 0, 0 },
-    m_region{0, 0, 0, 0},
+    m_region{ 0, 0, 0, 0 },
     m_cursorX(0),
     m_cursorY(0),
     m_userData(nullptr),
@@ -42,13 +49,11 @@ GameWindow::GameWindow() :
     m_layout(nullptr),
     m_editData(nullptr)
 {
-    // TODO, needs WindowManager
-    // Win_Set_Draw_Func;
-    // Win_Set_Input_Func;
-    // Win_Set_System_Func;
-    // Win_Set_Tooltip_Func;
+    Win_Set_Draw_Func(g_theWindowManager->Get_Default_Draw());
+    Win_Set_Input_Func(g_theWindowManager->Get_Default_Input());
+    Win_Set_System_Func(g_theWindowManager->Get_Default_System());
+    Win_Set_Tooltip_Func(g_theWindowManager->Get_Default_Tooltip());
 }
-#endif
 
 GameWindow::~GameWindow()
 {
@@ -58,8 +63,17 @@ GameWindow::~GameWindow()
 
 void GameWindow::Normalize_Window_Region()
 {
-    std::swap(m_region.lo.x, m_region.hi.x);
-    std::swap(m_region.lo.y, m_region.hi.y);
+    if (m_region.lo.x > m_region.hi.x) {
+        int x = m_region.lo.x;
+        m_region.lo.x = m_region.hi.x;
+        m_region.hi.x = x;
+    }
+
+    if (m_region.lo.y > m_region.hi.y) {
+        int y = m_region.lo.y;
+        m_region.lo.y = m_region.hi.y;
+        m_region.hi.y = y;
+    }
 }
 
 int GameWindow::Win_Next_Tab()
@@ -189,7 +203,7 @@ int GameWindow::Win_Enable(bool enable)
     return 0;
 }
 
-bool GameWindow::Win_Is_Enabled()
+bool GameWindow::Win_Get_Enabled()
 {
     return (m_status & WIN_STATUS_ENABLED) != 0;
 }
@@ -203,7 +217,7 @@ int GameWindow::Win_Set_Status(int status)
 {
     int old = m_status;
 
-    m_status |= ~status;
+    m_status |= status;
 
     return old;
 }
@@ -275,10 +289,29 @@ GameFont *GameWindow::Win_Get_Font()
 
 void GameWindow::Win_Set_Font(GameFont *font)
 {
-    // TODO needs gadgets
-#ifdef GAME_DLL
-    Call_Method<void, GameWindow, GameFont *>(PICK_ADDRESS(0x004F8FA0, 0x0086E2F5), this, font);
-#endif
+    m_instData.m_font = font;
+
+    if ((Win_Get_Style() & GWS_SCROLL_LISTBOX) != 0) {
+        Gadget_List_Box_Set_Font(this, font);
+    } else if ((Win_Get_Style() & GWS_COMBO_BOX) != 0) {
+        Gadget_Combo_Box_Set_Font(this, font);
+    } else if ((Win_Get_Style() & GWS_ENTRY_FIELD) != 0) {
+        Gadget_Text_Entry_Set_Font(this, font);
+    } else if ((Win_Get_Style() & GWS_STATIC_TEXT) != 0) {
+        Gadget_Static_Text_Set_Font(this, font);
+    } else {
+        DisplayString *string = m_instData.Get_Text_DisplayString();
+
+        if (string != nullptr) {
+            string->Set_Font(font);
+        }
+
+        DisplayString *tooltip_string = m_instData.Get_Tooltip_DisplayString();
+
+        if (tooltip_string != nullptr) {
+            tooltip_string->Set_Font(font);
+        }
+    }
 }
 
 int GameWindow::Win_Get_Enabled_Text_Color()
@@ -296,7 +329,7 @@ int GameWindow::Win_Get_IME_Composite_Text_Color()
     return m_instData.m_imeCompositeText.color;
 }
 
-int GameWindow::Win_Get_IME_Composite_Text_Border_Color()
+int GameWindow::Win_Get_IME_Composite_Border_Color()
 {
     return m_instData.m_imeCompositeText.borderColor;
 }
@@ -486,17 +519,17 @@ GameWindow *GameWindow::Win_Point_In_Child(int x, int y, bool ignore_enable_chec
         int r_x = window->m_region.lo.x;
         int r_y = window->m_region.lo.y;
 
-        for (GameWindow *j = window->Win_Get_Parent(); j != nullptr; j = j->m_parent) {
-            r_x += j->m_region.lo.x;
-            r_y += j->m_region.lo.y;
+        for (GameWindow *parent_window = window->Win_Get_Parent(); parent_window != nullptr;
+             parent_window = parent_window->m_parent) {
+            r_x += parent_window->m_region.lo.x;
+            r_y += parent_window->m_region.lo.y;
         }
 
         if (x >= r_x && x <= window->m_size.x + r_x && y >= r_y && y <= window->m_size.y + r_y) {
 
-            bool is_enabled = ignore_enable_check || Win_Is_Enabled() ? true : false;
-            bool is_hidden = Win_Is_Hidden();
+            bool is_enabled = ignore_enable_check || (window->m_status & WIN_STATUS_ENABLED) != 0;
 
-            if (!is_hidden) {
+            if ((window->m_status & WIN_STATUS_HIDDEN) == 0) {
 
                 if (is_enabled) {
                     return window->Win_Point_In_Child(x, y, ignore_enable_check, audio_event);
@@ -529,7 +562,7 @@ GameWindow *GameWindow::Win_Point_In_Any_Child(int x, int y, bool ignore_hidden,
         }
 
         if (x >= r_x && x <= window->m_size.x + r_x && y >= r_y && y <= window->m_size.y + r_y
-            && (!ignore_hidden || !Win_Is_Hidden())) {
+            && (!ignore_hidden || (window->m_status & WIN_STATUS_HIDDEN) == 0)) {
 
             return window->Win_Point_In_Child(x, y, ignore_enable_check, false);
         }
@@ -666,3 +699,300 @@ GameWindowEditData *GameWindow::Win_Get_Edit_Data()
 {
     return m_editData;
 }
+
+int GameWindow::Win_Set_Size(int width, int height)
+{
+    m_size.x = width;
+    m_size.y = height;
+    m_region.hi.x = width + m_region.lo.x;
+    m_region.hi.y = height + m_region.lo.y;
+    g_theWindowManager->Win_Send_System_Msg(this, 16388, width, height);
+    return 0;
+}
+
+int GameWindow::Win_Hide(bool hide)
+{
+    if (hide) {
+        m_status |= WIN_STATUS_HIDDEN;
+        g_theWindowManager->Window_Hiding(this);
+    } else {
+        m_status &= ~WIN_STATUS_HIDDEN;
+    }
+
+    return 0;
+}
+
+int GameWindow::Win_Set_Parent(GameWindow *parent)
+{
+    if (m_parent != nullptr) {
+        g_theWindowManager->Unlink_Child_Window(this);
+    } else {
+        g_theWindowManager->Unlink_Window(this);
+    }
+
+    if (parent != nullptr) {
+        g_theWindowManager->Add_Window_To_Parent(this, parent);
+    } else {
+        g_theWindowManager->Link_Window(this);
+        m_parent = nullptr;
+    }
+
+    return 0;
+}
+
+int GameWindow::Win_Set_Draw_Func(WindowDrawFunc draw)
+{
+    if (draw != nullptr) {
+        m_draw = draw;
+    } else {
+        m_draw = g_theWindowManager->Get_Default_Draw();
+    }
+
+    return 0;
+}
+
+int GameWindow::Win_Set_Input_Func(WindowCallbackFunc input)
+{
+    if (input != nullptr) {
+        m_input = input;
+    } else {
+        m_input = g_theWindowManager->Get_Default_Input();
+    }
+
+    return 0;
+}
+
+int GameWindow::Win_Set_System_Func(WindowCallbackFunc system)
+{
+    if (system != nullptr) {
+        m_system = system;
+    } else {
+        m_system = g_theWindowManager->Get_Default_System();
+    }
+
+    return 0;
+}
+
+int GameWindow::Win_Set_Callbacks(WindowCallbackFunc input, WindowDrawFunc draw, WindowTooltipFunc tooltip)
+{
+    Win_Set_Input_Func(input);
+    Win_Set_Draw_Func(draw);
+    Win_Set_Tooltip_Func(tooltip);
+    return 0;
+}
+
+int GameWindow::Win_Bring_To_Top()
+{
+    GameWindow *parent = Win_Get_Parent();
+
+    if (parent != nullptr) {
+        g_theWindowManager->Unlink_Child_Window(this);
+        g_theWindowManager->Add_Window_To_Parent(this, parent);
+    } else {
+        for (GameWindow *window = g_theWindowManager->Win_Get_Window_List(); window != nullptr; window = window->m_next) {
+            if (window == nullptr) {
+                return -3;
+            }
+        }
+
+        g_theWindowManager->Unlink_Window(this);
+        g_theWindowManager->Link_Window(this);
+    }
+
+    if (m_layout != nullptr) {
+        WindowLayout *layout = m_layout;
+        layout->Remove_Window(this);
+        layout->Add_Window(this);
+    }
+
+    return 0;
+}
+
+GameWindow *GameWindow::Find_First_Leaf()
+{
+    GameWindow *window = this;
+
+    while (window->m_parent != nullptr) {
+        window = window->m_parent;
+    }
+
+    while (window->m_child != nullptr) {
+        window = window->m_child;
+    }
+
+    return window;
+}
+
+GameWindow *GameWindow::Find_Last_Leaf()
+{
+    GameWindow *window = this;
+
+    while (window->m_parent != nullptr) {
+        window = window->m_parent;
+    }
+
+    while (window->m_child != nullptr) {
+        for (window = window->m_child; window->m_next != nullptr; window = window->m_next) {
+        }
+    }
+
+    return window;
+}
+
+GameWindow *GameWindow::Find_Prev_Leaf()
+{
+    GameWindow *window = this;
+
+    if (m_prev != nullptr) {
+        GameWindow *prev = m_prev;
+
+        while (prev->m_child != nullptr && (prev->m_status & WIN_STATUS_TAB_STOP) == 0) {
+            for (prev = prev->m_child; prev->m_next != nullptr; prev = prev->m_next) {
+            }
+        }
+
+        return m_prev;
+    } else {
+        do {
+            if (window->m_parent == nullptr) {
+                if (window != nullptr) {
+                    return window->Find_Last_Leaf();
+                } else {
+                    return nullptr;
+                }
+            }
+
+            window = window->m_parent;
+        } while (window->m_parent == nullptr || window->m_prev == nullptr);
+
+        GameWindow *prev = m_prev;
+
+        while (prev->m_child != nullptr && (prev->m_status & WIN_STATUS_TAB_STOP) == 0) {
+            for (prev = prev->m_child; prev->m_next != nullptr; prev = prev->m_next) {
+            }
+        }
+
+        return prev;
+    }
+}
+
+GameWindow *GameWindow::Find_Next_Leaf()
+{
+    GameWindow *window = this;
+
+    if (m_next != nullptr) {
+        if ((m_next->m_status & WIN_STATUS_TAB_STOP) != 0) {
+            return m_next;
+        } else {
+            for (GameWindow *next = m_next; next != nullptr; next = next->m_child) {
+                if (next->m_child == nullptr || (next->m_status & WIN_STATUS_TAB_STOP) != 0) {
+                    return next;
+                }
+            }
+
+            return nullptr;
+        }
+    } else {
+        while (window->m_parent != nullptr) {
+            window = window->m_parent;
+
+            if (window->m_parent != nullptr && window->m_next != nullptr) {
+                for (window = window->m_next; window != nullptr; window = window->m_child) {
+                    if (window->m_child == nullptr || (window->m_status & WIN_STATUS_TAB_STOP) != 0) {
+                        return window;
+                    }
+                }
+            }
+        }
+
+        if (window != nullptr) {
+            return window->Find_First_Leaf();
+        } else {
+            return nullptr;
+        }
+    }
+}
+
+void GameWindow::Win_Set_Disabled_Text_Colors(int color, int border_color)
+{
+    m_instData.m_disabledText.color = color;
+    m_instData.m_disabledText.borderColor = border_color;
+
+    if ((m_instData.Get_Style() & GWS_COMBO_BOX) != 0) {
+        Gadget_Combo_Box_Set_Disabled_Text_Colors(this, color, border_color);
+    }
+}
+
+void GameWindow::Win_Set_Enabled_Text_Colors(int color, int border_color)
+{
+    m_instData.m_enabledText.color = color;
+    m_instData.m_enabledText.borderColor = border_color;
+
+    if ((m_instData.Get_Style() & GWS_COMBO_BOX) != 0) {
+        Gadget_Combo_Box_Set_Enabled_Text_Colors(this, color, border_color);
+    }
+}
+
+void GameWindow::Win_Set_Hilite_Text_Colors(int color, int border_color)
+{
+    m_instData.m_hiliteText.color = color;
+    m_instData.m_hiliteText.borderColor = border_color;
+
+    if ((m_instData.Get_Style() & GWS_COMBO_BOX) != 0) {
+        Gadget_Combo_Box_Set_Hilite_Text_Colors(this, color, border_color);
+    }
+}
+
+void GameWindow::Win_Set_IME_Composite_Text_Colors(int color, int border_color)
+{
+    m_instData.m_imeCompositeText.color = color;
+    m_instData.m_imeCompositeText.borderColor = border_color;
+
+    if ((m_instData.Get_Style() & GWS_COMBO_BOX) != 0) {
+        Gadget_Combo_Box_Set_IME_Composite_Text_Colors(this, color, border_color);
+    }
+}
+
+int GameWindow::Win_Activate()
+{
+    int ret = Win_Bring_To_Top();
+
+    if (ret != 0) {
+        return ret;
+    }
+
+    m_status |= WIN_STATUS_ACTIVE;
+    Win_Hide(false);
+    return 0;
+}
+
+WindowMsgHandledType Game_Win_Default_Input(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2)
+{
+    return MSG_HANDLED;
+}
+
+WindowMsgHandledType Game_Win_Block_Input(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2)
+{
+    if (msg == GWM_CHAR || msg == GWM_MOUSE_POS) {
+        return MSG_IGNORED;
+    }
+
+    if (msg == GWM_LEFT_UP) {
+        g_theSelectionTranslator->Set_Left_Mouse_Button(false);
+        g_theSelectionTranslator->Set_Drag_Selecting(false);
+        g_theTacticalView->Set_Mouse_Lock(false);
+        g_theInGameUI->Set_Selecting(false);
+        g_theInGameUI->End_Area_Select_Hint(nullptr);
+    }
+
+    return MSG_HANDLED;
+}
+
+WindowMsgHandledType Game_Win_Default_System(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2)
+{
+    return MSG_HANDLED;
+}
+
+void Game_Win_Default_Tooltip(GameWindow *window, WinInstanceData *inst_data, unsigned int mouse) {}
+
+void Game_Win_Default_Draw(GameWindow *window, WinInstanceData *inst_data) {}

@@ -185,6 +185,8 @@
 #include "w3dgameclient.h"
 #include "w3dgamefont.h"
 #include "w3dgamelogic.h"
+#include "w3dgamewindow.h"
+#include "w3dgamewindowmanager.h"
 #include "w3dmodeldraw.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
@@ -3259,4 +3261,82 @@ void Setup_Hooks()
     // specialpower.h
     Hook_Any(0x0041D050, SpecialPowerStore::Find_Special_Power_Template);
     Hook_Any(0x004B7C20, SpecialPowerStore::Can_Use_Special_Power);
+
+    // gamewindow.h
+    Hook_Any(0x004F8B50, GameWindow::Normalize_Window_Region);
+    Hook_Any(0x004F8B80, GameWindow::Win_Bring_To_Top);
+    Hook_Any(0x004F8C10, GameWindow::Win_Set_Position);
+    Hook_Any(0x004F8C50, GameWindow::Win_Get_Position);
+    Hook_Any(0x004F8C80, GameWindow::Win_Set_Cursor_Position);
+    Hook_Any(0x004F8CA0, GameWindow::Win_Get_Cursor_Position);
+    Hook_Any(0x004F8CC0, GameWindow::Win_Get_Screen_Position);
+    Hook_Any(0x004F8D00, GameWindow::Win_Point_In_Window);
+    Hook_Any(0x004F8D70, GameWindow::Win_Set_Size);
+    Hook_Any(0x004F8DB0, GameWindow::Win_Get_Size);
+    Hook_Any(0x004F8DE0, GameWindow::Win_Enable);
+    Hook_Any(0x004F8E30, GameWindow::Win_Get_Enabled);
+    Hook_Any(0x004F8E40, GameWindow::Win_Hide);
+    Hook_Any(0x004F8E80, GameWindow::Win_Is_Hidden);
+    Hook_Any(0x004F8E90, GameWindow::Win_Set_Status);
+    Hook_Any(0x004F8EB0, GameWindow::Win_Clear_Status);
+    Hook_Any(0x004F8ED0, GameWindow::Win_Set_Text);
+    Hook_Any(0x004F8F70, GameWindow::Win_Get_Text_Length);
+    Hook_Any(0x004F8F90, GameWindow::Win_Get_Font);
+    Hook_Any(0x004F8FA0, GameWindow::Win_Set_Font);
+    Hook_Any(0x004F9030, GameWindow::Win_Set_Enabled_Text_Colors);
+    Hook_Any(0x004F9060, GameWindow::Win_Set_Disabled_Text_Colors);
+    Hook_Any(0x004F9090, GameWindow::Win_Set_Hilite_Text_Colors);
+    Hook_Any(0x004F90C0, GameWindow::Win_Set_IME_Composite_Text_Colors);
+    Hook_Any(0x004F90F0, GameWindow::Win_Get_Enabled_Text_Color);
+    Hook_Any(0x004F9100, GameWindow::Win_Get_Enabled_Text_Border_Color);
+    Hook_Any(0x004F9110, GameWindow::Win_Get_Disabled_Text_Color);
+    Hook_Any(0x004F9120, GameWindow::Win_Get_Disabled_Text_Border_Color);
+    Hook_Any(0x004F9130, GameWindow::Win_Get_IME_Composite_Text_Color);
+    Hook_Any(0x004F9140, GameWindow::Win_Get_IME_Composite_Border_Color);
+    Hook_Any(0x004F9150, GameWindow::Win_Get_Hilite_Text_Color);
+    Hook_Any(0x004F9160, GameWindow::Win_Get_Hilite_Text_Border_Color);
+    Hook_Any(0x004F9170, GameWindow::Win_Set_Instance_Data);
+    Hook_Any(0x004F9420, GameWindow::Win_Get_User_Data);
+    Hook_Any(0x004F9430, GameWindow::Win_Set_Tooltip);
+    Hook_Any(0x004F9490, GameWindow::Win_Set_ID);
+    Hook_Any(0x004F94A0, GameWindow::Win_Get_Parent);
+    Hook_Any(0x004F94B0, GameWindow::Win_Is_Child);
+    Hook_Any(0x004F94D0, GameWindow::Win_Get_Child);
+    Hook_Any(0x004F94E0, GameWindow::Win_Set_Owner);
+    Hook_Any(0x004F9500, GameWindow::Win_Get_Owner);
+    Hook_Any(0x004F9510, GameWindow::Win_Get_Prev);
+    Hook_Any(0x004F9520, GameWindow::Win_Set_Next_In_Layout);
+    Hook_Any(0x004F9530, GameWindow::Win_Set_Prev_In_Layout);
+    Hook_Any(0x004F9540, GameWindow::Win_Set_Layout);
+    Hook_Any(0x004F9550, GameWindow::Win_Get_Layout);
+    Hook_Any(0x004F9560, GameWindow::Win_Get_Next_In_Layout);
+    Hook_Any(0x004F9570, GameWindow::Win_Get_Prev_In_Layout);
+    Hook_Any(0x004F9580, GameWindow::Win_Set_System_Func);
+    Hook_Any(0x004F95B0, GameWindow::Win_Set_Input_Func);
+    Hook_Any(0x004F95E0, GameWindow::Win_Set_Draw_Func);
+    Hook_Any(0x004F9610, GameWindow::Win_Set_Tooltip_Func);
+    Hook_Any(0x004F9620, GameWindow::Win_Point_In_Child);
+    Hook_Any(0x004F97D0, GameWindow::Win_Point_In_Any_Child);
+    Hook_Any(0x004F9870, Game_Win_Block_Input);
+    Hook_Any(0x004F98E0, GameWindow::Win_Set_Enabled_Image);
+    Hook_Any(0x004F9910, GameWindow::Win_Set_Enabled_Color);
+    Hook_Any(0x004F9940, GameWindow::Win_Set_Enabled_Border_Color);
+    Hook_Any(0x004F9970, GameWindow::Win_Set_Disabled_Image);
+    Hook_Any(0x004F99A0, GameWindow::Win_Set_Disabled_Color);
+    Hook_Any(0x004F99D0, GameWindow::Win_Set_Disabled_Border_Color);
+    Hook_Any(0x004F9A00, GameWindow::Win_Set_Hilite_Image);
+    Hook_Any(0x004F9A30, GameWindow::Win_Set_Hilite_Color);
+    Hook_Any(0x004F9A60, GameWindow::Win_Set_Hilite_Border_Color);
+    Hook_Any(0x004F9A90, GameWindow::Win_Get_Input_Func);
+    Hook_Any(0x004F9AA0, GameWindow::Win_Get_Edit_Data);
+
+    // w3dgamewindow.h
+    Hook_Any(0x007CF0C0, W3DGameWindow::Blit_Border_Rect);
+    Hook_Any(0x007CF8D0, W3D_Game_Win_Default_Draw);
+    Hook_Any(0x007CFAE0, W3DGameWindow::Win_Draw_Border);
+    Hook_Any(0x007CFCF0, W3DGameWindow::Win_Set_Font);
+    Hook_Any(0x007CFD20, W3DGameWindow::Win_Set_Text);
+
+    // w3dgamewindowmanager.h
+    Hook_Any(0x007A9C10, W3DGameWindowManager::Allocate_New_Window);
 }

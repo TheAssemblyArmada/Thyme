@@ -80,14 +80,14 @@ enum GameWindowStyle
     GWS_VERT_SLIDER = 1 << 3,
     GWS_HORZ_SLIDER = 1 << 4,
 
-    GWS_SCROLL_LIST_BOX = 1 << 5,
+    GWS_SCROLL_LISTBOX = 1 << 5,
 
-    GWS_TEXT_ENTRY_FIELD = 1 << 6,
+    GWS_ENTRY_FIELD = 1 << 6,
     GWS_STATIC_TEXT = 1 << 7,
 
     GWS_PROGRESS_BAR = 1 << 8,
 
-    GWS_USER = 1 << 9,
+    GWS_USER_WINDOW = 1 << 9,
 
     GWS_MOUSE_TRACK = 1 << 10,
 
@@ -98,6 +98,9 @@ enum GameWindowStyle
     GWS_TAB_PLANE = 1 << 14,
 
     GWS_COMBO_BOX = 1 << 15,
+    GWS_ALL_SLIDER = GWS_VERT_SLIDER | GWS_HORZ_SLIDER,
+    GWS_GADGET_WINDOW = GWS_COMBO_BOX | GWS_TAB_CONTROL | GWS_PROGRESS_BAR | GWS_STATIC_TEXT | GWS_ENTRY_FIELD
+        | GWS_SCROLL_LISTBOX | GWS_HORZ_SLIDER | GWS_VERT_SLIDER | GWS_CHECK_BOX | GWS_RADIO_BUTTON | GWS_PUSH_BUTTON,
 };
 
 enum GameWindowMessage
@@ -166,6 +169,7 @@ struct GameWindowEditData
 class GameWindow : public MemoryPoolObject
 {
     friend GameWindowManager;
+    friend void W3DGameWinDefaultDraw(GameWindow *window, WinInstanceData *instance);
 
     IMPLEMENT_ABSTRACT_POOL(GameWindow);
 
@@ -195,11 +199,13 @@ public:
 
     bool Win_Point_In_Window(int x, int y);
 
+    int Win_Set_Size(int width, int height);
     int Win_Get_Size(int *width, int *height);
 
     int Win_Enable(bool enable);
-    bool Win_Is_Enabled();
+    bool Win_Get_Enabled();
 
+    int Win_Hide(bool hide);
     bool Win_Is_Hidden();
 
     int Win_Set_Status(int status);
@@ -222,7 +228,7 @@ public:
     int Win_Get_Enabled_Text_Border_Color();
 
     int Win_Get_IME_Composite_Text_Color();
-    int Win_Get_IME_Composite_Text_Border_Color();
+    int Win_Get_IME_Composite_Border_Color();
 
     int Win_Get_Disabled_Text_Color();
     int Win_Get_Disabled_Text_Border_Color();
@@ -241,6 +247,7 @@ public:
     int Win_Set_Window_Id(int id);
     int Win_Get_Window_Id();
 
+    int Win_Set_Parent(GameWindow *parent);
     GameWindow *Win_Get_Parent();
 
     bool Win_Is_Child(GameWindow *window);
@@ -263,7 +270,11 @@ public:
     GameWindow *Win_Get_Next_In_Layout();
     GameWindow *Win_Get_Prev_In_Layout();
 
+    int Win_Set_Draw_Func(WindowDrawFunc draw);
+    int Win_Set_Input_Func(WindowCallbackFunc input);
+    int Win_Set_System_Func(WindowCallbackFunc system);
     int Win_Set_Tooltip_Func(WindowTooltipFunc tooltip);
+    int Win_Set_Callbacks(WindowCallbackFunc input, WindowDrawFunc draw, WindowTooltipFunc tooltip);
 
     int Win_Draw_Window();
 
@@ -274,21 +285,49 @@ public:
     int Win_Set_Enabled_Color(int index, int color);
     int Win_Set_Enabled_Border_Color(int index, int color);
 
+    int Win_Get_Enabled_Color(int index) { return m_instData.m_enabledDrawData[index].color; }
+    int Win_Get_Enabled_Border_Color(int index) { return m_instData.m_enabledDrawData[index].borderColor; }
+
     int Win_Set_Disabled_Image(int index, Image *image);
     int Win_Set_Disabled_Color(int index, int color);
     int Win_Set_Disabled_Border_Color(int index, int color);
 
+    int Win_Get_Disabled_Color(int index) { return m_instData.m_disabledDrawData[index].color; }
+    int Win_Get_Disabled_Border_Color(int index) { return m_instData.m_disabledDrawData[index].borderColor; }
+
     int Win_Set_Hilite_Image(int index, Image *image);
     int Win_Set_Hilite_Color(int index, int color);
     int Win_Set_Hilite_Border_Color(int index, int color);
+
+    int Win_Get_Hilite_Color(int index) { return m_instData.m_hiliteDrawData[index].color; }
+    int Win_Get_Hilite_Border_Color(int index) { return m_instData.m_hiliteDrawData[index].borderColor; }
 
     WindowCallbackFunc Win_Get_Input_Func();
     WindowCallbackFunc Win_Get_System_Func();
     WindowTooltipFunc Win_Get_Tooltip_Func();
     WindowDrawFunc Win_Get_Draw_Func();
 
+    int Win_Bring_To_Top();
+
     void Win_Set_Edit_Data(GameWindowEditData *edit_data);
     GameWindowEditData *Win_Get_Edit_Data();
+
+    GameWindow *Find_First_Leaf();
+    GameWindow *Find_Last_Leaf();
+    GameWindow *Find_Prev_Leaf();
+    GameWindow *Find_Next_Leaf();
+
+    void Win_Set_Disabled_Text_Colors(int color, int border_color);
+    void Win_Set_Enabled_Text_Colors(int color, int border_color);
+    void Win_Set_Hilite_Text_Colors(int color, int border_color);
+    void Win_Set_IME_Composite_Text_Colors(int color, int border_color);
+
+    int Win_Activate();
+
+    int Get_Tooltip_Delay() { return m_instData.m_tooltipDelay; }
+    void Set_tooltip_Delay(int delay) { m_instData.m_tooltipDelay = delay; }
+
+    void Win_Set_ID(int id) { m_instData.m_id = id; }
 
 protected:
     int m_status;
@@ -330,3 +369,9 @@ public:
     GameWindow *m_window;
     ModalWindow *m_next;
 };
+
+WindowMsgHandledType Game_Win_Default_Input(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2);
+WindowMsgHandledType Game_Win_Block_Input(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2);
+WindowMsgHandledType Game_Win_Default_System(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2);
+void Game_Win_Default_Tooltip(GameWindow *window, WinInstanceData *inst_data, unsigned int mouse);
+void Game_Win_Default_Draw(GameWindow *window, WinInstanceData *inst_data);

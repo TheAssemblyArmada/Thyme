@@ -404,6 +404,11 @@ bool FontCharsClass::Locate_Font_WinRegistry(const char *font_name, StringClass 
         // Found a match
         DWORD max_count = value_name_size < strlen(font_name) ? value_name_size : strlen(font_name);
         if (strnicmp(font_name, value_name, max_count) == 0) {
+            // Check if this font is bold and skip non-bold
+            if (m_isBold && strstr(value_name, "Bold") == nullptr) {
+                continue;
+            }
+
             font_file = reinterpret_cast<char *>(value_data);
             break;
         }
@@ -451,11 +456,12 @@ void FontCharsClass::Create_Freetype_Font(const char *font_name)
         captainslog_error("Failed to locate font: %s", font_name);
         font_name = "Arial";
         captainslog_info("Trying '%s' as a fallback", font_name);
-        if (Locate_Font(font_name, font_file_path)) {
+        if (!Locate_Font(font_name, font_file_path)) {
             captainslog_error("Failed to find fallback font: %s", font_name);
             return;
         }
     }
+
     FT_Error error = FT_New_Face(m_ftLibrary, font_file_path, 0, &m_ftFace);
     if (error != FT_Err_Ok) {
         LogFtError("Failed to load Freetype face from file", error);

@@ -22,9 +22,28 @@
 #include <algorithm>
 #include <captainslog.h>
 #include <cstring>
+#include <utility>
 
 #ifdef PLATFORM_WINDOWS
 #include <windows.h>
+#endif
+
+#ifdef BUILD_WITH_FREETYPE
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+static void LogFtError(const char *text, FT_Error error)
+{
+#ifdef FT_CONFIG_OPTION_ERROR_STRINGS
+    captainslog_error("%s: %s", text, FT_Error_String(error));
+#else
+    captainslog_error(text);
+#endif
+}
+#endif
+
+#ifdef BUILD_WITH_FONTCONFIG
+#include <fontconfig/fontconfig.h>
 #endif
 
 FontCharsClass::FontCharsClass() :
@@ -49,6 +68,24 @@ FontCharsClass::FontCharsClass() :
     m_isBold(false)
 {
     std::memset(m_asciiCharArray, 0, sizeof(m_asciiCharArray));
+    // Use Fontconfig to locate system fonts
+#ifdef BUILD_WITH_FONTCONFIG
+    if (FcInit() == FcTrue) {
+        m_fc = FcInitLoadConfigAndFonts();
+        if (m_fc == nullptr) {
+            captainslog_error("Failed to load Fontconfig config & fonts");
+        }
+    } else {
+        captainslog_error("Failed to init Fontconfig");
+    }
+#endif
+    // Use Freetype to loader & rasterize fonts
+#ifdef BUILD_WITH_FREETYPE
+    FT_Error error = FT_Init_FreeType(&m_ftLibrary);
+    if (error != FT_Err_Ok) {
+        LogFtError("Failed to init Freetype", error);
+    }
+#endif
 }
 
 FontCharsClass::~FontCharsClass()
@@ -58,8 +95,17 @@ FontCharsClass::~FontCharsClass()
         m_bufferList.Delete(0);
     }
 
+#ifdef BUILD_WITH_FREETYPE
+    Free_Freetype_Font();
+#endif
     Free_GDI_Font();
     Free_Character_Arrays();
+#ifdef BUILD_WITH_FONTCONFIG
+    if (m_fc != nullptr) {
+        FcConfigDestroy(m_fc);
+    }
+    FcFini();
+#endif
 }
 
 const FontCharsClass::CharDataStruct *FontCharsClass::Get_Char_Data(unichar_t ch)
@@ -79,7 +125,11 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Get_Char_Data(unichar_t ch
     }
 
     if (retval == nullptr) {
+#ifdef BUILD_WITH_FREETYPE
+        retval = font->Store_Freetype_Char(ch);
+#else
         retval = font->Store_GDI_Char(ch);
+#endif
     }
 
     captainslog_assert(retval->value == ch);
@@ -134,12 +184,81 @@ void FontCharsClass::Blit_Char(unichar_t ch, uint16_t *dest_ptr, int dest_stride
     }
 }
 
+#if defined BUILD_WITH_FREETYPE
+const FontCharsClass::CharDataStruct *FontCharsClass::Store_Freetype_Char(unichar_t ch)
+{
+    captainslog_assert(m_ftFace != nullptr);
+    FT_UInt glyph_index = FT_Get_Char_Index(m_ftFace, ch);
+    // load glyph image into the slot (erase previous one)
+    FT_Error error = FT_Load_Glyph(m_ftFace, glyph_index, FT_LOAD_DEFAULT);
+    if (error) {
+        captainslog_error("Failed to load character(%i) from font", ch);
+        return nullptr;
+    }
+    // convert to an anti-aliased bitmap
+    error = FT_Render_Glyph(m_ftFace->glyph, FT_RENDER_MODE_NORMAL);
+    if (error) {
+        captainslog_error("Failed to render character(%i) from font", ch);
+        return nullptr;
+    }
+    int x_pos = 0;
+    if (ch == 'W') {
+        x_pos = 1;
+    }
+    unsigned int char_width = m_ftFace->glyph->advance.x >> 6;
+    // Sometimes for some reason the bitmap is wider than the advancement.
+    // This does not work with this font rendering approach
+    if (char_width < m_ftFace->glyph->bitmap.width + m_ftFace->glyph->bitmap_left) {
+        char_width = m_ftFace->glyph->bitmap.width + m_ftFace->glyph->bitmap_left;
+    }
+    char_width += m_widthReduction + x_pos;
+    Update_Current_Buffer(char_width);
+    uint16_t *curr_buffer = m_bufferList[m_bufferList.Count() - 1]->buffer;
+    curr_buffer += m_currPixelOffset;
+    // We might need a memset
+
+    int x_offset = m_ftFace->glyph->bitmap_left;
+    int descent = m_charHeight - m_ascent;
+    int y_offset = (m_charHeight - m_ftFace->glyph->bitmap_top) - descent;
+
+    // Render the bitmap
+    for (unsigned int row = 0; row < m_ftFace->glyph->bitmap.rows; row++) {
+        int index = row * m_ftFace->glyph->bitmap.pitch;
+        int dst_index = (y_offset + row) * char_width;
+        for (unsigned int col = 0u; col < m_ftFace->glyph->bitmap.width; col++) {
+            uint8_t pixel_value = m_ftFace->glyph->bitmap.buffer[index + col];
+            uint16_t pixel_color = 0;
+
+            if (pixel_value != 0) {
+                pixel_color = 0x0FFF;
+            }
+
+            curr_buffer[dst_index + x_offset + col] = pixel_color | ((pixel_value >> 4) << 12);
+        }
+    }
+
+    CharDataStruct *char_data = new CharDataStruct;
+    char_data->value = ch;
+    char_data->width = (int16_t)char_width;
+    char_data->buffer = m_bufferList[m_bufferList.Count() - 1]->buffer + m_currPixelOffset;
+
+    if (ch < 256) {
+        m_asciiCharArray[ch] = char_data;
+    } else {
+        m_unicodeCharArray[ch - m_firstUnicodeChar] = char_data;
+    }
+
+    m_currPixelOffset += (char_width * m_charHeight);
+    return char_data;
+}
+#endif
+
 const FontCharsClass::CharDataStruct *FontCharsClass::Store_GDI_Char(unichar_t ch)
 {
     int width = m_pointSize * 2;
     int height = m_pointSize * 2;
     int x_pos = 0;
-#ifdef PLATFORM_WINDOWS
+#if defined PLATFORM_WINDOWS
     RECT rect = { 0, 0, width, height };
 
     if (ch == 'W') {
@@ -206,6 +325,170 @@ void FontCharsClass::Update_Current_Buffer(int char_width)
         m_currPixelOffset = 0;
     }
 }
+
+#if defined BUILD_WITH_FONTCONFIG
+bool FontCharsClass::Locate_Font_FontConfig(const char *font_name, StringClass &font_file_path)
+{
+    if (m_fc == nullptr) {
+        return false;
+    }
+
+    FcPattern *pattern = FcNameParse(reinterpret_cast<const FcChar8 *>(font_name));
+    FcConfigSubstitute(m_fc, pattern, FcMatchPattern);
+    FcDefaultSubstitute(pattern);
+
+    // Find the font
+    FcResult result;
+    FcPattern *font = FcFontMatch(m_fc, pattern, &result);
+    if (font != nullptr) {
+        FcChar8 *file = NULL;
+        if (FcPatternGetString(font, FC_FILE, 0, &file) == FcResultMatch) {
+            font_file_path = reinterpret_cast<char *>(file);
+        }
+        FcPatternDestroy(font);
+    }
+
+    FcPatternDestroy(pattern);
+    return result == FcResultMatch;
+}
+#endif
+
+#if defined PLATFORM_WINDOWS
+bool FontCharsClass::Locate_Font_WinRegistry(const char *font_name, StringClass &font_file_path)
+{
+    const char *font_registry_key = "Software\\Microsoft\\Windows NT\\CurrentVersion\\Fonts";
+    HKEY hkey;
+    LONG result;
+
+    // Get the windows root directory
+    char windows_dir[MAX_PATH];
+    if (GetWindowsDirectory(windows_dir, MAX_PATH) == 0) {
+        return false;
+    }
+
+    // Open Windows font registry key
+    result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, font_registry_key, 0, KEY_READ, &hkey);
+    if (result != ERROR_SUCCESS) {
+        return false;
+    }
+
+    DWORD max_value_name_size;
+    DWORD max_value_data_size;
+    result = RegQueryInfoKey(hkey, 0, 0, 0, 0, 0, 0, 0, &max_value_name_size, &max_value_data_size, 0, 0);
+    if (result != ERROR_SUCCESS) {
+        RegCloseKey(hkey);
+        return false;
+    }
+
+    DWORD value_index = 0;
+    char *value_name = new char[max_value_name_size];
+    LPBYTE value_data = new BYTE[max_value_data_size];
+    DWORD value_name_size;
+    DWORD value_data_size;
+    DWORD value_type;
+    StringClass font_file;
+
+    // Look for a matching font name
+    do {
+        value_data_size = max_value_data_size;
+        value_name_size = max_value_name_size;
+
+        result = RegEnumValue(hkey, value_index, value_name, &value_name_size, 0, &value_type, value_data, &value_data_size);
+
+        ++value_index;
+
+        if (result != ERROR_SUCCESS || value_type != REG_SZ) {
+            continue;
+        }
+
+        // Found a match
+        DWORD max_count = value_name_size < strlen(font_name) ? value_name_size : strlen(font_name);
+        if (strnicmp(font_name, value_name, max_count) == 0) {
+            // Check if this font is bold and skip non-bold
+            if (m_isBold && strstr(value_name, "Bold") == nullptr) {
+                continue;
+            }
+
+            font_file = reinterpret_cast<char *>(value_data);
+            break;
+        }
+    } while (result != ERROR_NO_MORE_ITEMS);
+
+    delete[] value_name;
+    delete[] value_data;
+
+    RegCloseKey(hkey);
+
+    if (font_file.Is_Empty()) {
+        return false;
+    }
+
+    font_file_path += windows_dir;
+    font_file_path += "\\Fonts\\";
+    font_file_path += font_file;
+    return true;
+}
+#endif
+
+bool FontCharsClass::Locate_Font(const char *font_name, StringClass &font_file_path)
+{
+#if defined BUILD_WITH_FONTCONFIG
+    return Locate_Font_FontConfig(font_name, font_file_path);
+#elif defined PLATFORM_WINDOWS
+    return Locate_Font_WinRegistry(font_name, font_file_path);
+#else
+    return false;
+#endif
+}
+
+#ifdef BUILD_WITH_FREETYPE
+void FontCharsClass::Create_Freetype_Font(const char *font_name)
+{
+    bool is_generals = false;
+
+    if (std::strcmp(font_name, "Generals") == 0) {
+        font_name = "Arial";
+        is_generals = true;
+    }
+
+    StringClass font_file_path;
+    if (!Locate_Font(font_name, font_file_path)) {
+        captainslog_error("Failed to locate font: %s", font_name);
+        font_name = "Arial";
+        captainslog_info("Trying '%s' as a fallback", font_name);
+        if (!Locate_Font(font_name, font_file_path)) {
+            captainslog_error("Failed to find fallback font: %s", font_name);
+            return;
+        }
+    }
+
+    FT_Error error = FT_New_Face(m_ftLibrary, font_file_path, 0, &m_ftFace);
+    if (error != FT_Err_Ok) {
+        LogFtError("Failed to load Freetype face from file", error);
+        return;
+    }
+
+    // Original calculates with 96 DPI. Do the same
+    int font_height = FT_MulDiv(m_pointSize, 96, 72);
+    m_widthReduction = std::clamp(font_height / 8, 0, 4);
+    error = FT_Set_Pixel_Sizes(m_ftFace, 0, font_height);
+    if (error != FT_Err_Ok) {
+        LogFtError("Failed to set character size", error);
+        return;
+    }
+
+    // Use the same metric calculation as Wine does in their GDI emulation layer
+    // See https://github.com/NVIDIA/winex_lgpl/blob/master/winex/dlls/gdi/freetype.c#L3027
+    if (FT_IS_SCALABLE(m_ftFace)) {
+        m_ascent = FT_MulFix(m_ftFace->ascender, m_ftFace->size->metrics.y_scale) >> 6;
+        int descent = -FT_MulFix(m_ftFace->descender, m_ftFace->size->metrics.y_scale) >> 6;
+        m_charHeight = m_ascent + descent;
+        m_overhang = 0;
+    } else {
+        captainslog_error("Require a scalable font. Font=%s", font_name);
+    }
+}
+#endif
 
 void FontCharsClass::Create_GDI_Font(const char *font_name)
 {
@@ -281,6 +564,18 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
 #endif
 }
 
+#ifdef BUILD_WITH_FREETYPE
+void FontCharsClass::Free_Freetype_Font()
+{
+    if (m_ftFace != nullptr) {
+        FT_Done_Face(m_ftFace);
+    }
+    if (m_ftLibrary != nullptr) {
+        FT_Done_FreeType(m_ftLibrary);
+    }
+}
+#endif
+
 void FontCharsClass::Free_GDI_Font()
 {
 #ifdef PLATFORM_WINDOWS
@@ -305,13 +600,14 @@ void FontCharsClass::Free_GDI_Font()
 
 void FontCharsClass::Initialize_GDI_Font(const char *font_name, int point_size, bool is_bold)
 {
-#ifdef PLATFORM_WINDOWS
     m_name.Format("%s%d", font_name, point_size);
     m_gdiFontName = font_name;
     m_pointSize = point_size;
     m_isBold = is_bold;
-    Create_GDI_Font(font_name);
+#ifdef BUILD_WITH_FREETYPE
+    Create_Freetype_Font(font_name);
 #endif
+    Create_GDI_Font(font_name);
 }
 
 bool FontCharsClass::Is_Font(const char *font_name, int point_size, bool is_bold)

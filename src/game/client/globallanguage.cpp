@@ -19,6 +19,10 @@
 #include <algorithm>
 #include <cstddef>
 
+#ifdef PLATFORM_WINDOWS
+#include <windows.h>
+#endif
+
 #ifndef GAME_DLL
 GlobalLanguage *g_theGlobalLanguage;
 #endif
@@ -107,6 +111,14 @@ void GlobalLanguage::Init()
     // instead if the file existed. Thyme doesn't support running on Win9x so
     // we don't implement it. Only chinese language known to use it.
     ini.Load(file, INI_LOAD_OVERWRITE, nullptr);
+
+#ifdef PLATFORM_WINDOWS
+    // Original checked if it was running on a windows version, that supports this
+    // Also use "AddFontResourceEx", to not permanently install the font
+    for (auto &font : m_localFontFiles) {
+        AddFontResourceEx(font.Str(), FR_PRIVATE, 0);
+    }
+#endif
 }
 
 int GlobalLanguage::Adjust_Font_Size(int size)

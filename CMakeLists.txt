@@ -67,6 +67,8 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     set(DEFAULT_FFMPEG OFF)
     set(DEFAULT_SDL2 OFF)
     set(DEFAULT_ALSOFT OFF)
+    set(DEFAULT_FREETYPE OFF)
+    set(DEFAULT_FONTCONFIG OFF)
 else()
     set(DEFAULT_STANDALONE ON)
     include(CheckIncludeFileCXX)
@@ -79,6 +81,10 @@ else()
     set(DEFAULT_FFMPEG ON)
     set(DEFAULT_SDL2 ON)
     set(DEFAULT_ALSOFT ON)
+    set(DEFAULT_FREETYPE ON)
+    if(NOT WIN32)
+        set(DEFAULT_FONTCONFIG ON)
+    endif()
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -96,6 +102,8 @@ option(USE_FFMPEG "Use FFMPEG for codec handling." ${DEFAULT_FFMPEG})
 option(USE_ZLIB "Use zlib to support deflate compression." ON)
 option(USE_SDL2 "Use SDL2 for crossplatform window handling." ${DEFAULT_SDL2})
 option(USE_ALSOFT "Use OpenAL soft audio library" ${DEFAULT_ALSOFT})
+option(USE_FREETYPE "Use FreeType font rasterization" ${DEFAULT_FREETYPE})
+option(USE_FONTCONFIG "Use FontConfig for finding font files" ${DEFAULT_FONTCONFIG})
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
@@ -309,6 +317,28 @@ if(USE_ALSOFT)
     )
 
     FetchContent_MakeAvailable(ALSoft)
+endif()
+
+if(USE_FREETYPE)
+    find_package(Freetype)
+
+    if(NOT FREETYPE_FOUND AND NOT TARGET Freetype::Freetype)
+        include(FetchContent)
+
+        set(SKIP_INSTALL_ALL ON CACHE INTERNAL "Turn off install all")
+        FetchContent_Declare(
+            Freetype
+            GIT_REPOSITORY https://github.com/freetype/freetype.git
+            GIT_TAG        VER-2-13-2
+        )
+
+        FetchContent_MakeAvailable(Freetype)
+        add_library(Freetype::Freetype ALIAS freetype)
+    endif()
+endif()
+
+if(USE_FONTCONFIG)
+    find_package(Fontconfig REQUIRED)
 endif()
 
 if(USE_ZLIB)

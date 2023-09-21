@@ -38,6 +38,18 @@ struct FontCharsBuffer : public W3DMPO
     IMPLEMENT_W3D_POOL(FontCharsBuffer)
 };
 
+#ifdef BUILD_WITH_FREETYPE
+struct FT_LibraryRec_;
+typedef struct FT_LibraryRec_ *FT_Library;
+struct FT_FaceRec_;
+typedef struct FT_FaceRec_ *FT_Face;
+#endif
+
+#ifdef BUILD_WITH_FONTCONFIG
+struct _FcConfig;
+typedef struct _FcConfig FcConfig;
+#endif
+
 class FontCharsClass : public W3DMPO, public RefCountClass
 {
     friend class W3DFontLibrary;
@@ -71,9 +83,23 @@ public:
 #endif
 
 private:
+    bool Locate_Font(const char *font_name, StringClass &font_file_path);
+#ifdef BUILD_WITH_FONTCONFIG
+    bool Locate_Font_FontConfig(const char *font_name, StringClass &font_file_path);
+#endif
+#ifdef PLATFORM_WINDOWS
+    bool Locate_Font_WinRegistry(const char *font_name, StringClass &font_file_path);
+#endif
+    // GDI implementation
     void Create_GDI_Font(const char *font_name);
     void Free_GDI_Font();
     const CharDataStruct *Store_GDI_Char(unichar_t ch);
+    // Freetype implementation
+#ifdef BUILD_WITH_FREETYPE
+    void Create_Freetype_Font(const char *font_name);
+    void Free_Freetype_Font();
+    const CharDataStruct *Store_Freetype_Char(unichar_t ch);
+#endif
     void Update_Current_Buffer(int char_width);
     const CharDataStruct *Get_Char_Data(unichar_t ch);
     void Grow_Unicode_Array(unichar_t ch);
@@ -97,6 +123,13 @@ private:
     HFONT m_gdiFont;
     uint8_t *m_gdiBitmapBits;
     HDC m_memDC;
+#endif
+#ifdef BUILD_WITH_FREETYPE
+    FT_Library m_ftLibrary = nullptr;
+    FT_Face m_ftFace = nullptr;
+#endif
+#ifdef BUILD_WITH_FONTCONFIG
+    FcConfig *m_fc = nullptr;
 #endif
     FontCharsClass::CharDataStruct *m_asciiCharArray[256];
     FontCharsClass::CharDataStruct **m_unicodeCharArray;

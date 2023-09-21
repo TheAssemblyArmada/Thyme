@@ -20,8 +20,6 @@
 #include <ffmpegaudiofilecache.h>
 #endif
 
-extern LocalFileSystem *g_theLocalFileSystem;
-
 #ifdef BUILD_WITH_FFMPEG
 TEST(audio, ffmpegaudiofilecache)
 {

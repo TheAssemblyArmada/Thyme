@@ -1,3 +1,5 @@
+add_subdirectory(w3d)
+
 # Build and link the DLL.
 set(GAMEENGINE_INCLUDES
     editor
@@ -56,10 +58,6 @@ set(GAMEENGINE_INCLUDES
     platform/w3dengine/common/system
     platform/w3dengine/common/thing
     platform/w3dengine/logic
-    w3d/lib
-    w3d/math
-    w3d/renderer
-    w3d/saveload
 )
 
 set(HOOKER_SRC
@@ -413,136 +411,6 @@ set(GAMEENGINE_SRC
     platform/w3dengine/common/win32localfilesystem.cpp
     platform/w3dengine/logic/w3dghostobject.cpp
     platform/w3dengine/logic/w3dterrainlogic.cpp
-    w3d/lib/buff.cpp
-    w3d/lib/bufffile.cpp
-    w3d/lib/chunkio.cpp
-    w3d/lib/cpudetect.cpp
-    w3d/lib/crcengine.cpp
-    w3d/lib/critsection.cpp
-    w3d/lib/ffactory.cpp
-    w3d/lib/filestraw.cpp
-    w3d/lib/gcd_lcm.cpp
-    w3d/lib/hash.cpp
-    w3d/lib/iniclass.cpp
-    w3d/lib/mpu.cpp
-    w3d/lib/multilist.cpp
-    w3d/lib/mutex.cpp
-    w3d/lib/nstrdup.cpp
-    w3d/lib/random.cpp
-    w3d/lib/rawfile.cpp
-    w3d/lib/rcfile.cpp
-    w3d/lib/readline.cpp
-    w3d/lib/realcrc.cpp
-    w3d/lib/refcount.cpp
-    w3d/lib/straw.cpp
-    w3d/lib/systimer.cpp
-    w3d/lib/targa.cpp
-    w3d/lib/thread.cpp
-    w3d/lib/threadtrack.cpp
-    w3d/lib/wwfile.cpp
-    w3d/lib/wwstring.cpp
-    w3d/lib/xstraw.cpp
-    w3d/math/aabox.cpp
-    w3d/math/colmath.cpp
-    w3d/math/colmathaabox.cpp
-    w3d/math/colmathaabtri.cpp
-    w3d/math/colmathaaplane.cpp
-    w3d/math/colmathfrustum.cpp
-    w3d/math/colmathline.cpp
-    w3d/math/colmathobbobb.cpp
-    w3d/math/colmathobbtri.cpp
-    w3d/math/colmathplane.cpp
-    w3d/math/cullsys.cpp
-    w3d/math/frustum.cpp
-    w3d/math/gamemath.cpp
-    w3d/math/lineseg.cpp
-    w3d/math/matrix3.cpp
-    w3d/math/matrix3d.cpp
-    w3d/math/matrix4.cpp
-    w3d/math/quat.cpp
-    w3d/math/tri.cpp
-    w3d/math/v3_rnd.cpp
-    w3d/math/vector4.cpp
-    w3d/math/vp.cpp
-    w3d/renderer/aabtree.cpp
-    w3d/renderer/aabtreebuilder.cpp
-    w3d/renderer/animobj.cpp
-    w3d/renderer/assetmgr.cpp
-    w3d/renderer/bitmaphandler.cpp
-    w3d/renderer/bmp2d.cpp
-    w3d/renderer/boxrobj.cpp
-    w3d/renderer/bwrender.cpp
-    w3d/renderer/camera.cpp
-    w3d/renderer/colorspace.cpp
-    w3d/renderer/coltest.cpp
-    w3d/renderer/composite.cpp
-    w3d/renderer/dazzle.cpp
-    w3d/renderer/ddsfile.cpp
-    w3d/renderer/dx8caps.cpp
-    w3d/renderer/dx8fvf.cpp
-    w3d/renderer/dx8indexbuffer.cpp
-    w3d/renderer/dx8polygonrenderer.cpp
-    w3d/renderer/dx8renderer.cpp
-    w3d/renderer/dx8texman.cpp
-    w3d/renderer/dx8vertexbuffer.cpp
-    w3d/renderer/dx8wrapper.cpp
-    w3d/renderer/dynamesh.cpp
-    w3d/renderer/hanimmgr.cpp
-    w3d/renderer/hcanim.cpp
-    w3d/renderer/hlod.cpp
-    w3d/renderer/hrawanim.cpp
-    w3d/renderer/htree.cpp
-    w3d/renderer/htreemgr.cpp
-    w3d/renderer/intersec.cpp
-    w3d/renderer/light.cpp
-    w3d/renderer/lightenv.cpp
-    w3d/renderer/line3d.cpp
-    w3d/renderer/linegrp.cpp
-    w3d/renderer/loaders.cpp
-    w3d/renderer/mapper.cpp
-    w3d/renderer/matinfo.cpp
-    w3d/renderer/matpass.cpp
-    w3d/renderer/matrixmapper.cpp
-    w3d/renderer/mesh.cpp
-    w3d/renderer/meshgeometry.cpp
-    w3d/renderer/meshmatdesc.cpp
-    w3d/renderer/meshmdl.cpp
-    w3d/renderer/missingtexture.cpp
-    w3d/renderer/motchan.cpp
-    w3d/renderer/nullrobj.cpp
-    w3d/renderer/part_buf.cpp
-    w3d/renderer/part_emt.cpp
-    w3d/renderer/part_ldr.cpp
-    w3d/renderer/pivot.cpp
-    w3d/renderer/pointgr.cpp
-    w3d/renderer/pot.cpp
-    w3d/renderer/projector.cpp
-    w3d/renderer/render2d.cpp
-    w3d/renderer/render2dsentence.cpp
-    w3d/renderer/rendobj.cpp
-    w3d/renderer/rinfo.cpp
-    w3d/renderer/scene.cpp
-    w3d/renderer/segline.cpp
-    w3d/renderer/seglinerenderer.cpp
-    w3d/renderer/shader.cpp
-    w3d/renderer/sortingrenderer.cpp
-    w3d/renderer/streak.cpp
-    w3d/renderer/streakrender.cpp
-    w3d/renderer/surfaceclass.cpp
-    w3d/renderer/synctextureloadtasklist.cpp
-    w3d/renderer/texproject.cpp
-    w3d/renderer/texture.cpp
-    w3d/renderer/texturebase.cpp
-    w3d/renderer/textureloader.cpp
-    w3d/renderer/textureloadtask.cpp
-    w3d/renderer/textureloadtasklist.cpp
-    w3d/renderer/thumbnail.cpp
-    w3d/renderer/thumbnailmanager.cpp
-    w3d/renderer/vertmaterial.cpp
-    w3d/renderer/w3d.cpp
-    w3d/renderer/w3d_util.cpp
-    w3d/renderer/w3dexclusionlist.cpp
-    w3d/renderer/w3dformat.cpp
 )
 
 if(USE_STDFS)
@@ -630,7 +498,7 @@ if(CMAKE_CONFIGURATION_TYPES)
 endif()
 
 # Gather needed link libraries and compile defintions
-list(APPEND GAME_LINK_LIBRARIES base captnlog)
+list(APPEND GAME_LINK_LIBRARIES base captnlog w3d_lib w3d_math w3d_renderer)
 
 if(USE_SDL2)
     if(TARGET SDL2::SDL2)
@@ -660,16 +528,6 @@ if(USE_ALSOFT)
         platform/audio/alaudiomanager.cpp
         platform/audio/alaudiostream.cpp
     )
-endif()
-
-if(USE_FREETYPE)
-    list(APPEND GAME_LINK_LIBRARIES Freetype::Freetype)
-    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_FREETYPE)
-endif()
-
-if(USE_FONTCONFIG)
-    list(APPEND GAME_LINK_LIBRARIES Fontconfig::Fontconfig)
-    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_FONTCONFIG)
 endif()
 
 if(USE_GAMEMATH)
@@ -712,12 +570,19 @@ if(DINPUT8_FOUND)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_DINPUT)
 endif()
 
+if(BUILD_DLL)
+    target_compile_definitions(base PUBLIC "-DALLOW_HOOKING=friend void Setup_Hooks()\; " -DGAME_DLL)
+    target_include_directories(base PUBLIC hooker)
+else()
+    target_compile_definitions(base PUBLIC "ALLOW_HOOKING=")
+endif()
+
 # Static library for standalone builds and linking tools.
 if(STANDALONE OR BUILD_TOOLS)
     add_library(thyme_lib STATIC ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS} game/crashhandler.cpp)
     target_include_directories(thyme_lib PUBLIC ${GAMEENGINE_INCLUDES})
     target_link_libraries(thyme_lib PUBLIC ${GAME_LINK_LIBRARIES})
-    target_compile_definitions(thyme_lib PUBLIC ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=")
+    target_compile_definitions(thyme_lib PUBLIC ${GAME_COMPILE_OPTIONS})
     target_compile_definitions(thyme_lib PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG> $<$<CONFIG:DEBUG>:GAME_DEBUG_STRUCTS>)
 
     if(USE_CRASHPAD)
@@ -740,10 +605,10 @@ if(BUILD_DLL)
     include(TargetExports)
     add_library(thyme_dll SHARED ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme_dll BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/deps/stlport)
-    target_include_directories(thyme_dll PRIVATE hooker ${GAMEENGINE_INCLUDES})
-    target_compile_definitions(thyme_dll PRIVATE -DGAME_DLL -DTHYME_USE_STLPORT -D_USE_32BIT_TIME_T)
+    target_include_directories(thyme_dll PUBLIC hooker ${GAMEENGINE_INCLUDES})
+    target_compile_definitions(thyme_dll PRIVATE -DTHYME_USE_STLPORT)
     target_link_libraries(thyme_dll ${GAME_LINK_LIBRARIES} crash_handler)
-    target_compile_definitions(thyme_dll PRIVATE ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=friend void Setup_Hooks()\;")
+    target_compile_definitions(thyme_dll PRIVATE ${GAME_COMPILE_OPTIONS})
     target_compile_definitions(thyme_dll PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
     set_target_properties(thyme_dll PROPERTIES OUTPUT_NAME thyme PDB_NAME thymedll)
     target_exports(thyme_dll SYMBOLS 
@@ -764,9 +629,8 @@ if(BUILD_EDITOR)
         add_library(thymeedit_dll SHARED ${HOOKER_SRC} ${HOOKER_WB_SRC} ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
         target_include_directories(thymeedit_dll BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/deps/stlport)
         target_include_directories(thymeedit_dll PRIVATE hooker ${GAMEENGINE_INCLUDES})
-        target_compile_definitions(thymeedit_dll PRIVATE -DGAME_DLL -DTHYME_USE_STLPORT -DGAME_DEBUG_STRUCTS -DBUILD_EDITOR -D_USE_32BIT_TIME_T)
+        target_compile_definitions(thymeedit_dll PRIVATE -DTHYME_USE_STLPORT -DGAME_DEBUG_STRUCTS -DBUILD_EDITOR -D_USE_32BIT_TIME_T)
         target_link_libraries(thymeedit_dll ${GAME_LINK_LIBRARIES} crash_handler)
-        target_compile_definitions(thymeedit_dll PRIVATE ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=friend void Setup_Hooks()\;")
         target_compile_definitions(thymeedit_dll PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
         set_target_properties(thymeedit_dll PROPERTIES OUTPUT_NAME thymeedit PDB_NAME thymeeditdll)
         target_exports(thymeedit_dll SYMBOLS 

@@ -22,8 +22,6 @@
 #include <chrono>
 #include <thread>
 
-extern LocalFileSystem *g_theLocalFileSystem;
-
 class TestAudioEventInfo : public AudioEventInfo
 {
 public:

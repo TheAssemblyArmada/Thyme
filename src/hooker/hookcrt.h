@@ -28,14 +28,14 @@
 #ifdef malloc
 #undef malloc
 #endif
-#define malloc crt_malloc
+#define malloc(s) crt_malloc(s)
 
 #ifdef free
 #undef free
 #endif
-#define free crt_free
+#define free(a) crt_free(a)
 
 #ifdef strtok
 #undef strtok
 #endif
-#define strtok crt_strtok
+#define strtok(s, d) crt_strtok(s, d)

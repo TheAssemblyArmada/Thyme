@@ -42,5 +42,5 @@ int Darken_Color(int color, int percent)
     unsigned char blue;
     unsigned char alpha;
     Get_Color_Components(color, &red, &green, &blue, &alpha);
-    return Make_Color(red - percent * red / 100, green - percent * green / 100, blue - percent * blue / 100, alpha);
+    return Make_Color(red - (percent * red / 100), green - (percent * green / 100), blue - (percent * blue / 100), alpha);
 }

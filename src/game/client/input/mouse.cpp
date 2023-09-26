@@ -15,6 +15,7 @@
  */
 #include "mouse.h"
 #include "colorspace.h"
+#include "display.h"
 #include "displaystringmanager.h"
 #include "gametext.h"
 #include "globaldata.h"
@@ -22,10 +23,9 @@
 #include "keyboard.h"
 #include "messagestream.h"
 #include "rtsutils.h"
+#include "scriptengine.h"
 #include <algorithm>
 #include <cstddef>
-
-#include "display.h"
 
 using rts::Get_Time;
 
@@ -108,7 +108,7 @@ Mouse::Mouse() :
     m_tooltipFillTime(50),
     m_tooltipDelayTime(50),
     m_tooltipWidth(15.0f),
-    unkFloat(0.0f),
+    m_tooltipScale(0.0f),
     m_tooltipColorText{ 220, 220, 220, 255 },
     m_tooltipColorHighlight{ 255, 255, 0, 255 },
     m_tooltipColorShadow{ 0, 0, 0, 255 },
@@ -771,5 +771,151 @@ void Mouse::Draw_Cursor_Text() const
         int height;
         m_cursorTextDisplayString->Get_Size(&width, &height);
         m_cursorTextDisplayString->Draw(m_currMouse.pos.x - width / 2, m_currMouse.pos.y - height / 2, tcolor, dcolor);
+    }
+}
+
+void Mouse::Set_Cursor_Tooltip(Utf16String tooltip, int delay, const RGBColor *color, float scale)
+{
+    m_isTooltipEmpty = tooltip.Is_Empty();
+    m_tooltipDelay = delay;
+    bool scale_changed = false;
+
+    if (!tooltip.Is_Empty()) {
+        if (scale != m_tooltipScale) {
+            scale_changed = true;
+            unsigned int length = (g_theDisplay->Get_Width() * m_tooltipWidth * scale);
+
+            if (length < 10) {
+                length = 120;
+            } else if (length > g_theDisplay->Get_Width()) {
+                length = g_theDisplay->Get_Width();
+            }
+
+            m_tooltipDisplayString->Set_Word_Wrap(length);
+            m_tooltipScale = scale;
+        }
+    }
+
+    if (scale_changed || (!m_isTooltipEmpty && tooltip.Compare(m_tooltipDisplayString->Get_Text()))) {
+        m_tooltipDisplayString->Set_Text(tooltip);
+    }
+
+    if (color != nullptr) {
+        if (m_useTooltipAltTextColor) {
+            if (m_adjustTooltipAltColor) {
+                m_tooltipColorTextCopy.red = GameMath::Fast_To_Int_Truncate((color->red + 1.0f) * 255.0f / 2.0f);
+                m_tooltipColorTextCopy.green = GameMath::Fast_To_Int_Truncate((color->green + 1.0f) * 255.0f / 2.0f);
+                m_tooltipColorTextCopy.blue = GameMath::Fast_To_Int_Truncate((color->blue + 1.0f) * 255.0f / 2.0f);
+            } else {
+                m_tooltipColorTextCopy.red = GameMath::Fast_To_Int_Truncate(color->red * 255.0f);
+                m_tooltipColorTextCopy.green = GameMath::Fast_To_Int_Truncate(color->green * 255.0f);
+                m_tooltipColorTextCopy.blue = GameMath::Fast_To_Int_Truncate(color->blue * 255.0f);
+            }
+
+            m_tooltipColorTextCopy.alpha = m_tooltipColorText.alpha;
+        }
+
+        if (m_useTooltipAltBackColor) {
+            if (m_adjustTooltipAltColor) {
+                m_tooltipColorBackgroundCopy.red = GameMath::Fast_To_Int_Truncate(color->red * 255.0f * 0.5f);
+                m_tooltipColorBackgroundCopy.green = GameMath::Fast_To_Int_Truncate(color->green * 255.0f * 0.5f);
+                m_tooltipColorBackgroundCopy.blue = GameMath::Fast_To_Int_Truncate(color->blue * 255.0f * 0.5f);
+            } else {
+                m_tooltipColorBackgroundCopy.red = GameMath::Fast_To_Int_Truncate(color->red * 255.0f);
+                m_tooltipColorBackgroundCopy.green = GameMath::Fast_To_Int_Truncate(color->green * 255.0f);
+                m_tooltipColorBackgroundCopy.blue = GameMath::Fast_To_Int_Truncate(color->blue * 255.0f);
+            }
+
+            m_tooltipColorBackgroundCopy.alpha = m_tooltipColorBackground.alpha;
+        }
+    } else {
+        m_tooltipColorTextCopy = m_tooltipColorText;
+        m_tooltipColorBackgroundCopy = m_tooltipColorBackground;
+    }
+}
+
+void Mouse::Draw_Tooltip()
+{
+    if (g_theScriptEngine->Get_Fade() == ScriptEngine::FADE_NONE && m_displayTooltip && g_theDisplay != nullptr
+        && m_tooltipDisplayString != nullptr && m_tooltipDisplayString->Get_Text_Length() > 0 && !m_isTooltipEmpty) {
+        int string_w;
+        int string_h;
+        m_tooltipDisplayString->Get_Size(&string_w, &string_h);
+        int mouse_x = m_currMouse.pos.x + 20;
+        int mouse_y = m_currMouse.pos.y;
+
+        if (mouse_x + string_w + 4 > m_maxX) {
+            mouse_x -= string_w + 20;
+        }
+
+        if (mouse_y + string_h + 4 > m_maxY) {
+            mouse_y -= string_h;
+        }
+
+        int width;
+
+        if (m_tooltipAnimateBackground) {
+            width = GameMath::Min(string_w, m_highlightPos);
+        } else {
+            width = string_w;
+        }
+
+        g_theDisplay->Draw_Fill_Rect(mouse_x,
+            mouse_y,
+            width + 2,
+            string_h + 2,
+            Make_Color(m_tooltipColorBackgroundCopy.red,
+                m_tooltipColorBackgroundCopy.green,
+                m_tooltipColorBackgroundCopy.blue,
+                m_tooltipColorBackgroundCopy.alpha));
+
+        g_theDisplay->Draw_Open_Rect(mouse_x,
+            mouse_y,
+            width + 2,
+            string_h + 2,
+            1.0f,
+            Make_Color(m_tooltipColorBorder.red,
+                m_tooltipColorBorder.green,
+                m_tooltipColorBorder.blue,
+                m_tooltipColorBorder.alpha));
+
+        IRegion2D clip_region;
+        clip_region.lo.x = mouse_x + 2;
+        clip_region.lo.y = mouse_y + 1;
+        clip_region.hi.x = mouse_x + m_highlightPos + 2;
+        clip_region.hi.y = mouse_y + string_h + 1;
+        m_tooltipDisplayString->Set_Clip_Region(&clip_region);
+
+        m_tooltipDisplayString->Draw(mouse_x + 2,
+            mouse_y + 1,
+            Make_Color(m_tooltipColorTextCopy.red,
+                m_tooltipColorTextCopy.green,
+                m_tooltipColorTextCopy.blue,
+                m_tooltipColorTextCopy.alpha),
+            Make_Color(m_tooltipColorShadow.red,
+                m_tooltipColorShadow.green,
+                m_tooltipColorShadow.blue,
+                m_tooltipColorShadow.alpha));
+
+        clip_region.lo.x = mouse_x + m_highlightPos - 13;
+        clip_region.lo.y = mouse_y + 1;
+        clip_region.hi.x = mouse_x + m_highlightPos + 2;
+        clip_region.hi.y = mouse_y + string_h + 1;
+        m_tooltipDisplayString->Set_Clip_Region(&clip_region);
+
+        m_tooltipDisplayString->Draw(mouse_x + 2,
+            mouse_y + 1,
+            Make_Color(m_tooltipColorHighlight.red,
+                m_tooltipColorHighlight.green,
+                m_tooltipColorHighlight.blue,
+                m_tooltipColorHighlight.alpha),
+            Make_Color(m_tooltipColorShadow.red,
+                m_tooltipColorShadow.green,
+                m_tooltipColorShadow.blue,
+                m_tooltipColorShadow.alpha));
+
+        if (m_highlightPos < string_w + 15) {
+            m_highlightPos = (rts::Get_Time() - m_highlightUpdateStart) * string_w / m_tooltipFillTime;
+        }
     }
 }

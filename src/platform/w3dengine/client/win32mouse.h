@@ -35,10 +35,12 @@ public:
     virtual ~Win32Mouse() { g_theWin32Mouse = nullptr; };
 
     virtual void Init() override;
+    virtual void Reset() override { Mouse::Reset(); }
+    virtual void Update() override { Mouse::Update(); }
     virtual void Init_Cursor_Resources() override;
     virtual void Set_Cursor(MouseCursor cursor) override;
-    virtual void Capture() override{};
-    virtual void Release_Capture() override{};
+    virtual void Capture() override {}
+    virtual void Release_Capture() override {}
     virtual void Set_Visibility(bool visibility) override;
     virtual uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) override;
 

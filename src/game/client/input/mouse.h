@@ -173,6 +173,8 @@ public:
     void Check_For_Drag();
     void Reset_Tooltip_Delay();
     void Draw_Cursor_Text() const;
+    void Set_Cursor_Tooltip(Utf16String tooltip, int delay, const RGBColor *color, float scale);
+    void Draw_Tooltip();
 
 protected:
     void Update_Mouse_Data();
@@ -191,7 +193,7 @@ protected:
     int m_tooltipFillTime;
     int m_tooltipDelayTime;
     float m_tooltipWidth;
-    float unkFloat;
+    float m_tooltipScale;
     RGBAColorInt m_tooltipColorText;
     RGBAColorInt m_tooltipColorHighlight;
     RGBAColorInt m_tooltipColorShadow;

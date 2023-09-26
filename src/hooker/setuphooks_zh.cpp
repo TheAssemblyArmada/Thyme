@@ -779,6 +779,7 @@ void Setup_Hooks()
     Hook_Method(0x00403FC0, static_cast<void (Mouse::*)(const MouseCursor)>(&Mouse::Set_Mouse_Text));
     Hook_Method(0x00403A80,
         static_cast<void (Mouse::*)(const Utf16String, const RGBAColorInt *, const RGBAColorInt *)>(&Mouse::Set_Mouse_Text));
+    Hook_Any(0x004035C0, Mouse::Set_Cursor_Tooltip);
 
     // geometry.h
     Hook_Any(0x005CFAF0, GeometryInfo::Xfer_Snapshot);

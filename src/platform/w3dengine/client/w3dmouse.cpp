@@ -17,12 +17,16 @@
 #include "critsection.h"
 #include "dx8wrapper.h"
 #include "hanim.h"
+#include "image.h"
+#include "ingameui.h"
+#include "main.h"
 #include "rtsutils.h"
 #include "scene.h"
 #include "texture.h"
 #include "w3dassetmanager.h"
 #include "w3ddisplay.h"
 #include "w3dscene.h"
+#include <cmath>
 #include <cstdio>
 #ifdef PLATFORM_WINDOWS
 #include <winuser.h>
@@ -36,7 +40,7 @@ bool W3DMouse::s_mouseThreadIsDrawing;
 HAnimClass *W3DMouse::s_W3DMouseAssets1[CURSOR_COUNT];
 RenderObjClass *W3DMouse::s_W3DMouseAssets2[CURSOR_COUNT];
 TextureBaseClass *W3DMouse::s_D3DMouseAssets[CURSOR_COUNT][MAX_FRAMES]; // TODO unsure on type
-uint32_t W3DMouse::s_PolyMouseAssets[CURSOR_COUNT];
+Image *W3DMouse::s_PolyMouseAssets[CURSOR_COUNT];
 CriticalSectionClass g_mouseCriticalSection;
 #endif
 
@@ -56,9 +60,9 @@ void MouseThreadClass::Thread_Function()
 W3DMouse::W3DMouse() :
     m_currentD3DCursor(MouseCursor::CURSOR_NONE),
     m_D3DCursorSurfaceCount(0),
-    unk4(0),
-    unk5(0),
-    unk7(0.001f),
+    m_unk4(0),
+    m_unk5(0),
+    m_unk7(0.001f),
     m_setWinCursor(false),
     m_camera(nullptr),
     m_currentW3DCursor(MouseCursor::CURSOR_NONE),
@@ -97,19 +101,133 @@ void W3DMouse::Init()
     s_mouseThread.Set_Priority(0);
 }
 
+void Pixel_Screen_To_W3D_Logical_Screen(
+    int screen_x, int screen_y, float *log_x, float *log_y, int screen_width, int screen_height)
+{
+    *log_x = ((float)screen_x + (float)screen_x) / (float)screen_width - 1.0f;
+    *log_y = -(((float)screen_y + (float)screen_y) / (float)screen_height - 1.0f);
+}
+
 // 0x007AD940
 void W3DMouse::Draw()
 {
-    // TODO: Requires theDisplay, InGameUI
-#ifdef GAME_DLL
-    Call_Method<void, W3DMouse>(0x007AD940, this);
+#ifdef BUILD_WITH_D3D8
+    CriticalSectionClass::LockClass lock(g_mouseCriticalSection);
+    m_setWinCursor = true;
+    Set_Cursor(m_currentCursor);
+
+    if (m_currentRedrawMode == RM_DX8 && m_currentD3DCursor != MouseCursor::CURSOR_NONE) {
+        if (DX8Wrapper::Get_D3D_Device8() != nullptr) {
+            DX8Wrapper::Get_D3D_Device8()->ShowCursor(true);
+
+            if (g_theDisplay != nullptr && g_theDisplay->Get_Windowed() != 0) {
+                POINT point;
+                GetCursorPos(&point);
+                ScreenToClient(g_applicationHWnd, &point);
+                DX8Wrapper::Get_D3D_Device8()->SetCursorPosition(point.x, point.y, D3DCURSOR_IMMEDIATE_UPDATE);
+            }
+
+            if (m_D3DCursorSurfaceCount > 1) {
+                unsigned int time = rts::Get_Time();
+                m_unk4 = fmod((time - m_D3DCursorLastDrawn) * m_unk7 + m_unk4, m_D3DCursorSurfaceCount);
+                m_D3DCursorLastDrawn = time;
+
+                if (m_unk4 != m_unk5) {
+                    m_unk5 = m_unk4;
+                    DX8Wrapper::Get_D3D_Device8()->SetCursorProperties(
+                        m_hotSpotX, m_hotSpotY, m_D3DCursorSurfaces[m_unk5]->Peek_D3D_Surface());
+                }
+            }
+        }
+    } else if (m_currentRedrawMode == RM_POLYGON) {
+        Image *cursor = s_PolyMouseAssets[m_currentPolyCursor];
+
+        if (cursor != nullptr) {
+            g_theDisplay->Draw_Image(cursor,
+                m_currMouse.pos.x - m_hotSpotX,
+                m_currMouse.pos.y - m_hotSpotY,
+                m_currMouse.pos.x - m_hotSpotX + cursor->Get_Image_Width(),
+                m_currMouse.pos.y - m_hotSpotY + cursor->Get_Image_Height(),
+                0xFFFFFFFF,
+                Display::DRAWIMAGE_ADDITIVE);
+        }
+    } else if (m_currentRedrawMode == RM_W3D && W3DDisplay::s_3DInterfaceScene != nullptr && m_camera != nullptr && m_visible
+        && s_W3DMouseAssets2[m_currentW3DCursor] != nullptr) {
+        int i1 = g_theDisplay->Get_Width() - m_currMouse.pos.x;
+        float f1 = i1;
+        i1 = g_theDisplay->Get_Width();
+        float f2 = 1.0f - f1 / i1;
+        i1 = g_theDisplay->Get_Height() - m_currMouse.pos.y;
+        f1 = i1;
+        i1 = g_theDisplay->Get_Height();
+        f1 = f1 / i1;
+        float f3;
+        float f4;
+
+        if (!m_orthoCamera) {
+            Pixel_Screen_To_W3D_Logical_Screen(
+                m_currMouse.pos.x, m_currMouse.pos.y, &f1, &f2, g_theDisplay->Get_Width(), g_theDisplay->Get_Height());
+            Vector3 pos = m_camera->Get_Position();
+            Vector2 v;
+            v.X = f1;
+            v.Y = f2;
+            Vector3 v2;
+            m_camera->Un_Project(v2, v);
+            v2 -= pos;
+            v2.Normalize();
+            float depth = m_camera->Get_Depth();
+            v2.X = v2.X * depth;
+            v2.Y = v2.Y * depth;
+            v2.X = v2.X + pos.X;
+            v2.Y = v2.Y + pos.Y;
+            f2 = depth * v2.Z + pos.Z - pos.Z;
+            f1 = -1.0f - pos.Z;
+            f3 = (v2.X - pos.X) / f2 * f1 + pos.X;
+            f4 = (v2.Y - pos.Y) / f2 * f1 + pos.Y;
+        } else {
+            f3 = f2 + f2 - 1.0f;
+            f4 = f1 + f1;
+        }
+
+        Matrix3D tm;
+        tm[1].W = f1;
+        tm[0].W = f3;
+        tm[0].X = 1.0f;
+        tm[0].Y = 0.0f;
+        tm[0].Z = 0.0f;
+        tm[1].X = 0.0f;
+        tm[1].Y = 1.0f;
+        tm[1].Z = 0.0f;
+        tm[2].X = 0.0f;
+        tm[2].Y = 0.0f;
+        tm[2].Z = 1.0f;
+        tm[2].W = -1.0f;
+
+        if (g_theInGameUI != nullptr && g_theInGameUI->Is_Scrolling()) {
+            Coord2D scroll = g_theInGameUI->Get_Scroll_Amount();
+            scroll.Normalize();
+            tm.Rotate_Z(GameMath::Atan2(-scroll.y, scroll.x) - GAMEMATH_PI / 2);
+        }
+
+        s_W3DMouseAssets2[m_currentW3DCursor]->Set_Transform(tm);
+        W3D::Render(W3DDisplay::s_3DInterfaceScene, m_camera);
+    }
+
+    if (!s_mouseThreadIsDrawing) {
+        Draw_Cursor_Text();
+    }
+
+    if (m_visible && !s_mouseThreadIsDrawing) {
+        Draw_Tooltip();
+    }
+
+    m_setWinCursor = false;
 #endif
 }
 
 // 0x007AD650
 void W3DMouse::Set_Cursor(MouseCursor cursor)
 {
-
     CriticalSectionClass::LockClass lock(g_mouseCriticalSection);
 
     m_cursorDirection = 0;
@@ -154,11 +272,11 @@ void W3DMouse::Set_Cursor(MouseCursor cursor)
 
             m_hotSpotX = m_cursorInfo[cursor].hot_spot.x;
             m_hotSpotY = m_cursorInfo[cursor].hot_spot.y;
-            unk4 = 0;
-            unk7 = m_cursorInfo[cursor].fps * 0.001f;
+            m_unk4 = 0;
+            m_unk7 = m_cursorInfo[cursor].fps * 0.001f;
             device->SetCursorProperties(m_hotSpotX, m_hotSpotY, m_D3DCursorSurfaces[0]->Peek_D3D_Surface());
             device->ShowCursor(true);
-            unk5 = static_cast<int32_t>(unk4);
+            m_unk5 = static_cast<int32_t>(m_unk4);
             m_currentD3DCursor = cursor;
             m_D3DCursorLastDrawn = rts::Get_Time();
 #endif
@@ -236,6 +354,7 @@ void W3DMouse::Set_Redraw_Mode(RedrawMode mode)
             if (s_mouseThread.Is_Running()) {
                 s_mouseThread.Stop(3000);
             }
+
             Free_D3D_Assets();
             Free_W3D_Assets();
             memset(s_PolyMouseAssets, 0, sizeof(s_PolyMouseAssets));
@@ -247,6 +366,7 @@ void W3DMouse::Set_Redraw_Mode(RedrawMode mode)
             if (s_mouseThread.Is_Running()) {
                 s_mouseThread.Stop(3000);
             }
+
             Free_D3D_Assets();
             memset(s_PolyMouseAssets, 0, sizeof(s_PolyMouseAssets));
             m_currentD3DCursor = MouseCursor::CURSOR_NONE;
@@ -257,6 +377,7 @@ void W3DMouse::Set_Redraw_Mode(RedrawMode mode)
             if (s_mouseThread.Is_Running()) {
                 s_mouseThread.Stop(3000);
             }
+
             Free_D3D_Assets();
             Free_W3D_Assets();
             m_currentD3DCursor = MouseCursor::CURSOR_NONE;
@@ -268,9 +389,11 @@ void W3DMouse::Set_Redraw_Mode(RedrawMode mode)
             Init_D3D_Assets();
             Free_W3D_Assets();
             memset(s_PolyMouseAssets, 0, sizeof(s_PolyMouseAssets));
+
             if (s_mouseThread.Is_Running()) {
                 s_mouseThread.Execute();
             }
+
             m_currentW3DCursor = MouseCursor::CURSOR_NONE;
             m_currentPolyCursor = MouseCursor::CURSOR_NONE;
             break;
@@ -485,17 +608,37 @@ bool W3DMouse::Load_D3D_Cursor_Textures(MouseCursor cursor)
 // 0x007ACFB0
 void W3DMouse::Init_Polygon_Assets()
 {
-    // TODO: Requires ImageCollection
-#ifdef GAME_DLL
-    Call_Method<void, W3DMouse>(0x007ACFB0, this);
-#endif
+    CriticalSectionClass::LockClass lock(g_mouseCriticalSection);
+
+    if (!s_mouseThreadIsDrawing && m_currentRedrawMode == RM_POLYGON && s_W3DMouseAssets2[CURSOR_NORMAL] == nullptr) {
+        for (int i = 1; i < CURSOR_COUNT; ++i) {
+            m_currentPolyCursor = m_currentCursor;
+
+            if (m_cursorInfo[i].image_name.Is_Not_Empty()) {
+                s_PolyMouseAssets[i] = g_theMappedImageCollection->Find_Image_By_Name(m_cursorInfo[i].image_name);
+            }
+        }
+    }
 }
 
 // 0x007AE0D0
 void W3DMouse::Set_Cursor_Direction(MouseCursor cursor)
 {
-    // TODO: Requires InGameUI
-#ifdef GAME_DLL
-    Call_Method<void, W3DMouse, MouseCursor>(0x007AE0D0, this, cursor);
-#endif
+    if (m_cursorInfo[cursor].directions > 1 && g_theInGameUI != nullptr && g_theInGameUI->Is_Scrolling()) {
+        Coord2D scroll = g_theInGameUI->Get_Scroll_Amount();
+
+        if (scroll.x == 0 && scroll.y == 0) {
+            m_cursorDirection = 0;
+        } else {
+            scroll.Normalize();
+            uint32_t directions = m_cursorInfo[m_currentCursor].directions;
+            m_cursorDirection =
+                (fmod(GameMath::Atan2(scroll.y, scroll.x) + GAMEMATH_PI2, GAMEMATH_PI2) / (GAMEMATH_PI2 / directions)
+                    + 0.5f);
+
+            if (m_cursorDirection >= directions) {
+                m_cursorDirection = 0;
+            }
+        }
+    }
 }

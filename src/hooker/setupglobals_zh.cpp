@@ -490,7 +490,7 @@ ARRAY_DEF(0x00A3B18C, HAnimClass *, W3DMouse::s_W3DMouseAssets1, CURSOR_COUNT);
 ARRAY_DEF(0x00A3B22C, RenderObjClass *, W3DMouse::s_W3DMouseAssets2, CURSOR_COUNT);
 ARRAY2D_DEF(
     0x00A3B3D8, TextureBaseClass *, W3DMouse::s_D3DMouseAssets, CURSOR_COUNT, W3DMouse::MAX_FRAMES); // TODO unsure on type
-ARRAY_DEF(0x00A3B2CC, uint32_t, W3DMouse::s_PolyMouseAssets, CURSOR_COUNT); // unsure on type
+ARRAY_DEF(0x00A3B2CC, Image *, W3DMouse::s_PolyMouseAssets, CURSOR_COUNT); // unsure on type
 CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>(0x00A3B3D0);
 
 // w3ddisplay.cpp

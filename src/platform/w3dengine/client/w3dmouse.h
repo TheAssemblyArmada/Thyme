@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "image.h"
 #include "rendobj.h"
 #include "surfaceclass.h"
 #include "texture.h"
@@ -37,6 +38,7 @@ public:
     virtual ~W3DMouse() override;
 
     virtual void Init() override;
+    virtual void Reset() override { Win32Mouse::Reset(); }
     virtual void Draw() override;
     virtual void Set_Cursor(MouseCursor cursor) override;
     virtual void Set_Redraw_Mode(RedrawMode mode) override;
@@ -60,10 +62,10 @@ private:
     int32_t m_hotSpotX;
     int32_t m_hotSpotY;
     int32_t m_D3DCursorSurfaceCount;
-    float unk4;
-    int32_t unk5;
+    float m_unk4;
+    int32_t m_unk5;
     int32_t m_D3DCursorLastDrawn;
-    float unk7; // refersh rate related fps * 0.001
+    float m_unk7; // refersh rate related fps * 0.001
     bool m_setWinCursor;
     CameraClass *m_camera;
     MouseCursor m_currentW3DCursor;
@@ -75,13 +77,13 @@ private:
     static ARRAY_DEC(HAnimClass *, s_W3DMouseAssets1, CURSOR_COUNT);
     static ARRAY_DEC(RenderObjClass *, s_W3DMouseAssets2, CURSOR_COUNT);
     static ARRAY2D_DEC(TextureBaseClass *, s_D3DMouseAssets, CURSOR_COUNT, MAX_FRAMES); // TODO unsure on type
-    static ARRAY_DEC(uint32_t, s_PolyMouseAssets, CURSOR_COUNT);
+    static ARRAY_DEC(Image *, s_PolyMouseAssets, CURSOR_COUNT);
 #else
     static MouseThreadClass s_mouseThread;
     static bool s_mouseThreadIsDrawing;
     static HAnimClass *s_W3DMouseAssets1[CURSOR_COUNT];
     static RenderObjClass *s_W3DMouseAssets2[CURSOR_COUNT];
     static TextureBaseClass *s_D3DMouseAssets[CURSOR_COUNT][MAX_FRAMES]; // TODO unsure on type
-    static uint32_t s_PolyMouseAssets[CURSOR_COUNT];
+    static Image *s_PolyMouseAssets[CURSOR_COUNT];
 #endif
 };

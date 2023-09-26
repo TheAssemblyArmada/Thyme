@@ -1217,7 +1217,7 @@ void W3DDisplay::Draw_Remaining_Rect_Clock(
 
 // 0x00740640
 void W3DDisplay::Draw_Image(
-    Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode)
+    const Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode)
 {
     if (image == nullptr) {
         return;

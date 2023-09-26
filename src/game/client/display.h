@@ -91,8 +91,13 @@ public:
     virtual void Draw_Fill_Rect(int, int, int, int, unsigned) = 0;
     virtual void Draw_Rect_Clock(int, int, int, int, int, unsigned) = 0;
     virtual void Draw_Remaining_Rect_Clock(int, int, int, int, int, unsigned) = 0;
-    virtual void Draw_Image(
-        Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode) = 0;
+    virtual void Draw_Image(const Image *image,
+        int32_t left,
+        int32_t top,
+        int32_t right,
+        int32_t bottom,
+        uint32_t color,
+        DrawImageMode mode) = 0;
     virtual void Draw_VideoBuffer(VideoBuffer *, int, int, int, int) = 0;
     virtual void Play_Logo_Movie(Utf8String name, int a3, int a4);
     virtual void Play_Movie(Utf8String name);

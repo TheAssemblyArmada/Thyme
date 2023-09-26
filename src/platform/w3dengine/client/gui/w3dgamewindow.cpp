@@ -157,7 +157,7 @@ enum
 };
 
 bool g_bordersInit = false;
-Image *g_borderPieces[NUM_BORDER_PIECES];
+const Image *g_borderPieces[NUM_BORDER_PIECES];
 
 void Init_Borders()
 {
@@ -304,7 +304,7 @@ void W3D_Game_Win_Default_Draw(GameWindow *window, WinInstanceData *instance)
     window->Win_Get_Size(&width, &height);
 
     if ((window->Win_Get_Status() & WIN_STATUS_IMAGE) != 0) {
-        Image *image;
+        const Image *image;
 
         if ((window->Win_Get_Status() & WIN_STATUS_ENABLED) != 0) {
             if ((instance->m_state & 2) != 0) {
@@ -342,11 +342,11 @@ void W3D_Game_Win_Default_Draw(GameWindow *window, WinInstanceData *instance)
         }
 
         if (border_color != 0xFFFFFF) {
-            g_theWindowManager->Win_Draw_Open_Rect(border_color, 1.0f, x, y, x + width, y + height);
+            g_theWindowManager->Win_Open_Rect(border_color, 1.0f, x, y, x + width, y + height);
         }
 
         if (color != 0xFFFFFF) {
-            g_theWindowManager->Win_Draw_Fill_Rect(color, 1.0f, x + 1.0f, y + 1.0f, (x + width) - 1.0f, (y + height) - 1.0f);
+            g_theWindowManager->Win_Fill_Rect(color, 1.0f, x + 1.0f, y + 1.0f, (x + width) - 1.0f, (y + height) - 1.0f);
         }
     }
 

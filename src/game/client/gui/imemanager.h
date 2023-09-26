@@ -58,6 +58,19 @@ public:
 
     virtual int Result() const override;
 
+    wchar_t Convert_Char_To_Wide(unsigned int wparam);
+    void Convert_To_Unicode(char *mbcs, Utf16String &unicode);
+    void Update_Composition_String();
+    void Get_Results_String();
+    void Open_Candidate_List(int candidate_flags);
+    void Close_Candidate_List(int candidate_flags);
+    void Update_Candidate_List(int candidate_flags);
+    void Update_Properties();
+    void Resize_Candidate_Window(int page_size);
+    void Open_Status_Window();
+    void Close_Status_Window();
+    void Update_Status_Window();
+
 private:
     int m_result;
     GameWindow *m_window;

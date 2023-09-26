@@ -285,11 +285,11 @@ public:
     virtual int Win_Set_Modal(GameWindow *window);
     virtual int Win_Unset_Modal(GameWindow *window);
 
-    virtual void Win_Draw_Image(Image *image, int start_x, int start_y, int end_x, int end_y, int color);
+    virtual void Win_Draw_Image(const Image *image, int start_x, int start_y, int end_x, int end_y, int color);
 
-    virtual void Win_Draw_Fill_Rect(int color, float width, int start_x, int start_y, int end_x, int end_y);
+    virtual void Win_Fill_Rect(int color, float width, int start_x, int start_y, int end_x, int end_y);
 
-    virtual void Win_Draw_Open_Rect(int color, float width, int start_x, int start_y, int end_x, int end_y);
+    virtual void Win_Open_Rect(int color, float width, int start_x, int start_y, int end_x, int end_y);
 
     virtual void Win_Draw_Line(int color, float width, int start_x, int start_y, int end_x, int end_y);
 
@@ -301,7 +301,7 @@ public:
 
     virtual int Win_Is_Digit(int c);
     virtual int Win_Is_Ascii(int c);
-    virtual int Win_Is_Alpha_Numeric(int c);
+    virtual int Win_Is_Al_Num(int c);
 
     virtual void Win_Format_Text(GameFont *font, Utf16String text, int color, int x, int y, int width, int height);
     virtual void Win_Get_Text_Size(GameFont *font, Utf16String text, int *width, int *height, int max_width);
@@ -309,7 +309,7 @@ public:
     virtual Utf16String Win_Text_Label_To_Text(Utf8String label);
 
     virtual GameFont *Win_Find_Font(Utf8String font_name, int point_size, bool bold);
-    virtual GameWindow *Get_Win_Under_Cursor(int x, int y, bool ignore_enabled);
+    virtual GameWindow *Get_Window_Under_Cursor(int x, int y, bool ignore_enabled);
 
     void Link_Window(GameWindow *window);
     void Insert_Window_Ahead_Of(GameWindow *window, GameWindow *ahead_of);
@@ -318,9 +318,7 @@ public:
 
     int Draw_Window(GameWindow *window);
 
-#if 0
-    GameWindowManager *Hook_Ctor() { return new (this) GameWindowManager; }
-#endif
+    void Init_Test_GUI();
 
 protected:
     void Dump_Window(GameWindow *window);
@@ -344,7 +342,7 @@ private:
 
     std::list<GameWindow *> m_tabList;
 
-    Image *m_cursorBitmap; // needs confirming
+    const Image *m_cursorBitmap; // needs confirming
     unsigned int m_captureFlags; // needs confirming
 };
 
@@ -354,3 +352,8 @@ extern GameWindowManager *&g_theWindowManager;
 #else
 extern GameWindowManager *g_theWindowManager;
 #endif
+
+WindowMsgHandledType Pass_Selected_Buttons_To_Parent_System(
+    class GameWindow *window, unsigned int msg, unsigned int mData1, unsigned int mData2);
+WindowMsgHandledType Pass_Messages_To_Parent_System(
+    class GameWindow *window, unsigned int msg, unsigned int mData1, unsigned int mData2);

@@ -571,7 +571,7 @@ GameWindow *GameWindow::Win_Point_In_Any_Child(int x, int y, bool ignore_hidden,
     return this;
 }
 
-int GameWindow::Win_Set_Enabled_Image(int index, Image *image)
+int GameWindow::Win_Set_Enabled_Image(int index, const Image *image)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set enabled image, index out of range '%d'", index);
@@ -604,7 +604,7 @@ int GameWindow::Win_Set_Enabled_Border_Color(int index, int color)
     return 0;
 }
 
-int GameWindow::Win_Set_Disabled_Image(int index, Image *image)
+int GameWindow::Win_Set_Disabled_Image(int index, const Image *image)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set disabled image, index out of range '%d'", index);
@@ -637,7 +637,7 @@ int GameWindow::Win_Set_Disabled_Border_Color(int index, int color)
     return 0;
 }
 
-int GameWindow::Win_Set_Hilite_Image(int index, Image *image)
+int GameWindow::Win_Set_Hilite_Image(int index, const Image *image)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set hilite image, index out of range '%d'", index);
@@ -706,7 +706,7 @@ int GameWindow::Win_Set_Size(int width, int height)
     m_size.y = height;
     m_region.hi.x = width + m_region.lo.x;
     m_region.hi.y = height + m_region.lo.y;
-    g_theWindowManager->Win_Send_System_Msg(this, 16388, width, height);
+    g_theWindowManager->Win_Send_System_Msg(this, GGM_RESIZED, width, height);
     return 0;
 }
 

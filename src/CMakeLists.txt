@@ -50,6 +50,7 @@ set(GAMEENGINE_INCLUDES
     platform/w3dengine/client
     platform/w3dengine/client/drawable/draw
     platform/w3dengine/client/gui
+    platform/w3dengine/client/gui/gadget
     platform/w3dengine/client/shadow
     platform/w3dengine/client/water
     platform/w3dengine/common
@@ -78,6 +79,7 @@ set(HOOKER_GAME_SRC
 
 set(GAMEENGINE_SRC
     game/client/crashpreferences.cpp
+    game/client/color.cpp
     game/client/display.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
@@ -92,13 +94,22 @@ set(GAMEENGINE_SRC
     game/client/globallanguage.cpp
     game/client/gui/challengegenerals.cpp
     game/client/gui/controlbar/controlbar.cpp
+    game/client/gui/gadget/gadgetcheckbox.cpp
     game/client/gui/gadget/gadgetcombobox.cpp
+    game/client/gui/gadget/gadgethorizontalslider.cpp
     game/client/gui/gadget/gadgetlistbox.cpp
+    game/client/gui/gadget/gadgetprogressbar.cpp
+    game/client/gui/gadget/gadgetpushbutton.cpp
+    game/client/gui/gadget/gadgetradiobutton.cpp
     game/client/gui/gadget/gadgetstatictext.cpp
+    game/client/gui/gadget/gadgettabcontrol.cpp
     game/client/gui/gadget/gadgettextentry.cpp
+    game/client/gui/gadget/gadgetverticalslider.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/gamewindow.cpp
+    game/client/gui/gamewindowglobal.cpp
     game/client/gui/gamewindowmanager.cpp
+    game/client/gui/gamewindowmanagerscript.cpp
     game/client/gui/gamewindowtransitions.cpp
     game/client/gui/imemanager.cpp
     game/client/gui/imemanagerinterface.cpp
@@ -367,6 +378,17 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/drawable/draw/w3dtreedraw.cpp
     platform/w3dengine/client/drawable/draw/w3dtruckdraw.cpp
     platform/w3dengine/client/flatheightmap.cpp
+    platform/w3dengine/client/gui/gadget/w3dcheckbox.cpp
+    platform/w3dengine/client/gui/gadget/w3dcombobox.cpp
+    platform/w3dengine/client/gui/gadget/w3dhorizontalslider.cpp
+    platform/w3dengine/client/gui/gadget/w3dlistbox.cpp
+    platform/w3dengine/client/gui/gadget/w3dprogressbar.cpp
+    platform/w3dengine/client/gui/gadget/w3dpushbutton.cpp
+    platform/w3dengine/client/gui/gadget/w3dradiobutton.cpp
+    platform/w3dengine/client/gui/gadget/w3dstatictext.cpp
+    platform/w3dengine/client/gui/gadget/w3dtabcontrol.cpp
+    platform/w3dengine/client/gui/gadget/w3dtextentry.cpp
+    platform/w3dengine/client/gui/gadget/w3dverticalslider.cpp
     platform/w3dengine/client/gui/w3dgamefont.cpp
     platform/w3dengine/client/gui/w3dgamewindow.cpp
     platform/w3dengine/client/gui/w3dgamewindowmanager.cpp

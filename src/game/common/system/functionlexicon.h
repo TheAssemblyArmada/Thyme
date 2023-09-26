@@ -14,15 +14,10 @@
  */
 #pragma once
 
+#include "gamewindow.h"
 #include "namekeygenerator.h"
 #include "subsysteminterface.h"
-
-class GameWindow;
-class WinInstanceData;
-class WinLayout;
-
-typedef void (*drawfunc_t)(GameWindow *, WinInstanceData *);
-typedef void (*layoutfunc_t)(WinLayout *, void *);
+#include "windowlayout.h"
 
 class FunctionLexicon : public SubsystemInterface
 {
@@ -59,8 +54,33 @@ public:
     virtual void Update() override {}
 
     void *Find_Function(NameKeyType key, TableIndex index);
-    drawfunc_t Game_Win_Draw_Func(NameKeyType key, TableIndex index);
-    layoutfunc_t Win_Layout_Init_Func(NameKeyType key, TableIndex index);
+    WindowDrawFunc Game_Win_Draw_Func(NameKeyType key, TableIndex index);
+    WindowLayoutCallbackFunc Win_Layout_Init_Func(NameKeyType key, TableIndex index);
+
+    WindowCallbackFunc Game_Win_System_Func(NameKeyType key, TableIndex index)
+    {
+        return reinterpret_cast<WindowCallbackFunc>(Find_Function(key, index));
+    }
+
+    WindowCallbackFunc Game_Win_Input_Func(NameKeyType key, TableIndex index)
+    {
+        return reinterpret_cast<WindowCallbackFunc>(Find_Function(key, index));
+    }
+
+    WindowTooltipFunc Game_Win_Tooltip_Func(NameKeyType key, TableIndex index)
+    {
+        return reinterpret_cast<WindowTooltipFunc>(Find_Function(key, index));
+    }
+
+    WindowLayoutCallbackFunc Win_Layout_Update_Func(NameKeyType key, TableIndex index)
+    {
+        return reinterpret_cast<WindowLayoutCallbackFunc>(Find_Function(key, index));
+    }
+
+    WindowLayoutCallbackFunc Win_Layout_Shutdown_Func(NameKeyType key, TableIndex index)
+    {
+        return reinterpret_cast<WindowLayoutCallbackFunc>(Find_Function(key, index));
+    }
 
 protected:
     void Load_Table(TableEntry *table, TableIndex index);

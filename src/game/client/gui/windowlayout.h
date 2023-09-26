@@ -54,6 +54,30 @@ public:
     void Set_Update(WindowLayoutCallbackFunc func) { m_updateFunc = func; }
     void Set_Shutdown(WindowLayoutCallbackFunc func) { m_shutdownFunc = func; }
 
+    bool Is_Hidden() { return m_hidden; }
+    Utf8String Get_Filename() { return m_filenameString; }
+
+    void Run_Init(void *user_data)
+    {
+        if (m_initFunc != nullptr) {
+            m_initFunc(this, user_data);
+        }
+    }
+
+    void Run_Update(void *user_data)
+    {
+        if (m_updateFunc != nullptr) {
+            m_updateFunc(this, user_data);
+        }
+    }
+
+    void Run_Shutdown(void *user_data)
+    {
+        if (m_shutdownFunc != nullptr) {
+            m_shutdownFunc(this, user_data);
+        }
+    }
+
 protected:
     Utf8String m_filenameString;
     GameWindow *m_windowList;

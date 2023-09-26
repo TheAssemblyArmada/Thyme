@@ -13,6 +13,16 @@
  *            LICENSE
  */
 #include "gamewindowmanager.h"
+#include "gadgetcheckbox.h"
+#include "gadgetcombobox.h"
+#include "gadgetlistbox.h"
+#include "gadgetprogressbar.h"
+#include "gadgetpushbutton.h"
+#include "gadgetradiobutton.h"
+#include "gadgetslider.h"
+#include "gadgetstatictext.h"
+#include "gadgettabcontrol.h"
+#include "gadgettextentry.h"
 
 #ifndef GAME_DLL
 GameWindowManager *g_theWindowManager;

@@ -39,7 +39,7 @@ public:
     void Set_Status(uint32_t bit);
     bool Is_Set_Status(uint32_t bit) const { return m_status & bit; }
     TextureClass *Get_Raw_Texture_Data() const { return m_rawTextureData; }
-    Utf8String Get_File_Name() { return m_filename; }
+    Utf8String Get_File_Name() const { return m_filename; }
     Utf8String Get_Name() { return m_name; }
     void Set_Name(Utf8String str) { m_name = str; }
     Region2D Get_UV_Region() const { return m_UVCoords; }

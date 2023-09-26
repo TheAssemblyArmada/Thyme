@@ -29,6 +29,11 @@ public:
     Utf8String Get_Campaign_Name() const { return m_campaign; }
     Utf8String Get_General_Name() const { return m_bioNameString; }
     Utf8String Get_Player_Template_Name() const { return m_playerTemplate; }
+    Utf8String Get_Preview_Sound() const { return m_previewSound; }
+    Image *Get_Bio_Portrait_Small() const { return m_bioPortraitSmall; }
+    Utf8String Get_Bio_Rank_String() const { return m_bioRankString; }
+    Utf8String Get_Bio_Branch_String() const { return m_bioBranchString; }
+    Utf8String Get_Bio_Strategy_String() const { return m_bioStrategyString; }
 
     bool Get_Starts_Enabled() const { return m_startsEnabled; }
     void Set_Starts_Enabled(bool state) { m_startsEnabled = state; }

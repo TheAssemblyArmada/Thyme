@@ -150,6 +150,59 @@ enum GameWindowMessage
 
 };
 
+enum GadgetGameMessage
+{
+    GGM_LEFT_DRAG = 0x4000,
+    GGM_SET_LABEL,
+    GGM_GET_LABEL,
+    GGM_FOCUS_CHANG,
+    GGM_RESIZED,
+    GGM_CLOSE,
+    GBM_MOUSE_ENTERING,
+    GBM_MOUSE_LEAVING,
+    GBM_SELECTED,
+    GBM_SELECTED_RIGHT,
+    GBM_SET_SELECTION,
+    GSM_SLIDER_TRACK,
+    GSM_SET_SLIDER,
+    GSM_SET_MIN_MAX,
+    GSM_SLIDER_DONE,
+    GLM_ADD_ENTRY,
+    GLM_DEL_ENTRY,
+    GLM_DEL_ALL,
+    GLM_SELECTED,
+    GLM_DOUBLE_CLICKED,
+    GLM_RIGHT_CLICKED,
+    GLM_SET_SELECTION,
+    GLM_GET_SELECTION,
+    GLM_TOGGLE_MULTI_SELECTION,
+    GLM_GET_TEXT,
+    GLM_SET_UP_BUTTON,
+    GLM_SET_DOWN_BUTTON,
+    GLM_SET_SLIDER,
+    GLM_SCROLL_BUFFER,
+    GLM_UPDATE_DISPLAY,
+    GLM_GET_ITEM_DATA,
+    GLM_SET_ITEM_DATA,
+    GCM_ADD_ENTRY,
+    GCM_DEL_ENTRY,
+    GCM_DEL_ALL,
+    GCM_SELECTED,
+    GCM_GET_TEXT,
+    GCM_SET_TEXT,
+    GCM_EDIT_DONE,
+    GCM_GET_ITEM_DATA,
+    GCM_SET_ITEM_DATA,
+    GCM_GET_SELECTION,
+    GCM_SET_SELECTION,
+    GCM_UPDATE_TEXT,
+    GEM_GET_TEXT,
+    GEM_SET_TEXT,
+    GEM_EDIT_DONE,
+    GEM_UPDATE_TEXT,
+    GPM_SET_PROGRESS,
+};
+
 typedef WindowMsgHandledType(__cdecl *WindowCallbackFunc)(
     GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
 
@@ -281,21 +334,21 @@ public:
     GameWindow *Win_Point_In_Child(int x, int y, bool ignore_enable_check, bool audio_event);
     GameWindow *Win_Point_In_Any_Child(int x, int y, bool ignore_hidden, bool ignore_enable_check);
 
-    int Win_Set_Enabled_Image(int index, Image *image);
+    int Win_Set_Enabled_Image(int index, const Image *image);
     int Win_Set_Enabled_Color(int index, int color);
     int Win_Set_Enabled_Border_Color(int index, int color);
 
     int Win_Get_Enabled_Color(int index) { return m_instData.m_enabledDrawData[index].color; }
     int Win_Get_Enabled_Border_Color(int index) { return m_instData.m_enabledDrawData[index].borderColor; }
 
-    int Win_Set_Disabled_Image(int index, Image *image);
+    int Win_Set_Disabled_Image(int index, const Image *image);
     int Win_Set_Disabled_Color(int index, int color);
     int Win_Set_Disabled_Border_Color(int index, int color);
 
     int Win_Get_Disabled_Color(int index) { return m_instData.m_disabledDrawData[index].color; }
     int Win_Get_Disabled_Border_Color(int index) { return m_instData.m_disabledDrawData[index].borderColor; }
 
-    int Win_Set_Hilite_Image(int index, Image *image);
+    int Win_Set_Hilite_Image(int index, const Image *image);
     int Win_Set_Hilite_Color(int index, int color);
     int Win_Set_Hilite_Border_Color(int index, int color);
 

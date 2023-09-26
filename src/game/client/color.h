@@ -57,3 +57,7 @@ struct RGBColorKeyframe
     RGBColor color;
     uint32_t frame;
 };
+
+void Get_Color_Components(int color, unsigned char *red, unsigned char *green, unsigned char *blue, unsigned char *alpha);
+void Get_Color_Components_Real(int color, float *red, float *green, float *blue, float *alpha);
+int Darken_Color(int color, int percent);

@@ -102,25 +102,3 @@ void Gadget_Combo_Box_Set_Font(GameWindow *combo_box, GameFont *font)
         tooltip_string->Set_Font(font);
     }
 }
-
-GameWindow *Gadget_Combo_Box_Get_List_Box(GameWindow *combo_box)
-{
-    _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
-
-    if (data != nullptr && data->m_listBox != nullptr) {
-        return data->m_listBox;
-    } else {
-        return nullptr;
-    }
-}
-
-GameWindow *Gadget_Combo_Box_Get_Edit_Box(GameWindow *combo_box)
-{
-    _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
-
-    if (data != nullptr && data->m_editBox != nullptr) {
-        return data->m_editBox;
-    } else {
-        return nullptr;
-    }
-}

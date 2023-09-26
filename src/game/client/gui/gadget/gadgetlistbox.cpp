@@ -16,16 +16,16 @@
 #include "displaystring.h"
 #include "gamewindow.h"
 
-void Gadget_List_Box_Set_Font(GameWindow *window, GameFont *font)
+void Gadget_List_Box_Set_Font(GameWindow *list_box, GameFont *font)
 {
-    _ListboxData *data = static_cast<_ListboxData *>(window->Win_Get_User_Data());
-    DisplayString *string = window->Win_Get_Instance_Data()->Get_Text_DisplayString();
+    _ListboxData *data = static_cast<_ListboxData *>(list_box->Win_Get_User_Data());
+    DisplayString *string = list_box->Win_Get_Instance_Data()->Get_Text_DisplayString();
 
     if (string != nullptr) {
         string->Set_Font(font);
     }
 
-    DisplayString *tooltip_string = window->Win_Get_Instance_Data()->Get_Tooltip_DisplayString();
+    DisplayString *tooltip_string = list_box->Win_Get_Instance_Data()->Get_Tooltip_DisplayString();
 
     if (tooltip_string != nullptr) {
         tooltip_string->Set_Font(font);

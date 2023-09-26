@@ -14,9 +14,8 @@
  */
 #pragma once
 #include "always.h"
-class DisplayString;
-class GameWindow;
-class GameFont;
+#include "gamewindow.h"
+#include "gamewindowmanager.h"
 
 struct _EntryData
 {
@@ -34,4 +33,109 @@ struct _EntryData
     short m_conCharPos;
 };
 
+inline void Gadget_Text_Entry_Set_Enabled_Item_Left_End_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Enabled_Image(0, image);
+}
+
+inline void Gadget_Text_Entry_Set_Enabled_Item_Right_End_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Enabled_Image(1, image);
+}
+
+inline void Gadget_Text_Entry_Set_Enabled_Item_Repeating_Center_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Enabled_Image(2, image);
+}
+
+inline void Gadget_Text_Entry_Set_Enabled_Item_Small_Repeating_Center_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Enabled_Image(3, image);
+}
+
+inline void Gadget_Text_Entry_Set_Disabled_Item_Left_End_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Disabled_Image(0, image);
+}
+
+inline void Gadget_Text_Entry_Set_Disabled_Item_Right_End_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Disabled_Image(1, image);
+}
+
+inline void Gadget_Text_Entry_Set_Disabled_Item_Repeating_Center_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Disabled_Image(2, image);
+}
+
+inline void Gadget_Text_Entry_Set_Disabled_Item_Small_Repeating_Center_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Disabled_Image(3, image);
+}
+
+inline void Gadget_Text_Entry_Set_Hilite_Item_Left_End_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Hilite_Image(0, image);
+}
+
+inline void Gadget_Text_Entry_Set_Hilite_Item_Right_End_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Hilite_Image(1, image);
+}
+
+inline void Gadget_Text_Entry_Set_Hilite_Item_Repeating_Center_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Hilite_Image(2, image);
+}
+
+inline void Gadget_Text_Entry_Set_Hilite_Item_Small_Repeating_Center_Image(GameWindow *text_entry, const Image *image)
+{
+    text_entry->Win_Set_Hilite_Image(3, image);
+}
+
+inline void Gadget_Text_Entry_Set_Enabled_Color(GameWindow *text_entry, int color)
+{
+    text_entry->Win_Set_Enabled_Color(0, color);
+}
+
+inline void Gadget_Text_Entry_Set_Enabled_Border_Color(GameWindow *text_entry, int color)
+{
+    text_entry->Win_Set_Enabled_Border_Color(0, color);
+}
+
+inline void Gadget_Text_Entry_Set_Disabled_Color(GameWindow *text_entry, int color)
+{
+    text_entry->Win_Set_Disabled_Color(0, color);
+}
+
+inline void Gadget_Text_Entry_Set_Disabled_Border_Color(GameWindow *text_entry, int color)
+{
+    text_entry->Win_Set_Disabled_Border_Color(0, color);
+}
+
+inline void Gadget_Text_Entry_Set_Hilite_Color(GameWindow *text_entry, int color)
+{
+    text_entry->Win_Set_Hilite_Color(0, color);
+}
+
+inline void Gadget_Text_Entry_Set_Hilite_Border_Color(GameWindow *text_entry, int color)
+{
+    text_entry->Win_Set_Hilite_Border_Color(0, color);
+}
+
+inline void Gadget_Text_Entry_Set_Text(GameWindow *text_entry, Utf16String text)
+{
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+    g_theWindowManager->Win_Send_System_Msg(text_entry, GEM_SET_TEXT, reinterpret_cast<unsigned int>(&text), 0);
+#endif
+}
+
+WindowMsgHandledType Gadget_Text_Entry_Input(
+    GameWindow *text_entry, unsigned int message, unsigned int data_1, unsigned int data_2);
+
+WindowMsgHandledType Gadget_Text_Entry_System(
+    GameWindow *text_entry, unsigned int message, unsigned int data_1, unsigned int data_2);
+
 void Gadget_Text_Entry_Set_Font(GameWindow *text_entry, GameFont *font);
+Utf16String Gadget_Text_Entry_Get_Text(GameWindow *text_entry);

@@ -127,10 +127,10 @@ void *FunctionLexicon::Find_Function(NameKeyType key, TableIndex index)
 /**
  * @brief Specifically locates functions relating to window drawing.
  */
-drawfunc_t FunctionLexicon::Game_Win_Draw_Func(NameKeyType key, TableIndex index)
+WindowDrawFunc FunctionLexicon::Game_Win_Draw_Func(NameKeyType key, TableIndex index)
 {
     if (index != TABLE_ANY) {
-        return (drawfunc_t)Find_Function(key, index);
+        return (WindowDrawFunc)Find_Function(key, index);
     }
 
     void *tmp = Find_Function(key, TABLE_GAME_WIN_DEVICEDRAW);
@@ -139,16 +139,16 @@ drawfunc_t FunctionLexicon::Game_Win_Draw_Func(NameKeyType key, TableIndex index
         tmp = Find_Function(key, TABLE_GAME_WIN_DRAW);
     }
 
-    return (drawfunc_t)tmp;
+    return (WindowDrawFunc)tmp;
 }
 
 /**
  * @brief Specifically locates functions relating to layout initialisation.
  */
-layoutfunc_t FunctionLexicon::Win_Layout_Init_Func(NameKeyType key, TableIndex index)
+WindowLayoutCallbackFunc FunctionLexicon::Win_Layout_Init_Func(NameKeyType key, TableIndex index)
 {
     if (index != TABLE_ANY) {
-        return (layoutfunc_t)Find_Function(key, index);
+        return (WindowLayoutCallbackFunc)Find_Function(key, index);
     }
 
     void *tmp = Find_Function(key, TABLE_WIN_LAYOUT_INIT);
@@ -157,5 +157,5 @@ layoutfunc_t FunctionLexicon::Win_Layout_Init_Func(NameKeyType key, TableIndex i
         tmp = Find_Function(key, TABLE_LAYOUT_INIT);
     }
 
-    return (layoutfunc_t)tmp;
+    return (WindowLayoutCallbackFunc)tmp;
 }

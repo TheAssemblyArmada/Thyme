@@ -19,6 +19,7 @@
 class W3DGameWindowManager : public GameWindowManager
 {
 public:
+    W3DGameWindowManager();
     virtual ~W3DGameWindowManager() override;
 
     virtual void Init() override;

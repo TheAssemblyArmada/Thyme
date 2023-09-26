@@ -28,7 +28,7 @@ class GameFont;
 
 struct WinDrawData
 {
-    Image *image;
+    const Image *image;
     int color;
     int borderColor;
 };

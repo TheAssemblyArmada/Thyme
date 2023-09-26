@@ -14,6 +14,7 @@
  */
 #include "w3dlaserdraw.h"
 #include "assetmgr.h"
+#include "color.h"
 #include "colorspace.h"
 #include "drawable.h"
 #include "laserupdate.h"
@@ -22,14 +23,6 @@
 #include "texture.h"
 #include "w3ddisplay.h"
 #include "w3dscene.h"
-
-void Get_Color_Components_Real(int color, float *red, float *green, float *blue, float *alpha)
-{
-    *alpha = (float)((color & 0xFF000000) >> 24) / 255.0f;
-    *red = (float)((color & 0xFF0000) >> 16) / 255.0f;
-    *green = (float)((color & 0xFF00) >> 8) / 255.0f;
-    *blue = (float)(unsigned char)color / 255.0f;
-}
 
 W3DLaserDrawModuleData::W3DLaserDrawModuleData() :
     // BUGFIX initalize all members

@@ -66,7 +66,8 @@ public:
     virtual void Draw_Remaining_Rect_Clock(
         int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color) override;
     virtual void Draw_Image(
-        Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode) override;
+        const Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode)
+        override;
     virtual void Draw_VideoBuffer(VideoBuffer *vb, int32_t x1, int32_t y1, int32_t x2, int32_t y2) override;
     virtual void Set_Shroud_Level(int, int, CellShroudStatus) override;
     virtual void Clear_Shroud() override{};

@@ -23,10 +23,21 @@
 #include "gadgetstatictext.h"
 #include "gadgettabcontrol.h"
 #include "gadgettextentry.h"
+#include "gamewindowtransitions.h"
 
 #ifndef GAME_DLL
 GameWindowManager *g_theWindowManager;
 #endif
+
+void GameWindowManager::Init()
+{
+    if (g_theTransitionHandler == nullptr) {
+        g_theTransitionHandler = new GameWindowTransitionsHandler();
+    }
+
+    g_theTransitionHandler->Load();
+    g_theTransitionHandler->Init();
+}
 
 void GameWindowManager::Link_Window(GameWindow *window)
 {

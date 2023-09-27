@@ -29,6 +29,7 @@
 #include "gamemath.h"
 #include "gametext.h"
 #include "gametype.h"
+#include "gamewindowtransitions.h"
 #include "globaldata.h"
 #include "globallanguage.h"
 #include "image.h"
@@ -90,7 +91,7 @@ const BlockParse TheTypeTable[] = {
     {"ControlBarResizer", &INI::Parse_Control_Bar_Resizer_Definition},
     {"CrateData", HOOK_BLOCK(0x00516B90) /*&INI::parseCrateTemplateDefinition*/},
     {"Credits", HOOK_BLOCK(0x00515A20) /*&INI::parseCredits*/},
-    {"WindowTransition", HOOK_BLOCK(0x005145F0) /*&INI::parseWindowTransitions*/},
+    {"WindowTransition", &GameWindowTransitionsHandler::Parse_Window_Transitions},
     {"DamageFX", HOOK_BLOCK(0x005145E0) /*&INI::parseDamageFXDefinition*/},
     {"DialogEvent", &AudioEventInfo::Parse_Dialog_Definition},
     {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
@@ -992,6 +993,12 @@ void INI::Parse_Dynamic_Audio_Event_RTS(INI *ini, void *formal, void *store, con
     if (*audio) {
         g_theAudio->Get_Info_For_Audio_Event(&(*audio)->m_event);
     }
+}
+
+void INI::Parse_Lookup_List(INI *ini, void *formal, void *store, const void *user_data)
+{
+    *reinterpret_cast<int *>(store) =
+        ini->Scan_LookupList(ini->Get_Next_Token(), reinterpret_cast<const LookupListRec *>(user_data));
 }
 
 void INI::Parse_Object_Definition(INI *ini)

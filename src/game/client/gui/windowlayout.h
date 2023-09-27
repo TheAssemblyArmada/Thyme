@@ -41,7 +41,7 @@ public:
     void Remove_Window(GameWindow *window);
     void Destroy_Windows();
 
-    int Load(Utf8String filename);
+    bool Load(Utf8String filename);
 
     void Bring_Forward();
 

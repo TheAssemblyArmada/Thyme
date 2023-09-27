@@ -73,6 +73,7 @@
 #include "gamesounds.h"
 #include "gamestate.h"
 #include "gametext.h"
+#include "gamewindowtransitions.h"
 #include "geometry.h"
 #include "globaldata.h"
 #include "hanimmgr.h"
@@ -3340,4 +3341,13 @@ void Setup_Hooks()
 
     // w3dgamewindowmanager.h
     Hook_Any(0x007A9C10, W3DGameWindowManager::Allocate_New_Window);
+
+    // gamewindowmanager.h
+    Hook_Any(0x004F9DA0, GameWindowManager::Init);
+
+    // gamewindowtransitions.h
+    Hook_Any(0x00515070, GameWindowTransitionsHandler::Set_Group);
+    Hook_Any(0x00515280, GameWindowTransitionsHandler::Reverse);
+    Hook_Any(0x00515450, GameWindowTransitionsHandler::Remove);
+    Hook_Any(0x00515760, GameWindowTransitionsHandler::Is_Finished);
 }

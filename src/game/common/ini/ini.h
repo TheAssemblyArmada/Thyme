@@ -166,6 +166,7 @@ public:
     static void Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Sounds_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Dynamic_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Lookup_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Object_Definition(INI *ini);
     static void Parse_Object_Reskin_Definition(INI *ini);
 

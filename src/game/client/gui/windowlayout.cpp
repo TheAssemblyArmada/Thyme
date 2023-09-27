@@ -14,6 +14,7 @@
  */
 #include "windowlayout.h"
 #include "gamewindow.h"
+#include "gamewindowmanager.h"
 #include <captainslog.h>
 
 WindowLayout::WindowLayout() :
@@ -104,21 +105,57 @@ GameWindow *WindowLayout::Find_Window(GameWindow *window)
 
 void WindowLayout::Hide(bool hide)
 {
-#ifdef GAME_DLL
-    Call_Method<void, WindowLayout, bool>(PICK_ADDRESS(0x004F83F0, 0x008E4EF4), this, hide);
-#endif
+    for (GameWindow *window = m_windowList; window != nullptr; window = window->Win_Get_Next_In_Layout()) {
+        window->Win_Hide(hide);
+    }
+
+    m_hidden = hide;
 }
 
 void WindowLayout::Destroy_Windows()
 {
-#ifdef GAME_DLL
-    Call_Method<void, WindowLayout>(PICK_ADDRESS(0x004F8530, 0x008E50FD), this);
-#endif
+    for (GameWindow *window = m_windowList; window != nullptr; window = m_windowList) {
+        Remove_Window(window);
+        g_theWindowManager->Win_Destroy(window);
+    }
 }
 
 void WindowLayout::Bring_Forward()
 {
-#ifdef GAME_DLL
-    Call_Method<void, WindowLayout>(PICK_ADDRESS(0x004F8900, 0x008E531E), this);
-#endif
+    int count = m_windowCount;
+    GameWindow *tail = m_windowTail;
+
+    while (count != 0) {
+        captainslog_dbgassert(tail != nullptr, "Must have window: m_windowCount is off");
+    }
+
+    GameWindow *prev = tail->Win_Get_Prev_In_Layout();
+    tail->Win_Bring_To_Top();
+    count--;
+    tail = prev;
+}
+
+bool WindowLayout::Load(Utf8String filename)
+{
+    if (filename.Is_Empty()) {
+        return false;
+    } else {
+        WindowLayoutInfo layout;
+
+        if (g_theWindowManager->Win_Create_From_Script(filename, &layout)) {
+            for (auto it = layout.m_windowList.begin(); it != layout.m_windowList.end(); it++) {
+                Add_Window(*it);
+            }
+
+            m_filenameString = filename;
+            Set_Init(layout.m_initFunc);
+            Set_Update(layout.m_updateFunc);
+            Set_Shutdown(layout.m_shutdownFunc);
+            return true;
+        } else {
+            captainslog_dbgassert(false, "WindowLayout::load - Failed to load layout");
+            captainslog_debug("WindowLayout::load - Unable to load layout file '%s'", filename.Str());
+            return false;
+        }
+    }
 }

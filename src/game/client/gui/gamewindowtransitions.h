@@ -18,6 +18,8 @@
 #include "subsysteminterface.h"
 #include <list>
 
+class GameWindow;
+
 enum WindowTransitionStyle
 {
     TRANSITION_FLASH,
@@ -37,7 +39,76 @@ enum WindowTransitionStyle
     TRANSITION_REVERSE_SOUND,
 };
 
-class TransitionGroup;
+class Transition
+{
+public:
+    Transition();
+    virtual ~Transition();
+    virtual void Init(GameWindow *window) = 0;
+    virtual void Update(int frame) = 0;
+    virtual void Reverse() = 0;
+    virtual void Draw() = 0;
+    virtual void Skip() = 0;
+
+    int Get_Max_Frames() const { return m_maxFrames; }
+    bool Is_Finished() const { return m_isFinished; }
+
+private:
+    int m_maxFrames;
+    bool m_isFinished;
+    bool m_unk1;
+};
+
+class TransitionWindow
+{
+public:
+    TransitionWindow();
+    ~TransitionWindow();
+    bool Init();
+    void Update(int frame);
+    bool Is_Finished();
+    void Reverse();
+    void Skip();
+    void Draw();
+    int Get_Total_Frames();
+
+private:
+    Utf8String m_winName;
+    int m_frameDelay;
+    WindowTransitionStyle m_style;
+    NameKeyType m_winNameKey;
+    GameWindow *m_window;
+    Transition *m_transition;
+    int m_unk1;
+    friend class GameWindowTransitionsHandler;
+};
+
+class TransitionGroup
+{
+public:
+    TransitionGroup();
+    ~TransitionGroup();
+    void Init();
+    void Update();
+    bool Is_Finished();
+    void Reverse();
+    bool Is_Reversed();
+    void Skip();
+    void Draw();
+    void Add_Window(TransitionWindow *window);
+
+    bool Fire_Once() const { return m_fireOnce; }
+    void Set_Name(Utf8String name) { m_name = name; }
+    Utf8String Get_Name() const { return m_name; }
+
+private:
+    bool m_fireOnce;
+    std::list<TransitionWindow *> m_windows;
+    int m_frameAdjust;
+    int m_currentFrame;
+    Utf8String m_name;
+    friend class GameWindowTransitionsHandler;
+};
 
 class GameWindowTransitionsHandler : public SubsystemInterface
 {
@@ -50,9 +121,18 @@ public:
     virtual void Update() override;
     virtual void Draw() override;
 
-    void Set_Group(Utf8String str, bool b);
+    void Load();
+    void Set_Group(Utf8String name, bool skip);
     bool Is_Finished();
-    void Reverse(Utf8String str);
+    void Reverse(Utf8String name);
+    void Remove(Utf8String name, bool skip);
+    TransitionGroup *Get_New_Group(Utf8String name);
+    TransitionGroup *Find_Group(Utf8String name);
+
+    static void Parse_Window(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Window_Transitions(INI *ini);
+
+    static FieldParse *Get_Field_Parse() { return s_gameWindowTransitionsFieldParseTable; }
 
 protected:
     std::list<TransitionGroup *> m_groupList;
@@ -60,6 +140,8 @@ protected:
     TransitionGroup *m_group2;
     TransitionGroup *m_group3;
     TransitionGroup *m_group4;
+
+    static FieldParse s_gameWindowTransitionsFieldParseTable[];
 };
 
 #ifdef GAME_DLL

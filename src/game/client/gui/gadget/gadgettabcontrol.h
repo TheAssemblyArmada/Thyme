@@ -29,7 +29,7 @@ struct _TabControlData
     int m_tabHeight;
     int m_tabCount;
     GameWindow *m_subPanes[NUM_TAB_PANES];
-    char m_subPaneDisabled[NUM_TAB_PANES];
+    bool m_subPaneDisabled[NUM_TAB_PANES];
     int m_paneBorder;
     int m_activeTab;
     int m_tabsLeftLimit;

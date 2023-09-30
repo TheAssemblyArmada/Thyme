@@ -35,7 +35,7 @@ TransitionWindow::TransitionWindow() :
     m_winNameKey(NAMEKEY_INVALID),
     m_window(nullptr),
     m_transition(nullptr),
-    m_unk1(0)
+    m_startFrame(0)
 {
 }
 
@@ -54,7 +54,7 @@ bool TransitionWindow::Init()
 {
     m_winNameKey = g_theNameKeyGenerator->Name_To_Key(m_winName.Str());
     m_window = g_theWindowManager->Win_Get_Window_From_Id(nullptr, m_winNameKey);
-    m_unk1 = m_frameDelay;
+    m_startFrame = m_frameDelay;
 
     if (m_transition != nullptr) {
         delete m_transition;
@@ -68,9 +68,9 @@ bool TransitionWindow::Init()
 
 void TransitionWindow::Update(int frame)
 {
-    if (frame >= m_unk1 && frame <= m_transition->Get_Max_Frames() + m_unk1) {
+    if (frame >= m_startFrame && frame <= m_transition->Get_Max_Frames() + m_startFrame) {
         if (m_transition != nullptr) {
-            m_transition->Update(frame - m_unk1);
+            m_transition->Update(frame - m_startFrame);
         }
     }
 }
@@ -207,8 +207,8 @@ void TransitionGroup::Add_Window(TransitionWindow *window)
 
 // clang-format off
 FieldParse GameWindowTransitionsHandler::s_gameWindowTransitionsFieldParseTable[] = { 
-    { "Window", &GameWindowTransitionsHandler::Parse_Window,  nullptr,  0 },
-    { "FireOnce", &INI::Parse_Bool,  nullptr,  offsetof(TransitionGroup, m_fireOnce) },
+    { "Window", &GameWindowTransitionsHandler::Parse_Window, nullptr, 0 },
+    { "FireOnce", &INI::Parse_Bool, nullptr, offsetof(TransitionGroup, m_fireOnce) },
     { nullptr, nullptr, nullptr, 0 }
 };
 // clang-format on
@@ -463,9 +463,9 @@ void GameWindowTransitionsHandler::Parse_Window(INI *ini, void *formal, void *st
 {
     // clang-format off
     static FieldParse s_fieldParse[] = { 
-        { "WinName", &INI::Parse_AsciiString,  nullptr,  offsetof(TransitionWindow, m_winName) },
-        { "Style", &INI::Parse_Lookup_List,  s_transitionStyleNames,  offsetof(TransitionWindow, m_style) },
-        { "FrameDelay", &INI::Parse_Int,  nullptr,  offsetof(TransitionWindow, m_frameDelay) },
+        { "WinName", &INI::Parse_AsciiString, nullptr, offsetof(TransitionWindow, m_winName) },
+        { "Style", &INI::Parse_Lookup_List, s_transitionStyleNames, offsetof(TransitionWindow, m_style) },
+        { "FrameDelay", &INI::Parse_Int, nullptr, offsetof(TransitionWindow, m_frameDelay) },
         { nullptr, nullptr, nullptr, 0 }
     };
     // clang-format on

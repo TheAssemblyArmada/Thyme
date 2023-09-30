@@ -95,7 +95,7 @@ enum GameWindowStyle
 
     GWS_TAB_STOP = 1 << 12,
     GWS_TAB_CONTROL = 1 << 13,
-    GWS_TAB_PLANE = 1 << 14,
+    GWS_TAB_PANE = 1 << 14,
 
     GWS_COMBO_BOX = 1 << 15,
     GWS_ALL_SLIDER = GWS_VERT_SLIDER | GWS_HORZ_SLIDER,
@@ -109,25 +109,25 @@ enum GameWindowMessage
 
     GWM_CREATE, // Freshly created window
     GWM_DESTROY, // Window is being destroyed
-    GWM_3, // ?
-    GWM_4, // ?
+    GWM_ACTIVATE,
+    GWM_ENABLE,
 
     // Left mouse
     GWM_LEFT_DOWN,
     GWM_LEFT_UP,
-    GWM_7,
+    GWM_LEFT_CLICK,
     GWM_LEFT_DRAG,
 
     // Middle mouse
     GWM_MIDDLE_DOWN,
     GWM_MIDDLE_UP,
-    GWM_11,
+    GWM_MIDDLE_CLICK,
     GWM_MIDDLE_DRAG,
 
     // Right mouse
     GWM_RIGHT_DOWN,
     GWM_RIGHT_UP,
-    GWM_15,
+    GWM_RIGHT_CLICK,
     GWM_RIGHT_DRAG,
 
     GWM_MOUSE_ENTERING,
@@ -146,8 +146,7 @@ enum GameWindowMessage
 
     GWM_IME_CHAR, // IME input
 
-    GWM_26,
-
+    GWM_IME_STRING,
 };
 
 enum GadgetGameMessage

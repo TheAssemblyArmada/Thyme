@@ -347,7 +347,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern GameWindowManager *&g_theWindowManager;
 #else
 extern GameWindowManager *g_theWindowManager;

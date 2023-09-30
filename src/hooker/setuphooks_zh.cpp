@@ -3344,6 +3344,12 @@ void Setup_Hooks()
 
     // gamewindowmanager.h
     Hook_Any(0x004F9DA0, GameWindowManager::Init);
+    Hook_Any(0x006DBD00, GameWindowManager::Win_Create_Layout);
+    Hook_Any(0x006DBE80, GameWindowManager::Free_Static_Strings);
+    Hook_Any(0x006DC000, GameWindowManager::Win_Create_From_Script);
+    Hook_Any(0x004F9E60, GameWindowManager::Link_Window);
+    Hook_Any(0x004F9F00, GameWindowManager::Unlink_Window);
+    Hook_Any(0x004F9F50, GameWindowManager::Unlink_Child_Window);
 
     // gamewindowtransitions.h
     Hook_Any(0x00515070, GameWindowTransitionsHandler::Set_Group);

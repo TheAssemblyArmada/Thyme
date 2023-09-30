@@ -91,7 +91,7 @@ struct _AddMessageStruct
 
 inline GameWindow *Gadget_List_Box_Get_Slider(GameWindow *list_box)
 {
-    _ListboxData *data = reinterpret_cast<_ListboxData *>(list_box);
+    _ListboxData *data = static_cast<_ListboxData *>(list_box->Win_Get_User_Data());
 
     if (data != nullptr && data->m_slider != nullptr) {
         return data->m_slider;
@@ -102,7 +102,7 @@ inline GameWindow *Gadget_List_Box_Get_Slider(GameWindow *list_box)
 
 inline GameWindow *Gadget_List_Box_Get_Up_Button(GameWindow *list_box)
 {
-    _ListboxData *data = reinterpret_cast<_ListboxData *>(list_box);
+    _ListboxData *data = static_cast<_ListboxData *>(list_box->Win_Get_User_Data());
 
     if (data != nullptr && data->m_upButton != nullptr) {
         return data->m_upButton;
@@ -113,7 +113,7 @@ inline GameWindow *Gadget_List_Box_Get_Up_Button(GameWindow *list_box)
 
 inline GameWindow *Gadget_List_Box_Get_Down_Button(GameWindow *list_box)
 {
-    _ListboxData *data = reinterpret_cast<_ListboxData *>(list_box);
+    _ListboxData *data = static_cast<_ListboxData *>(list_box->Win_Get_User_Data());
 
     if (data != nullptr && data->m_downButton != nullptr) {
         return data->m_downButton;

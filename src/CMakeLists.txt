@@ -112,6 +112,7 @@ set(GAMEENGINE_SRC
     game/client/gui/gamewindowmanagerscript.cpp
     game/client/gui/gamewindowtransitions.cpp
     game/client/gui/gamewindowtransitionsstyles.cpp
+    game/client/gui/headertemplate.cpp
     game/client/gui/imemanager.cpp
     game/client/gui/imemanagerinterface.cpp
     game/client/gui/loadscreen.cpp

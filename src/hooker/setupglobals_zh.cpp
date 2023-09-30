@@ -823,3 +823,8 @@ ARRAY_DEF(PICK_ADDRESS(0x00A2BF78, 0x04CA9BA8), int, g_gameSpyColor, 27);
 // selectionxlat.cpp
 class SelectionTranslator;
 SelectionTranslator *&g_theSelectionTranslator = Make_Global<SelectionTranslator *>(PICK_ADDRESS(0x00A2F458, 0x04CAB624));
+
+// headertemplate.cpp
+class HeaderTemplateManager;
+HeaderTemplateManager *&g_theHeaderTemplateManager =
+    Make_Global<HeaderTemplateManager *>(PICK_ADDRESS(0x00A2BEFC, 0x04CA9B04));

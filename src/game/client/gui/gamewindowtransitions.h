@@ -79,7 +79,7 @@ private:
     NameKeyType m_winNameKey;
     GameWindow *m_window;
     Transition *m_transition;
-    int m_unk1;
+    int m_startFrame;
     friend class GameWindowTransitionsHandler;
 };
 

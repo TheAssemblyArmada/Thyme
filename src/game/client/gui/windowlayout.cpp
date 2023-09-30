@@ -127,12 +127,11 @@ void WindowLayout::Bring_Forward()
 
     while (count != 0) {
         captainslog_dbgassert(tail != nullptr, "Must have window: m_windowCount is off");
+        GameWindow *prev = tail->Win_Get_Prev_In_Layout();
+        tail->Win_Bring_To_Top();
+        count--;
+        tail = prev;
     }
-
-    GameWindow *prev = tail->Win_Get_Prev_In_Layout();
-    tail->Win_Bring_To_Top();
-    count--;
-    tail = prev;
 }
 
 bool WindowLayout::Load(Utf8String filename)
@@ -153,8 +152,8 @@ bool WindowLayout::Load(Utf8String filename)
             Set_Shutdown(layout.m_shutdownFunc);
             return true;
         } else {
-            captainslog_dbgassert(false, "WindowLayout::load - Failed to load layout");
-            captainslog_debug("WindowLayout::load - Unable to load layout file '%s'", filename.Str());
+            captainslog_dbgassert(false, "WindowLayout::Load - Failed to load layout");
+            captainslog_debug("WindowLayout::Load - Unable to load layout file '%s'", filename.Str());
             return false;
         }
     }

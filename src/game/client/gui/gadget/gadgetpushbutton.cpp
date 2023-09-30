@@ -13,3 +13,12 @@
  *            LICENSE
  */
 #include "gadgetpushbutton.h"
+#include "gamewindowmanager.h"
+
+void Gadget_Button_Set_Text(GameWindow *push_button, Utf16String text)
+{
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+    g_theWindowManager->Win_Send_System_Msg(push_button, GGM_SET_LABEL, reinterpret_cast<unsigned int>(&text), 0);
+#endif
+}

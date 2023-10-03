@@ -38,13 +38,13 @@ typedef bool(__cdecl *LayoutScriptParseFunc)(char *, char *, unsigned int, Windo
 
 struct GameWindowParse
 {
-    char *name;
+    const char *name;
     GameWindowParseFunc parse;
 };
 
 struct LayoutScriptParse
 {
-    char *name;
+    const char *name;
     LayoutScriptParseFunc parse;
 };
 

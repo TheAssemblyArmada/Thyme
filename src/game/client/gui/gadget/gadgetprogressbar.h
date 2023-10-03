@@ -196,7 +196,7 @@ inline void Gadget_Progress_Bar_Set_Hilite_Bar_Border_Color(GameWindow *progress
     progress_bar->Win_Set_Hilite_Border_Color(4, color);
 }
 
-WindowMsgHandledType Gadget_Progess_Bar_System(
+WindowMsgHandledType Gadget_Progress_Bar_System(
     GameWindow *progress_bar, unsigned int message, unsigned int data_1, unsigned int data_2);
 
 void Gadget_Progress_Bar_Set_Progress(GameWindow *progress_bar, int progress);

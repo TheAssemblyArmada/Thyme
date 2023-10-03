@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "w3dlistbox.h"
+
+void W3D_Gadget_List_Box_Draw(GameWindow *list_box, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CC290, list_box, data);
+#endif
+}
+
+void W3D_Gadget_List_Box_Image_Draw(GameWindow *list_box, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CCB90, list_box, data);
+#endif
+}

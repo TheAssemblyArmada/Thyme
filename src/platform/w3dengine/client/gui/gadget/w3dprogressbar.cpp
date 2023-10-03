@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "w3dprogressbar.h"
+
+void W3D_Gadget_Progress_Bar_Draw(GameWindow *progress_bar, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CB2F0, progress_bar, data);
+#endif
+}
+
+void W3D_Gadget_Progress_Bar_Image_Draw(GameWindow *progress_bar, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CB520, progress_bar, data);
+#endif
+}

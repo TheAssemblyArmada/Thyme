@@ -181,12 +181,12 @@ inline void Gadget_Slider_Set_Enabled_Border_Color(GameWindow *slider, int color
 
 inline int Gadget_Slider_Get_Enabled_Color(GameWindow *slider)
 {
-    slider->Win_Get_Enabled_Color(0);
+    return slider->Win_Get_Enabled_Color(0);
 }
 
 inline int Gadget_Slider_Get_Enabled_Border_Color(GameWindow *slider)
 {
-    slider->Win_Get_Enabled_Border_Color(0);
+    return slider->Win_Get_Enabled_Border_Color(0);
 }
 
 inline void Gadget_Slider_Set_Disabled_Color(GameWindow *slider, int color)
@@ -201,12 +201,12 @@ inline void Gadget_Slider_Set_Disabled_Border_Color(GameWindow *slider, int colo
 
 inline int Gadget_Slider_Get_Disabled_Color(GameWindow *slider)
 {
-    slider->Win_Get_Disabled_Color(0);
+    return slider->Win_Get_Disabled_Color(0);
 }
 
 inline int Gadget_Slider_Get_Disabled_Border_Color(GameWindow *slider)
 {
-    slider->Win_Get_Disabled_Border_Color(0);
+    return slider->Win_Get_Disabled_Border_Color(0);
 }
 
 inline void Gadget_Slider_Set_Hilite_Color(GameWindow *slider, int color)
@@ -221,12 +221,12 @@ inline void Gadget_Slider_Set_Hilite_Border_Color(GameWindow *slider, int color)
 
 inline int Gadget_Slider_Get_Hilite_Color(GameWindow *slider)
 {
-    slider->Win_Get_Hilite_Color(0);
+    return slider->Win_Get_Hilite_Color(0);
 }
 
 inline int Gadget_Slider_Get_Hilite_Border_Color(GameWindow *slider)
 {
-    slider->Win_Get_Hilite_Border_Color(0);
+    return slider->Win_Get_Hilite_Border_Color(0);
 }
 
 inline void Gadget_Slider_Set_Thumb_Enabled_Color(GameWindow *slider, int color)

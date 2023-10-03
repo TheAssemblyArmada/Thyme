@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "w3dcombobox.h"
+
+void W3D_Gadget_Combo_Box_Draw(GameWindow *combo_box, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CBEF0, combo_box, data);
+#endif
+}
+
+void W3D_Gadget_Combo_Box_Image_Draw(GameWindow *combo_box, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CC0C0, combo_box, data);
+#endif
+}

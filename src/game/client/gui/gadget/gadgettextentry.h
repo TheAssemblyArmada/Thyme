@@ -28,6 +28,7 @@ struct _EntryData
     bool m_asciiOnly;
     short m_maxTextLen;
     bool m_receivedUnichar;
+    bool m_noInput;
     GameWindow *m_constructList;
     short m_charPos;
     short m_conCharPos;

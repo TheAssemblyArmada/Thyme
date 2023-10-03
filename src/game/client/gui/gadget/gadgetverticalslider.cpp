@@ -13,3 +13,25 @@
  *            LICENSE
  */
 #include "gadgetslider.h"
+
+WindowMsgHandledType Gadget_Vertical_Slider_Input(
+    GameWindow *slider, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+#ifdef GAME_DLL
+    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
+        PICK_ADDRESS(0x006D6F10, 0x00A5AE40), slider, message, data_1, data_2);
+#else
+    return MSG_IGNORED;
+#endif
+}
+
+WindowMsgHandledType Gadget_Vertical_Slider_System(
+    GameWindow *slider, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+#ifdef GAME_DLL
+    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
+        PICK_ADDRESS(0x006D7370, 0x00A5B339), slider, message, data_1, data_2);
+#else
+    return MSG_IGNORED;
+#endif
+}

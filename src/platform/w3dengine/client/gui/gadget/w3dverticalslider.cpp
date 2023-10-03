@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "w3dslider.h"
+
+void W3D_Gadget_Vertical_Slider_Draw(GameWindow *slider, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CB890, slider, data);
+#endif
+}
+
+void W3D_Gadget_Vertical_Slider_Image_Draw(GameWindow *slider, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CB980, slider, data);
+#endif
+}

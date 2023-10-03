@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "w3dgamewindowmanager.h"
+#include "display.h"
 #include "w3dcheckbox.h"
 #include "w3dcombobox.h"
 #include "w3dgamewindow.h"
@@ -25,7 +26,131 @@
 #include "w3dtabcontrol.h"
 #include "w3dtextentry.h"
 
+W3DGameWindowManager::W3DGameWindowManager() {}
+
+W3DGameWindowManager::~W3DGameWindowManager() {}
+
+void W3DGameWindowManager::Init()
+{
+    GameWindowManager::Init();
+}
+
 GameWindow *W3DGameWindowManager::Allocate_New_Window()
 {
     return new W3DGameWindow();
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Push_Button_Image_Draw_Func()
+{
+    return W3D_Gadget_Push_Button_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Push_Button_Draw_Func()
+{
+    return W3D_Gadget_Push_Button_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Check_Box_Image_Draw_Func()
+{
+    return W3D_Gadget_Check_Box_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Check_Box_Draw_Func()
+{
+    return W3D_Gadget_Check_Box_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Radio_Button_Image_Draw_Func()
+{
+    return W3D_Gadget_Radio_Button_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Radio_Button_Draw_Func()
+{
+    return W3D_Gadget_Radio_Button_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Tab_Control_Image_Draw_Func()
+{
+    return W3D_Gadget_Tab_Control_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Tab_Control_Draw_Func()
+{
+    return W3D_Gadget_Tab_Control_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_List_Box_Image_Draw_Func()
+{
+    return W3D_Gadget_List_Box_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_List_Box_Draw_Func()
+{
+    return W3D_Gadget_List_Box_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Combo_Box_Image_Draw_Func()
+{
+    return W3D_Gadget_Combo_Box_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Combo_Box_Draw_Func()
+{
+    return W3D_Gadget_Combo_Box_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Horizontal_Slider_Image_Draw_Func()
+{
+    return W3D_Gadget_Horizontal_Slider_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Horizontal_Slider_Draw_Func()
+{
+    return W3D_Gadget_Horizontal_Slider_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Vertical_Slider_Image_Draw_Func()
+{
+    return W3D_Gadget_Vertical_Slider_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Vertical_Slider_Draw_Func()
+{
+    return W3D_Gadget_Vertical_Slider_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Progress_Bar_Image_Draw_Func()
+{
+    return W3D_Gadget_Progress_Bar_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Progress_Bar_Draw_Func()
+{
+    return W3D_Gadget_Progress_Bar_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Static_Text_Image_Draw_Func()
+{
+    return W3D_Gadget_Static_Text_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Static_Text_Draw_Func()
+{
+    return W3D_Gadget_Static_Text_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Text_Entry_Image_Draw_Func()
+{
+    return W3D_Gadget_Text_Entry_Image_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Text_Entry_Draw_Func()
+{
+    return W3D_Gadget_Text_Entry_Draw;
+}
+
+WindowDrawFunc W3DGameWindowManager::Get_Default_Draw()
+{
+    return W3D_Game_Win_Default_Draw;
 }

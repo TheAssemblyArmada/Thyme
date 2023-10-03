@@ -36,6 +36,33 @@ struct _TextData;
 struct _EntryData;
 struct _ComboBoxData;
 
+enum
+{
+    WIN_ERR_OK = 0,
+    WIN_ERR_GENERAL_FAILURE = -1,
+    WIN_ERR_INVALID_WINDOW = -2,
+    WIN_ERR_INVALID_PARAMETER = -3,
+    WIN_ERR_MOUSE_CAPTURED = -4,
+    WIN_ERR_KEYBOARD_CAPTURED = -5,
+    WIN_ERR_OUT_OF_WINDOWS = -6,
+};
+
+enum
+{
+    MSG_BOX_YES = 1,
+    MSG_BOX_NO = 2,
+    MSG_BOX_CANCEL = 4,
+    MSG_BOX_OK = 8,
+};
+
+struct _MessageBoxData
+{
+    WindowMsgBoxCallbackFunc yes_callback;
+    WindowMsgBoxCallbackFunc no_callback;
+    WindowMsgBoxCallbackFunc ok_callback;
+    WindowMsgBoxCallbackFunc cancel_callback;
+};
+
 class GameWindowManager : public SubsystemInterface
 {
     friend GlobalLanguage;
@@ -111,7 +138,7 @@ public:
         WindowMsgBoxCallbackFunc no_callback,
         WindowMsgBoxCallbackFunc ok_callback,
         WindowMsgBoxCallbackFunc cancel_callback,
-        bool use_other);
+        bool use_quit_box);
 
     virtual GameWindow *Go_Go_Gadget_Push_Button(GameWindow *parent,
         unsigned int status,
@@ -242,8 +269,8 @@ public:
 
     virtual GameWindow *Win_Get_Window_List();
 
-    virtual void Hide_Windows_In_Range(GameWindow *base_window, int first, int last, bool state);
-    virtual void Enable_Windows_In_Range(GameWindow *base_window, int first, int last, bool state);
+    virtual void Hide_Windows_In_Range(GameWindow *base_window, int first, int last, bool hide_flag);
+    virtual void Enable_Windows_In_Range(GameWindow *base_window, int first, int last, bool enable_flag);
 
     virtual void Window_Hiding(GameWindow *window);
 
@@ -252,7 +279,7 @@ public:
     virtual void Win_Next_Tab(GameWindow *window);
     virtual void Win_Prev_Tab(GameWindow *window);
 
-    virtual void Register_Tab_List(std::list<GameWindow *> *list);
+    virtual void Register_Tab_List(std::list<GameWindow *> list);
     virtual void Clear_Tab_List();
 
     virtual WinInputReturnCode Win_Process_Mouse_Event(GameWindowMessage msg, ICoord2D *mouse_pos, void *data);
@@ -318,7 +345,7 @@ public:
 
     int Draw_Window(GameWindow *window);
 
-    void Init_Test_GUI();
+    bool Init_Test_GUI();
 
 protected:
     void Dump_Window(GameWindow *window);
@@ -353,6 +380,6 @@ extern GameWindowManager *g_theWindowManager;
 #endif
 
 WindowMsgHandledType Pass_Selected_Buttons_To_Parent_System(
-    class GameWindow *window, unsigned int msg, unsigned int mData1, unsigned int mData2);
+    GameWindow *window, unsigned int msg, unsigned int data_1, unsigned int data_2);
 WindowMsgHandledType Pass_Messages_To_Parent_System(
-    class GameWindow *window, unsigned int msg, unsigned int mData1, unsigned int mData2);
+    GameWindow *window, unsigned int msg, unsigned int data_1, unsigned int data_2);

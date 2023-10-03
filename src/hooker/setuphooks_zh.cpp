@@ -63,6 +63,12 @@
 #include "framemetrics.h"
 #include "functionlexicon.h"
 #include "fxlist.h"
+#include "gadgetcombobox.h"
+#include "gadgetlistbox.h"
+#include "gadgetprogressbar.h"
+#include "gadgetpushbutton.h"
+#include "gadgetstatictext.h"
+#include "gadgettabcontrol.h"
 #include "gameclient.h"
 #include "gamelogic.h"
 #include "gamemath.h"
@@ -1980,6 +1986,7 @@ void Setup_Hooks()
     Hook_Any(0x00774EA0, W3DGameClient::Create_Drawable);
     Hook_Any(0x007753A0, W3DGameClient::Create_VideoPlayer);
     Hook_Any(0x00775460, W3DGameClient::Create_SnowManager);
+    Hook_Any(0x00775260, W3DGameClient::Create_WindowManager);
 
     // w3dprojectedshadow.cpp
     Hook_Any(0x0075ECC0, W3DProjectedShadowManager::Hook_Ctor);
@@ -3341,6 +3348,29 @@ void Setup_Hooks()
 
     // w3dgamewindowmanager.h
     Hook_Any(0x007A9C10, W3DGameWindowManager::Allocate_New_Window);
+    Hook_Any(0x007A9BE0, W3DGameWindowManager::Init);
+    Hook_Any(0x007A9D00, W3DGameWindowManager::Get_Push_Button_Image_Draw_Func);
+    Hook_Any(0x007A9D10, W3DGameWindowManager::Get_Push_Button_Draw_Func);
+    Hook_Any(0x007A9D20, W3DGameWindowManager::Get_Check_Box_Image_Draw_Func);
+    Hook_Any(0x007A9D30, W3DGameWindowManager::Get_Check_Box_Draw_Func);
+    Hook_Any(0x007A9D40, W3DGameWindowManager::Get_Radio_Button_Image_Draw_Func);
+    Hook_Any(0x007A9D50, W3DGameWindowManager::Get_Radio_Button_Draw_Func);
+    Hook_Any(0x007A9D60, W3DGameWindowManager::Get_Tab_Control_Image_Draw_Func);
+    Hook_Any(0x007A9D70, W3DGameWindowManager::Get_Tab_Control_Draw_Func);
+    Hook_Any(0x007A9D80, W3DGameWindowManager::Get_List_Box_Image_Draw_Func);
+    Hook_Any(0x007A9D90, W3DGameWindowManager::Get_List_Box_Draw_Func);
+    Hook_Any(0x007A9DA0, W3DGameWindowManager::Get_Combo_Box_Image_Draw_Func);
+    Hook_Any(0x007A9DB0, W3DGameWindowManager::Get_Combo_Box_Draw_Func);
+    Hook_Any(0x007A9DC0, W3DGameWindowManager::Get_Horizontal_Slider_Image_Draw_Func);
+    Hook_Any(0x007A9DD0, W3DGameWindowManager::Get_Vertical_Slider_Draw_Func);
+    Hook_Any(0x007A9DE0, W3DGameWindowManager::Get_Vertical_Slider_Image_Draw_Func);
+    Hook_Any(0x007A9DF0, W3DGameWindowManager::Get_Progress_Bar_Image_Draw_Func);
+    Hook_Any(0x007A9E00, W3DGameWindowManager::Get_Progress_Bar_Draw_Func);
+    Hook_Any(0x007A9E10, W3DGameWindowManager::Get_Static_Text_Image_Draw_Func);
+    Hook_Any(0x007A9E20, W3DGameWindowManager::Get_Static_Text_Draw_Func);
+    Hook_Any(0x007A9E30, W3DGameWindowManager::Get_Text_Entry_Image_Draw_Func);
+    Hook_Any(0x007A9E40, W3DGameWindowManager::Get_Text_Entry_Draw_Func);
+    Hook_Any(0x007A9CF0, W3DGameWindowManager::Get_Default_Draw);
 
     // gamewindowmanager.h
     Hook_Any(0x004F9DA0, GameWindowManager::Init);
@@ -3351,9 +3381,99 @@ void Setup_Hooks()
     Hook_Any(0x004F9F00, GameWindowManager::Unlink_Window);
     Hook_Any(0x004F9F50, GameWindowManager::Unlink_Child_Window);
 
+    Hook_Any(0x006DF710, GameWindowManager::Win_Draw_Image);
+    Hook_Any(0x006DF750, GameWindowManager::Win_Fill_Rect);
+    Hook_Any(0x006DF790, GameWindowManager::Win_Open_Rect);
+    Hook_Any(0x006DF7D0, GameWindowManager::Win_Draw_Line);
+    Hook_Any(0x006DF800, GameWindowManager::Win_Find_Image);
+    Hook_Any(0x006DF8C0, GameWindowManager::Win_Make_Color);
+    Hook_Any(0x006DF8F0, GameWindowManager::Win_Format_Text);
+    Hook_Any(0x006DF900, GameWindowManager::Win_Get_Text_Size);
+    Hook_Any(0x006DF930, GameWindowManager::Win_Font_Height);
+    Hook_Any(0x006DF940, GameWindowManager::Win_Is_Digit);
+    Hook_Any(0x006DF960, GameWindowManager::Win_Is_Ascii);
+    Hook_Any(0x006DF980, GameWindowManager::Win_Is_Al_Num);
+    Hook_Any(0x006DF9A0, GameWindowManager::Win_Find_Font);
+
+    Hook_Any(0x004F9AB0, GameWindowManager::Process_Destroy_List);
+    Hook_Any(0x004F9B60, Pass_Selected_Buttons_To_Parent_System);
+    Hook_Any(0x004F9BC0, Pass_Messages_To_Parent_System);
+
+    Hook_Any(0x004F9C90, GameWindowManager::Get_Default_System);
+    Hook_Any(0x004F9CA0, GameWindowManager::Get_Default_Tooltip);
+    Hook_Any(0x004F9E20, GameWindowManager::Reset);
+    Hook_Any(0x004F9E40, GameWindowManager::Update);
+    Hook_Any(0x004F9FE0, GameWindowManager::Is_Enabled);
+    Hook_Any(0x004FA020, GameWindowManager::Is_Hidden);
+    Hook_Any(0x004FA060, GameWindowManager::Add_Window_To_Parent);
+    Hook_Any(0x004FA0B0, GameWindowManager::Add_Window_To_Parent_At_End);
+    Hook_Any(0x004FA120, GameWindowManager::Window_Hiding);
+    Hook_Any(0x004FA190, GameWindowManager::Hide_Windows_In_Range);
+    Hook_Any(0x004FA1D0, GameWindowManager::Enable_Windows_In_Range);
+    Hook_Any(0x004FA210, GameWindowManager::Win_Capture);
+    Hook_Any(0x004FA230, GameWindowManager::Win_Release);
+    Hook_Any(0x004FA250, GameWindowManager::Win_Get_Window_From_Id);
+    Hook_Any(0x004FA2B0, GameWindowManager::Win_Send_System_Msg);
+    Hook_Any(0x004FA2F0, GameWindowManager::Win_Send_Input_Msg);
+    Hook_Any(0x004FA330, GameWindowManager::Win_Set_Focus);
+    Hook_Any(0x004FA3E0, GameWindowManager::Win_Process_Key);
+    Hook_Any(0x004FA460, GameWindowManager::Win_Process_Mouse_Event);
+    Hook_Any(0x004FAB30, GameWindowManager::Draw_Window);
+    Hook_Any(0x004FAC00, GameWindowManager::Win_Repaint);
+    Hook_Any(0x004FAC80, GameWindowManager::Dump_Window);
+    Hook_Any(0x004FACB0, GameWindowManager::Win_Create);
+    Hook_Any(0x004FAE00, GameWindowManager::Win_Destroy);
+    Hook_Any(0x004FAF80, GameWindowManager::Win_Destroy_All);
+    Hook_Any(0x004FAFB0, GameWindowManager::Win_Set_Modal);
+    Hook_Any(0x004FB0E0, GameWindowManager::Win_Unset_Modal);
+    Hook_Any(0x004FB140, GameWindowManager::Win_Set_Lone_Window);
+    Hook_Any(0x004FBA40, GameWindowManager::Go_Go_Gadget_Push_Button);
+    Hook_Any(0x004FBB90, GameWindowManager::Go_Go_Gadget_Checkbox);
+    Hook_Any(0x004FBCD0, GameWindowManager::Go_Go_Gadget_Radio_Button);
+    Hook_Any(0x004FBE30, GameWindowManager::Go_Go_Gadget_Tab_Control);
+    Hook_Any(0x004FBF20, GameWindowManager::Go_Go_Gadget_List_Box);
+    Hook_Any(0x004FC180, GameWindowManager::Go_Go_Gadget_Slider);
+    Hook_Any(0x004FC420, GameWindowManager::Go_Go_Gadget_Combo_Box);
+    Hook_Any(0x004FC920, GameWindowManager::Go_Go_Gadget_Progress_Bar);
+    Hook_Any(0x004FC9C0, GameWindowManager::Go_Go_Gadget_Static_Text);
+    Hook_Any(0x004FCB60, GameWindowManager::Go_Go_Gadget_Text_Entry);
+
+    // Because some code checks if the input function for a push button is Gadget_Push_Button_Input or not, we need to make
+    // sure the checks point to our version, not the original.
+    Hook_Memory(0x009DF1E0, Gadget_Push_Button_Input);
+    Hook_Memory(0x0045FD27, Gadget_Push_Button_Input);
+    Hook_Memory(0x005AC723, Gadget_Push_Button_Input);
+
+    Hook_Any(0x004FCE70, GameWindowManager::Assign_Default_Gadget_Look);
+    Hook_Any(0x004FFC40, GameWindowManager::Win_Text_Label_To_Text);
+    Hook_Any(0x004FFD30, GameWindowManager::Get_Window_Under_Cursor);
+    Hook_Any(0x004FFEB0, GameWindowManager::Win_Next_Tab);
+    Hook_Any(0x004FFF60, GameWindowManager::Win_Prev_Tab);
+    Hook_Any(0x00500060, GameWindowManager::Register_Tab_List);
+    Hook_Any(0x00500180, GameWindowManager::Clear_Tab_List);
+
     // gamewindowtransitions.h
     Hook_Any(0x00515070, GameWindowTransitionsHandler::Set_Group);
     Hook_Any(0x00515280, GameWindowTransitionsHandler::Reverse);
     Hook_Any(0x00515450, GameWindowTransitionsHandler::Remove);
     Hook_Any(0x00515760, GameWindowTransitionsHandler::Is_Finished);
+
+    // gadgetcombobox.h
+    Hook_Any(0x005C4430, Gadget_Combo_Box_Set_Colors);
+    Hook_Any(0x00A538AF, Gadget_Combo_Box_Set_Is_Editable);
+    Hook_Any(0x005C4710, Gadget_Combo_Box_Set_Max_Chars);
+    Hook_Any(0x005C4730, Gadget_Combo_Box_Set_Max_Display);
+
+    // gadgetlistbox.h
+    Hook_Any(0x005E76A0, Gadget_List_Box_Set_Colors);
+    Hook_Any(0x005E85C0, Gadget_List_Box_Set_Audio_Feedback);
+
+    // gadgetprogressbar.h
+    Hook_Any(0x005A2C60, Gadget_Progress_Bar_System);
+
+    // gadgetstatictext.h
+    Hook_Any(0x005A2CC0, Gadget_Static_Text_Input);
+
+    // gadgettabcontrol.h
+    Hook_Any(0x006D8390, Gadget_Tab_Control_Show_Sub_Pane);
 }

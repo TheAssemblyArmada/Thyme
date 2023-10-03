@@ -22,3 +22,25 @@ void Gadget_Radio_Set_Text(GameWindow *radio_button, Utf16String text)
     g_theWindowManager->Win_Send_System_Msg(radio_button, GGM_SET_LABEL, reinterpret_cast<unsigned int>(&text), 0);
 #endif
 }
+
+WindowMsgHandledType Gadget_Radio_Button_Input(
+    GameWindow *radio_button, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+#ifdef GAME_DLL
+    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
+        PICK_ADDRESS(0x006D8610, 0x00A59F40), radio_button, message, data_1, data_2);
+#else
+    return MSG_IGNORED;
+#endif
+}
+
+WindowMsgHandledType Gadget_Radio_Button_System(
+    GameWindow *radio_button, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+#ifdef GAME_DLL
+    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
+        PICK_ADDRESS(0x006D8AA0, 0x00A5A3CD), radio_button, message, data_1, data_2);
+#else
+    return MSG_IGNORED;
+#endif
+}

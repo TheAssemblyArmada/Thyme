@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "w3dtextentry.h"
+
+void W3D_Gadget_Text_Entry_Draw(GameWindow *text_entry, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CA650, text_entry, data);
+#endif
+}
+
+void W3D_Gadget_Text_Entry_Image_Draw(GameWindow *text_entry, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CAC00, text_entry, data);
+#endif
+}

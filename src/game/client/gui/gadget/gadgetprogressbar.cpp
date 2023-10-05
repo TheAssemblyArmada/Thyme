@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "gadgetprogressbar.h"
+
+WindowMsgHandledType Gadget_Progress_Bar_System(
+    GameWindow *progress_bar, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+    if (message != GPM_SET_PROGRESS) {
+        return MSG_IGNORED;
+    }
+
+    if (data_1 < 101) {
+        progress_bar->Win_Set_User_Data(reinterpret_cast<void *>(data_1));
+    }
+
+    return MSG_HANDLED;
+}

@@ -17,12 +17,18 @@
 #include "drawable.h"
 #include "w3ddisplay.h"
 #include "w3dgamefont.h"
+#include "w3dgamewindowmanager.h"
 #include "w3dmouse.h"
 #include "w3dsnow.h"
 #include "w3dstatuscircle.h"
 #ifdef BUILD_WITH_FFMPEG
 #include "ffmpegvideoplayer.h"
 #endif
+
+GameWindowManager *W3DGameClient::Create_WindowManager()
+{
+    return new W3DGameWindowManager;
+}
 
 Mouse *W3DGameClient::Create_Mouse()
 {

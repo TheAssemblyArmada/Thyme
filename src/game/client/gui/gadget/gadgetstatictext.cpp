@@ -16,6 +16,7 @@
 #include "displaystring.h"
 #include "gamewindow.h"
 #include "gamewindowmanager.h"
+#include "keyboard.h"
 
 void Gadget_Static_Text_Set_Text(GameWindow *static_text, Utf16String text)
 {
@@ -45,4 +46,44 @@ void Gadget_Static_Text_Set_Font(GameWindow *static_text, GameFont *font)
             data->m_text->Set_Font(font);
         }
     }
+}
+
+WindowMsgHandledType Gadget_Static_Text_Input(
+    GameWindow *static_text, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+
+    if (message != GWM_CHAR) {
+        return MSG_IGNORED;
+    }
+
+    switch (data_1) {
+        case Keyboard::KEY_TAB:
+        case Keyboard::KEY_RIGHT:
+        case Keyboard::KEY_DOWN:
+            if ((data_2 & Keyboard::KEY_STATE_DOWN) != 0) {
+                static_text->Win_Next_Tab();
+            }
+
+            return MSG_HANDLED;
+        case Keyboard::KEY_UP:
+        case Keyboard::KEY_LEFT:
+            if ((data_2 & Keyboard::KEY_STATE_DOWN) != 0) {
+                static_text->Win_Prev_Tab();
+            }
+
+            return MSG_HANDLED;
+        default:
+            return MSG_IGNORED;
+    }
+}
+
+WindowMsgHandledType Gadget_Static_Text_System(
+    GameWindow *static_text, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+#ifdef GAME_DLL
+    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
+        PICK_ADDRESS(0x005A2DF0, 0x008DFAA7), static_text, message, data_1, data_2);
+#else
+    return MSG_IGNORED;
+#endif
 }

@@ -131,6 +131,11 @@ inline void Hook_Func(uintptr_t in, uintptr_t out)
 #endif
 }
 
+template<typename T> void Hook_Memory(uintptr_t in, T out)
+{
+    WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &out, sizeof(T), nullptr);
+}
+
 // Hook regular functions and static methods.
 template<typename T> void Hook_Function(uintptr_t in, T out)
 {

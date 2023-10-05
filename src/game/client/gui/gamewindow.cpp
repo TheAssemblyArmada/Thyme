@@ -968,7 +968,7 @@ int GameWindow::Win_Activate()
 
 WindowMsgHandledType Game_Win_Default_Input(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2)
 {
-    return MSG_HANDLED;
+    return MSG_IGNORED;
 }
 
 WindowMsgHandledType Game_Win_Block_Input(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2)
@@ -990,7 +990,7 @@ WindowMsgHandledType Game_Win_Block_Input(GameWindow *window, unsigned int msg, 
 
 WindowMsgHandledType Game_Win_Default_System(GameWindow *window, unsigned int msg, unsigned int data1, unsigned int data2)
 {
-    return MSG_HANDLED;
+    return MSG_IGNORED;
 }
 
 void Game_Win_Default_Tooltip(GameWindow *window, WinInstanceData *inst_data, unsigned int mouse) {}

@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "w3dpushbutton.h"
+
+void W3D_Gadget_Push_Button_Draw(GameWindow *push_button, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CE230, push_button, data);
+#endif
+}
+
+void W3D_Gadget_Push_Button_Image_Draw(GameWindow *push_button, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CE600, push_button, data);
+#endif
+}

@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "w3dcheckbox.h"
+
+void W3D_Gadget_Check_Box_Draw(GameWindow *check_box, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CDDF0, check_box, data);
+#endif
+}
+
+void W3D_Gadget_Check_Box_Image_Draw(GameWindow *check_box, WinInstanceData *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, WinInstanceData *>(0x007CE130, check_box, data);
+#endif
+}

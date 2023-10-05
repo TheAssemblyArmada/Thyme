@@ -41,3 +41,25 @@ void Gadget_Text_Entry_Set_Font(GameWindow *text_entry, GameFont *font)
         }
     }
 }
+
+WindowMsgHandledType Gadget_Text_Entry_Input(
+    GameWindow *text_entry, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+#ifdef GAME_DLL
+    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
+        PICK_ADDRESS(0x005CB380, 0x00A51AF0), text_entry, message, data_1, data_2);
+#else
+    return MSG_IGNORED;
+#endif
+}
+
+WindowMsgHandledType Gadget_Text_Entry_System(
+    GameWindow *text_entry, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+#ifdef GAME_DLL
+    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
+        PICK_ADDRESS(0x005CB7C0, 0x00A520D2), text_entry, message, data_1, data_2);
+#else
+    return MSG_IGNORED;
+#endif
+}

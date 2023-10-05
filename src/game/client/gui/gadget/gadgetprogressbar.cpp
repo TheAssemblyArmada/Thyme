@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "gadgetprogressbar.h"
+#include "gamewindowmanager.h"
 
 WindowMsgHandledType Gadget_Progress_Bar_System(
     GameWindow *progress_bar, unsigned int message, unsigned int data_1, unsigned int data_2)
@@ -26,4 +27,11 @@ WindowMsgHandledType Gadget_Progress_Bar_System(
     }
 
     return MSG_HANDLED;
+}
+
+void Gadget_Progress_Bar_Set_Progress(GameWindow *progress_bar, int progress)
+{
+    if (progress_bar != nullptr) {
+        g_theWindowManager->Win_Send_System_Msg(progress_bar, GPM_SET_PROGRESS, progress, 0);
+    }
 }

@@ -197,6 +197,7 @@
 #include "w3dmodeldraw.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
+#include "w3dprogressbar.h"
 #include "w3dprojectedshadow.h"
 #include "w3dpropbuffer.h"
 #include "w3droadbuffer.h"
@@ -204,6 +205,7 @@
 #include "w3dshroud.h"
 #include "w3dsmudge.h"
 #include "w3dsnow.h"
+#include "w3dstatictext.h"
 #include "w3dterrainbackground.h"
 #include "w3dterraintracks.h"
 #include "w3dtreebuffer.h"
@@ -3470,10 +3472,22 @@ void Setup_Hooks()
 
     // gadgetprogressbar.h
     Hook_Any(0x005A2C60, Gadget_Progress_Bar_System);
+    Hook_Any(0x005A2C90, Gadget_Progress_Bar_Set_Progress);
 
     // gadgetstatictext.h
     Hook_Any(0x005A2CC0, Gadget_Static_Text_Input);
+    Hook_Any(0x005A2DF0, Gadget_Static_Text_System);
+    Hook_Any(0x005A2EF0, Gadget_Static_Text_Set_Text);
+    Hook_Any(0x005A2F60, Gadget_Static_Text_Get_Text);
 
     // gadgettabcontrol.h
     Hook_Any(0x006D8390, Gadget_Tab_Control_Show_Sub_Pane);
+
+    // w3dprogressbar.h
+    Hook_Any(0x007CB2F0, W3D_Gadget_Progress_Bar_Draw);
+    Hook_Any(0x007CB520, W3D_Gadget_Progress_Bar_Image_Draw);
+
+    // w3dstatictext.h
+    Hook_Any(0x007CAF30, W3D_Gadget_Static_Text_Draw);
+    Hook_Any(0x007CB1D0, W3D_Gadget_Static_Text_Image_Draw);
 }

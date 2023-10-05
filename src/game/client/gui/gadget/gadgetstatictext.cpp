@@ -14,6 +14,7 @@
  */
 #include "gadgetstatictext.h"
 #include "displaystring.h"
+#include "displaystringmanager.h"
 #include "gamewindow.h"
 #include "gamewindowmanager.h"
 #include "keyboard.h"
@@ -80,10 +81,49 @@ WindowMsgHandledType Gadget_Static_Text_Input(
 WindowMsgHandledType Gadget_Static_Text_System(
     GameWindow *static_text, unsigned int message, unsigned int data_1, unsigned int data_2)
 {
-#ifdef GAME_DLL
-    return Call_Function<WindowMsgHandledType, GameWindow *, unsigned int, unsigned int, unsigned int>(
-        PICK_ADDRESS(0x005A2DF0, 0x008DFAA7), static_text, message, data_1, data_2);
-#else
-    return MSG_IGNORED;
-#endif
+    switch (message) {
+        case GGM_GET_LABEL: {
+            _TextData *st_data = static_cast<_TextData *>(static_text->Win_Get_User_Data());
+
+            if (st_data != nullptr && st_data->m_text != nullptr) {
+                *(reinterpret_cast<Utf16String *>(data_2)) = st_data->m_text->Get_Text();
+            }
+
+            return MSG_HANDLED;
+        }
+        case GGM_SET_LABEL: {
+            _TextData *st_data = static_cast<_TextData *>(static_text->Win_Get_User_Data());
+
+            if (st_data != nullptr && st_data->m_text != nullptr) {
+                st_data->m_text->Set_Text(*(reinterpret_cast<Utf16String *>(data_1)));
+            }
+
+            return MSG_HANDLED;
+        }
+        case GWM_CREATE:
+            return MSG_HANDLED;
+        case GWM_DESTROY: {
+            _TextData *st_data = static_cast<_TextData *>(static_text->Win_Get_User_Data());
+            g_theDisplayStringManager->Free_Display_String(st_data->m_text);
+            delete st_data;
+            return MSG_HANDLED;
+        }
+        default:
+            return MSG_IGNORED;
+    }
+}
+
+Utf16String Gadget_Static_Text_Get_Text(GameWindow *static_text)
+{
+    if (static_text != nullptr) {
+        _TextData *st_data = static_cast<_TextData *>(static_text->Win_Get_User_Data());
+
+        if (st_data != nullptr) {
+            return st_data->m_text->Get_Text();
+        } else {
+            return Utf16String::s_emptyString;
+        }
+    } else {
+        return Utf16String::s_emptyString;
+    }
 }

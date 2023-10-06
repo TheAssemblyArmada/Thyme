@@ -233,4 +233,5 @@ private:
     int m_lockedStride;
     TextureClass *m_curTexture;
     ShaderClass m_shader;
+    friend class W3DDisplayString;
 };

@@ -18,6 +18,10 @@
 DisplayStringManager *g_theDisplayStringManager = nullptr;
 #endif
 
+DisplayStringManager::DisplayStringManager() : m_stringList(nullptr), m_currentCheckpoint(nullptr) {}
+
+DisplayStringManager::~DisplayStringManager() {}
+
 /**
  * @brief Links a DisplayString into the managers internal list.
  *

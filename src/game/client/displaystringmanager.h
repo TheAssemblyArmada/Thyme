@@ -36,7 +36,7 @@ protected:
     void Link(DisplayString *string);
     void Unlink(DisplayString *string);
 
-private:
+protected:
     DisplayString *m_stringList;
     DisplayString *m_currentCheckpoint;
 };

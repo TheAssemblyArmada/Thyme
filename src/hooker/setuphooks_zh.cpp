@@ -1989,6 +1989,7 @@ void Setup_Hooks()
     Hook_Any(0x007753A0, W3DGameClient::Create_VideoPlayer);
     Hook_Any(0x00775460, W3DGameClient::Create_SnowManager);
     Hook_Any(0x00775260, W3DGameClient::Create_WindowManager);
+    Hook_Any(0x00775340, W3DGameClient::Create_DisplayStringManager);
 
     // w3dprojectedshadow.cpp
     Hook_Any(0x0075ECC0, W3DProjectedShadowManager::Hook_Ctor);

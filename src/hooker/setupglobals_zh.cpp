@@ -828,3 +828,7 @@ SelectionTranslator *&g_theSelectionTranslator = Make_Global<SelectionTranslator
 class HeaderTemplateManager;
 HeaderTemplateManager *&g_theHeaderTemplateManager =
     Make_Global<HeaderTemplateManager *>(PICK_ADDRESS(0x00A2BEFC, 0x04CA9B04));
+
+// hotkey.cpp
+class HotKeyManager;
+HotKeyManager *&g_theHotKeyManager = Make_Global<HotKeyManager *>(PICK_ADDRESS(0x00A2C678, 0x04CA8B00));

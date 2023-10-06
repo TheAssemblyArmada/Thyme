@@ -38,13 +38,13 @@ public:
     virtual void Reset();
     virtual void Set_Font(GameFont *font) { m_font = font; }
     virtual GameFont *Get_Font() { return m_font; }
-    virtual void Set_Word_Wrap(int length) = 0;
+    virtual void Set_Word_Wrap(int wrap_width) = 0;
     virtual void Set_Word_Wrap_Centered(bool on) = 0;
     virtual void Draw(int x, int y, int color, int border_color) = 0;
-    virtual void Draw(int x, int y, int color, int border_color, int x_offset, int y_offset) = 0;
+    virtual void Draw(int x, int y, int color, int border_color, int border_x_offset, int border_y_offset) = 0;
     virtual void Get_Size(int *x, int *y) = 0;
     virtual int Get_Width(int char_count) = 0;
-    virtual void Set_Use_Hotkey(bool state, int val) = 0;
+    virtual void Set_Use_Hotkey(bool state, int color) = 0;
     virtual void Set_Clip_Region(IRegion2D *region) {}
     virtual void Remove_Last_Char();
     virtual void Add_Char(wchar_t ch);

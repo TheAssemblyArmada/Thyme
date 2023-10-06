@@ -16,6 +16,7 @@
 #include "binkvideoplayer.h"
 #include "drawable.h"
 #include "w3ddisplay.h"
+#include "w3ddisplaystringmanager.h"
 #include "w3dgamefont.h"
 #include "w3dgamewindowmanager.h"
 #include "w3dmouse.h"
@@ -74,4 +75,9 @@ VideoPlayer *W3DGameClient::Create_VideoPlayer()
 SnowManager *W3DGameClient::Create_SnowManager()
 {
     return new W3DSnowManager();
+}
+
+DisplayStringManager *W3DGameClient::Create_DisplayStringManager()
+{
+    return new W3DDisplayStringManager();
 }

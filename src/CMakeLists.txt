@@ -125,6 +125,7 @@ set(GAMEENGINE_SRC
     game/client/languagefilter.cpp
     game/client/line2d.cpp
     game/client/maputil.cpp
+    game/client/messagestream/hotkey.cpp
     game/client/messagestream/metaevent.cpp
     game/client/messagestream/selectionxlat.cpp
     game/client/optionpreferences.cpp
@@ -405,6 +406,8 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3ddebugdisplay.cpp
     platform/w3dengine/client/w3ddebugicons.cpp
     platform/w3dengine/client/w3ddisplay.cpp
+    platform/w3dengine/client/w3ddisplaystring.cpp
+    platform/w3dengine/client/w3ddisplaystringmanager.cpp
     platform/w3dengine/client/w3ddynamiclight.cpp
     platform/w3dengine/client/w3dfilesystem.cpp
     platform/w3dengine/client/w3dgameclient.cpp

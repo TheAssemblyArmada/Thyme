@@ -46,6 +46,7 @@ class GlobalLanguage : public SubsystemInterface
 {
 public:
     friend W3DFontLibrary;
+    friend class W3DDisplayString;
 
     GlobalLanguage();
     virtual ~GlobalLanguage() {}
@@ -60,6 +61,7 @@ public:
     const FontDesc &Copyright_Font() const { return m_copyrightFont; }
     const FontDesc &Debug_Display_Font() const { return m_nativeDebugDisplayFont; }
     const FontDesc &Default_Window_Font() const { return m_defaultWindowFont; }
+    const FontDesc &Default_Display_String_Font() const { return m_defaultDisplayStringFont; }
 
     static void Parse_Language_Definition(INI *ini);
     static void Parse_Font_Filename(INI *ini, void *formal, void *store, void const *user_data);

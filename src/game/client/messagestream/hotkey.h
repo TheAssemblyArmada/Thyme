@@ -25,7 +25,7 @@ public:
     HotKey() : m_window(nullptr) {}
 
 private:
-    Utf8String *m_key;
+    Utf8String m_key;
     GameWindow *m_window;
     friend class HotKeyManager;
 };
@@ -39,6 +39,7 @@ public:
     virtual void Reset() override;
     virtual void Update() override;
     Utf8String Search_Hot_Key(const Utf16String &str);
+    void Add_Hot_Key(GameWindow *window, const Utf8String &key);
 
 private:
     std::map<Utf8String, HotKey> m_hotKeys;

@@ -94,6 +94,16 @@ set(GAMEENGINE_SRC
     game/client/globallanguage.cpp
     game/client/gui/challengegenerals.cpp
     game/client/gui/controlbar/controlbar.cpp
+    game/client/gui/controlbar/controlbarbeacon.cpp
+    game/client/gui/controlbar/controlbarcommand.cpp
+    game/client/gui/controlbar/controlbarcommandprocessing.cpp
+    game/client/gui/controlbar/controlbarmultiselect.cpp
+    game/client/gui/controlbar/controlbarocltimer.cpp
+    game/client/gui/controlbar/controlbarobserver.cpp
+    game/client/gui/controlbar/controlbarresizer.cpp
+    game/client/gui/controlbar/controlbarscheme.cpp
+    game/client/gui/controlbar/controlbarstructureinventory.cpp
+    game/client/gui/controlbar/controlbarunderconstruction.cpp
     game/client/gui/gadget/gadgetcheckbox.cpp
     game/client/gui/gadget/gadgetcombobox.cpp
     game/client/gui/gadget/gadgethorizontalslider.cpp

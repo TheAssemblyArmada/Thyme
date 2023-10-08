@@ -54,7 +54,36 @@ enum LegalBuildCode
 
 enum RadiusCursorType
 {
-    RADIUS_CURSOR_UNK,
+    RADIUS_CURSOR_NONE,
+    RADIUS_CURSOR_ATTACK_DAMAGE_AREA,
+    RADIUS_CURSOR_ATTACK_SCATTER_AREA,
+    RADIUS_CURSOR_ATTACK_CONTINUE_AREA,
+    RADIUS_CURSOR_GUARD_AREA,
+    RADIUS_CURSOR_EMERGENCY_REPAIR,
+    RADIUS_CURSOR_FRIENDLY_SPECIALPOWER,
+    RADIUS_CURSOR_OFFENSIVE_SPECIALPOWER,
+    RADIUS_CURSOR_SUPERWEAPON_SCATTER_AREA,
+    RADIUS_CURSOR_PARTICLECANNON,
+    RADIUS_CURSOR_A10STRIKE,
+    RADIUS_CURSOR_CARPETBOMB,
+    RADIUS_CURSOR_DAISYCUTTER,
+    RADIUS_CURSOR_PARADROP,
+    RADIUS_CURSOR_SPYSATELLITE,
+    RADIUS_CURSOR_SPECTREGUNSHIP,
+    RADIUS_CURSOR_HELIX_NAPALM_BOMB,
+    RADIUS_CURSOR_NUCLEARMISSILE,
+    RADIUS_CURSOR_EMPPULSE,
+    RADIUS_CURSOR_ARTILLERYBARRAGE,
+    RADIUS_CURSOR_NAPALMSTRIKE,
+    RADIUS_CURSOR_CLUSTERMINES,
+    RADIUS_CURSOR_SCUDSTORM,
+    RADIUS_CURSOR_ANTHRAXBOMB,
+    RADIUS_CURSOR_AMBUSH,
+    RADIUS_CURSOR_RADAR,
+    RADIUS_CURSOR_SPYDRONE,
+    RADIUS_CURSOR_FRENZY,
+    RADIUS_CURSOR_CLEARMINES,
+    RADIUS_CURSOR_AMBULANCE,
 };
 
 struct BuildProgress
@@ -188,6 +217,7 @@ public:
 
     void Add_World_Animation(
         Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise);
+    bool Are_Selected_Objects_Controllable();
 
     bool Get_Drawable_Caption_Bold() const { return m_drawableCaptionBold; }
     int Get_Drawable_Caption_Size() const { return m_drawableCaptionPointSize; }
@@ -196,6 +226,7 @@ public:
     bool Is_In_Waypoint_Mode() const { return m_waypointMode; }
     bool Get_Unk7() const { return m_unk7; }
     void Set_Unk6(bool b) { m_unk6 = b; }
+    void Clear_Attack_Move_To_Mode() { m_attackMoveToMode = false; }
 
 protected:
     struct MoveHintStruct
@@ -315,7 +346,7 @@ protected:
     bool m_waypointMode;
     bool m_unk2; // not 100% identified yet
     bool m_unk3; // not 100% identified yet
-    bool m_unk4; // not 100% identified yet
+    bool m_attackMoveToMode; // not 100% identified yet
     bool m_unk5; // not 100% identified yet
     bool m_cameraRotateLeft; // not 100% identified yet
     bool m_cameraRotateRight; // not 100% identified yet

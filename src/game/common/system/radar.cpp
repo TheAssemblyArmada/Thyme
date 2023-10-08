@@ -55,3 +55,21 @@ void Radar::Try_Infiltration_Event(Object *obj)
     Call_Method<void, Radar, Object *>(PICK_ADDRESS(0x0049AD70, 0x0090AFF1), this, obj);
 #endif
 }
+
+bool Radar::Local_Pixel_To_Radar(const ICoord2D *pixel, ICoord2D *radar)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Radar, const ICoord2D *, ICoord2D *>(PICK_ADDRESS(0x0049A190, 0x0090A315), this, pixel, radar);
+#else
+    return false;
+#endif
+}
+
+bool Radar::Radar_To_World(const ICoord2D *radar, Coord3D *world)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Radar, const ICoord2D *, Coord3D *>(PICK_ADDRESS(0x0049A070, 0x0090A22B), this, radar, world);
+#else
+    return false;
+#endif
+}

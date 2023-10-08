@@ -1107,3 +1107,42 @@ bool INI::Is_End_Of_Block(char *buffer_to_check)
 
     return ret;
 }
+
+void INI::Parse_Thing_Template(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *name = ini->Get_Next_Token();
+    captainslog_relassert(g_theThingFactory != nullptr, CODE_01, "TheThingFactory not inited yet");
+    ThingTemplate **tmplate = static_cast<ThingTemplate **>(store);
+
+    if (strcasecmp(name, "None") == 0) {
+        *tmplate = nullptr;
+    } else {
+        ThingTemplate *thing_template = g_theThingFactory->Find_Template(name, true);
+        captainslog_dbgassert(thing_template != nullptr, "ThingTemplate %s not found!", name);
+        *tmplate = thing_template;
+    }
+}
+
+void INI::Parse_Upgrade_Template(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *name = ini->Get_Next_Token();
+    captainslog_relassert(g_theUpgradeCenter != nullptr, CODE_01, "TheUpgradeCenter not inited yet");
+    const UpgradeTemplate **tmplate = static_cast<const UpgradeTemplate **>(store);
+    const UpgradeTemplate *upgrade_template = g_theUpgradeCenter->Find_Upgrade(name);
+    captainslog_dbgassert(upgrade_template != nullptr, "Upgrade %s not found!", name);
+    *tmplate = upgrade_template;
+}
+
+void INI::Parse_Special_Power_Template(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *name = ini->Get_Next_Token();
+    captainslog_relassert(g_theSpecialPowerStore != nullptr, CODE_01, "TheSpecialPowerStore not inited yet");
+    const SpecialPowerTemplate **tmplate = static_cast<const SpecialPowerTemplate **>(store);
+    const SpecialPowerTemplate *special_power_template = g_theSpecialPowerStore->Find_Special_Power_Template(name);
+    captainslog_dbgassert(special_power_template != nullptr && strcasecmp(name, "None") == 0,
+        "[LINE: %d in '%s'] Specialpower %s not found!",
+        ini->Get_Line_Number(),
+        ini->Get_Filename().Str(),
+        name);
+    *tmplate = special_power_template;
+}

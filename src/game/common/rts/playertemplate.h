@@ -70,6 +70,9 @@ public:
     const std::map<NameKeyType, float> *Get_Production_Time_Changes() const { return &m_productionTimeChanges; }
     const std::vector<ScienceType> *Get_Intrinsinc_Sciences() const { return &m_intrinsicSciences; }
     int Get_Intrinsic_Science_Purchase_Points() const { return m_intrinsicSciencePurchasePoints; }
+    Utf8String Get_Special_Power_Shortcut_Win_Name() const { return m_specialPowerShortcutWinName; }
+    int Get_Special_Power_Shortcut_Button_Count() const { return m_specialPowerShortcutButtonCount; }
+    Utf8String Get_Special_Power_Shortcut_Command_Set() const { return m_specialPowerShortcutCommandSet; }
 
     const std::map<NameKeyType, VeterancyLevel> *Get_Production_Veterancy_Levels() const
     {

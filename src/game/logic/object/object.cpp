@@ -4235,7 +4235,8 @@ void Object::Do_Command_Button(const CommandButton *button, CommandSourceType ty
                         goto l1;
                     }
 
-                    if ((button->Get_Options() & 7) != 0 || (button->Get_Options() & 0x20) != 0) {
+                    if ((button->Get_Options() & COMMAND_OPTION_NEED_TARGET_OBJECT) != 0
+                        || (button->Get_Options() & COMMAND_OPTION_NEED_TARGET_POS) != 0) {
                         captainslog_dbgassert(false,
                             "WARNING: Script doCommandButton for button %s cannot fire weapon with NO POSITION. Skipping.",
                             button->Get_Name().Str());
@@ -4251,8 +4252,9 @@ void Object::Do_Command_Button(const CommandButton *button, CommandSourceType ty
                         goto l1;
                     }
 
-                    Do_Special_Power(
-                        button->Get_Special_Power(), button->Get_Options() | 0x40000, type == COMMANDSOURCE_SCRIPT);
+                    Do_Special_Power(button->Get_Special_Power(),
+                        button->Get_Options() | COMMAND_OPTION_DO_NOT_USE,
+                        type == COMMANDSOURCE_SCRIPT);
                     break;
                 }
                 case GUI_COMMAND_HACK_INTERNET: {
@@ -4299,14 +4301,14 @@ void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *ob
                         goto l1;
                     }
 
-                    if ((button->Get_Options() & 7) != 0) {
+                    if ((button->Get_Options() & COMMAND_OPTION_NEED_TARGET_OBJECT) != 0) {
                         if (obj == nullptr || !button->Is_Valid_Object_Target(this, obj)) {
                             goto l1;
                         }
 
                         Set_Weapon_Lock(button->Get_Weapon_Slot(), LOCKED_LEVEL_1);
 
-                        if ((button->Get_Options() & 0x1000) != 0) {
+                        if ((button->Get_Options() & COMMAND_OPTION_ATTACK_OBJECTS_POSITION) != 0) {
                             update->AI_Attack_Position(Get_Position(), button->Get_Max_Shots_To_Fire(), type);
                         } else {
                             update->AI_Attack_Object(obj, button->Get_Max_Shots_To_Fire(), type);
@@ -4322,8 +4324,10 @@ void Object::Do_Command_Button_At_Object(const CommandButton *button, Object *ob
                 }
                 case GUI_COMMAND_SPECIAL_POWER: {
                     if (button->Get_Special_Power()) {
-                        Do_Special_Power_At_Object(
-                            button->Get_Special_Power(), obj, button->Get_Options() | 0x40000, type == COMMANDSOURCE_SCRIPT);
+                        Do_Special_Power_At_Object(button->Get_Special_Power(),
+                            obj,
+                            button->Get_Options() | COMMAND_OPTION_DO_NOT_USE,
+                            type == COMMANDSOURCE_SCRIPT);
                     }
 
                     break;
@@ -4389,7 +4393,7 @@ void Object::Do_Command_Button_At_Position(const CommandButton *button, const Co
                         goto l1;
                     }
 
-                    if ((button->Get_Options() & 0x20) != 0) {
+                    if ((button->Get_Options() & COMMAND_OPTION_NEED_TARGET_POS) != 0) {
                         if (pos == nullptr) {
                             goto l1;
                         }
@@ -4413,7 +4417,7 @@ void Object::Do_Command_Button_At_Position(const CommandButton *button, const Co
                     Do_Special_Power_At_Location(button->Get_Special_Power(),
                         pos,
                         -100.0f,
-                        button->Get_Options() | 0x40000,
+                        button->Get_Options() | COMMAND_OPTION_DO_NOT_USE,
                         type == COMMANDSOURCE_SCRIPT);
                     break;
                 }
@@ -4432,10 +4436,12 @@ void Object::Do_Command_Button_At_Position(const CommandButton *button, const Co
 void Object::Do_Command_Button_Using_Waypoints(const CommandButton *button, const Waypoint *wp, CommandSourceType type)
 {
     if (!Is_Disabled() && button == nullptr) {
-        if ((button->Get_Options() & 0x400000) != 0) {
+        if ((button->Get_Options() & COMMAND_OPTION_CAN_USE_WAYPOINTS) != 0) {
             if (button->Get_Command() == GUI_COMMAND_SPECIAL_POWER && button->Get_Special_Power() != nullptr) {
-                Do_Special_Power_Using_Waypoints(
-                    button->Get_Special_Power(), wp, button->Get_Options() | 0x40000, type == COMMANDSOURCE_SCRIPT);
+                Do_Special_Power_Using_Waypoints(button->Get_Special_Power(),
+                    wp,
+                    button->Get_Options() | COMMAND_OPTION_DO_NOT_USE,
+                    type == COMMANDSOURCE_SCRIPT);
             } else {
                 captainslog_dbgassert(false,
                     "WARNING: Script doCommandButtonUsingWaypoints for button %s not implemented. Doing nothing.",

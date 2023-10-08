@@ -50,6 +50,7 @@ public:
     NameKeyType Get_Name_Key() const { return m_nameKey; }
     UpgradeType Get_Type() const { return m_type; }
     AcademyClassificationType Get_Academy_Classify() const { return m_academyClassify; }
+    const Image *Get_Button_Image() const { return m_buttonImage; }
 
     void Set_Name(const Utf8String &name) { m_name = name; }
     void Set_Name_Key(NameKeyType key) { m_nameKey = key; }

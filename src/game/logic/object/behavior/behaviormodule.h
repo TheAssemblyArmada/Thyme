@@ -35,7 +35,6 @@ class HordeUpdateInterface;
 class OverchargeBehaviorInterface;
 class ParkingPlaceBehaviorInterface;
 class PowerPlantUpdateInterface;
-class ProductionEntry;
 class RailedTransportDockUpdateInterface;
 class RebuildHoleBehaviorInterface;
 class SlowDeathBehaviorInterface;
@@ -80,6 +79,37 @@ public:
     virtual ObjectID Calculate_Countermeasure_To_Divert_To(const Object &obj) = 0;
     virtual void Reload_Countermeasures() = 0;
     virtual bool Is_Active() const = 0;
+};
+
+class ProductionEntry : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(ProductionEntry)
+
+public:
+    enum ProductionType
+    {
+        PRODUCTION_INVALID,
+        PRODUCTION_UNIT,
+        PRODUCTION_UPGRADE,
+    };
+
+    virtual ~ProductionEntry() override;
+    ProductionID Get_Production_ID() const { return m_productionID; }
+    const ThingTemplate *Get_Production_Object() const { return m_objectToProduce; }
+    int Get_Type() const { return m_type; }
+    float Get_Percent_Complete() const { return m_percentComplete; }
+
+private:
+    int m_type;
+    ThingTemplate *m_objectToProduce;
+    ProductionID m_productionID;
+    float m_percentComplete;
+    int m_framesUnderConstruction;
+    int m_productionQuantity;
+    int m_productionCount;
+    int m_exitDoor;
+    ProductionEntry *m_next;
+    ProductionEntry *m_prev;
 };
 
 class ProductionUpdateInterface

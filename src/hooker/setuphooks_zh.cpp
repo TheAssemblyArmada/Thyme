@@ -22,6 +22,7 @@
 #include "aipathfind.h"
 #include "aiupdate.h"
 #include "anim2d.h"
+#include "animatewindowmanager.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
@@ -3491,4 +3492,9 @@ void Setup_Hooks()
     // w3dstatictext.h
     Hook_Any(0x007CAF30, W3D_Gadget_Static_Text_Draw);
     Hook_Any(0x007CB1D0, W3D_Gadget_Static_Text_Image_Draw);
+
+    // animatewindowmanager.h
+    Hook_Any(0x005A9160, AnimateWindowManager::Hook_Ctor);
+    Hook_Any(0x005A9830, AnimateWindowManager::Register_Game_Window);
+    Hook_Any(0x005A9990, AnimateWindowManager::Reverse_Animate_Window);
 }

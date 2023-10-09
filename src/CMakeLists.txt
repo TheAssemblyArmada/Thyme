@@ -92,6 +92,7 @@ set(GAMEENGINE_SRC
     game/client/gameclient.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
+    game/client/gui/animatewindowmanager.cpp
     game/client/gui/challengegenerals.cpp
     game/client/gui/controlbar/controlbar.cpp
     game/client/gui/controlbar/controlbarbeacon.cpp
@@ -126,6 +127,7 @@ set(GAMEENGINE_SRC
     game/client/gui/imemanager.cpp
     game/client/gui/imemanagerinterface.cpp
     game/client/gui/loadscreen.cpp
+    game/client/gui/processanimatewindow.cpp
     game/client/gui/shell/shell.cpp
     game/client/gui/windowlayout.cpp
     game/client/gui/wininstancedata.cpp

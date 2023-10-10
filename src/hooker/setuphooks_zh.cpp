@@ -221,6 +221,7 @@
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include "win32mouse.h"
+#include "windowvideomanager.h"
 #include "wininstancedata.h"
 #include "worldheightmap.h"
 #include "wwstring.h"
@@ -3497,4 +3498,8 @@ void Setup_Hooks()
     Hook_Any(0x005A9160, AnimateWindowManager::Hook_Ctor);
     Hook_Any(0x005A9830, AnimateWindowManager::Register_Game_Window);
     Hook_Any(0x005A9990, AnimateWindowManager::Reverse_Animate_Window);
+
+    // windowvideomanager.h
+    Hook_Any(0x005A9D00, WindowVideoManager::Hook_Ctor);
+    Hook_Any(0x005AA400, WindowVideoManager::Load_Movie);
 }

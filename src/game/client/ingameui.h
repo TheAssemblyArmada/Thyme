@@ -29,7 +29,7 @@
 class CommandButton;
 class Drawable;
 class VideoBuffer;
-class VideoStreamInterface;
+class VideoStream;
 class GameWindow;
 class PopupMessageData;
 class WindowLayout;
@@ -272,9 +272,9 @@ protected:
     int m_doubleClickCounter; // not 100% identified yet
     Coord3D m_radiusDecalPos; // not 100% identified yet
     VideoBuffer *m_videoBuffer;
-    VideoStreamInterface *m_videoStream;
+    VideoStream *m_videoStream;
     VideoBuffer *m_cameoVideoBuffer;
-    VideoStreamInterface *m_cameoVideoStream;
+    VideoStream *m_cameoVideoStream;
     UIMessage m_uiMessages[6];
     std::map<Utf8String, std::list<SuperweaponInfo *>> m_superweapons[16];
     Coord2D m_superweaponPosition;

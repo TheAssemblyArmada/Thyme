@@ -130,6 +130,7 @@ set(GAMEENGINE_SRC
     game/client/gui/processanimatewindow.cpp
     game/client/gui/shell/shell.cpp
     game/client/gui/windowlayout.cpp
+    game/client/gui/windowvideomanager.cpp
     game/client/gui/wininstancedata.cpp
     game/client/ingameui.cpp
     game/client/input/keyboard.cpp

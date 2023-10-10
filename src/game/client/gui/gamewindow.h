@@ -337,6 +337,7 @@ public:
     int Win_Set_Enabled_Color(int index, int color);
     int Win_Set_Enabled_Border_Color(int index, int color);
 
+    const Image *Win_Get_Enabled_Image(int index) { return m_instData.m_enabledDrawData[index].image; }
     int Win_Get_Enabled_Color(int index) { return m_instData.m_enabledDrawData[index].color; }
     int Win_Get_Enabled_Border_Color(int index) { return m_instData.m_enabledDrawData[index].borderColor; }
 
@@ -344,6 +345,7 @@ public:
     int Win_Set_Disabled_Color(int index, int color);
     int Win_Set_Disabled_Border_Color(int index, int color);
 
+    const Image *Win_Get_Disabled_Image(int index) { return m_instData.m_disabledDrawData[index].image; }
     int Win_Get_Disabled_Color(int index) { return m_instData.m_disabledDrawData[index].color; }
     int Win_Get_Disabled_Border_Color(int index) { return m_instData.m_disabledDrawData[index].borderColor; }
 

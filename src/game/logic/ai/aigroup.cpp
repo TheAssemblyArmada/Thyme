@@ -2399,7 +2399,7 @@ void AIGroup::Queue_Upgrade(UpgradeTemplate *upgrade)
                     ProductionUpdateInterface *production = member_obj->Get_Production_Update_Interface();
 
                     if (production != nullptr) {
-                        if (production->Can_Queue_Upgrade(upgrade) != CAN_MAKE_UNK2) {
+                        if (production->Can_Queue_Upgrade(upgrade) != CAN_MAKE_QUEUE_FULL) {
                             production->Queue_Upgrade(upgrade);
                         }
                     }

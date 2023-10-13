@@ -43,6 +43,8 @@
 #include "commandline.h"
 #include "commandlist.h"
 #include "compressionmanager.h"
+#include "controlbar.h"
+#include "controlbarscheme.h"
 #include "copyprotect.h"
 #include "datachunk.h"
 #include "ddsfile.h"
@@ -3502,4 +3504,63 @@ void Setup_Hooks()
     // windowvideomanager.h
     Hook_Any(0x005A9D00, WindowVideoManager::Hook_Ctor);
     Hook_Any(0x005AA400, WindowVideoManager::Load_Movie);
+
+    // controlbar.h
+    Hook_Any(0x0045CB00, CommandSet::Get_Command_Button);
+    Hook_Method(0x0045C3B0,
+        static_cast<bool (CommandButton::*)(const Player *, const Object *) const>(&CommandButton::Is_Valid_Object_Target));
+    Hook_Method(0x0045C430,
+        static_cast<bool (CommandButton::*)(const Object *, const Object *) const>(&CommandButton::Is_Valid_Object_Target));
+    Hook_Any(0x0045C4A0, CommandButton::Is_Valid_To_Use_On);
+    Hook_Any(0x0045C5F0, CommandButton::Is_Ready);
+    Hook_Method(0x0045C660,
+        static_cast<bool (CommandButton::*)(const Drawable *, const Drawable *) const>(
+            &CommandButton::Is_Valid_Object_Target));
+    Hook_Any(0x0045C6E0, CommandButton::Is_Context_Command);
+    Hook_Any(0x0045C6F0, CommandButton::Copy_Images_From);
+    Hook_Any(0x0045C720, CommandButton::Copy_Button_Text_From);
+    Hook_Any(0x0045CBF0, ControlBar::Hook_Ctor);
+    Hook_Any(0x00460A80, ControlBar::Update_Command_Bar_Border_Colors);
+    Hook_Any(0x0045D010, ControlBar::Init);
+    Hook_Any(0x00461620, ControlBar::Get_Background_Marker_Pos);
+    Hook_Any(0x0045FD00, ControlBar::Set_Control_Command);
+    Hook_Any(0x0045E2A0, ControlBar::Reset);
+    Hook_Any(0x0045E4C0, ControlBar::Update);
+    Hook_Any(0x0045EAE0, ControlBar::Get_Star_Image);
+    Hook_Any(0x0045FEF0, ControlBar::Set_Portrait_By_Object);
+    Hook_Any(0x00462960, ControlBar::Hide_Special_Power_Shortcut);
+    Hook_Any(0x0045B3F0, ControlBar::Mark_UI_Dirty);
+    Hook_Any(0x00460AB0, ControlBar::Hide_Communicator);
+    Hook_Any(0x0045F0A0, ControlBar::Find_Non_Const_Command_Button);
+    Hook_Any(0x0045F650, ControlBar::Find_Non_Const_Command_Set);
+    Hook_Any(0x0045F770, ControlBar::Find_Command_Set);
+    Hook_Any(0x0045F6D0, ControlBar::Find_Command_Button);
+    Hook_Any(0x0045F130, ControlBar::New_Command_Button);
+    Hook_Any(0x0045F250, ControlBar::New_Command_Button_Override);
+
+    Hook_Any(0x005A3750, ControlBar::Reset_Contain_Data);
+    Hook_Any(0x005A3770, ControlBar::Reset_Build_Queue_Data);
+    Hook_Any(0x005A3020, ControlBar::Populate_Inv_Data_Callback);
+    Hook_Any(0x005A4060, ControlBar::Calculate_Veterancy_Overlay_For_Object);
+    Hook_Any(0x005A3DD0, ControlBar::Calculate_Veterancy_Overlay_For_Thing);
+
+    Hook_Any(0x005AC680, ControlBar::Process_Command_UI);
+
+    Hook_Any(0x005AB280, ControlBar::Populate_Button_Proc);
+    Hook_Any(0x005AB640, ControlBar::Update_Context_Structure_Inventory);
+    Hook_Any(0x005AB320, ControlBar::Populate_Structure_Inventory);
+
+    Hook_Any(0x005AB080, ControlBar::Update_Context_Under_Construction);
+    Hook_Any(0x005AAE70, ControlBar::Update_Construction_Text_Display);
+
+    Hook_Any(0x005A7870, Control_Bar_Popup_Description_Update_Func);
+    Hook_Any(0x005A79F0, ControlBar::Show_Build_Tooltip_Layout);
+    Hook_Any(0x005A7C60, ControlBar::Repopulate_Build_Tooltip_Layout);
+    Hook_Any(0x005A7CA0, ControlBar::Populate_Build_Tooltip_Layout);
+    Hook_Any(0x005A8FD0, ControlBar::Delete_Build_Tooltip_Layout);
+
+    // controlbarscheme.h
+    Hook_Any(0x005A49F0, ControlBarScheme::Reset);
+    Hook_Any(0x005A6570, ControlBarSchemeManager::Init);
+    Hook_Any(0x005A6620, ControlBarSchemeManager::Update);
 }

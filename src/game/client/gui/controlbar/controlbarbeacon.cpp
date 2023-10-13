@@ -13,3 +13,5 @@
  *            LICENSE
  */
 #include "controlbar.h"
+
+void ControlBar::Update_Context_Beacon() {}

@@ -30,7 +30,6 @@ public:
     ControlBarSchemeImage();
     ~ControlBarSchemeImage();
 
-private:
     Utf8String m_name;
     ICoord2D m_position;
     ICoord2D m_size;
@@ -49,7 +48,12 @@ public:
     void Set_Current_Frame(unsigned int frame) { m_currentFrame = frame; }
     void Set_Start_Pos(ICoord2D pos) { m_startPos = pos; }
 
-private:
+    enum
+    {
+        CB_ANIM_SLIDE_RIGHT,
+        CB_ANIM_MAX,
+    };
+
     Utf8String m_name;
     int m_animType;
     ControlBarSchemeImage *m_animImage;
@@ -73,6 +77,11 @@ public:
     void Update();
     void Update_Anim(ControlBarSchemeAnimation *anim);
 
+    enum
+    {
+        LAYER_COUNT = 6,
+    };
+
 private:
     Utf8String m_name;
     Coord2D m_ScreenCreationRes;
@@ -86,19 +95,19 @@ private:
     int m_borderSystemColor;
     int m_commandBarBorderColor;
     Image *m_optionsButtonEnableImage;
-    Image *m_optionsButtonHightlitedImage;
+    Image *m_optionsButtonHilitedImage;
     Image *m_optionsButtonPushedImage;
     Image *m_optionsButtonDisabledImage;
     Image *m_idleWorkerButtonEnableImage;
-    Image *m_idleWorkerButtonHightlitedImage;
+    Image *m_idleWorkerButtonHilitedImage;
     Image *m_idleWorkerButtonPushedImage;
     Image *m_idleWorkerButtonDisabledImage;
     Image *m_buddyButtonEnableImage;
-    Image *m_buddyButtonHightlitedImage;
+    Image *m_buddyButtonHilitedImage;
     Image *m_buddyButtonPushedImage;
     Image *m_buddyButtonDisabledImage;
     Image *m_beaconButtonEnableImage;
-    Image *m_beaconButtonHightlitedImage;
+    Image *m_beaconButtonHilitedImage;
     Image *m_beaconButtonPushedImage;
     Image *m_beaconButtonDisabledImage;
     Image *m_genBarButtonInImage;
@@ -110,14 +119,14 @@ private:
     Image *m_toggleButtonDownOnImage;
     Image *m_toggleButtonDownPushedImage;
     Image *m_generalButtonEnableImage;
-    Image *m_generalButtonHightlitedImage;
+    Image *m_generalButtonHilitedImage;
     Image *m_generalButtonPushedImage;
     Image *m_generalButtonDisabledImage;
     Image *m_uAttackButtonEnableImage;
-    Image *m_uAttackButtonHightlitedImage;
+    Image *m_uAttackButtonHilitedImage;
     Image *m_uAttackButtonPushedImage;
     Image *m_minMaxButtonEnableImage;
-    Image *m_minMaxButtonHightlitedImage;
+    Image *m_minMaxButtonHilitedImage;
     Image *m_minMaxButtonPushedImage;
     Image *m_genArrowImage;
     ICoord2D m_moneyUL;
@@ -141,7 +150,7 @@ private:
     Image *m_expBarForegroundImage;
     Image *m_commandMarkerImage;
     Image *m_powerPurchaseImage;
-    std::list<ControlBarSchemeImage *> m_layer[6];
+    std::list<ControlBarSchemeImage *> m_layer[LAYER_COUNT];
     std::list<ControlBarSchemeAnimation *> m_animations;
 };
 

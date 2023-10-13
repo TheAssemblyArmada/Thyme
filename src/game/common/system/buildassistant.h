@@ -25,8 +25,13 @@ class Player;
 
 enum CanMakeType
 {
-    CAN_MAKE_UNK,
-    CAN_MAKE_UNK2 = 4,
+    CAN_MAKE_SUCCESS,
+    CAN_MAKE_IMPOSSIBLE,
+    CAN_MAKE_NOT_ENOUGH_MONEY,
+    CAN_MAKE_NOT_ENABLED,
+    CAN_MAKE_QUEUE_FULL,
+    CAN_MAKE_PARKING_FULL,
+    CAN_MAKE_MAXIMUM_NUMBER,
 };
 
 class BuildAssistant : public SubsystemInterface

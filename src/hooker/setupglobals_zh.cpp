@@ -832,3 +832,7 @@ HeaderTemplateManager *&g_theHeaderTemplateManager =
 // hotkey.cpp
 class HotKeyManager;
 HotKeyManager *&g_theHotKeyManager = Make_Global<HotKeyManager *>(PICK_ADDRESS(0x00A2C678, 0x04CA8B00));
+
+// disconnectmenu.cpp
+class DisconnectMenu;
+DisconnectMenu *&g_theDisconnectMenu = Make_Global<DisconnectMenu *>(PICK_ADDRESS(0x00A31DA0, 0x04CAD314));

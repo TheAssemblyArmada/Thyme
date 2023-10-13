@@ -14,9 +14,16 @@
  */
 #include "controlbar.h"
 
-void ControlBar::Update_Context_OCL_Timer()
+void Hide_Control_Bar(bool hide)
 {
 #ifdef GAME_DLL
-    Call_Method<void, ControlBar>(PICK_ADDRESS(0x005AADE0, 0x008F3148), this);
+    Call_Function<void, bool>(PICK_ADDRESS(0x0048A3E0, 0x009DF7F2), hide);
+#endif
+}
+
+void Show_Control_Bar(bool show)
+{
+#ifdef GAME_DLL
+    Call_Function<void, bool>(PICK_ADDRESS(0x0048A250, 0x009DF683), show);
 #endif
 }

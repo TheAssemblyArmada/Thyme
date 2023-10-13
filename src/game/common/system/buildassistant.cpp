@@ -176,7 +176,7 @@ CanMakeType BuildAssistant::Can_Make_Unit(Object *constructor_object, const Thin
     return Call_Method<CanMakeType, const BuildAssistant, Object *, const ThingTemplate *>(
         PICK_ADDRESS(0x004B53E0, 0x009FAC20), this, constructor_object, what);
 #else
-    return CAN_MAKE_UNK;
+    return CAN_MAKE_SUCCESS;
 #endif
 }
 

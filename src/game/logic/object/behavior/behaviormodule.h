@@ -95,13 +95,13 @@ public:
 
     virtual ~ProductionEntry() override;
     ProductionID Get_Production_ID() const { return m_productionID; }
-    const ThingTemplate *Get_Production_Object() const { return m_objectToProduce; }
+    const UpgradeTemplate *Get_Production_Object() const { return m_objectToProduce; }
     int Get_Type() const { return m_type; }
     float Get_Percent_Complete() const { return m_percentComplete; }
 
 private:
     int m_type;
-    ThingTemplate *m_objectToProduce;
+    UpgradeTemplate *m_objectToProduce;
     ProductionID m_productionID;
     float m_percentComplete;
     int m_framesUnderConstruction;

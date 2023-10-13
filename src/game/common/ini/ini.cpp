@@ -20,6 +20,7 @@
 #include "challengegenerals.h"
 #include "color.h"
 #include "colorspace.h"
+#include "controlbar.h"
 #include "coord.h"
 #include "file.h"
 #include "filesystem.h"
@@ -84,9 +85,9 @@ const BlockParse TheTypeTable[] = {
     {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definition},
     {"Campaign", HOOK_BLOCK(0x00517490) /*&INI::parseCampaignDefinition*/},
     {"ChallengeGenerals", ChallengeGenerals::Parse_Challenge_Mode_Definition},
-    {"CommandButton", HOOK_BLOCK(0x00516CE0) /*&INI::parseCommandButtonDefinition*/},
+    {"CommandButton", &ControlBar::Parse_Command_Button_Definition},
     {"CommandMap", HOOK_BLOCK(0x00498480) /*&INI::parseMetaMapDefinition*/},
-    {"CommandSet", HOOK_BLOCK(0x00516CD0) /*&INI::parseCommandSetDefinition*/},
+    {"CommandSet", &ControlBar::Parse_Command_Set_Definition},
     {"ControlBarScheme", HOOK_BLOCK(0x00516BA0) /*&INI::parseControlBarSchemeDefinition*/},
     {"ControlBarResizer", &INI::Parse_Control_Bar_Resizer_Definition},
     {"CrateData", HOOK_BLOCK(0x00516B90) /*&INI::parseCrateTemplateDefinition*/},
@@ -1129,7 +1130,7 @@ void INI::Parse_Upgrade_Template(INI *ini, void *formal, void *store, const void
     captainslog_relassert(g_theUpgradeCenter != nullptr, CODE_01, "TheUpgradeCenter not inited yet");
     const UpgradeTemplate **tmplate = static_cast<const UpgradeTemplate **>(store);
     const UpgradeTemplate *upgrade_template = g_theUpgradeCenter->Find_Upgrade(name);
-    captainslog_dbgassert(upgrade_template != nullptr, "Upgrade %s not found!", name);
+    captainslog_dbgassert(upgrade_template != nullptr || strcasecmp(name, "None") == 0, "Upgrade %s not found!", name);
     *tmplate = upgrade_template;
 }
 
@@ -1139,7 +1140,7 @@ void INI::Parse_Special_Power_Template(INI *ini, void *formal, void *store, cons
     captainslog_relassert(g_theSpecialPowerStore != nullptr, CODE_01, "TheSpecialPowerStore not inited yet");
     const SpecialPowerTemplate **tmplate = static_cast<const SpecialPowerTemplate **>(store);
     const SpecialPowerTemplate *special_power_template = g_theSpecialPowerStore->Find_Special_Power_Template(name);
-    captainslog_dbgassert(special_power_template != nullptr && strcasecmp(name, "None") == 0,
+    captainslog_dbgassert(special_power_template != nullptr || strcasecmp(name, "None") == 0,
         "[LINE: %d in '%s'] Specialpower %s not found!",
         ini->Get_Line_Number(),
         ini->Get_Filename().Str(),

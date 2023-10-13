@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Control Bar
+ * @brief Create
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,11 +12,4 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "controlbar.h"
-
-void ControlBar::Update_Context_OCL_Timer()
-{
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar>(PICK_ADDRESS(0x005AADE0, 0x008F3148), this);
-#endif
-}
+#include "createmodule.h"

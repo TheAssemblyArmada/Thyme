@@ -7,7 +7,9 @@ set(GAMEENGINE_INCLUDES
     game/client/drawable/update
     game/client/gui
     game/client/gui/controlbar
+    game/client/gui/disconnectmenu
     game/client/gui/gadget
+    game/client/gui/guicallbacks
     game/client/gui/shell
     game/client/input
     game/client/messagestream
@@ -30,6 +32,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/object
     game/logic/object/behavior
     game/logic/object/body
+    game/logic/object/create
     game/logic/object/collide
     game/logic/object/contain
     game/logic/object/damage
@@ -105,6 +108,7 @@ set(GAMEENGINE_SRC
     game/client/gui/controlbar/controlbarscheme.cpp
     game/client/gui/controlbar/controlbarstructureinventory.cpp
     game/client/gui/controlbar/controlbarunderconstruction.cpp
+    game/client/gui/disconnectmenu/disconnectmenu.cpp
     game/client/gui/gadget/gadgetcheckbox.cpp
     game/client/gui/gadget/gadgetcombobox.cpp
     game/client/gui/gadget/gadgethorizontalslider.cpp
@@ -123,6 +127,8 @@ set(GAMEENGINE_SRC
     game/client/gui/gamewindowmanagerscript.cpp
     game/client/gui/gamewindowtransitions.cpp
     game/client/gui/gamewindowtransitionsstyles.cpp
+    game/client/gui/guicallbacks/controlbarcallback.cpp
+    game/client/gui/guicallbacks/controlbarpopupdescription.cpp
     game/client/gui/headertemplate.cpp
     game/client/gui/imemanager.cpp
     game/client/gui/imemanagerinterface.cpp
@@ -138,6 +144,7 @@ set(GAMEENGINE_SRC
     game/client/languagefilter.cpp
     game/client/line2d.cpp
     game/client/maputil.cpp
+    game/client/messagestream/commandxlat.cpp
     game/client/messagestream/hotkey.cpp
     game/client/messagestream/metaevent.cpp
     game/client/messagestream/selectionxlat.cpp
@@ -297,6 +304,8 @@ set(GAMEENGINE_SRC
     game/logic/object/behavior/rebuildholebehavior.cpp
     game/logic/object/collide/collidemodule.cpp
     game/logic/object/collide/squishcollide.cpp
+    game/logic/object/create/veterancygaincreate.cpp
+    game/logic/object/create/createmodule.cpp
     game/logic/object/damage/damagemodule.cpp
     game/logic/object/die/diemodule.cpp
     game/logic/object/die/specialpowercompletiondie.cpp

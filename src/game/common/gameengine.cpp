@@ -89,20 +89,6 @@
 GameEngine *g_theGameEngine = nullptr;
 #endif
 
-void Hide_Control_Bar(bool hide)
-{
-#ifdef GAME_DLL
-    Call_Function<void, bool>(PICK_ADDRESS(0x0048A3E0, 0x009DF7F2), hide);
-#endif
-}
-
-void Show_Control_Bar(bool show)
-{
-#ifdef GAME_DLL
-    Call_Function<void, bool>(PICK_ADDRESS(0x0048A250, 0x009DF683), show);
-#endif
-}
-
 GameEngine::GameEngine() : m_maxFPS(0), m_isQuitting(false), m_isActive(false)
 {
 #ifdef PLATFORM_WINDOWS

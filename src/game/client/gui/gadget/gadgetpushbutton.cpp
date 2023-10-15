@@ -44,3 +44,47 @@ WindowMsgHandledType Gadget_Push_Button_System(
     return MSG_IGNORED;
 #endif
 }
+
+void *Gadget_Button_Get_Data(GameWindow *push_button)
+{
+#ifdef GAME_DLL
+    return Call_Function<void *, GameWindow *>(PICK_ADDRESS(0x005AC4D0, 0x008F5209), push_button);
+#else
+    return nullptr;
+#endif
+}
+
+void Gadget_Button_Enable_Check_Like(GameWindow *push_button, bool is_enabled, bool is_checked)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, bool, bool>(PICK_ADDRESS(0x005AC300, 0x008F4F1C), push_button, is_enabled, is_checked);
+#endif
+}
+
+void Gadget_Button_Set_Data(GameWindow *push_button, void *data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, void *>(PICK_ADDRESS(0x005AC4A0, 0x008F51CB), push_button, data);
+#endif
+}
+
+void Gadget_Button_Set_Alt_Sound(GameWindow *push_button, Utf8String alt_sound)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, Utf8String>(PICK_ADDRESS(0x005AC4F0, 0x008F5236), push_button, alt_sound);
+#endif
+}
+
+void Gadget_Button_Set_Border(GameWindow *push_button, int color, bool draw_border)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, int, bool>(PICK_ADDRESS(0x005AC3F0, 0x008F50AC), push_button, color, draw_border);
+#endif
+}
+
+void Gadget_Button_Draw_Overlay_Image(GameWindow *push_button, const Image *image)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, const Image *>(PICK_ADDRESS(0x005AC470, 0x008F518D), push_button, image);
+#endif
+}

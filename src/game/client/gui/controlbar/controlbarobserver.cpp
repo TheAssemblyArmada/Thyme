@@ -13,3 +13,17 @@
  *            LICENSE
  */
 #include "controlbar.h"
+
+void ControlBar::Init_Observer_Controls()
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar>(PICK_ADDRESS(0x005A6CB0, 0x008E9B70), this);
+#endif
+}
+
+void ControlBar::Populate_Observer_Info_Window()
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar>(PICK_ADDRESS(0x005A7480, 0x008EA4BE), this);
+#endif
+}

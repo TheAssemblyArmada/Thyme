@@ -13,12 +13,18 @@
  *            LICENSE
  */
 #include "hotkey.h"
+#include "gametext.h"
 #include "gamewindow.h"
 #include "unicodestring.h"
 
 #ifndef GAME_DLL
 HotKeyManager *g_theHotKeyManager;
 #endif
+
+Utf8String HotKeyManager::Search_Hot_Key(const Utf8String &str)
+{
+    return Search_Hot_Key(g_theGameText->Fetch(str));
+}
 
 Utf8String HotKeyManager::Search_Hot_Key(const Utf16String &key)
 {
@@ -50,8 +56,8 @@ void HotKeyManager::Add_Hot_Key(GameWindow *window, const Utf8String &key)
             window->Win_Get_Instance_Data()->m_decoratedNameString.Str());
     } else {
         HotKey hotkey;
-        hotkey.m_key = key;
+        hotkey.m_key.Set(key_lower);
         hotkey.m_window = window;
-        m_hotKeys[key] = hotkey;
+        m_hotKeys[key_lower] = hotkey;
     }
 }

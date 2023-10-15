@@ -13,3 +13,10 @@
  *            LICENSE
  */
 #include "controlbar.h"
+
+void ControlBar::Update_Context_Multi_Select()
+{
+#ifdef GAME_DLL
+    Call_Method<void, ControlBar>(PICK_ADDRESS(0x005AB940, 0x008F4155), this);
+#endif
+}

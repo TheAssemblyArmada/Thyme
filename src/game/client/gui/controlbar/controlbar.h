@@ -16,6 +16,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "audioeventrts.h"
+#include "behaviormodule.h"
 #include "gamewindow.h"
 #include "ingameui.h"
 
@@ -28,12 +29,14 @@ class ControlBarSchemeManager;
 enum ControlBarContext
 {
     CB_CONTEXT_NONE,
-    CB_CONTEXT_SIDE_SELECT,
     CB_CONTEXT_COMMAND,
     CB_CONTEXT_STRUCTURE_INVENTORY,
     CB_CONTEXT_BEACON,
     CB_CONTEXT_UNDER_CONSTRUCTION,
     CB_CONTEXT_MULTI_SELECT,
+    CB_CONTEXT_UNK,
+    CB_CONTEXT_OBSERVER,
+    CB_CONTEXT_OCL_TIMER,
     NUM_CB_CONTEXTS,
 };
 
@@ -192,7 +195,7 @@ public:
     const AudioEventRTS *Get_Unit_Specific_Sound() const { return &m_unitSpecificSound; }
 
     void Set_Cameo_Flash_Time(int time) { m_cameoFlashTime = time; }
-    void Set_Name(Utf8String &name) { m_name = name; }
+    void Set_Name(const Utf8String &name) { m_name = name; }
     void Set_Button_Image(Image *image) { m_buttonImage = image; }
 
     bool Is_Valid_Object_Target(const Player *player, const Object *obj) const;
@@ -205,7 +208,7 @@ public:
     void Copy_Images_From(const CommandButton *button, bool set_dirty);
     void Copy_Button_Text_From(const CommandButton *button, bool conflicting_label, bool set_dirty);
     void Cache_Button_Image();
-    void Set_Next(CommandButton **next);
+    void Friend_Add_To_List(CommandButton **next);
 
     static FieldParse *Get_Field_Parse() { return s_commandButtonFieldParseTable; }
     static void Parse_Command(INI *ini, void *formal, void *store, const void *user_data);
@@ -242,15 +245,30 @@ class ControlBar : public SubsystemInterface
 public:
     struct QueueEntry
     {
-        int control;
-        int type;
-        int production_id;
+        GameWindow *control;
+        ProductionEntry::ProductionType type;
+        union
+        {
+            ProductionID production_id;
+            UpgradeTemplate *upgrade_template;
+        };
     };
 
     struct ContainEntry
     {
         GameWindow *button;
         ObjectID id;
+    };
+
+    enum
+    {
+        SPECIAL_POWER_SHORTCUT_BUTTON_COUNT = 11,
+        CONTEXT_PARENT_COUNT = 9,
+        UNIT_UPGRADE_WINDOW_COUNT = 5,
+        RANK_1_BUTTON_COUNT = 4,
+        RANK_3_BUTTON_COUNT = 15,
+        RANK_8_BUTTON_COUNT = 4,
+        QUEUE_ENTRY_COUNT = 9,
     };
 
     ControlBar();
@@ -263,7 +281,7 @@ public:
     const CommandButton *Get_Command_Buttons() const { return m_commandButtons; }
     const ControlBarSchemeManager *Get_Control_Bar_Scheme_Manager() const { return m_controlBarSchemeManager; }
     const Image *Get_Gen_Arrow_Image() const { return m_genArrowImage; }
-    const Player *Get_Observer_Player() const { return m_observerPlayer; }
+    Player *Get_Observer_Player() const { return m_observerPlayer; }
     bool Is_Observer() const { return m_isObserver; }
     void Set_Cameo_Flash(bool flash) { m_cameoFlash = flash; }
     void Set_Gen_Arrow_Image(const Image *image) { m_genArrowImage = image; }
@@ -296,7 +314,7 @@ public:
 
     void Populate_Beacon(Object *beacon);
     void Populate_Build_Queue(Object *producer);
-    void Populate_Build_Tooltip_Layout(const CommandButton *, GameWindow *);
+    void Populate_Build_Tooltip_Layout(const CommandButton *button, GameWindow *window);
     void Populate_Command(Object *obj);
     void Populate_Multi_Select();
     void Populate_OCL_Timer(Object *obj);
@@ -320,7 +338,8 @@ public:
     void Set_Control_Bar_Scheme_By_Name(const Utf8String &name);
     void Set_Control_Bar_Scheme_By_Player(Player *p);
     void Set_Control_Bar_Scheme_By_Player_Template(PlayerTemplate *tmplate);
-    void Set_Control_Command(const Utf8String &button_window_name, GameWindow *parent, const CommandButton *command_button);
+    // void Set_Control_Command(const Utf8String &button_window_name, GameWindow *parent, const CommandButton
+    // *command_button); //unused, not implemented
     void Set_Control_Command(GameWindow *button, const CommandButton *command_button);
     void Set_Default_Control_Bar_Config();
     void Set_Hidden_Control_Bar();
@@ -360,7 +379,7 @@ public:
         const Image *toggle_button_down_on_image,
         const Image *toggle_button_down_pushed_image,
         const Image *general_button_enable_image,
-        const Image *general_button_hightlited_image);
+        const Image *general_button_hilited_image);
 
     void Add_Common_Commands(Drawable *draw, bool first_drawable);
     void Animate_Special_Power_Shortcut(bool forward);
@@ -374,7 +393,7 @@ public:
     CommandButton *New_Command_Button(const Utf8String &name);
     CommandButton *New_Command_Button_Override(CommandButton *button);
     CommandSet *New_Command_Set(const Utf8String &name);
-    CommandSet *New_Command_Set_Override(CommandSet *button);
+    CommandSet *New_Command_Set_Override(CommandSet *set);
     void Post_Process_Commands();
     void Preload_Assets(TimeOfDayType time_of_day);
     void Repopulate_Build_Tooltip_Layout();
@@ -391,6 +410,10 @@ public:
     static const Image *Calculate_Veterancy_Overlay_For_Thing(const ThingTemplate *thing);
     static void Populate_Button_Proc(Object *obj, void *user_data);
 
+#ifdef GAME_DLL
+    ControlBar *Hook_Ctor() { return new (this) ControlBar; }
+#endif
+
 private:
     WindowVideoManager *m_videoManager;
     AnimateWindowManager *m_controlBarAnimateWindowManager;
@@ -403,7 +426,7 @@ private:
     CommandButton *m_commandButtons;
     CommandSet *m_commandSets;
     ControlBarSchemeManager *m_controlBarSchemeManager;
-    GameWindow *m_contextParent[9];
+    GameWindow *m_contextParent[CONTEXT_PARENT_COUNT];
     Drawable *m_currentSelectedDrawable;
     ControlBarContext m_currContext;
     Drawable *m_rallyPointDrawable;
@@ -413,22 +436,22 @@ private:
     unsigned int m_lastRecordedInventoryCount;
     GameWindow *m_rightHUDWindow;
     GameWindow *m_rightHUDCameoWindow;
-    GameWindow *m_unitUpgradeWindows[5];
+    GameWindow *m_unitUpgradeWindows[UNIT_UPGRADE_WINDOW_COUNT];
     GameWindow *m_unitSelectedWindow;
     GameWindow *m_popupCommunicator;
     WindowLayout *m_generalsPointsLayout;
-    GameWindow *m_rank1Buttons[4];
-    void *m_rank3Buttons[15];
-    GameWindow *m_rank8Buttons[4];
-    GameWindow *m_specialPowerShortcutButtons[11];
-    GameWindow *m_specialPowerShortcutButtonParents[11];
-    int m_specialPowerShortcutButtonUnk[11];
+    GameWindow *m_rank1Buttons[RANK_1_BUTTON_COUNT];
+    GameWindow *m_rank3Buttons[RANK_3_BUTTON_COUNT];
+    GameWindow *m_rank8Buttons[RANK_8_BUTTON_COUNT];
+    GameWindow *m_specialPowerShortcutButtons[SPECIAL_POWER_SHORTCUT_BUTTON_COUNT];
+    GameWindow *m_specialPowerShortcutButtonParents[SPECIAL_POWER_SHORTCUT_BUTTON_COUNT];
+    int m_specialPowerShortcutButtonUnk[SPECIAL_POWER_SHORTCUT_BUTTON_COUNT];
     int m_specialPowerShortcutButtonCount;
     WindowLayout *m_specialPowerShortcutBarLayout;
     GameWindow *m_specialPowerShortcutBarParent;
     GameWindow *m_commandWindows[CommandSet::MAX_COMMAND_BUTTONS];
     CommandButton *m_commonCommands[CommandSet::MAX_COMMAND_BUTTONS];
-    QueueEntry m_queueData[9];
+    QueueEntry m_queueData[QUEUE_ENTRY_COUNT];
     bool m_cameoFlash;
     bool m_unk1;
     int m_unk2;
@@ -462,7 +485,7 @@ private:
     int m_unk11;
     const Image *m_genArrowImage;
     const Image *m_generalButtonEnableImage;
-    const Image *m_generalButtonHightlitedImage;
+    const Image *m_generalButtonHilitedImage;
     bool m_starHilight;
     int m_sciencePurchasePoints;
     int m_foregroundMarkerPosX;
@@ -472,14 +495,20 @@ private:
     bool m_triggerRadarAttackGlow;
     int m_radarAttackGlowCounter;
     GameWindow *m_radarAttackGlowWindow;
+#ifdef GAME_DEBUG_STRUCTS
     unsigned int m_uiDirtyFrame;
     int m_uiDirtyCounter;
+#endif
 
     static ContainEntry s_containData[CommandSet::MAX_COMMAND_BUTTONS];
     static const Image *s_rankEliteIcon;
     static const Image *s_rankHeroicIcon;
     static const Image *s_rankVeteranIcon;
 };
+
+void Control_Bar_Popup_Description_Update_Func(WindowLayout *layout, void *user_data);
+void Hide_Control_Bar(bool hide);
+void Show_Control_Bar(bool hide);
 
 #ifdef GAME_DLL
 extern ControlBar *&g_theControlBar;

@@ -164,4 +164,4 @@ void Gadget_Button_Draw_Inverse_Clock(GameWindow *push_button, int percent, int 
 void Gadget_Button_Draw_Overlay_Image(GameWindow *push_button, const Image *image);
 void Gadget_Button_Set_Data(GameWindow *push_button, void *data);
 void *Gadget_Button_Get_Data(GameWindow *push_button);
-void Gaget_Button_Set_Alt_Sound(GameWindow *push_button, Utf8String alt_sound);
+void Gadget_Button_Set_Alt_Sound(GameWindow *push_button, Utf8String alt_sound);

@@ -128,14 +128,14 @@ Utf16String ProductionPrerequisite::Get_Requires_List(const Player *player) cons
         for (int i = 0; i < num; i++) {
             if (counts[i] == 0) {
                 if (required[i]) {
-                    str2 = m_prereqUnit[i - 1].unit->Get_Name();
+                    str2 = m_prereqUnit[i - 1].unit->Get_Display_Name();
                     str2.Concat(U_CHAR(' '));
                     str2.Concat(g_theGameText->Fetch("CONTROLBAR:OrRequirement"));
                     str2.Concat(U_CHAR(' '));
                     str.Concat(str2);
                 }
 
-                str2 = m_prereqUnit[i].unit->Get_Name();
+                str2 = m_prereqUnit[i].unit->Get_Display_Name();
 
                 if (newline) {
                     newline = false;

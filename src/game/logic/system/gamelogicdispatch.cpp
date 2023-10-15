@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "controlbar.h"
 #include "gameengine.h"
 #include "gamelogic.h"
 #include "gamemessage.h"
@@ -27,8 +28,6 @@
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
-
-void Hide_Control_Bar(bool hide);
 
 void Fixup_Score_Screen_Movie_Window()
 {

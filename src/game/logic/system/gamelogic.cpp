@@ -74,9 +74,6 @@
 GameLogic *g_theGameLogic;
 #endif
 
-void Hide_Control_Bar(bool hide);
-void Show_Control_Bar(bool hide);
-
 GameLogic::GameLogic() :
     m_width(0.0f),
     m_height(0.0f),

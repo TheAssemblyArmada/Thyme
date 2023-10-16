@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Control Bar
+ * @brief Battle Plan Update
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,7 +12,13 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "controlbar.h"
-#include "ini.h"
+#include "battleplanupdate.h"
 
-// ResizerWindow and ControlBarResizer classes unused
+BattlePlanStatus BattlePlanUpdate::Get_Active_Battle_Plan()
+{
+    if (m_transitionStatus == TRANSITION_STATUS_IDLE) {
+        return m_activeBattlePlan;
+    } else {
+        return BATTLE_PLAN_STATUS_NONE;
+    }
+}

@@ -29,7 +29,6 @@ class CollideModuleInterface;
 class ContainModuleInterface;
 class DamageModuleInterface;
 class DieModuleInterface;
-class DockUpdateInterface;
 class ExitInterface;
 class HordeUpdateInterface;
 class OverchargeBehaviorInterface;
@@ -60,6 +59,30 @@ class DestroyModuleInterface
 {
 public:
     virtual void On_Destroy() = 0;
+};
+
+class DockUpdateInterface
+{
+public:
+    virtual bool Is_Clear_To_Approach(const Object *docker) const = 0;
+    virtual bool Reserve_Approach_Position(Object *docker, Coord3D *pos, int *index) = 0;
+    virtual bool Advance_Approach_Position(Object *docker, Coord3D *pos, int *index) = 0;
+    virtual bool Is_Clear_To_Enter(const Object *docker) const = 0;
+    virtual bool Is_Clear_To_Advance(const Object *docker, int index) const = 0;
+    virtual void Get_Enter_Position(Object *docker, Coord3D *pos) = 0;
+    virtual void Get_Dock_Position(Object *docker, Coord3D *pos) = 0;
+    virtual void Get_Exit_Position(Object *docker, Coord3D *pos) = 0;
+    virtual void On_Approach_Reached(Object *docker) = 0;
+    virtual void On_Enter_Reached(Object *docker) = 0;
+    virtual void On_Dock_Reached(Object *docker) = 0;
+    virtual void On_Exit_Reached(Object *docker) = 0;
+    virtual bool Action(Object *docker, Object *obj) = 0;
+    virtual void Cancel_Dock(Object *docker) = 0;
+    virtual bool Is_Dock_Open() = 0;
+    virtual void Set_Dock_Open(bool open) = 0;
+    virtual void Set_Dock_Crippled(bool crippled) = 0;
+    virtual bool Is_Allow_Passthrough_Type() = 0;
+    virtual bool Is_Rally_Point_After_Dock_Type() = 0;
 };
 
 class SlavedUpdateInterface
@@ -95,13 +118,18 @@ public:
 
     virtual ~ProductionEntry() override;
     ProductionID Get_Production_ID() const { return m_productionID; }
-    const UpgradeTemplate *Get_Production_Object() const { return m_objectToProduce; }
-    int Get_Type() const { return m_type; }
+    const UpgradeTemplate *Get_Production_Upgrade() const { return m_upgradeToResearch; }
+    const ThingTemplate *Get_Production_Object() const { return m_objectToProduce; }
+    ProductionType Get_Type() const { return m_type; }
     float Get_Percent_Complete() const { return m_percentComplete; }
 
 private:
-    int m_type;
-    UpgradeTemplate *m_objectToProduce;
+    ProductionType m_type;
+    union
+    {
+        ThingTemplate *m_objectToProduce;
+        UpgradeTemplate *m_upgradeToResearch;
+    };
     ProductionID m_productionID;
     float m_percentComplete;
     int m_framesUnderConstruction;

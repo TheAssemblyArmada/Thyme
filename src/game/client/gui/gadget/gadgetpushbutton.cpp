@@ -88,3 +88,17 @@ void Gadget_Button_Draw_Overlay_Image(GameWindow *push_button, const Image *imag
     Call_Function<void, GameWindow *, const Image *>(PICK_ADDRESS(0x005AC470, 0x008F518D), push_button, image);
 #endif
 }
+
+void Gadget_Button_Draw_Inverse_Clock(GameWindow *push_button, int percent, int color)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, int, int>(PICK_ADDRESS(0x005AC430, 0x008F5140), push_button, percent, color);
+#endif
+}
+
+void Gadget_Check_Like_Button_Set_Visual_Check(GameWindow *push_button, bool is_checked)
+{
+#ifdef GAME_DLL
+    Call_Function<void, GameWindow *, bool>(PICK_ADDRESS(0x005AC2B0, 0x008F4E41), push_button, is_checked);
+#endif
+}

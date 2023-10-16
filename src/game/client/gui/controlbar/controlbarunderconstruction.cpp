@@ -40,3 +40,20 @@ void ControlBar::Update_Construction_Text_Display(Object *obj)
     Gadget_Static_Text_Set_Text(window, text);
     m_displayedConstructPercent = obj->Get_Construction_Percent();
 }
+
+void ControlBar::Populate_Under_Construction(Object *object_under_construction)
+{
+    if (object_under_construction != nullptr) {
+        const CommandButton *button = Find_Command_Button("Command_CancelConstruction");
+        GameWindow *window = g_theWindowManager->Win_Get_Window_From_Id(
+            m_contextParent[5], g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonCancelConstruction"));
+        Set_Control_Command(window, button);
+        window->Win_Set_Status(WIN_STATUS_USE_OVERLAY_STATES);
+        Update_Construction_Text_Display(object_under_construction);
+        ExitInterface *exit = object_under_construction->Get_Object_Exit_Interface();
+
+        if (exit != nullptr) {
+            Show_Rally_Point(exit->Get_Rally_Point());
+        }
+    }
+}

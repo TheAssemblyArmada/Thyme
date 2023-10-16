@@ -42,7 +42,11 @@ enum ControlBarContext
 
 enum ControlBarStages
 {
+    CONTROL_BAR_STAGE_DEFAULT,
     CONTROL_BAR_STAGE_UNK,
+    CONTROL_BAR_STAGE_LOW,
+    CONTROL_BAR_STAGE_HIDDEN,
+    CONTROL_BAR_STAGE_MAX,
 };
 
 enum CBCommandStatus
@@ -53,7 +57,12 @@ enum CBCommandStatus
 
 enum CommandAvailability
 {
-    COMMAND_AVAILIBLITY_UNK,
+    COMMAND_AVAILABILITY_DISABLED,
+    COMMAND_AVAILABILITY_ENABLED,
+    COMMAND_AVAILABILITY_ENABLED_AND_ACTIVE,
+    COMMAND_AVAILABILITY_HIDDEN,
+    COMMAND_AVAILABILITY_NOT_READY,
+    COMMAND_AVAILABILITY_DISABLED_PERMANENTLY,
 };
 
 class CommandSet : public Overridable
@@ -196,7 +205,7 @@ public:
 
     void Set_Cameo_Flash_Time(int time) { m_cameoFlashTime = time; }
     void Set_Name(const Utf8String &name) { m_name = name; }
-    void Set_Button_Image(Image *image) { m_buttonImage = image; }
+    void Set_Button_Image(const Image *image) { m_buttonImage = image; }
 
     bool Is_Valid_Object_Target(const Player *player, const Object *obj) const;
     bool Is_Valid_Object_Target(const Object *obj1, const Object *obj2) const;
@@ -205,8 +214,8 @@ public:
     bool Is_Ready(const Object *obj) const;
     bool Is_Valid_Object_Target(const Drawable *drawable, const Drawable *drawable2) const;
     bool Is_Context_Command() const;
-    void Copy_Images_From(const CommandButton *button, bool set_dirty);
-    void Copy_Button_Text_From(const CommandButton *button, bool conflicting_label, bool set_dirty);
+    void Copy_Images_From(const CommandButton *button, bool set_dirty) const;
+    void Copy_Button_Text_From(const CommandButton *button, bool conflicting_label, bool set_dirty) const;
     void Cache_Button_Image();
     void Friend_Add_To_List(CommandButton **next);
 
@@ -224,8 +233,8 @@ private:
     RadiusCursorType m_radiusCursorType;
     Utf8String m_cursorName;
     Utf8String m_invalidCursorName;
-    Utf8String m_textLabel;
-    Utf8String m_descriptLabel;
+    mutable Utf8String m_textLabel;
+    mutable Utf8String m_descriptLabel;
     Utf8String m_purchasedLabel;
     Utf8String m_conflictingLabel;
     WeaponSlotType m_weaponSlot;
@@ -235,7 +244,7 @@ private:
     Utf8String m_buttonImageString;
     int m_unk;
     AudioEventRTS m_unitSpecificSound;
-    const Image *m_buttonImage;
+    mutable const Image *m_buttonImage;
     int m_cameoFlashTime;
     static FieldParse s_commandButtonFieldParseTable[];
 };
@@ -250,7 +259,7 @@ public:
         union
         {
             ProductionID production_id;
-            UpgradeTemplate *upgrade_template;
+            const UpgradeTemplate *upgrade_template;
         };
     };
 
@@ -279,14 +288,14 @@ public:
 
     bool Get_Build_Tooltip_Layout_Visible() const { return m_buildTooltipLayoutVisible; }
     const CommandButton *Get_Command_Buttons() const { return m_commandButtons; }
-    const ControlBarSchemeManager *Get_Control_Bar_Scheme_Manager() const { return m_controlBarSchemeManager; }
+    ControlBarSchemeManager *Get_Control_Bar_Scheme_Manager() const { return m_controlBarSchemeManager; }
     const Image *Get_Gen_Arrow_Image() const { return m_genArrowImage; }
     Player *Get_Observer_Player() const { return m_observerPlayer; }
     bool Is_Observer() const { return m_isObserver; }
     void Set_Cameo_Flash(bool flash) { m_cameoFlash = flash; }
     void Set_Gen_Arrow_Image(const Image *image) { m_genArrowImage = image; }
     void Set_Observer_Player(Player *player) { m_observerPlayer = player; }
-    void Set_Unk_Color(int color) { m_unkColor = color; }
+    void Set_Command_Bar_Border_Color(int color) { m_CommandBarBorderColor = color; }
 
     const CommandSet *Find_Command_Set(const Utf8String &name);
     const CommandButton *Find_Command_Button(const Utf8String &name);
@@ -296,7 +305,7 @@ public:
     void Get_Background_Marker_Pos(int *x, int *y);
     CommandAvailability Get_Command_Availability(
         const CommandButton *button, Object *obj, GameWindow *window, GameWindow *window2, bool b);
-    const void Get_Foreground_Marker_Pos(int *x, int *y);
+    void Get_Foreground_Marker_Pos(int *x, int *y);
     const Image *Get_Star_Image();
 
     void Hide_Build_Tooltip_Layout();
@@ -405,6 +414,7 @@ public:
 
     static void Parse_Command_Button_Definition(INI *ini);
     static void Parse_Command_Set_Definition(INI *ini);
+    static void Parse_Control_Bar_Scheme_Definition(INI *ini);
     static void Populate_Inv_Data_Callback(Object *obj, void *user_data);
     static const Image *Calculate_Veterancy_Overlay_For_Object(const Object *object);
     static const Image *Calculate_Veterancy_Overlay_For_Thing(const ThingTemplate *thing);
@@ -429,7 +439,7 @@ private:
     GameWindow *m_contextParent[CONTEXT_PARENT_COUNT];
     Drawable *m_currentSelectedDrawable;
     ControlBarContext m_currContext;
-    Drawable *m_rallyPointDrawable;
+    DrawableID m_rallyPointDrawableID;
     float m_displayedConstructPercent;
     unsigned int m_oclTimerFrame;
     unsigned int m_displayedQueueCount;
@@ -450,7 +460,7 @@ private:
     WindowLayout *m_specialPowerShortcutBarLayout;
     GameWindow *m_specialPowerShortcutBarParent;
     GameWindow *m_commandWindows[CommandSet::MAX_COMMAND_BUTTONS];
-    CommandButton *m_commonCommands[CommandSet::MAX_COMMAND_BUTTONS];
+    const CommandButton *m_commonCommands[CommandSet::MAX_COMMAND_BUTTONS];
     QueueEntry m_queueData[QUEUE_ENTRY_COUNT];
     bool m_cameoFlash;
     bool m_unk1;
@@ -473,7 +483,7 @@ private:
     int m_commandButtonBorderActionColor;
     int m_commandButtonBorderUpgradeColor;
     int m_commandButtonBorderSystemColor;
-    int m_unkColor;
+    int m_CommandBarBorderColor;
     const Image *m_barButtonGenStarOnIcon;
     const Image *m_barButtonGenStarOffIcon;
     const Image *m_toggleButtonUpInImage;
@@ -507,6 +517,8 @@ private:
 };
 
 void Control_Bar_Popup_Description_Update_Func(WindowLayout *layout, void *user_data);
+WindowMsgHandledType Beacon_Window_Input(
+    GameWindow *text_entry, unsigned int message, unsigned int data_1, unsigned int data_2);
 void Hide_Control_Bar(bool hide);
 void Show_Control_Bar(bool hide);
 

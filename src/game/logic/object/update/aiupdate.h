@@ -23,13 +23,19 @@
 class INI;
 class DozerAIInterface;
 class WorkerAIInterface;
-class HackInternetAIInterface;
 class JetAIUpdate;
 class AIStateMachine;
 class Path;
 class TurretAIData;
 class TurretAI;
 class AttackPriorityInfo;
+
+class HackInternetAIInterface
+{
+public:
+    virtual bool Is_Hacking() const = 0;
+    virtual bool Is_Hacking_Packing_Or_Unpacking() const = 0;
+};
 
 enum AICommandType
 {

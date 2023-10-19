@@ -88,7 +88,7 @@ const BlockParse TheTypeTable[] = {
     {"CommandButton", &ControlBar::Parse_Command_Button_Definition},
     {"CommandMap", HOOK_BLOCK(0x00498480) /*&INI::parseMetaMapDefinition*/},
     {"CommandSet", &ControlBar::Parse_Command_Set_Definition},
-    {"ControlBarScheme", HOOK_BLOCK(0x00516BA0) /*&INI::parseControlBarSchemeDefinition*/},
+    {"ControlBarScheme", &ControlBar::Parse_Control_Bar_Scheme_Definition},
     {"ControlBarResizer", &INI::Parse_Control_Bar_Resizer_Definition},
     {"CrateData", HOOK_BLOCK(0x00516B90) /*&INI::parseCrateTemplateDefinition*/},
     {"Credits", HOOK_BLOCK(0x00515A20) /*&INI::parseCredits*/},

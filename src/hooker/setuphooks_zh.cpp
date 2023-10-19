@@ -3563,4 +3563,39 @@ void Setup_Hooks()
     Hook_Any(0x005A49F0, ControlBarScheme::Reset);
     Hook_Any(0x005A6570, ControlBarSchemeManager::Init);
     Hook_Any(0x005A6620, ControlBarSchemeManager::Update);
+
+    // controlbar.h
+    Hook_Any(0x004601C0, ControlBar::Show_Rally_Point);
+    Hook_Any(0x00460D70, ControlBar::Switch_Control_Bar_Stage);
+    Hook_Any(0x004614F0, ControlBar::Set_Up_Down_Images);
+    Hook_Any(0x00460920, ControlBar::Update_Build_Queue_Disabled_Images);
+    Hook_Any(0x00460A70, ControlBar::Update_Build_Up_Clock_Color);
+    Hook_Any(0x00460A50, ControlBar::Update_Right_HUD_Image);
+    Hook_Any(0x00461050, ControlBar::Update_Slot_Exit_Image);
+    Hook_Any(0x00461390, ControlBar::Update_Up_Down_Images);
+    Hook_Any(0x0045EA80, ControlBar::On_Drawable_Selected);
+    Hook_Any(0x0045EAA0, ControlBar::On_Drawable_Deselected);
+    Hook_Any(0x0045F8A0, ControlBar::Process_Context_Sensitive_Button_Transition);
+    Hook_Any(0x00460900, ControlBar::Preload_Assets);
+    Hook_Any(0x00460BB0, ControlBar::Toggle_Control_Bar_Stage);
+    Hook_Any(0x00461600, ControlBar::Get_Foreground_Marker_Pos);
+    Hook_Any(0x00461640, ControlBar::Trigger_Radar_Attack_Glow);
+    Hook_Any(0x005AB0D0, ControlBar::Populate_Beacon);
+    Hook_Any(0x005AB250, Beacon_Window_Input);
+    Hook_Any(0x005A30D0, ControlBar::Do_Transport_Inventory_UI);
+    Hook_Any(0x005A3230, ControlBar::Populate_Command);
+    Hook_Any(0x005A3790, ControlBar::Populate_Build_Queue);
+    Hook_Any(0x005A3B20, ControlBar::Update_Context_Command);
+    Hook_Any(0x005A4090, ControlBar::Get_Command_Availability);
+    Hook_Any(0x005AC640, ControlBar::Process_Command_Transition_UI);
+    Hook_Any(0x005AB6C0, ControlBar::Add_Common_Commands);
+    Hook_Any(0x005AB820, ControlBar::Populate_Multi_Select);
+    Hook_Any(0x005AB940, ControlBar::Update_Context_Multi_Select);
+    Hook_Any(0x005AAF60, ControlBar::Populate_Under_Construction);
+
+    // controlbarscheme.h
+    Hook_Any(0x005A66B0, ControlBarSchemeManager::Draw_Foreground);
+    Hook_Any(0x005A66E0, ControlBarSchemeManager::Draw_Background);
+    Hook_Any(0x005A6710, ControlBarSchemeManager::Set_Control_Bar_Scheme_By_Player_Template);
+    Hook_Any(0x005A6970, ControlBarSchemeManager::Set_Control_Bar_Scheme_By_Player);
 }

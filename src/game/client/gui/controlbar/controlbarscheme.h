@@ -84,7 +84,7 @@ public:
 
 private:
     Utf8String m_name;
-    Coord2D m_ScreenCreationRes;
+    ICoord2D m_screenCreationRes;
     Utf8String m_side;
     Image *m_buttonQueueImage;
     Image *m_rightHUDImage;
@@ -152,6 +152,7 @@ private:
     Image *m_powerPurchaseImage;
     std::list<ControlBarSchemeImage *> m_layer[LAYER_COUNT];
     std::list<ControlBarSchemeAnimation *> m_animations;
+    friend class ControlBarSchemeManager;
 };
 
 class ControlBarSchemeManager

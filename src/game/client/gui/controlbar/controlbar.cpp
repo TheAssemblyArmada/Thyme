@@ -19,6 +19,7 @@
 #include "captainslog.h"
 #include "colorspace.h"
 #include "controlbarscheme.h"
+#include "display.h"
 #include "drawable.h"
 #include "gadgetprogressbar.h"
 #include "gadgetpushbutton.h"
@@ -33,10 +34,12 @@
 #include "player.h"
 #include "playerlist.h"
 #include "playertemplate.h"
+#include "recorder.h"
 #include "scriptengine.h"
 #include "specialpower.h"
 #include "stealthupdate.h"
 #include "thingfactory.h"
+#include "view.h"
 #include "windowlayout.h"
 #include "windowvideomanager.h"
 #ifdef GAME_DLL
@@ -322,7 +325,7 @@ bool CommandButton::Is_Valid_To_Use_On(Object *obj, const Object *obj2, const Co
         if (interface != nullptr) {
             for (const ProductionEntry *entry = interface->First_Production(); entry;
                  entry = interface->Next_Production(entry)) {
-                if (entry->Get_Production_Object() != nullptr) {
+                if (entry->Get_Production_Upgrade() != nullptr) {
                     return false;
                 }
             }
@@ -399,7 +402,7 @@ bool CommandButton::Is_Context_Command() const
     return (m_options & COMMAND_OPTION_CONTEXTMODE_COMMAND) != 0;
 }
 
-void CommandButton::Copy_Images_From(const CommandButton *button, bool set_dirty)
+void CommandButton::Copy_Images_From(const CommandButton *button, bool set_dirty) const
 {
     if (m_buttonImage != button->Get_Button_Image()) {
         m_buttonImage = button->Get_Button_Image();
@@ -410,7 +413,7 @@ void CommandButton::Copy_Images_From(const CommandButton *button, bool set_dirty
     }
 }
 
-void CommandButton::Copy_Button_Text_From(const CommandButton *button, bool conflicting_label, bool set_dirty)
+void CommandButton::Copy_Button_Text_From(const CommandButton *button, bool conflicting_label, bool set_dirty) const
 {
     bool is_dirty = false;
 
@@ -474,7 +477,7 @@ ControlBar::ControlBar() :
     m_controlBarSchemeManager(nullptr),
     m_currentSelectedDrawable(nullptr),
     m_currContext(CB_CONTEXT_NONE),
-    m_rallyPointDrawable(nullptr),
+    m_rallyPointDrawableID(INVALID_DRAWABLE_ID),
     m_displayedConstructPercent(-1.0f),
     m_oclTimerFrame(0),
     m_displayedQueueCount(0),
@@ -504,7 +507,7 @@ ControlBar::ControlBar() :
     m_observerPlayer(nullptr),
     m_controlBarPopupDescriptionLayout(nullptr),
     m_buildTooltipLayoutVisible(false),
-    m_unkColor(Make_Color(0, 0, 0, 100)),
+    m_CommandBarBorderColor(Make_Color(0, 0, 0, 100)),
     m_barButtonGenStarOnIcon(nullptr),
     m_barButtonGenStarOffIcon(nullptr),
     m_toggleButtonUpInImage(nullptr),
@@ -965,7 +968,7 @@ void ControlBar::Set_Command_Bar_Border(GameWindow *button, CommandButtonMappedB
 void ControlBar::Reset()
 {
     Hide_Special_Power_Shortcut();
-    m_rallyPointDrawable = nullptr;
+    m_rallyPointDrawableID = INVALID_DRAWABLE_ID;
 
     if (m_radarAttackGlowWindow != nullptr) {
         m_radarAttackGlowWindow->Win_Enable(true);
@@ -1474,6 +1477,21 @@ void ControlBar::Parse_Command_Set_Definition(INI *ini)
     ini->Init_From_INI(commandset, CommandSet::Get_Field_Parse());
 }
 
+void ControlBar::Parse_Control_Bar_Scheme_Definition(INI *ini)
+{
+    Utf8String name;
+    name.Set(ini->Get_Next_Token());
+    ControlBarSchemeManager *manager = g_theControlBar->Get_Control_Bar_Scheme_Manager();
+    captainslog_dbgassert(manager != nullptr, "Parse_Control_Bar_Scheme_Definition: Unable to Get ControlBarSchemeManager");
+
+    if (manager != nullptr) {
+        ControlBarScheme *scheme = manager->New_Control_Bar_Scheme(name);
+        captainslog_dbgassert(
+            scheme != nullptr, "Parse_Control_Bar_Scheme_Definition: Unable to allocate Scheme '%s'", name.Str());
+        ini->Init_From_INI(scheme, ControlBarSchemeManager::Get_Field_Parse());
+    }
+}
+
 CommandButton *ControlBar::Find_Non_Const_Command_Button(const Utf8String &name)
 {
     for (CommandButton *button = m_commandButtons; button != nullptr; button = button->Get_Next()) {
@@ -1557,6 +1575,266 @@ CommandSet *ControlBar::New_Command_Set_Override(CommandSet *set)
     new_set->Set_Is_Allocated();
     set->Set_Next(new_set);
     return new_set;
+}
+
+void ControlBar::Show_Rally_Point(const Coord3D *loc)
+{
+    if (loc != nullptr) {
+        Drawable *drawable = nullptr;
+
+        if (m_rallyPointDrawableID != INVALID_DRAWABLE_ID) {
+            drawable = g_theGameClient->Find_Drawable_By_ID(m_rallyPointDrawableID);
+        } else {
+            drawable = g_theThingFactory->New_Drawable(
+                g_theThingFactory->Find_Template("RallyPointMarker", true), DRAWABLE_STATUS_UNK);
+            captainslog_dbgassert(drawable != nullptr, "Show_Rally_Point: Unable to create rally point drawable");
+
+            if (drawable != nullptr) {
+                drawable->Set_Status_Bit(DRAWABLE_STATUS_16);
+                m_rallyPointDrawableID = drawable->Get_ID();
+            }
+        }
+
+        captainslog_dbgassert(drawable != nullptr, "Show_Rally_Point: No rally point marker found");
+        drawable->Set_Position(loc);
+        drawable->Set_Orientation(g_theWriteableGlobalData->m_downWindAngle);
+
+        if (g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT) {
+            drawable->Set_Indicator_Color(g_thePlayerList->Get_Local_Player()->Get_Night_Color());
+        } else {
+            drawable->Set_Indicator_Color(g_thePlayerList->Get_Local_Player()->Get_Color());
+        }
+    } else {
+        if (m_rallyPointDrawableID != INVALID_DRAWABLE_ID) {
+            g_theGameClient->Destroy_Drawable(g_theGameClient->Find_Drawable_By_ID(m_rallyPointDrawableID));
+        }
+
+        m_rallyPointDrawableID = INVALID_DRAWABLE_ID;
+    }
+}
+
+void ControlBar::Switch_Control_Bar_Stage(ControlBarStages stage)
+{
+    if (stage < CONTROL_BAR_STAGE_MAX
+        && (g_theRecorder == nullptr || g_theRecorder->Get_Mode() != RECORDERMODETYPE_PLAYBACK)) {
+        switch (stage) {
+            case CONTROL_BAR_STAGE_DEFAULT:
+                Set_Default_Control_Bar_Config();
+                break;
+            case CONTROL_BAR_STAGE_LOW:
+                Set_Low_Control_Bar_Config();
+                break;
+            case CONTROL_BAR_STAGE_HIDDEN:
+                Set_Hidden_Control_Bar();
+                break;
+            default:
+                captainslog_dbgassert(
+                    false, "ControlBar::Switch_Control_Bar_Stage we were passed in a stage that's not supported %d", stage);
+                break;
+        }
+    }
+}
+
+void ControlBar::Set_Default_Control_Bar_Config()
+{
+    m_controlBarConfig = CONTROL_BAR_STAGE_DEFAULT;
+    g_theTacticalView->Set_Height(g_theDisplay->Get_Height() * 0.8f);
+    m_contextParent[0]->Win_Set_Position(m_parentXPosition, m_parentYPosition);
+    m_contextParent[0]->Win_Hide(false);
+    Repopulate_Build_Tooltip_Layout();
+    Set_Up_Down_Images();
+}
+
+void ControlBar::Set_Hidden_Control_Bar()
+{
+    m_controlBarConfig = CONTROL_BAR_STAGE_HIDDEN;
+    m_contextParent[0]->Win_Hide(true);
+}
+
+void ControlBar::Set_Low_Control_Bar_Config()
+{
+    m_controlBarConfig = CONTROL_BAR_STAGE_LOW;
+    int x_pos = m_parentXPosition;
+    int y_pos = (float)g_theDisplay->Get_Height() - (float)g_theDisplay->Get_Height() * 0.1f;
+    g_theTacticalView->Set_Height(g_theDisplay->Get_Height());
+    m_contextParent[0]->Win_Set_Position(x_pos, y_pos);
+    m_contextParent[0]->Win_Hide(false);
+}
+
+void ControlBar::Set_Up_Down_Images()
+{
+    GameWindow *window = g_theWindowManager->Win_Get_Window_From_Id(
+        nullptr, g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonLarge"));
+
+    if (window != nullptr) {
+        if (m_controlBarConfig == CONTROL_BAR_STAGE_LOW) {
+            Gadget_Button_Set_Enabled_Image(window, m_toggleButtonUpOnImage);
+            Gadget_Button_Set_Hilite_Image(window, m_toggleButtonUpInImage);
+            Gadget_Button_Set_Hilite_Selected_Image(window, m_toggleButtonUpPushedImage);
+        } else {
+            Gadget_Button_Set_Enabled_Image(window, m_toggleButtonDownOnImage);
+            Gadget_Button_Set_Hilite_Image(window, m_toggleButtonDownInImage);
+            Gadget_Button_Set_Hilite_Selected_Image(window, m_toggleButtonDownPushedImage);
+        }
+    }
+}
+
+void ControlBar::Update_Build_Queue_Disabled_Images(const Image *image)
+{
+    if (image != nullptr) {
+        static bool ids_initialized = false;
+        static NameKeyType build_queue_ids[QUEUE_ENTRY_COUNT];
+
+        if (!ids_initialized) {
+            Utf8String name;
+
+            for (int i = 0; i < QUEUE_ENTRY_COUNT; i++) {
+                name.Format("ControlBar.wnd:ButtonQueue%02d", i + 1);
+                build_queue_ids[i] = g_theNameKeyGenerator->Name_To_Key(name.Str());
+            }
+
+            ids_initialized = true;
+        }
+
+        for (int i = 0; i < QUEUE_ENTRY_COUNT; i++) {
+            m_queueData[i].control = g_theWindowManager->Win_Get_Window_From_Id(m_contextParent[3], build_queue_ids[i]);
+            Gadget_Button_Set_Disabled_Image(m_queueData[i].control, image);
+        }
+    }
+}
+
+void ControlBar::Update_Build_Up_Clock_Color(int color)
+{
+    m_buildUpClockColor = color;
+}
+
+void ControlBar::Update_Right_HUD_Image(const Image *image)
+{
+    if (m_rightHUDWindow != nullptr) {
+        if (image != nullptr) {
+            m_rightHUDWindow->Win_Set_Enabled_Image(0, image);
+        }
+    }
+}
+
+void ControlBar::Update_Slot_Exit_Image(const Image *image)
+{
+    if (image != nullptr) {
+        CommandButton *button = Find_Non_Const_Command_Button("Command_StructureExit");
+
+        if (button != nullptr) {
+            button->Set_Button_Image(image);
+        }
+
+        button = Find_Non_Const_Command_Button("Command_TransportExit");
+
+        if (button != nullptr) {
+            button->Set_Button_Image(image);
+        }
+
+        button = Find_Non_Const_Command_Button("Command_BunkerExit");
+
+        if (button != nullptr) {
+            button->Set_Button_Image(image);
+        }
+
+        button = Find_Non_Const_Command_Button("Command_FireBaseExit");
+
+        if (button != nullptr) {
+            button->Set_Button_Image(image);
+        }
+    }
+}
+
+void ControlBar::Update_Up_Down_Images(const Image *toggle_button_up_in_image,
+    const Image *toggle_button_up_on_image,
+    const Image *toggle_button_up_pushed_image,
+    const Image *toggle_button_down_in_image,
+    const Image *toggle_button_down_on_image,
+    const Image *toggle_button_down_pushed_image,
+    const Image *general_button_enable_image,
+    const Image *general_button_hilited_image)
+{
+    m_toggleButtonUpInImage = toggle_button_up_in_image;
+    m_toggleButtonUpOnImage = toggle_button_up_on_image;
+    m_toggleButtonUpPushedImage = toggle_button_up_pushed_image;
+    m_toggleButtonDownInImage = toggle_button_down_in_image;
+    m_toggleButtonDownOnImage = toggle_button_down_on_image;
+    m_toggleButtonDownPushedImage = toggle_button_down_pushed_image;
+    m_generalButtonEnableImage = general_button_enable_image;
+    m_generalButtonHilitedImage = general_button_hilited_image;
+    Set_Up_Down_Images();
+}
+
+void ControlBar::On_Drawable_Selected(Drawable *draw)
+{
+    Mark_UI_Dirty();
+    g_theInGameUI->Set_GUI_Command(nullptr);
+}
+
+void ControlBar::On_Drawable_Deselected(Drawable *draw)
+{
+    Mark_UI_Dirty();
+
+    if (g_theInGameUI->Get_Select_Count() == 0) {
+        g_theInGameUI->Set_GUI_Command(nullptr);
+    }
+
+    g_theInGameUI->Place_Build_Available(nullptr, nullptr);
+}
+
+CBCommandStatus ControlBar::Process_Context_Sensitive_Button_Transition(GameWindow *button, GadgetGameMessage gadget_message)
+{
+    return Process_Command_Transition_UI(button, gadget_message);
+}
+
+void ControlBar::Set_Control_Bar_Scheme_By_Name(const Utf8String &name)
+{
+    if (m_controlBarSchemeManager != nullptr) {
+        m_controlBarSchemeManager->Set_Control_Bar_Scheme(name);
+    }
+
+    Switch_Control_Bar_Stage(CONTROL_BAR_STAGE_DEFAULT);
+}
+
+void ControlBar::Preload_Assets(TimeOfDayType time_of_day)
+{
+    if (m_controlBarSchemeManager != nullptr) {
+        m_controlBarSchemeManager->Preload_Assets(time_of_day);
+    }
+}
+
+void ControlBar::Update_Purchase_Science() {}
+
+void ControlBar::Toggle_Control_Bar_Stage()
+{
+    if (m_controlBarConfig != CONTROL_BAR_STAGE_DEFAULT) {
+        Switch_Control_Bar_Stage(CONTROL_BAR_STAGE_DEFAULT);
+    } else {
+        Switch_Control_Bar_Stage(CONTROL_BAR_STAGE_LOW);
+    }
+}
+
+void ControlBar::Update_Command_Marker_Image(const Image *image) {}
+
+void ControlBar::Get_Foreground_Marker_Pos(int *x, int *y)
+{
+    *x = m_foregroundMarkerPosX;
+    *y = m_foregroundMarkerPosY;
+}
+
+void ControlBar::Draw_Transition_Handler() {}
+
+void ControlBar::Trigger_Radar_Attack_Glow()
+{
+    if (m_radarAttackGlowWindow != nullptr) {
+        m_triggerRadarAttackGlow = true;
+        m_radarAttackGlowCounter = 150;
+
+        if ((m_radarAttackGlowWindow->Win_Get_Status() & WIN_STATUS_ENABLED) != 0) {
+            m_radarAttackGlowWindow->Win_Enable(false);
+        }
+    }
 }
 
 void ControlBar::Set_Control_Bar_Scheme_By_Player(Player *p)

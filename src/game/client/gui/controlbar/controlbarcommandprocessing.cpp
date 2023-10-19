@@ -294,7 +294,7 @@ CBCommandStatus ControlBar::Process_Command_UI(GameWindow *control, GadgetGameMe
                                 if (i == 9) {
                                     captainslog_dbgassert(false, "Control not found in build queue data");
                                 } else if (m_queueData[i].type == ProductionEntry::PRODUCTION_UPGRADE) {
-                                    UpgradeTemplate *upgrade = m_queueData[i].upgrade_template;
+                                    const UpgradeTemplate *upgrade = m_queueData[i].upgrade_template;
 
                                     if (upgrade != nullptr) {
                                         if (obj != nullptr) {
@@ -539,4 +539,18 @@ CBCommandStatus ControlBar::Process_Command_UI(GameWindow *control, GadgetGameMe
         captainslog_dbgassert(false, "ControlBar::Process_Command_UI() -- Button activated has no data. Ignoring...");
         return CBC_COMMAND_NOT_USED;
     }
+}
+
+CBCommandStatus ControlBar::Process_Command_Transition_UI(GameWindow *control, GadgetGameMessage gadget_message)
+{
+    if (m_currContext == CB_CONTEXT_MULTI_SELECT
+        || (m_currentSelectedDrawable != nullptr && m_currentSelectedDrawable->Get_Object())) {
+        return CBC_COMMAND_USED;
+    }
+
+    if (m_currContext != CB_CONTEXT_NONE && m_currContext != CB_CONTEXT_UNK && m_currContext != CB_CONTEXT_OBSERVER) {
+        Switch_To_Context(CB_CONTEXT_NONE, nullptr);
+    }
+
+    return CBC_COMMAND_NOT_USED;
 }

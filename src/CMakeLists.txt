@@ -330,6 +330,7 @@ set(GAMEENGINE_SRC
     game/logic/object/update/aiupdate/dozeraiupdate.cpp
     game/logic/object/update/assistedtargetingupdate.cpp
     game/logic/object/update/autodepositupdate.cpp
+    game/logic/object/update/battleplanupdate.cpp
     game/logic/object/update/laserupdate.cpp
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp

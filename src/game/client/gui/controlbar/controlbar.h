@@ -43,7 +43,7 @@ enum ControlBarContext
 enum ControlBarStages
 {
     CONTROL_BAR_STAGE_DEFAULT,
-    CONTROL_BAR_STAGE_UNK,
+    CONTROL_BAR_STAGE_SQUISHED,
     CONTROL_BAR_STAGE_LOW,
     CONTROL_BAR_STAGE_HIDDEN,
     CONTROL_BAR_STAGE_MAX,
@@ -291,6 +291,7 @@ public:
     ControlBarSchemeManager *Get_Control_Bar_Scheme_Manager() const { return m_controlBarSchemeManager; }
     const Image *Get_Gen_Arrow_Image() const { return m_genArrowImage; }
     Player *Get_Observer_Player() const { return m_observerPlayer; }
+    int Get_Command_Bar_Border_Color() const { return m_CommandBarBorderColor; }
     bool Is_Observer() const { return m_isObserver; }
     void Set_Cameo_Flash(bool flash) { m_cameoFlash = flash; }
     void Set_Gen_Arrow_Image(const Image *image) { m_genArrowImage = image; }
@@ -347,8 +348,7 @@ public:
     void Set_Control_Bar_Scheme_By_Name(const Utf8String &name);
     void Set_Control_Bar_Scheme_By_Player(Player *p);
     void Set_Control_Bar_Scheme_By_Player_Template(PlayerTemplate *tmplate);
-    // void Set_Control_Command(const Utf8String &button_window_name, GameWindow *parent, const CommandButton
-    // *command_button); //unused, not implemented
+    void Set_Control_Command(const Utf8String &button_window_name, GameWindow *parent, const CommandButton *command_button);
     void Set_Control_Command(GameWindow *button, const CommandButton *command_button);
     void Set_Default_Control_Bar_Config();
     void Set_Hidden_Control_Bar();
@@ -514,13 +514,22 @@ private:
     static const Image *s_rankEliteIcon;
     static const Image *s_rankHeroicIcon;
     static const Image *s_rankVeteranIcon;
+    friend void Hide_Control_Bar(bool immediate);
+    friend void Show_Control_Bar(bool immediate);
+    friend void Toggle_Control_Bar(bool immediate);
 };
 
 void Control_Bar_Popup_Description_Update_Func(WindowLayout *layout, void *user_data);
 WindowMsgHandledType Beacon_Window_Input(
     GameWindow *text_entry, unsigned int message, unsigned int data_1, unsigned int data_2);
-void Hide_Control_Bar(bool hide);
-void Show_Control_Bar(bool hide);
+void Hide_Control_Bar(bool immediate);
+void Show_Control_Bar(bool immediate);
+void Toggle_Control_Bar(bool immediate);
+WindowMsgHandledType Control_Bar_Observer_System(
+    GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
+WindowMsgHandledType Left_HUD_Input(GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
+WindowMsgHandledType Control_Bar_Input(GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
+WindowMsgHandledType Control_Bar_System(GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
 
 #ifdef GAME_DLL
 extern ControlBar *&g_theControlBar;

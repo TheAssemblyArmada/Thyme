@@ -20,6 +20,27 @@
 InGameUI *g_theInGameUI;
 #endif
 
+void Hide_Replay_Controls()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00506FD0, 0x00506FD0));
+#endif
+}
+
+void Show_Replay_Controls()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00506FB0, 0x00506FB0));
+#endif
+}
+
+void Toggle_Replay_Controls()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00506FF0, 0x00506FF0));
+#endif
+}
+
 void InGameUI::Add_World_Animation(
     Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise)
 {

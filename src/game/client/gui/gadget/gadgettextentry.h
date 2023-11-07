@@ -139,4 +139,21 @@ WindowMsgHandledType Gadget_Text_Entry_System(
     GameWindow *text_entry, unsigned int message, unsigned int data_1, unsigned int data_2);
 
 void Gadget_Text_Entry_Set_Font(GameWindow *text_entry, GameFont *font);
-Utf16String Gadget_Text_Entry_Get_Text(GameWindow *text_entry);
+
+static Utf16String Gadget_Text_Entry_Get_Text(GameWindow *text_entry)
+{
+    if (text_entry != nullptr) {
+        if ((text_entry->Win_Get_Style() & GWS_ENTRY_FIELD) != 0) {
+            Utf16String str;
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+            g_theWindowManager->Win_Send_System_Msg(text_entry, GEM_GET_TEXT, 0, reinterpret_cast<unsigned int>(&str));
+#endif
+            return str;
+        } else {
+            return Utf16String::s_emptyString;
+        }
+    } else {
+        return Utf16String::s_emptyString;
+    }
+}

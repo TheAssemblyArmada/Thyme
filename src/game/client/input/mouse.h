@@ -175,12 +175,12 @@ public:
     void Draw_Cursor_Text() const;
     void Set_Cursor_Tooltip(Utf16String tooltip, int delay, const RGBColor *color, float scale);
     void Draw_Tooltip();
+    MouseCursor Get_Cursor_Index(const Utf8String &name);
 
 protected:
     void Update_Mouse_Data();
     void Process_Mouse_Event(int event_num);
     void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
-    MouseCursor Get_Cursor_Index(const Utf8String &name);
     void Set_Mouse_Text(const MouseCursor cursor);
     void Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, const RGBAColorInt *drop_color);
 

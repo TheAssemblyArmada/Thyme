@@ -80,6 +80,8 @@ private:
     std::set<Utf8String> m_unk;
 };
 
+void Find_Draw_Positions(int start_x, int start_y, int width, int height, Region3D extent, ICoord2D *ul, ICoord2D *lr);
+
 #ifdef GAME_DLL
 extern WaypointMap *&g_waypoints;
 extern MapCache *&g_theMapCache;

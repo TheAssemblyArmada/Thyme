@@ -68,6 +68,7 @@ enum WinStatus
     WIN_STATUS_FLASHING = 1 << 23,
     WIN_STATUS_ALWAYS_COLOR = 1 << 24,
     WIN_STATUS_ON_MOUSE_DOWN = 1 << 25,
+    WIN_STATUS_UNK = 1 << 26,
 };
 
 enum GameWindowStyle

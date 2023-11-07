@@ -22,6 +22,11 @@
 #include "mempoolfact.h"
 #include "rawalloc.h"
 
+#pragma warning(push)
+#pragma warning(disable : 4073) // warning C4073: initializers put in library initialization area
+#pragma init_seg(lib) // Forces objects and variables in this file to initialize before other stuff.
+#pragma warning(pop)
+
 #ifndef GAME_DLL
 bool g_thePreMainInitFlag = false;
 bool g_theMainInitFlag = false;

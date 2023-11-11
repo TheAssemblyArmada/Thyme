@@ -23,17 +23,21 @@
 #include "drawable.h"
 #include "gadgetprogressbar.h"
 #include "gadgetpushbutton.h"
+#include "gadgetstatictext.h"
 #include "gameclient.h"
 #include "gamelogic.h"
+#include "gametext.h"
 #include "gamewindowmanager.h"
 #include "gamewindowtransitions.h"
 #include "hotkey.h"
 #include "image.h"
+#include "ingamechat.h"
 #include "multiplayersettings.h"
 #include "object.h"
 #include "player.h"
 #include "playerlist.h"
 #include "playertemplate.h"
+#include "rebuildholebehavior.h"
 #include "recorder.h"
 #include "scriptengine.h"
 #include "specialpower.h"
@@ -1837,51 +1841,1146 @@ void ControlBar::Trigger_Radar_Attack_Glow()
     }
 }
 
+void ControlBar::Toggle_Purchase_Science()
+{
+    if (m_contextParent[1]->Win_Is_Hidden()) {
+        Show_Purchase_Science();
+    } else {
+        Hide_Purchase_Science();
+    }
+}
+
+void ControlBar::Hide_Purchase_Science()
+{
+    if (m_contextParent[1] != nullptr) {
+        if (!m_contextParent[1]->Win_Is_Hidden()) {
+            m_contextParent[1]->Win_Hide(true);
+        }
+    }
+}
+
+void ControlBar::Show_Special_Power_Shortcut()
+{
+    if (!g_theScriptEngine->Is_End_Game_Timer_Running() && m_specialPowerShortcutBarParent != nullptr
+        && g_thePlayerList != nullptr && g_thePlayerList->Get_Local_Player() != nullptr) {
+        bool skip = true;
+
+        for (int i = 0; i < m_specialPowerShortcutButtonCount; i++) {
+            if (m_specialPowerShortcutButtons[i]->Win_Get_User_Data() != nullptr) {
+                skip = false;
+                break;
+            }
+        }
+
+        if (!skip) {
+            if (g_thePlayerList->Get_Local_Player()->Has_Any_Shortcut_Special_Power() || Has_Any_Shortcut_Selection()) {
+                m_specialPowerShortcutBarParent->Win_Hide(false);
+                Populate_Special_Power_Shortcut(g_thePlayerList->Get_Local_Player());
+            }
+        }
+    }
+}
+
+void ControlBar::Show_Purchase_Science()
+{
+    if (!g_theScriptEngine->Is_End_Game_Timer_Running()) {
+        Populate_Purchase_Science(g_thePlayerList->Get_Local_Player());
+        m_starHilight = false;
+
+        if (m_contextParent[1]->Win_Is_Hidden()) {
+            m_contextParent[1]->Win_Hide(false);
+
+            if (g_theWriteableGlobalData->m_animateWindows) {
+                g_theTransitionHandler->Set_Group("GenExpFade", false);
+            }
+        }
+    }
+}
+
+void ControlBar::Populate_Purchase_Science(Player *player)
+{
+    if (g_theScriptEngine->Is_End_Game_Timer_Running()) {
+        return;
+    }
+
+    if (player == nullptr) {
+        return;
+    }
+
+    if (player->Get_Player_Template() == nullptr) {
+        return;
+    }
+
+    if (player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_One().Is_Empty()) {
+        return;
+    }
+
+    if (player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_Three().Is_Empty()) {
+        return;
+    }
+
+    if (player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_Eight().Is_Empty()) {
+        return;
+    }
+
+    const CommandSet *command_set_one =
+        g_theControlBar->Find_Command_Set(player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_One());
+    const CommandSet *command_set_three =
+        g_theControlBar->Find_Command_Set(player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_Three());
+    const CommandSet *command_set_eight =
+        g_theControlBar->Find_Command_Set(player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_Eight());
+
+    for (int i = 0; i < RANK_1_BUTTON_COUNT; i++) {
+        m_rank1Buttons[i]->Win_Hide(true);
+    }
+
+    for (int i = 0; i < RANK_3_BUTTON_COUNT; i++) {
+        m_rank3Buttons[i]->Win_Hide(true);
+    }
+
+    for (int i = 0; i < RANK_8_BUTTON_COUNT; i++) {
+        m_rank8Buttons[i]->Win_Hide(true);
+    }
+
+    if (command_set_one == nullptr || command_set_three == nullptr || command_set_eight == nullptr) {
+        return;
+    }
+
+    for (int i = 0; i < RANK_1_BUTTON_COUNT; i++) {
+        const CommandButton *command_button = command_set_one->Get_Command_Button(i);
+
+        if (command_button == nullptr || (command_button->Get_Options() & COMMAND_OPTION_SCRIPT_ONLY) != 0) {
+            m_rank1Buttons[i]->Win_Hide(true);
+            continue;
+        }
+
+        m_rank1Buttons[i]->Win_Hide(false);
+        m_rank1Buttons[i]->Win_Enable(false);
+        Set_Control_Command(m_rank1Buttons[i], command_button);
+
+        if (!command_button->Get_Sciences()->empty()) {
+            ScienceType science = (*command_button->Get_Sciences())[0];
+
+            if (player->Is_Science_Disabled(science)) {
+                m_rank1Buttons[i]->Win_Enable(false);
+                continue;
+            }
+
+            if (player->Is_Science_Hidden(science)) {
+                m_rank1Buttons[i]->Win_Hide(true);
+                continue;
+            }
+
+            if (!player->Has_Science(science)) {
+                if (g_theScienceStore->Player_Has_Prereqs_For_Science(player, science)) {
+                    if (g_theScienceStore->Get_Science_Purchase_Cost(science) <= player->Get_Science_Purchase_Points()) {
+                        m_rank1Buttons[i]->Win_Enable(true);
+                    }
+                }
+            }
+
+            if (player->Has_Science(science)) {
+                m_rank1Buttons[i]->Win_Set_Status(WIN_STATUS_ALWAYS_COLOR);
+            } else {
+                m_rank1Buttons[i]->Win_Clear_Status(WIN_STATUS_ALWAYS_COLOR);
+            }
+
+            if (!g_theScienceStore->Player_Has_Root_Prereqs_For_Science(player, science)) {
+                m_rank1Buttons[i]->Win_Hide(true);
+            }
+        }
+    }
+
+    for (int i = 0; i < RANK_3_BUTTON_COUNT; i++) {
+        const CommandButton *command_button = command_set_three->Get_Command_Button(i);
+
+        if (command_button == nullptr || (command_button->Get_Options() & COMMAND_OPTION_SCRIPT_ONLY) != 0) {
+            m_rank3Buttons[i]->Win_Hide(true);
+            continue;
+        }
+
+        m_rank3Buttons[i]->Win_Hide(false);
+        m_rank3Buttons[i]->Win_Enable(false);
+        Set_Control_Command(m_rank3Buttons[i], command_button);
+
+        if (!command_button->Get_Sciences()->empty()) {
+            ScienceType science = (*command_button->Get_Sciences())[0];
+
+            if (player->Is_Science_Disabled(science)) {
+                m_rank3Buttons[i]->Win_Enable(false);
+                continue;
+            }
+
+            if (player->Is_Science_Hidden(science)) {
+                m_rank3Buttons[i]->Win_Hide(true);
+                continue;
+            }
+
+            if (!player->Has_Science(science)) {
+                if (g_theScienceStore->Player_Has_Prereqs_For_Science(player, science)) {
+                    if (g_theScienceStore->Get_Science_Purchase_Cost(science) <= player->Get_Science_Purchase_Points()) {
+                        m_rank3Buttons[i]->Win_Enable(true);
+                    }
+                }
+            }
+
+            if (player->Has_Science(science)) {
+                m_rank3Buttons[i]->Win_Set_Status(WIN_STATUS_ALWAYS_COLOR);
+            } else {
+                m_rank3Buttons[i]->Win_Clear_Status(WIN_STATUS_ALWAYS_COLOR);
+            }
+
+            if (!g_theScienceStore->Player_Has_Root_Prereqs_For_Science(player, science)) {
+                m_rank3Buttons[i]->Win_Hide(true);
+            }
+        }
+    }
+
+    for (int i = 0; i < RANK_8_BUTTON_COUNT; i++) {
+        const CommandButton *command_button = command_set_eight->Get_Command_Button(i);
+
+        if (command_button == nullptr || (command_button->Get_Options() & COMMAND_OPTION_SCRIPT_ONLY) != 0) {
+            m_rank8Buttons[i]->Win_Hide(true);
+            continue;
+        }
+
+        m_rank8Buttons[i]->Win_Hide(false);
+        m_rank8Buttons[i]->Win_Enable(false);
+        Set_Control_Command(m_rank8Buttons[i], command_button);
+
+        if (!command_button->Get_Sciences()->empty()) {
+            ScienceType science = (*command_button->Get_Sciences())[0];
+
+            if (player->Is_Science_Disabled(science)) {
+                m_rank8Buttons[i]->Win_Enable(false);
+                continue;
+            }
+
+            if (player->Is_Science_Hidden(science)) {
+                m_rank8Buttons[i]->Win_Hide(true);
+                continue;
+            }
+
+            if (!player->Has_Science(science)) {
+                if (g_theScienceStore->Player_Has_Prereqs_For_Science(player, science)) {
+                    if (g_theScienceStore->Get_Science_Purchase_Cost(science) <= player->Get_Science_Purchase_Points()) {
+                        m_rank8Buttons[i]->Win_Enable(true);
+                    }
+                }
+            }
+
+            if (player->Has_Science(science)) {
+                m_rank8Buttons[i]->Win_Set_Status(WIN_STATUS_ALWAYS_COLOR);
+            } else {
+                m_rank8Buttons[i]->Win_Clear_Status(WIN_STATUS_ALWAYS_COLOR);
+            }
+
+            if (!g_theScienceStore->Player_Has_Root_Prereqs_For_Science(player, science)) {
+                m_rank8Buttons[i]->Win_Hide(true);
+            }
+        }
+    }
+
+    Utf16String points;
+
+    GameWindow *window = g_theWindowManager->Win_Get_Window_From_Id(
+        m_contextParent[1], g_theNameKeyGenerator->Name_To_Key("GeneralsExpPoints.wnd:StaticTextRankPointsAvailable"));
+
+    if (window != nullptr) {
+        points.Format(U_CHAR("%d"), player->Get_Science_Purchase_Points());
+        Gadget_Static_Text_Set_Text(window, points);
+    }
+
+    window = g_theWindowManager->Win_Get_Window_From_Id(
+        m_contextParent[1], g_theNameKeyGenerator->Name_To_Key("GeneralsExpPoints.wnd:ProgressBarExperience"));
+
+    if (window != nullptr) {
+        Gadget_Progress_Bar_Set_Progress(window,
+            (100 * (player->Get_Current_Skill_Points() - player->Get_Rank_Progress()))
+                / (player->Get_Skill_Points_Needed_For_Next_Rank() - player->Get_Rank_Progress()));
+    }
+
+    window = g_theWindowManager->Win_Get_Window_From_Id(
+        m_contextParent[1], g_theNameKeyGenerator->Name_To_Key("GeneralsExpPoints.wnd:StaticTextTitle"));
+
+    if (window != nullptr) {
+        Utf8String text;
+        text.Format("SCIENCE:Rank%d", player->Get_Rank_Level());
+        Gadget_Static_Text_Set_Text(window, g_theGameText->Fetch(text));
+    }
+
+    Update_Context_Purchase_Science();
+}
+
+void ControlBar::Animate_Special_Power_Shortcut(bool forward)
+{
+    if (m_specialPowerShortcutBarParent != nullptr && m_specialPowerShortcutAnimateWindowManager != nullptr
+        && m_specialPowerShortcutButtonCount != 0) {
+        bool skip = true;
+
+        for (int i = 0; i < m_specialPowerShortcutButtonCount; i++) {
+            if (m_specialPowerShortcutButtons[i]->Win_Get_User_Data() != nullptr) {
+                skip = false;
+                break;
+            }
+        }
+
+        if (!skip) {
+            if (forward) {
+                m_specialPowerShortcutAnimateWindowManager->Reset();
+                m_specialPowerShortcutAnimateWindowManager->Register_Game_Window(
+                    m_specialPowerShortcutBarParent, WIN_ANIMATION_SLIDE_RIGHT, true, 500, 0);
+            } else {
+                m_specialPowerShortcutAnimateWindowManager->Reverse_Animate_Window();
+            }
+        }
+    }
+}
+
+CBCommandStatus ControlBar::Process_Context_Sensitive_Button_Click(GameWindow *button, GadgetGameMessage gadget_message)
+{
+    return Process_Command_UI(button, gadget_message);
+}
+
+bool ControlBar::Has_Any_Shortcut_Selection()
+{
+    for (int i = 0; i < m_specialPowerShortcutButtonCount; i++) {
+        if (m_specialPowerShortcutButtons[i] != nullptr) {
+            CommandButton *button = static_cast<CommandButton *>(Gadget_Button_Get_Data(m_specialPowerShortcutButtons[i]));
+
+            if (button != nullptr) {
+                if (button->Get_Command() == GUI_COMMAND_SELECT_ALL_UNITS_OF_TYPE) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 void ControlBar::Set_Control_Bar_Scheme_By_Player(Player *p)
 {
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar, Player *>(PICK_ADDRESS(0x00460340, 0x0072F421), this, p);
-#endif
+    if (m_controlBarSchemeManager != nullptr) {
+        m_controlBarSchemeManager->Set_Control_Bar_Scheme_By_Player(p);
+    }
+
+    static const NameKeyType buttonPlaceBeaconID = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonPlaceBeacon");
+    static const NameKeyType buttonIdleWorkerID = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonIdleWorker");
+    static const NameKeyType buttonGeneralID = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonGeneral");
+    GameWindow *place_beacon = g_theWindowManager->Win_Get_Window_From_Id(nullptr, buttonPlaceBeaconID);
+    GameWindow *idle_worker = g_theWindowManager->Win_Get_Window_From_Id(nullptr, buttonIdleWorkerID);
+    GameWindow *general = g_theWindowManager->Win_Get_Window_From_Id(nullptr, buttonGeneralID);
+
+    if (p->Is_Player_Active()) {
+        Switch_To_Context(CB_CONTEXT_NONE, nullptr);
+        m_isObserver = false;
+
+        if (place_beacon != nullptr) {
+            if ((g_theGameLogic->Get_Game_Mode() == GAME_LAN || g_theGameLogic->Get_Game_Mode() == GAME_INTERNET)
+                && g_theGameInfo->Is_Multi_Player()) {
+                place_beacon->Win_Hide(false);
+            } else {
+                place_beacon->Win_Hide(true);
+            }
+        }
+
+        if (idle_worker != nullptr) {
+            idle_worker->Win_Hide(false);
+        }
+
+        if (general != nullptr) {
+            general->Win_Hide(false);
+            general->Win_Enable(true);
+        }
+    } else {
+        m_isObserver = true;
+        Switch_To_Context(CB_CONTEXT_OBSERVER, nullptr);
+        captainslog_debug("We're loading the Observer Command Bar");
+
+        if (place_beacon != nullptr) {
+            place_beacon->Win_Hide(true);
+        }
+
+        if (idle_worker != nullptr) {
+            idle_worker->Win_Hide(true);
+        }
+
+        if (general != nullptr) {
+            general->Win_Enable(false);
+        }
+    }
+
+    Switch_Control_Bar_Stage(CONTROL_BAR_STAGE_DEFAULT);
 }
 
 void ControlBar::Set_Control_Bar_Scheme_By_Player_Template(PlayerTemplate *tmplate)
 {
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar, PlayerTemplate *>(PICK_ADDRESS(0x004606B0, 0x0072F642), this, tmplate);
-#endif
+    if (m_controlBarSchemeManager != nullptr) {
+        m_controlBarSchemeManager->Set_Control_Bar_Scheme_By_Player_Template(tmplate, false);
+    }
+
+    static const NameKeyType buttonPlaceBeaconID = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonPlaceBeacon");
+    static const NameKeyType buttonIdleWorkerID = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonIdleWorker");
+    static const NameKeyType buttonGeneralID = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonGeneral");
+    GameWindow *place_beacon = g_theWindowManager->Win_Get_Window_From_Id(nullptr, buttonPlaceBeaconID);
+    GameWindow *idle_worker = g_theWindowManager->Win_Get_Window_From_Id(nullptr, buttonIdleWorkerID);
+    GameWindow *general = g_theWindowManager->Win_Get_Window_From_Id(nullptr, buttonGeneralID);
+
+    if (tmplate == g_thePlayerTemplateStore->Find_Player_Template(g_theNameKeyGenerator->Name_To_Key("FactionObserver"))) {
+        m_isObserver = true;
+        Switch_To_Context(CB_CONTEXT_OBSERVER, nullptr);
+        captainslog_debug("We're loading the Observer Command Bar");
+
+        if (place_beacon != nullptr) {
+            place_beacon->Win_Hide(true);
+        }
+
+        if (idle_worker != nullptr) {
+            idle_worker->Win_Hide(true);
+        }
+
+        if (general != nullptr) {
+            general->Win_Enable(false);
+        }
+    } else {
+        Switch_To_Context(CB_CONTEXT_NONE, nullptr);
+        m_isObserver = false;
+
+        if (place_beacon != nullptr) {
+            if ((g_theGameLogic->Get_Game_Mode() == GAME_LAN || g_theGameLogic->Get_Game_Mode() == GAME_INTERNET)
+                && g_theGameInfo->Is_Multi_Player()) {
+                place_beacon->Win_Hide(false);
+            } else {
+                place_beacon->Win_Hide(true);
+            }
+        }
+
+        if (idle_worker != nullptr) {
+            idle_worker->Win_Hide(false);
+        }
+
+        if (general != nullptr) {
+            general->Win_Hide(false);
+            general->Win_Enable(true);
+        }
+    }
+
+    Switch_Control_Bar_Stage(CONTROL_BAR_STAGE_DEFAULT);
+    Hide_Purchase_Science();
 }
 
 void ControlBar::Init_Special_Power_Shortcut_Bar(Player *player)
 {
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar, Player *>(PICK_ADDRESS(0x00461680, 0x0073027A), this, player);
-#endif
+    for (int i = 0; i < SPECIAL_POWER_SHORTCUT_BUTTON_COUNT; i++) {
+        m_specialPowerShortcutButtonParents[i] = nullptr;
+        m_specialPowerShortcutButtons[i] = nullptr;
+    }
+
+    if (m_specialPowerShortcutBarLayout != nullptr) {
+        m_specialPowerShortcutBarLayout->Destroy_Windows();
+        m_specialPowerShortcutBarLayout->Delete_Instance();
+        m_specialPowerShortcutBarLayout = nullptr;
+    }
+
+    m_specialPowerShortcutBarParent = nullptr;
+    m_specialPowerShortcutButtonCount = 0;
+    const PlayerTemplate *tmplate = player->Get_Player_Template();
+
+    if (player != nullptr) {
+        if (tmplate != nullptr) {
+            if (player->Is_Local_Player()) {
+                if (tmplate->Get_Special_Power_Shortcut_Button_Count() != 0) {
+                    if (!tmplate->Get_Special_Power_Shortcut_Win_Name().Is_Empty() && player->Is_Player_Active()) {
+                        m_specialPowerShortcutButtonCount = tmplate->Get_Special_Power_Shortcut_Button_Count();
+                        Utf8String win_name;
+                        Utf8String str1;
+                        Utf8String str2;
+                        Utf8String str3;
+                        win_name = tmplate->Get_Special_Power_Shortcut_Win_Name();
+                        m_specialPowerShortcutBarLayout = g_theWindowManager->Win_Create_Layout(win_name);
+                        m_specialPowerShortcutBarLayout->Hide(true);
+                        str1 = win_name;
+                        str1.Concat(":GenPowersShortcutBarParent");
+                        m_specialPowerShortcutBarParent = g_theWindowManager->Win_Get_Window_From_Id(
+                            nullptr, g_theNameKeyGenerator->Name_To_Key(str1.Str()));
+                        str1 = win_name;
+                        str1.Concat(":ButtonCommand%d");
+                        str3 = win_name;
+                        str3.Concat(":ButtonParent%d");
+
+                        if (tmplate->Get_Special_Power_Shortcut_Button_Count() >= SPECIAL_POWER_SHORTCUT_BUTTON_COUNT) {
+                            m_specialPowerShortcutButtonCount = SPECIAL_POWER_SHORTCUT_BUTTON_COUNT;
+                        } else {
+                            m_specialPowerShortcutButtonCount = tmplate->Get_Special_Power_Shortcut_Button_Count();
+                        }
+
+                        for (int i = 0; i < SPECIAL_POWER_SHORTCUT_BUTTON_COUNT; i++) {
+                            str2.Format(str1, i + 1);
+                            m_specialPowerShortcutButtons[i] = g_theWindowManager->Win_Get_Window_From_Id(
+                                m_specialPowerShortcutBarParent, g_theNameKeyGenerator->Name_To_Key(str2.Str()));
+                            m_specialPowerShortcutButtons[i]->Win_Set_Status(WIN_STATUS_USE_OVERLAY_STATES);
+                            m_specialPowerShortcutButtons[i]->Win_Set_Status(WIN_STATUS_UNK);
+                            str2.Format(str3, i + 1);
+                            m_specialPowerShortcutButtonParents[i] = g_theWindowManager->Win_Get_Window_From_Id(
+                                m_specialPowerShortcutBarParent, g_theNameKeyGenerator->Name_To_Key(str2.Str()));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 void ControlBar::Switch_To_Context(ControlBarContext context, Drawable *draw)
 {
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar, ControlBarContext, Drawable *>(PICK_ADDRESS(0x0045F8C0, 0x0072E3D0), this, context, draw);
-#endif
+    Set_Portrait_By_Object(nullptr);
+    Object *obj;
+
+    if (draw != nullptr) {
+        obj = draw->Get_Object();
+    } else {
+        obj = nullptr;
+    }
+
+    Set_Portrait_By_Object(obj);
+
+    if (g_theHotKeyManager != nullptr) {
+        g_theHotKeyManager->Reset();
+    }
+
+    g_theInGameUI->Set_Radius_Cursor_None();
+    m_currentSelectedDrawable = draw;
+
+    if (!Is_In_Game_Chat_Active() && g_theGameLogic != nullptr && !g_theGameLogic->Is_In_Shell_Game()) {
+        g_theWindowManager->Win_Set_Focus(nullptr);
+    }
+
+    switch (context) {
+        case CB_CONTEXT_NONE:
+            m_contextParent[2]->Win_Hide(true);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(true);
+            m_contextParent[5]->Win_Hide(true);
+            m_contextParent[8]->Win_Hide(true);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(true);
+
+            for (int i = 0; i < CommandSet::MAX_COMMAND_BUTTONS; i++) {
+                if (m_commandWindows[i]) {
+                    m_commandWindows[i]->Win_Clear_Status(WIN_STATUS_FLASHING);
+                }
+            }
+
+            if (draw != nullptr) {
+                draw->Get_Template();
+                Object *object = draw->Get_Object();
+
+                if (object != nullptr) {
+                    if (object->Is_KindOf(KINDOF_REBUILD_HOLE)) {
+                        RebuildHoleBehaviorInterface *interface =
+                            RebuildHoleBehavior::Get_Rebuild_Hole_Behavior_Interface_From_Object(object);
+
+                        if (interface != nullptr) {
+                            interface->Get_Rebuild_Template();
+                        }
+                    }
+                }
+
+                Set_Portrait_By_Object(object);
+            }
+
+            Show_Rally_Point(nullptr);
+            break;
+        case CB_CONTEXT_COMMAND:
+            m_contextParent[2]->Win_Hide(false);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(true);
+            m_contextParent[5]->Win_Hide(true);
+            m_contextParent[8]->Win_Hide(true);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(true);
+            Populate_Command(draw->Get_Object());
+
+            if (obj != nullptr) {
+                ProductionUpdateInterface *update = obj->Get_Production_Update_Interface();
+
+                if (update != nullptr && update->First_Production() != nullptr) {
+                    m_contextParent[3]->Win_Hide(false);
+                    Populate_Build_Queue(obj);
+                    Set_Portrait_By_Object(nullptr);
+                } else {
+                    Set_Portrait_By_Object(obj);
+                }
+            }
+            break;
+        case CB_CONTEXT_STRUCTURE_INVENTORY:
+            m_contextParent[2]->Win_Hide(false);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(true);
+            m_contextParent[5]->Win_Hide(true);
+            m_contextParent[8]->Win_Hide(true);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(true);
+            Populate_Structure_Inventory(draw->Get_Object());
+            break;
+        case CB_CONTEXT_BEACON:
+            m_contextParent[2]->Win_Hide(true);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(false);
+            m_contextParent[5]->Win_Hide(true);
+            m_contextParent[8]->Win_Hide(true);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(true);
+            Populate_Beacon(draw->Get_Object());
+            break;
+        case CB_CONTEXT_UNDER_CONSTRUCTION:
+            m_contextParent[2]->Win_Hide(true);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(true);
+            m_contextParent[5]->Win_Hide(false);
+            m_contextParent[8]->Win_Hide(true);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(true);
+            Populate_Under_Construction(draw->Get_Object());
+            break;
+        case CB_CONTEXT_MULTI_SELECT:
+            m_contextParent[2]->Win_Hide(false);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(true);
+            m_contextParent[5]->Win_Hide(true);
+            m_contextParent[8]->Win_Hide(true);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(true);
+            Populate_Multi_Select();
+            break;
+        case CB_CONTEXT_OBSERVER:
+            m_contextParent[2]->Win_Hide(true);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(true);
+            m_contextParent[5]->Win_Hide(true);
+            m_contextParent[8]->Win_Hide(true);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(false);
+            Populate_Observer_List();
+            break;
+        case CB_CONTEXT_OCL_TIMER:
+            m_contextParent[2]->Win_Hide(true);
+            m_contextParent[3]->Win_Hide(true);
+            m_contextParent[4]->Win_Hide(true);
+            m_contextParent[5]->Win_Hide(true);
+            m_contextParent[8]->Win_Hide(false);
+            m_contextParent[6]->Win_Hide(true);
+            m_contextParent[7]->Win_Hide(true);
+            Populate_OCL_Timer(draw->Get_Object());
+            break;
+        default:
+            captainslog_dbgassert(false, "ControlBar::Switch_To_Context, unknown context '%d'", context);
+            break;
+    }
+
+    m_currContext = context;
 }
 
 void ControlBar::Evaluate_Context_UI()
 {
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar>(PICK_ADDRESS(0x0045EC00, 0x0072D9A7), this);
-#endif
+    m_UIDirty = false;
+
+    if (!m_contextParent[1]->Win_Is_Hidden()) {
+        Show_Purchase_Science();
+    }
+
+    Switch_To_Context(CB_CONTEXT_NONE, nullptr);
+
+    if (g_theInGameUI->Get_Select_Count() != 0) {
+        const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
+
+        if (!drawables->empty()) {
+            if (g_theInGameUI->Are_Selected_Objects_Controllable()) {
+                goto l1;
+            }
+
+            Drawable *draw;
+            draw = drawables->front();
+
+            if (draw != nullptr) {
+                Object *object;
+                object = draw->Get_Object();
+
+                if (object != nullptr) {
+                    if (object->Get_Controlling_Player() != nullptr
+                        && object->Get_Controlling_Player()->Get_Player_Template() != nullptr
+                        && object->Get_Controlling_Player()->Get_Player_Template()->Get_Beacon_Name().Compare(
+                               object->Get_Template()->Get_Name())
+                            == 0) {
+                        Switch_To_Context(CB_CONTEXT_BEACON, draw);
+                    } else {
+                        Switch_To_Context(CB_CONTEXT_NONE, draw);
+                    }
+
+                    ContainModuleInterface *contain;
+                    contain = object->Get_Contain();
+
+                    if (contain != nullptr) {
+                        if (contain->Get_Contain_Max() > 0) {
+                            const Player *player;
+                            player = contain->Get_Apparent_Controlling_Player(g_thePlayerList->Get_Local_Player());
+
+                            if (player == nullptr) {
+                                player = object->Get_Controlling_Player();
+                            }
+
+                            Player *local_player;
+                            local_player = g_thePlayerList->Get_Local_Player();
+
+                            if (local_player != nullptr) {
+                                if (player != nullptr) {
+                                    if (contain->Is_Garrisonable()
+                                        && local_player->Get_Relationship(player->Get_Default_Team()) == NEUTRAL) {
+                                    l1:
+                                        Drawable *drawable = nullptr;
+                                        bool b = false;
+
+                                        if (g_theInGameUI->Get_Select_Count() <= 1) {
+                                            drawable = drawables->front();
+                                        } else {
+                                            drawable = g_theGameClient->Find_Drawable_By_ID(
+                                                g_theInGameUI->Get_Solo_Nexus_Selected_Drawable_ID());
+                                            b = drawable == nullptr;
+                                        }
+
+                                        if (b) {
+                                            Switch_To_Context(CB_CONTEXT_MULTI_SELECT, nullptr);
+                                        } else if (drawable != nullptr) {
+                                            Object *obj = drawable->Get_Object();
+
+                                            if (obj != nullptr) {
+                                                if (!obj->Get_Status_Bits().Test(OBJECT_STATUS_SOLD)) {
+                                                    static const NameKeyType key_OCLUpdate =
+                                                        g_theNameKeyGenerator->Name_To_Key("OCLUpdate");
+                                                    UpdateModule *update = obj->Find_Update_Module(key_OCLUpdate);
+                                                    bool under_construction = false;
+
+                                                    if (obj->Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+                                                        Switch_To_Context(CB_CONTEXT_UNDER_CONSTRUCTION, drawable);
+                                                        under_construction = true;
+                                                    }
+
+                                                    if (!under_construction) {
+                                                        ContainModuleInterface *contain_module = obj->Get_Contain();
+
+                                                        if (contain_module != nullptr && contain_module->Is_Garrisonable()
+                                                            && obj->Get_Command_Set_String().Is_Empty()) {
+                                                            if (obj->Is_Locally_Controlled()
+                                                                || g_thePlayerList->Get_Local_Player()->Get_Relationship(
+                                                                       obj->Get_Team())
+                                                                    == NEUTRAL) {
+                                                                Switch_To_Context(CB_CONTEXT_STRUCTURE_INVENTORY, drawable);
+                                                            }
+                                                        } else if (update != nullptr) {
+                                                            Switch_To_Context(CB_CONTEXT_OCL_TIMER, drawable);
+                                                        } else {
+                                                            if (obj->Get_Command_Set_String().Is_Empty()) {
+                                                                if (obj->Get_Controlling_Player()
+                                                                        ->Get_Player_Template()
+                                                                        ->Get_Beacon_Name()
+                                                                        .Compare(obj->Get_Template()->Get_Name())
+                                                                    == 0) {
+                                                                    Switch_To_Context(CB_CONTEXT_BEACON, drawable);
+                                                                } else {
+                                                                    Switch_To_Context(CB_CONTEXT_NONE, drawable);
+                                                                }
+                                                            } else {
+                                                                Switch_To_Context(CB_CONTEXT_COMMAND, drawable);
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 void ControlBar::Update_Special_Power_Shortcut()
 {
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar>(PICK_ADDRESS(0x00462230, 0x00731139), this);
-#endif
+    if (m_specialPowerShortcutBarParent != nullptr && g_thePlayerList != nullptr && g_thePlayerList->Get_Local_Player()) {
+        bool has_shortcut =
+            Has_Any_Shortcut_Selection() || g_thePlayerList->Get_Local_Player()->Has_Any_Shortcut_Special_Power();
+
+        if (has_shortcut && m_specialPowerShortcutBarParent->Win_Is_Hidden() && m_contextParent[0] != nullptr
+            && !m_contextParent[0]->Win_Is_Hidden()) {
+            Show_Special_Power_Shortcut();
+            Animate_Special_Power_Shortcut(true);
+        } else if (!has_shortcut && !m_specialPowerShortcutBarParent->Win_Is_Hidden()
+            && m_specialPowerShortcutAnimateWindowManager->Is_Finished()) {
+            Animate_Special_Power_Shortcut(false);
+        }
+
+        if (!m_specialPowerShortcutBarParent->Win_Is_Hidden()) {
+            if (g_thePlayerList->Get_Local_Player()->Is_Player_Active()) {
+                if (m_contextParent[0] != nullptr && !m_contextParent[0]->Win_Is_Hidden()
+                    && m_specialPowerShortcutBarParent->Win_Is_Hidden()) {
+                    Show_Special_Power_Shortcut();
+                }
+
+                for (int i = 0; i < m_specialPowerShortcutButtonCount; i++) {
+                    GameWindow *win = m_specialPowerShortcutButtons[i];
+
+                    if (!win->Win_Is_Hidden()) {
+                        CommandButton *button = static_cast<CommandButton *>(Gadget_Button_Get_Data(win));
+
+                        if (button != nullptr) {
+                            win->Win_Clear_Status(WIN_STATUS_NOT_READY);
+                            win->Win_Clear_Status(WIN_STATUS_ALWAYS_COLOR);
+                            CommandAvailability availability = COMMAND_AVAILABILITY_DISABLED;
+                            Object *obj = nullptr;
+
+                            if (button->Get_Special_Power() != nullptr) {
+                                obj = g_thePlayerList->Get_Local_Player()->Find_Most_Ready_Shortcut_Special_Power_Of_Type(
+                                    button->Get_Special_Power()->Get_Type());
+                                availability = Get_Command_Availability(button, obj, win, nullptr, false);
+                            } else if (button->Get_Command() != GUI_COMMAND_SELECT_ALL_UNITS_OF_TYPE) {
+                                availability = COMMAND_AVAILABILITY_HIDDEN;
+                                Object *existing_object =
+                                    g_thePlayerList->Get_Local_Player()->Find_Any_Existing_Object_With_Thing_Template(
+                                        button->Get_Template());
+
+                                if (existing_object != nullptr) {
+                                    availability = COMMAND_AVAILABILITY_ENABLED;
+                                    unsigned int percent;
+                                    existing_object = g_thePlayerList->Get_Local_Player()
+                                                          ->Find_Most_Ready_Shortcut_Special_Power_For_Thing(
+                                                              button->Get_Template(), percent);
+
+                                    if (existing_object != nullptr) {
+                                        const CommandSet *set = Find_Command_Set(existing_object->Get_Command_Set_String());
+
+                                        if (set != nullptr) {
+                                            for (int j = 0; j < CommandSet::MAX_COMMAND_BUTTONS; j++) {
+                                                const CommandButton *command_button = set->Get_Command_Button(j);
+                                                GameWindow *window = m_commandWindows[j];
+
+                                                if (command_button != nullptr
+                                                    && button->Get_Command() == GUI_COMMAND_SPECIAL_POWER) {
+                                                    availability = Get_Command_Availability(
+                                                        command_button, existing_object, window, win, false);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            switch (availability) {
+                                case COMMAND_AVAILABILITY_DISABLED:
+                                    win->Win_Enable(false);
+                                    break;
+                                case COMMAND_AVAILABILITY_HIDDEN:
+                                    win->Win_Hide(true);
+                                    break;
+                                case COMMAND_AVAILABILITY_NOT_READY:
+                                    win->Win_Enable(false);
+                                    win->Win_Set_Status(WIN_STATUS_NOT_READY);
+                                    break;
+                                case COMMAND_AVAILABILITY_DISABLED_PERMANENTLY:
+                                    win->Win_Enable(false);
+                                    win->Win_Set_Status(WIN_STATUS_ALWAYS_COLOR);
+                                    break;
+                                default:
+                                    win->Win_Enable(true);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            } else {
+                Hide_Special_Power_Shortcut();
+            }
+        }
+    }
 }
 
 void ControlBar::Populate_Special_Power_Shortcut(Player *player)
 {
-#ifdef GAME_DLL
-    Call_Method<void, ControlBar, Player *>(PICK_ADDRESS(0x00461B10, 0x0073067E), this, player);
-#endif
+    if (player == nullptr || player->Get_Player_Template() == nullptr || !player->Is_Local_Player()
+        || m_specialPowerShortcutButtonCount == 0) {
+        return;
+    }
+
+    for (int i = 0; i < SPECIAL_POWER_SHORTCUT_BUTTON_COUNT; i++) {
+        if (m_specialPowerShortcutButtons[i] != nullptr) {
+            m_specialPowerShortcutButtons[i]->Win_Hide(true);
+        }
+
+        if (m_specialPowerShortcutButtonParents[i] != nullptr) {
+            m_specialPowerShortcutButtonParents[i]->Win_Hide(true);
+        }
+    }
+
+    if (player->Get_Player_Template()->Get_Special_Power_Shortcut_Command_Set().Is_Empty()) {
+        return;
+    }
+
+    const CommandSet *set =
+        g_theControlBar->Find_Command_Set(player->Get_Player_Template()->Get_Special_Power_Shortcut_Command_Set());
+
+    if (set == nullptr) {
+        return;
+    }
+
+    int count = 0;
+
+    for (int i = 0; i < m_specialPowerShortcutButtonCount; i++) {
+        const CommandButton *button = set->Get_Command_Button(i);
+
+        if (button != nullptr) {
+            const UpgradeTemplate *upgrade;
+            if ((button->Get_Options() & COMMAND_OPTION_NEED_UPGRADE) == 0 || (upgrade = button->Get_Upgrade_Template()) == 0
+                || g_thePlayerList->Get_Local_Player()->Has_Upgrade_Complete(upgrade->Get_Upgrade_Mask())) {
+                if ((button->Get_Options() & COMMAND_OPTION_NEED_SPECIAL_POWER_SCIENCE) != 0) {
+                    const SpecialPowerTemplate *power;
+                    power = button->Get_Special_Power();
+
+                    if (power != nullptr) {
+                        if (!g_thePlayerList->Get_Local_Player()->Find_Most_Ready_Shortcut_Special_Power_Of_Type(
+                                power->Get_Type())) {
+                            continue;
+                        }
+
+                        if (power->Get_Required_Science() == SCIENCE_INVALID) {
+                            goto l1;
+                        }
+
+                        if (!player->Has_Science(power->Get_Required_Science())) {
+                            continue;
+                        }
+
+                        int type;
+                        type = -1;
+
+                        for (unsigned int j = 0; j < button->Get_Sciences()->size(); type = j++) {
+                            if (!player->Has_Science((*button->Get_Sciences())[i])) {
+                                break;
+                            }
+                        }
+
+                        if (type == -1) {
+                            goto l1;
+                        }
+
+                        ScienceType science;
+                        science = (*button->Get_Sciences())[type];
+
+                        if (player->Get_Player_Template() != nullptr) {
+                            if (!player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_One().Is_Empty()) {
+                                if (!player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_Three().Is_Empty()) {
+                                    if (!player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_Eight().Is_Empty()) {
+                                        const CommandSet *command_set_one;
+                                        command_set_one = g_theControlBar->Find_Command_Set(
+                                            player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_One());
+                                        const CommandSet *command_set_three;
+                                        command_set_three = g_theControlBar->Find_Command_Set(
+                                            player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_One());
+                                        const CommandSet *command_set_eight;
+                                        command_set_eight = g_theControlBar->Find_Command_Set(
+                                            player->Get_Player_Template()->Get_Purchase_Command_Set_Rank_One());
+
+                                        if (command_set_one != nullptr) {
+                                            if (command_set_three != nullptr && command_set_eight != nullptr) {
+                                                bool science_button_found;
+                                                science_button_found = false;
+
+                                                for (int k = 0; !science_button_found && k < RANK_1_BUTTON_COUNT; k++) {
+                                                    const CommandButton *command = command_set_one->Get_Command_Button(k);
+
+                                                    if (command != nullptr
+                                                        && command->Get_Command() == GUI_COMMAND_PURCHASE_SCIENCE) {
+                                                        if (command->Get_Sciences()->empty()) {
+                                                            captainslog_dbgassert(false,
+                                                                "Commandbutton %s is a purchase science button without any "
+                                                                "science! Please add it.",
+                                                                command->Get_Name().Str());
+                                                        } else {
+                                                            if ((*button->Get_Sciences())[0] == science) {
+                                                                button->Copy_Images_From(command, true);
+                                                                button->Copy_Button_Text_From(command, true, true);
+                                                                science_button_found = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                for (int k = 0; !science_button_found && k < RANK_3_BUTTON_COUNT; k++) {
+                                                    const CommandButton *command = command_set_three->Get_Command_Button(k);
+
+                                                    if (command != nullptr
+                                                        && command->Get_Command() == GUI_COMMAND_PURCHASE_SCIENCE) {
+                                                        if (command->Get_Sciences()->empty()) {
+                                                            captainslog_dbgassert(false,
+                                                                "Commandbutton %s is a purchase science button without any "
+                                                                "science! Please add it.",
+                                                                command->Get_Name().Str());
+                                                        } else {
+                                                            if ((*button->Get_Sciences())[0] == science) {
+                                                                button->Copy_Images_From(command, true);
+                                                                button->Copy_Button_Text_From(command, true, true);
+                                                                science_button_found = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                for (int k = 0; !science_button_found && k < RANK_8_BUTTON_COUNT; k++) {
+                                                    const CommandButton *command = command_set_eight->Get_Command_Button(k);
+
+                                                    if (command != nullptr
+                                                        && command->Get_Command() == GUI_COMMAND_PURCHASE_SCIENCE) {
+                                                        if (command->Get_Sciences()->empty()) {
+                                                            captainslog_dbgassert(false,
+                                                                "Commandbutton %s is a purchase science button without any "
+                                                                "science! Please add it.",
+                                                                command->Get_Name().Str());
+                                                        } else {
+                                                            if ((*button->Get_Sciences())[0] == science) {
+                                                                button->Copy_Images_From(command, true);
+                                                                button->Copy_Button_Text_From(command, true, true);
+                                                                science_button_found = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                            l1:
+                                                m_specialPowerShortcutButtons[count]->Win_Hide(false);
+                                                m_specialPowerShortcutButtonParents[count]->Win_Hide(false);
+                                                m_specialPowerShortcutButtons[count]->Win_Enable(true);
+                                                m_specialPowerShortcutButtonParents[count]->Win_Enable(true);
+                                                Set_Control_Command(m_specialPowerShortcutButtons[count], button);
+                                                Gadget_Button_Set_Alt_Sound(
+                                                    m_specialPowerShortcutButtons[count], "GUIGenShortcutClick");
+                                                count++;
+                                                continue;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        captainslog_dbgassert(false,
+                            "CommandButton %s needs a SpecialPower entry, but it's either incorrect or missing.",
+                            button->Get_Name().Str());
+                    }
+                } else {
+                    if (button->Get_Command() != GUI_COMMAND_SELECT_ALL_UNITS_OF_TYPE) {
+                        goto l1;
+                    }
+
+                    if (g_thePlayerList->Get_Local_Player()->Find_Any_Existing_Object_With_Thing_Template(
+                            button->Get_Template())) {
+                        goto l1;
+                    }
+                }
+            }
+        }
+    }
+
+    if (m_contextParent[0] != nullptr && !m_contextParent[0]->Win_Is_Hidden()
+        && m_specialPowerShortcutBarParent->Win_Is_Hidden()) {
+        Show_Special_Power_Shortcut();
+        Animate_Special_Power_Shortcut(true);
+    }
+
+    Update_Special_Power_Shortcut();
+}
+
+void ControlBar::Set_Portrait_By_Image(const Image *image)
+{
+    if (image != nullptr) {
+        m_unitSelectedWindow->Win_Hide(false);
+        m_rightHUDCameoWindow->Win_Set_Enabled_Image(0, image);
+        m_rightHUDWindow->Win_Clear_Status(WIN_STATUS_IMAGE);
+        m_rightHUDCameoWindow->Win_Set_Status(WIN_STATUS_IMAGE);
+
+        for (int i = 0; i < UNIT_UPGRADE_WINDOW_COUNT; i++) {
+            m_unitUpgradeWindows[i]->Win_Hide(true);
+        }
+    } else {
+        m_rightHUDWindow->Win_Set_Status(WIN_STATUS_IMAGE);
+        m_rightHUDCameoWindow->Win_Clear_Status(WIN_STATUS_IMAGE);
+        m_unitSelectedWindow->Win_Hide(true);
+
+        for (int i = 0; i < UNIT_UPGRADE_WINDOW_COUNT; i++) {
+            m_unitUpgradeWindows[i]->Win_Hide(true);
+        }
+    }
+}
+
+void ControlBar::Set_Control_Command(
+    const Utf8String &button_window_name, GameWindow *parent, const CommandButton *command_button)
+{
+    GameWindow *window =
+        g_theWindowManager->Win_Get_Window_From_Id(parent, g_theNameKeyGenerator->Name_To_Key(button_window_name.Str()));
+
+    if (window != nullptr) {
+        Set_Control_Command(window, command_button);
+    } else {
+        captainslog_dbgassert(false, "setControlCommand: Unable to find window '%s'", button_window_name.Str());
+    }
+}
+
+void ControlBar::Set_Squished_Control_Bar_Config()
+{
+    if (m_controlBarConfig != CONTROL_BAR_STAGE_SQUISHED) {
+        m_controlBarConfig = CONTROL_BAR_STAGE_SQUISHED;
+        m_contextParent[0]->Win_Set_Position(m_parentXPosition, m_parentYPosition);
+        Repopulate_Build_Tooltip_Layout();
+        g_theTacticalView->Set_Height(g_theDisplay->Get_Height());
+        m_controlBarSchemeManager->Set_Control_Bar_Scheme_By_Player_Template(
+            g_thePlayerList->Get_Local_Player()->Get_Player_Template(), true);
+    }
+}
+
+void ControlBar::Draw_Special_Power_Shortcut_Multiplier_Text()
+{
+    for (int i = 0; i < m_specialPowerShortcutButtonCount; i++) {
+        GameWindow *window = m_specialPowerShortcutButtons[i];
+
+        if (!window->Win_Is_Hidden()) {
+            CommandButton *button = static_cast<CommandButton *>(Gadget_Button_Get_Data(window));
+
+            if (button != nullptr) {
+                for (int j = 0; j < SPECIAL_POWER_SHORTCUT_BUTTON_COUNT; j++) {
+                    const SpecialPowerTemplate *power = button->Get_Special_Power();
+                    int count = 0;
+
+                    if (power != nullptr) {
+                        count = g_thePlayerList->Get_Local_Player()->Count_Ready_Shortcut_Special_Powers_Of_Type(
+                            power->Get_Type());
+                    }
+
+                    if (count <= 1) {
+                        Utf16String str;
+                        Gadget_Button_Set_Text(window, str);
+                    } else {
+                        Utf16String str;
+                        str.Format(U_CHAR("%d"), count);
+                        Gadget_Button_Set_Text(window, str);
+                    }
+                }
+            }
+        }
+    }
 }

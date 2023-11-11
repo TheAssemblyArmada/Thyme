@@ -44,11 +44,11 @@ public:
     PlayerTemplate();
     ~PlayerTemplate() {}
 
-    Image *Get_Head_Watermark_Image();
-    Image *Get_Flag_Watermark_Image();
-    Image *Get_Side_Icon_Image();
-    Image *Get_General_Image();
-    Image *Get_Enabled_Image();
+    const Image *Get_Head_Watermark_Image() const;
+    const Image *Get_Flag_Watermark_Image() const;
+    const Image *Get_Side_Icon_Image() const;
+    const Image *Get_General_Image() const;
+    const Image *Get_Enabled_Image() const;
     Utf8String Get_Starting_Unit(int unit) const;
 
     Utf8String Get_Name() const { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }

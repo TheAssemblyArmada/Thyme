@@ -363,6 +363,10 @@ protected:
     DrawableID m_soloNexusSelectedDrawableID;
 };
 
+void Hide_Replay_Controls();
+void Show_Replay_Controls();
+void Toggle_Replay_Controls();
+
 #ifdef GAME_DLL
 extern InGameUI *&g_theInGameUI;
 #else

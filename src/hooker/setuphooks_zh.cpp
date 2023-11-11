@@ -83,6 +83,7 @@
 #include "gamestate.h"
 #include "gametext.h"
 #include "gamewindowtransitions.h"
+#include "generalsexppoints.h"
 #include "geometry.h"
 #include "globaldata.h"
 #include "hanimmgr.h"
@@ -99,6 +100,7 @@
 #include "locomotor.h"
 #include "main.h"
 #include "mapobject.h"
+#include "maputil.h"
 #include "matpass.h"
 #include "memdynalloc.h"
 #include "mesh.h"
@@ -155,6 +157,7 @@
 #include "shadermanager.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
+#include "skirmishgameoptionsmenu.h"
 #include "smudge.h"
 #include "sortingrenderer.h"
 #include "specialpower.h"
@@ -189,6 +192,7 @@
 #include "w3dbibbuffer.h"
 #include "w3dbridgebuffer.h"
 #include "w3dbuffermanager.h"
+#include "w3dcontrolbar.h"
 #include "w3ddebugdisplay.h"
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
@@ -3523,7 +3527,8 @@ void Setup_Hooks()
     Hook_Any(0x00460A80, ControlBar::Update_Command_Bar_Border_Colors);
     Hook_Any(0x0045D010, ControlBar::Init);
     Hook_Any(0x00461620, ControlBar::Get_Background_Marker_Pos);
-    Hook_Any(0x0045FD00, ControlBar::Set_Control_Command);
+    Hook_Method(0x0045FD00,
+        static_cast<void (ControlBar::*)(GameWindow *, const CommandButton *)>(&ControlBar::Set_Control_Command));
     Hook_Any(0x0045E2A0, ControlBar::Reset);
     Hook_Any(0x0045E4C0, ControlBar::Update);
     Hook_Any(0x0045EAE0, ControlBar::Get_Star_Image);
@@ -3593,9 +3598,61 @@ void Setup_Hooks()
     Hook_Any(0x005AB940, ControlBar::Update_Context_Multi_Select);
     Hook_Any(0x005AAF60, ControlBar::Populate_Under_Construction);
 
+    Hook_Any(0x00460B70, ControlBar::Toggle_Purchase_Science);
+    Hook_Any(0x00460B50, ControlBar::Hide_Purchase_Science);
+    Hook_Any(0x00462860, ControlBar::Show_Special_Power_Shortcut);
+    Hook_Any(0x00460AD0, ControlBar::Show_Purchase_Science);
+    Hook_Any(0x0045B400, ControlBar::Populate_Purchase_Science);
+    Hook_Any(0x004627D0, ControlBar::Animate_Special_Power_Shortcut);
+    Hook_Any(0x0045F880, ControlBar::Process_Context_Sensitive_Button_Click);
+    Hook_Any(0x005A6970, ControlBar::Set_Control_Bar_Scheme_By_Player);
+    Hook_Any(0x005A6710, ControlBar::Set_Control_Bar_Scheme_By_Player_Template);
+    Hook_Any(0x00461680, ControlBar::Init_Special_Power_Shortcut_Bar);
+    Hook_Any(0x0045F8C0, ControlBar::Switch_To_Context);
+    Hook_Any(0x0045EC00, ControlBar::Evaluate_Context_UI);
+    Hook_Any(0x00462230, ControlBar::Update_Special_Power_Shortcut);
+    Hook_Any(0x00461B10, ControlBar::Populate_Special_Power_Shortcut);
+    Hook_Any(0x00462670, ControlBar::Draw_Special_Power_Shortcut_Multiplier_Text);
+    Hook_Any(0x005A6CB0, ControlBar::Init_Observer_Controls);
+    Hook_Any(0x005A6F60, Control_Bar_Observer_System);
+    Hook_Any(0x005A7050, ControlBar::Populate_Observer_List);
+    Hook_Any(0x005A7480, ControlBar::Populate_Observer_Info_Window);
+    Hook_Any(0x005AADE0, ControlBar::Update_Context_OCL_Timer);
+    Hook_Any(0x005AAB80, ControlBar::Populate_OCL_Timer);
+    Hook_Any(0x005AAA10, ControlBar::Update_OCL_Timer_Text_Display);
+    Hook_Any(0x0048A3E0, Hide_Control_Bar);
+    Hook_Any(0x0048A250, Show_Control_Bar);
+    Hook_Any(0x00489930, Left_HUD_Input);
+    Hook_Any(0x00489D00, Control_Bar_System);
+    Hook_Any(0x0048A540, Toggle_Control_Bar);
+
     // controlbarscheme.h
     Hook_Any(0x005A66B0, ControlBarSchemeManager::Draw_Foreground);
     Hook_Any(0x005A66E0, ControlBarSchemeManager::Draw_Background);
     Hook_Any(0x005A6710, ControlBarSchemeManager::Set_Control_Bar_Scheme_By_Player_Template);
     Hook_Any(0x005A6970, ControlBarSchemeManager::Set_Control_Bar_Scheme_By_Player);
+
+    // generalsexppoints.h
+    Hook_Any(0x006D62E0, Generals_Exp_Points_Input);
+    Hook_Any(0x006D6330, Generals_Exp_Points_System);
+
+    // skirmishgameoptionsmenu.h
+    Hook_Any(0x005F22A0, Position_Additional_Images);
+    Hook_Any(0x005F1DB0, Map_Selector_Tooltip);
+
+    // maputil.h
+    Hook_Any(0x00483510, Find_Draw_Positions);
+
+    // w3dcontrolbar.h
+    Hook_Any(0x007C8860, W3D_Cameo_Movie_Draw);
+    Hook_Any(0x007C88D0, W3D_Left_HUD_Draw);
+    Hook_Any(0x007C89C0, W3D_Right_HUD_Draw);
+    Hook_Any(0x007C89E0, W3D_Power_Draw);
+    Hook_Any(0x007C8EA0, W3D_Command_Bar_Grid_Draw);
+    Hook_Any(0x007C9010, W3D_Command_Bar_Gen_Exp_Draw);
+    Hook_Any(0x007C9450, W3D_Command_Bar_Top_Draw);
+    Hook_Any(0x007C94A0, W3D_Command_Bar_Background_Draw);
+    Hook_Any(0x007C95F0, W3D_Command_Bar_Foreground_Draw);
+    Hook_Any(0x007C9740, W3D_Draw_Map_Preview);
+    Hook_Any(0x007CA250, W3D_Command_Bar_Help_Popup_Draw);
 }

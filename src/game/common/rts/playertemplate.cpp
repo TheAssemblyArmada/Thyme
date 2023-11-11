@@ -34,27 +34,27 @@ PlayerTemplate::PlayerTemplate() :
 {
 }
 
-Image *PlayerTemplate::Get_Head_Watermark_Image()
+const Image *PlayerTemplate::Get_Head_Watermark_Image() const
 {
     return g_theMappedImageCollection->Find_Image_By_Name(m_headWaterMark);
 }
 
-Image *PlayerTemplate::Get_Flag_Watermark_Image()
+const Image *PlayerTemplate::Get_Flag_Watermark_Image() const
 {
     return g_theMappedImageCollection->Find_Image_By_Name(m_flagWaterMark);
 }
 
-Image *PlayerTemplate::Get_Side_Icon_Image()
+const Image *PlayerTemplate::Get_Side_Icon_Image() const
 {
     return g_theMappedImageCollection->Find_Image_By_Name(m_sideIconImage);
 }
 
-Image *PlayerTemplate::Get_General_Image()
+const Image *PlayerTemplate::Get_General_Image() const
 {
     return g_theMappedImageCollection->Find_Image_By_Name(m_generalImage);
 }
 
-Image *PlayerTemplate::Get_Enabled_Image()
+const Image *PlayerTemplate::Get_Enabled_Image() const
 {
     return g_theMappedImageCollection->Find_Image_By_Name(m_enabledImage);
 }

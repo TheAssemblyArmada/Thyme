@@ -85,3 +85,30 @@ MapMetaData *MapCache::Find_Map(Utf8String map_name)
         return &it->second;
     }
 }
+
+void Find_Draw_Positions(int start_x, int start_y, int width, int height, Region3D extent, ICoord2D *ul, ICoord2D *lr)
+{
+    float max_w = extent.Width() / (width * 1.0f);
+    float max_h = extent.Height() / (height * 1.0f);
+
+    if (max_w < max_h) {
+        float fitted_w = extent.Width() / max_h;
+        float fitted_h = extent.Height() / max_h;
+        ul->x = (width - fitted_w) / 2.0f;
+        ul->y = 0;
+        lr->x = width - ul->x;
+        lr->y = fitted_h;
+    } else {
+        float fitted_w = extent.Width() / max_w;
+        float fitted_h = extent.Height() / max_w;
+        ul->x = 0;
+        ul->y = (height - fitted_h) / 2.0f;
+        lr->x = fitted_w;
+        lr->y = height - ul->y;
+    }
+
+    ul->x += start_x;
+    ul->y += start_y;
+    lr->x += start_x;
+    lr->y += start_y;
+}

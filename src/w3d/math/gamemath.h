@@ -201,6 +201,15 @@ inline float Atan(float val)
 #endif
 }
 
+inline float Log10(float val)
+{
+#ifdef BUILD_WITH_GAMEMATH
+    return gm_log10f(val);
+#else
+    return float(log10f(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
+}
+
 inline float Atan2(float y, float x)
 {
 #ifdef BUILD_WITH_GAMEMATH

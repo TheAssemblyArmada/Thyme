@@ -10,6 +10,7 @@ set(GAMEENGINE_INCLUDES
     game/client/gui/disconnectmenu
     game/client/gui/gadget
     game/client/gui/guicallbacks
+    game/client/gui/guicallbacks/menus
     game/client/gui/shell
     game/client/input
     game/client/messagestream
@@ -54,6 +55,7 @@ set(GAMEENGINE_INCLUDES
     platform/w3dengine/client/drawable/draw
     platform/w3dengine/client/gui
     platform/w3dengine/client/gui/gadget
+    platform/w3dengine/client/gui/guicallbacks
     platform/w3dengine/client/shadow
     platform/w3dengine/client/water
     platform/w3dengine/common
@@ -129,6 +131,11 @@ set(GAMEENGINE_SRC
     game/client/gui/gamewindowtransitionsstyles.cpp
     game/client/gui/guicallbacks/controlbarcallback.cpp
     game/client/gui/guicallbacks/controlbarpopupdescription.cpp
+    game/client/gui/guicallbacks/diplomacy.cpp
+    game/client/gui/guicallbacks/generalsexppoints.cpp
+    game/client/gui/guicallbacks/ingamechat.cpp
+    game/client/gui/guicallbacks/menus/quitmenu.cpp
+    game/client/gui/guicallbacks/skirmishgameoptionsmenu.cpp
     game/client/gui/headertemplate.cpp
     game/client/gui/imemanager.cpp
     game/client/gui/imemanagerinterface.cpp
@@ -332,6 +339,7 @@ set(GAMEENGINE_SRC
     game/logic/object/update/autodepositupdate.cpp
     game/logic/object/update/battleplanupdate.cpp
     game/logic/object/update/laserupdate.cpp
+    game/logic/object/update/oclupdate.cpp
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp
     game/logic/object/update/specialabilityupdate.cpp
@@ -415,6 +423,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/gui/gadget/w3dtabcontrol.cpp
     platform/w3dengine/client/gui/gadget/w3dtextentry.cpp
     platform/w3dengine/client/gui/gadget/w3dverticalslider.cpp
+    platform/w3dengine/client/gui/guicallbacks/w3dcontrolbar.cpp
     platform/w3dengine/client/gui/w3dgamefont.cpp
     platform/w3dengine/client/gui/w3dgamewindow.cpp
     platform/w3dengine/client/gui/w3dgamewindowmanager.cpp

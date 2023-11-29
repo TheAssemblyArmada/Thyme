@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @author OmniBlade
+ * @author Jonathan Wilson
  *
- * @brief Class for generating Cyclic Redundancy Checks.
+ * @brief Skirmish Battle Honors
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,22 +12,18 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#pragma once
+#include "skirmishbattlehonors.h"
 
-#include "always.h"
-#include "array.h"
-#include "bittype.h"
-
-class CRC
+SkirmishBattleHonors::SkirmishBattleHonors()
 {
-public:
-    CRC() : m_crc(0) {}
-    void Compute_CRC(void const *data, int bytes);
-    uint32_t Get_CRC() { return m_crc; }
-    void Clear() { m_crc = 0; }
+    Load("SkirmishStats.ini");
+}
 
-private:
-    void Add_CRC(uint8_t byte);
+SkirmishBattleHonors::~SkirmishBattleHonors() {}
 
-    uint32_t m_crc;
-};
+int SkirmishBattleHonors::Get_Endurance_Medal(Utf8String name, int level) const
+{
+    Utf8String str;
+    str.Format("%s_%d", name.Str(), level);
+    return Get_Int(str, 0);
+}

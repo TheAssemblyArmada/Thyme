@@ -174,3 +174,4 @@ extern StaticNameKey g_waypointPathLabel1;
 extern StaticNameKey g_waypointPathLabel2;
 extern StaticNameKey g_waypointPathLabel3;
 extern StaticNameKey g_waypointPathBiDirectional;
+extern StaticNameKey g_mapName;

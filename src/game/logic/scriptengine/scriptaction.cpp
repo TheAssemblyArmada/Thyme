@@ -199,10 +199,21 @@ bool ScriptAction::Parse_Action_False_Data_Chunk(DataChunkInput &input, DataChun
  */
 void ScriptAction::Set_Action_Type(ScriptActionType type)
 {
-    // TODO Requires ScriptEngine vtable
-#ifdef GAME_DLL
-    Call_Method<void, ScriptAction, ScriptActionType>(PICK_ADDRESS(0x0051FE50, 0x006FA4A5), this, type);
-#endif
+    for (int i = 0; i < m_numParams; i++) {
+        if (m_params[i] != nullptr) {
+            m_params[i]->Delete_Instance();
+        }
+
+        m_params[i] = nullptr;
+    }
+
+    m_actionType = type;
+    ActionTemplate *action = g_theScriptEngine->Get_Action_Template(m_actionType);
+    m_numParams = action->Get_Num_Parameters();
+
+    for (int i = 0; i < m_numParams; i++) {
+        m_params[i] = new Parameter(action->Get_Parameter_Type(i));
+    }
 }
 
 /**
@@ -212,13 +223,169 @@ void ScriptAction::Set_Action_Type(ScriptActionType type)
  */
 ScriptAction *ScriptAction::Parse_Action(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    // TODO Requires ScriptEngine vtable
-#ifdef GAME_DLL
-    return Call_Function<ScriptAction *, DataChunkInput &, DataChunkInfo *, void *>(
-        PICK_ADDRESS(0x005208A0, 0), input, info, data);
-#else
-    return nullptr;
-#endif
+    ScriptAction *action = new ScriptAction();
+    action->m_actionType = static_cast<ScriptAction::ScriptActionType>(input.Read_Int32());
+    ActionTemplate *action_template = g_theScriptEngine->Get_Action_Template(action->m_actionType);
+
+    if (info->version >= 2) {
+        NameKeyType key = input.Read_Name_Key();
+        bool match = false;
+
+        if (action_template != nullptr && action_template->m_nameKey == key) {
+            match = true;
+        }
+
+        if (!match) {
+            for (int i = 0; i < ScriptAction::ACTION_COUNT; i++) {
+                action_template = g_theScriptEngine->Get_Action_Template(i);
+
+                if (key == action_template->m_nameKey) {
+                    match = true;
+                    captainslog_debug("Rematching script action %s", g_theNameKeyGenerator->Key_To_Name(key).Str());
+                    action->m_actionType = static_cast<ScriptAction::ScriptActionType>(i);
+                    break;
+                }
+            }
+
+            if (!match) {
+                captainslog_dbgassert(false, "Invalid script action.  Making it noop. jba.");
+                action->m_actionType = ScriptAction::NO_OP;
+                action->m_numParams = 0;
+            }
+        }
+    }
+
+    Script *script = static_cast<Script *>(data);
+
+    if (action_template != nullptr) {
+        captainslog_dbgassert(!action_template->Get_UI_Name().Is_Empty()
+                && action_template->Get_UI_Name().Compare_No_Case("(placeholder)") != 0,
+            "Invalid Script Action found in script '%s'",
+            script->Get_Name().Str());
+    }
+
+    action->m_numParams = input.Read_Int32();
+
+    for (int i = 0; i < action->m_numParams; i++) {
+        action->m_params[i] = Parameter::Read_Parameter(input);
+    }
+
+    switch (action->Get_Action_Type()) {
+        case MOVE_CAMERA_TO:
+        case MOVE_CAMERA_ALONG_WAYPOINT_PATH:
+        case CAMERA_LOOK_TOWARD_OBJECT:
+            if (action->Get_Num_Parameters() == 3) {
+                action->m_numParams = 5;
+                action->m_params[3] = new Parameter(Parameter::REAL);
+                action->m_params[4] = new Parameter(Parameter::REAL);
+            }
+
+            break;
+        case ROTATE_CAMERA:
+        case RESET_CAMERA:
+        case ZOOM_CAMERA:
+        case PITCH_CAMERA:
+            if (action->Get_Num_Parameters() == 2) {
+                action->m_numParams = 4;
+                action->m_params[2] = new Parameter(Parameter::REAL);
+                action->m_params[3] = new Parameter(Parameter::REAL);
+            }
+
+            break;
+        case CAMERA_MOD_SET_FINAL_ZOOM:
+        case CAMERA_MOD_SET_FINAL_PITCH:
+            goto l1;
+        case TEAM_FOLLOW_WAYPOINTS:
+            if (action->m_numParams == 2) {
+                action->m_numParams = 3;
+                action->m_params[2] = new Parameter(Parameter::BOOLEAN, true);
+            }
+
+            break;
+        case NAMED_SET_ATTITUDE:
+        case TEAM_SET_ATTITUDE:
+            if (action->m_numParams >= 2 && action->m_params[1]->Get_Parameter_Type() == Parameter::INT) {
+                action->m_params[1] = new Parameter(Parameter::AI_MOOD, action->m_params[1]->Get_Int());
+            }
+
+            break;
+        case SPEECH_PLAY:
+            if (action->m_numParams == 1) {
+                action->m_numParams = 2;
+                action->m_params[1] = new Parameter(Parameter::BOOLEAN, true);
+            } else {
+            l1:
+                if (action->m_numParams == 1) {
+                    action->m_numParams = 3;
+                    action->m_params[1] = new Parameter(Parameter::PERCENT);
+                    action->m_params[2] = new Parameter(Parameter::PERCENT);
+                }
+            }
+
+            break;
+        case MAP_REVEAL_AT_WAYPOINT:
+        case MAP_SHROUD_AT_WAYPOINT:
+            if (action->m_numParams == 2) {
+                action->m_numParams = 3;
+                action->m_params[2] = new Parameter(Parameter::SIDE);
+            }
+
+            break;
+        case MAP_REVEAL_ALL:
+        case MAP_SHROUD_ALL:
+        case MAP_REVEAL_ALL_PERM:
+        case MAP_REVEAL_ALL_UNDO_PERM:
+            if (action->Get_Num_Parameters() == 0) {
+                action->m_numParams = 1;
+                action->m_params[0] = new Parameter(Parameter::SIDE);
+            }
+
+            break;
+        case CAMERA_LOOK_TOWARD_WAYPOINT:
+            if (action->Get_Num_Parameters() == 2) {
+                action->m_numParams = 5;
+                action->m_params[2] = new Parameter(Parameter::REAL);
+                action->m_params[3] = new Parameter(Parameter::REAL);
+                action->m_params[4] = new Parameter(Parameter::BOOLEAN);
+            } else if (action->Get_Num_Parameters() == 4) {
+                action->m_numParams = 5;
+                action->m_params[4] = new Parameter(Parameter::BOOLEAN);
+            }
+
+            break;
+        case SKIRMISH_BUILD_BASE_DEFENSE_FRONT:
+            if (action->m_numParams == 1) {
+                bool b = action->m_params[0]->Get_Int() != 0;
+                action->m_params[0]->Delete_Instance();
+                action->m_numParams = 0;
+
+                if (b) {
+                    action->m_actionType = SKIRMISH_BUILD_BASE_DEFENSE_FLANK;
+                }
+            }
+
+            break;
+        case SKIRMISH_FIRE_SPECIAL_POWER_AT_MOST_COST:
+            if (action->m_numParams == 1) {
+                action->m_numParams = 2;
+                action->m_params[1] = action->m_params[0];
+                action->m_params[0] = new Parameter(Parameter::SIDE);
+                action->m_params[0]->Set_String("<This Player>");
+            }
+
+            break;
+        default:
+            break;
+    }
+
+    if (action_template->Get_Num_Parameters() != action->Get_Num_Parameters()) {
+        captainslog_dbgassert(false, "Invalid script action.  Making it noop. jba.");
+        action->m_actionType = ScriptAction::NO_OP;
+        action->m_numParams = 0;
+    }
+
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
+    return action;
 }
 
 int ScriptAction::Get_UI_Strings(Utf8String *const strings)

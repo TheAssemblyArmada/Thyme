@@ -131,6 +131,7 @@ StaticNameKey g_waypointPathLabel1("waypointPathLabel1");
 StaticNameKey g_waypointPathLabel2("waypointPathLabel2");
 StaticNameKey g_waypointPathLabel3("waypointPathLabel3");
 StaticNameKey g_waypointPathBiDirectional("waypointPathBiDirectional");
+StaticNameKey g_mapName("mapName");
 
 NameKeyType StaticNameKey::Key()
 {

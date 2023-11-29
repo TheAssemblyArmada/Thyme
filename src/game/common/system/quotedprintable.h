@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @author OmniBlade
+ * @author Jonathan Wilson
  *
- * @brief Class for generating Cyclic Redundancy Checks.
+ * @brief Quoted Printable
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -13,21 +13,7 @@
  *            LICENSE
  */
 #pragma once
-
 #include "always.h"
-#include "array.h"
-#include "bittype.h"
+#include "asciistring.h"
 
-class CRC
-{
-public:
-    CRC() : m_crc(0) {}
-    void Compute_CRC(void const *data, int bytes);
-    uint32_t Get_CRC() { return m_crc; }
-    void Clear() { m_crc = 0; }
-
-private:
-    void Add_CRC(uint8_t byte);
-
-    uint32_t m_crc;
-};
+Utf8String Ascii_String_To_Quoted_Printable(Utf8String string);

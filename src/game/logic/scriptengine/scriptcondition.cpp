@@ -14,6 +14,7 @@
  */
 #include "scriptcondition.h"
 #include "script.h"
+#include "scriptengine.h"
 
 Condition::Condition() :
     m_conditionType(CONDITION_FALSE),
@@ -124,18 +125,18 @@ Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8St
  */
 void Condition::Set_Condition_Type(ConditionType type)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Condition, ConditionType>(PICK_ADDRESS(0x0051DB90, 0), this, type);
-#else
-    // Clear existing paramters.
     for (int i = 0; i < m_numParams; ++i) {
         m_params[i]->Delete_Instance();
         m_params[i] = nullptr;
     }
 
     m_conditionType = type;
-    // TODO, needs ScriptEngine
-#endif
+    ConditionTemplate *condition_template = g_theScriptEngine->Get_Condition_Template(m_conditionType);
+    m_numParams = condition_template->Get_Num_Parameters();
+
+    for (int i = 0; i < m_numParams; i++) {
+        m_params[i] = new Parameter(condition_template->Get_Parameter_Type(i));
+    }
 }
 
 /**
@@ -145,15 +146,90 @@ void Condition::Set_Condition_Type(ConditionType type)
  */
 bool Condition::Parse_Condition_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-#ifdef GAME_DLL
-    return Call_Function<bool, DataChunkInput &, DataChunkInfo *, void *>(PICK_ADDRESS(0x0051E540, 0), input, info, data);
-#else
-    Condition *new_condition = NEW_POOL_OBJ(Condition);
-
+    Condition *new_condition = new Condition();
+    OrCondition *or_condition = static_cast<OrCondition *>(data);
     new_condition->m_conditionType = ConditionType(input.Read_Int32());
-    // TODO, needs ScriptEngine
-    return false;
-#endif
+    ConditionTemplate *condition_template = g_theScriptEngine->Get_Condition_Template(new_condition->m_conditionType);
+
+    if (info->version >= 4) {
+        NameKeyType key = input.Read_Name_Key();
+        bool match = false;
+
+        if (condition_template != nullptr && condition_template->m_nameKey == key) {
+            match = true;
+        }
+
+        if (!match) {
+            for (int i = 0; i < Condition::CONDITION_COUNT; i++) {
+                condition_template = g_theScriptEngine->Get_Condition_Template(i);
+
+                if (key == condition_template->m_nameKey) {
+                    match = true;
+                    captainslog_debug("Rematching script condition %s", g_theNameKeyGenerator->Key_To_Name(key).Str());
+                    new_condition->m_conditionType = static_cast<ConditionType>(i);
+                    break;
+                }
+            }
+        }
+
+        if (!match) {
+            captainslog_dbgassert(false, "Invalid script condition.  Making it false. jba.");
+            new_condition->m_conditionType = CONDITION_FALSE;
+            new_condition->m_numParams = 0;
+        }
+    }
+
+    new_condition->m_numParams = input.Read_Int32();
+
+    for (int j = 0; j < new_condition->m_numParams; j++) {
+        new_condition->m_params[j] = Parameter::Read_Parameter(input);
+    }
+
+    if (input.Get_Chunk_Version() < 2) {
+        static int condition_types[] = { TEAM_INSIDE_AREA_PARTIALLY,
+            TEAM_INSIDE_AREA_ENTIRELY,
+            TEAM_OUTSIDE_AREA_ENTIRELY,
+            TEAM_ENTERED_AREA_PARTIALLY,
+            TEAM_ENTERED_AREA_ENTIRELY,
+            TEAM_EXITED_AREA_ENTIRELY,
+            TEAM_EXITED_AREA_PARTIALLY,
+            -1 };
+
+        for (int k = 0; condition_types[k] != -1; k++) {
+            if (new_condition->m_conditionType == condition_types[k]) {
+                new_condition->m_params[new_condition->m_numParams] = new Parameter(Parameter::SURFACES_ALLOWED, 3);
+                new_condition->m_numParams = 3;
+            }
+        }
+    }
+
+    if (new_condition->Get_Condition_Type() == SKIRMISH_SPECIAL_POWER_READY && new_condition->m_numParams == 1) {
+        new_condition->m_numParams = 2;
+        new_condition->m_params[1] = new_condition->m_params[0];
+        new_condition->m_params[0] = new Parameter(Parameter::SIDE);
+        new_condition->m_params[0]->Set_String("<This Player>");
+    }
+
+    if (condition_template->Get_Num_Parameters() != new_condition->Get_Num_Parameters()) {
+        captainslog_dbgassert(false, "Invalid script condition.  Making it false. jba.");
+        new_condition->m_conditionType = CONDITION_FALSE;
+        new_condition->m_numParams = 0;
+    }
+
+    Condition *condition;
+
+    for (condition = or_condition->Get_First_And_Condition(); condition != nullptr && condition->Get_Next() != nullptr;
+         condition = condition->Get_Next()) {
+    }
+
+    if (condition != nullptr) {
+        condition->Set_Next_Condition(new_condition);
+    } else {
+        or_condition->Set_First_And_Condition(new_condition);
+    }
+
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
+    return true;
 }
 
 /**

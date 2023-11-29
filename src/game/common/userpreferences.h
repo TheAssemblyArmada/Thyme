@@ -26,10 +26,10 @@ public:
     virtual bool Load(Utf8String filename);
     virtual bool Write();
 
-    Utf8String Get_AsciiString(Utf8String key, Utf8String def_arg = Utf8String::s_emptyString);
-    int Get_Int(Utf8String key, int def_arg);
-    float Get_Real(Utf8String key, float def_arg);
-    bool Get_Bool(Utf8String key, bool def_arg);
+    Utf8String Get_AsciiString(Utf8String key, Utf8String def_arg = Utf8String::s_emptyString) const;
+    int Get_Int(Utf8String key, int def_arg) const;
+    float Get_Real(Utf8String key, float def_arg) const;
+    bool Get_Bool(Utf8String key, bool def_arg) const;
     void Set_AsciiString(Utf8String key, Utf8String value);
     void Set_Int(Utf8String key, int value);
     void Set_Real(Utf8String key, float value);

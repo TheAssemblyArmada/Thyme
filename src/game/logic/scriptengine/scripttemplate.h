@@ -50,6 +50,8 @@ private:
     int m_numParameters;
     Parameter::ParameterType m_parameters[PARAMETER_COUNT];
     Utf8String m_helpString;
+    friend class Condition;
+    friend class ScriptAction;
 };
 
 class ActionTemplate : public Template

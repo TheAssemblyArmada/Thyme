@@ -42,7 +42,16 @@ public:
     Utf8String Get_File_Name() const { return m_filename; }
     Utf8String Get_Name() { return m_name; }
     void Set_Name(Utf8String str) { m_name = str; }
+    void Set_Filename(Utf8String str) { m_filename = str; }
     Region2D Get_UV_Region() const { return m_UVCoords; }
+    void Set_Texture_Width(int width) { m_textureSize.x = width; }
+    void Set_Texture_Height(int height) { m_textureSize.y = height; }
+    void Set_UV_Region(Region2D *region)
+    {
+        if (region != nullptr) {
+            m_UVCoords = *region;
+        }
+    }
     int Get_Image_Width() const { return m_imageSize.x; }
     int Get_Image_Height() const { return m_imageSize.y; }
     const ICoord2D *Get_Image_Size() const { return &m_imageSize; }

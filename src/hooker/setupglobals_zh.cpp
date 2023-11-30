@@ -23,7 +23,7 @@ HINSTANCE &g_applicationHInstance = Make_Global<HINSTANCE>(PICK_ADDRESS(0x00A27B
 // maputil.cpp
 class WaypointMap;
 class MapCache;
-WaypointMap *&g_waypoints = Make_Global<WaypointMap *>(PICK_ADDRESS(0x00945AD4, 0x04CAA140));
+WaypointMap *&g_waypoints = Make_Global<WaypointMap *>(PICK_ADDRESS(0x00A2B968, 0x04CAA140));
 MapCache *&g_theMapCache = Make_Global<MapCache *>(PICK_ADDRESS(0x00A2B974, 0x04CAA154));
 
 // snow.cpp

@@ -240,6 +240,7 @@ set(GAMEENGINE_SRC
     game/common/rts/specialpower.cpp
     game/common/rts/team.cpp
     game/common/rts/teamsinfo.cpp
+    game/common/skirmishbattlehonors.cpp
     game/common/statemachine.cpp
     game/common/staticnamekey.cpp
     game/common/statscollector.cpp
@@ -266,6 +267,7 @@ set(GAMEENGINE_SRC
     game/common/system/memdynalloc.cpp
     game/common/system/mempool.cpp
     game/common/system/mempoolfact.cpp
+    game/common/system/quotedprintable.cpp
     game/common/system/radar.cpp
     game/common/system/ramfile.cpp
     game/common/system/registryget.cpp

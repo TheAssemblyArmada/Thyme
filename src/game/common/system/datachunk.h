@@ -111,4 +111,5 @@ private:
     void *m_currentObject;
     void *m_userData;
     friend class WorldHeightMap;
+    friend bool Parse_Objects_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 };

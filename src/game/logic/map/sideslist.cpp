@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "sideslist.h"
+#include "cachedfileinputstream.h"
+#include "scriptlist.h"
 #include "staticnamekey.h"
 #include "unicodestring.h"
 #include "xfer.h"
@@ -405,9 +407,160 @@ bool SidesList::Parse_Sides_Data_Chunk(DataChunkInput &input, DataChunkInfo *inf
     return true;
 }
 
+static Utf8String s_readPlayerNames[MAX_PLAYER_COUNT];
+
+bool Parse_Players_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+{
+    int read_dict = 0;
+
+    if (info->version >= 2) {
+        read_dict = input.Read_Int32();
+    }
+
+    int player_count = input.Read_Int32();
+
+    for (int i = 0; i < player_count && i < MAX_PLAYER_COUNT; i++) {
+        s_readPlayerNames[i] = input.Read_AsciiString();
+
+        if (read_dict != 0) {
+            input.Read_Dict();
+        }
+    }
+
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
+    return true;
+}
+
+bool Parse_Teams_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+{
+    SidesList *list = static_cast<SidesList *>(data);
+
+    while (!input.At_End_Of_Chunk()) {
+        Dict dict = input.Read_Dict();
+        Utf8String name = dict.Get_AsciiString(g_teamNameKey);
+        Utf8String owner = dict.Get_AsciiString(g_teamOwnerKey);
+
+        if (list->Find_Skirmish_Side_Info(owner) != nullptr) {
+            list->Add_Skirmish_Team(&dict);
+        }
+    }
+
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
+    return true;
+}
+
 void SidesList::Prepare_For_MP_Or_Skirmish()
 {
-#ifdef GAME_DLL
-    Call_Method<void, SidesList>(PICK_ADDRESS(0x004D6DA0, 0x006B9F32), this);
-#endif
+    m_skirmishTeamsRec.Clear();
+
+    for (int i = 0; i < Get_Num_Teams(); i++) {
+        m_skirmishTeamsRec.Add_Team(Get_Team_Info(i)->Get_Dict());
+    }
+
+    m_teamRec.Clear();
+
+    for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+        m_skirmishSides[i].Reset();
+    }
+
+    m_numSkirmishSides = 0;
+
+    for (int i = 0; i < m_numSides; i++) {
+        m_skirmishSides[m_numSkirmishSides] = m_sides[i];
+        m_numSkirmishSides++;
+        Utf8String faction = m_sides[i].Get_Dict().Get_AsciiString(g_playerFactionKey);
+
+        if (!(faction == "FactionCivilian")) {
+            if (m_numSides == 1) {
+                break;
+            }
+
+            Remove_Side(i);
+            i--;
+        }
+    }
+
+    bool has_script = false;
+
+    for (int i = 0; i < m_numSkirmishSides; i++) {
+        Utf8String faction = m_skirmishSides[i].Get_Dict().Get_AsciiString(g_playerFactionKey);
+
+        if (!(faction == "FactionCivilian")) {
+            if (m_skirmishSides[i].Get_Script_List() != nullptr) {
+                if (m_skirmishSides[i].Get_Script_List()->Get_Script() != nullptr
+                    || m_skirmishSides[i].Get_Script_List()->Get_Script_Group() != nullptr) {
+                    has_script = true;
+                }
+            }
+        }
+    }
+
+    if (!has_script) {
+        Utf8String name("data\\Scripts\\SkirmishScripts.scb");
+        captainslog_debug("Skirmish map using standard scripts");
+        m_skirmishTeamsRec.Clear();
+        CachedFileInputStream stream;
+
+        if (stream.Open(name)) {
+            DataChunkInput input(&stream);
+            input.Register_Parser(
+                "PlayerScriptsList", Utf8String::s_emptyString, ScriptList::Parse_Scripts_Data_Chunk, nullptr);
+            input.Register_Parser("ScriptsPlayers", Utf8String::s_emptyString, Parse_Players_Data_Chunk, nullptr);
+            input.Register_Parser("ScriptTeams", Utf8String::s_emptyString, Parse_Teams_Data_Chunk, nullptr);
+
+            if (!input.Parse(this)) {
+                captainslog_debug("ERROR - Unable to read in skirmish scripts.");
+                return;
+            }
+
+            ScriptList *scripts[MAX_LIST_COUNT];
+            int count = ScriptList::Get_Read_Scripts(scripts);
+
+            for (int j = 0; j < count; j++) {
+                int player_index = -1;
+
+                for (int k = 0; k < m_numSkirmishSides; k++) {
+                    Utf8String playername = Get_Skirmish_Side_Info(k)->Get_Dict().Get_AsciiString(g_playerNameKey);
+
+                    if (playername == s_readPlayerNames[j]) {
+                        player_index = k;
+                        break;
+                    }
+                }
+
+                if (player_index != -1) {
+                    ScriptList *list = Get_Skirmish_Side_Info(player_index)->Get_Script_List();
+                    Get_Skirmish_Side_Info(player_index)->Set_Script_List(scripts[j]);
+                    scripts[j] = nullptr;
+
+                    if (list != nullptr) {
+                        list->Delete_Instance();
+                    }
+
+                    scripts[j] = nullptr;
+                }
+            }
+
+            for (int j = 0; j < MAX_PLAYER_COUNT; j++) {
+                s_readPlayerNames[j].Clear();
+            }
+        }
+    }
+}
+
+void SidesList::Remove_Side(int index)
+{
+    if (index >= 0 && index < m_numSides && m_numSides > 1) {
+        while (index < m_numSides - 1) {
+            m_sides[index] = m_sides[index + 1];
+            index++;
+        }
+
+        while (index < MAX_PLAYER_COUNT) {
+            m_sides[index].Reset();
+            index++;
+        }
+
+        m_numSides--;
+    }
 }

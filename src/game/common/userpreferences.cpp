@@ -73,7 +73,7 @@ bool UserPreferences::Write()
     return false;
 }
 
-Utf8String UserPreferences::Get_AsciiString(Utf8String key, Utf8String def_arg)
+Utf8String UserPreferences::Get_AsciiString(Utf8String key, Utf8String def_arg) const
 {
     auto it = find(key);
 
@@ -84,7 +84,7 @@ Utf8String UserPreferences::Get_AsciiString(Utf8String key, Utf8String def_arg)
     return it->second;
 }
 
-int UserPreferences::Get_Int(Utf8String key, int def_arg)
+int UserPreferences::Get_Int(Utf8String key, int def_arg) const
 {
     Utf8String value = Get_AsciiString(key);
 
@@ -95,7 +95,7 @@ int UserPreferences::Get_Int(Utf8String key, int def_arg)
     return atoi(value.Str());
 }
 
-float UserPreferences::Get_Real(Utf8String key, float def_arg)
+float UserPreferences::Get_Real(Utf8String key, float def_arg) const
 {
     Utf8String value = Get_AsciiString(key);
 
@@ -106,7 +106,7 @@ float UserPreferences::Get_Real(Utf8String key, float def_arg)
     return (float)atof(value.Str());
 }
 
-bool UserPreferences::Get_Bool(Utf8String key, bool def_arg)
+bool UserPreferences::Get_Bool(Utf8String key, bool def_arg) const
 {
     Utf8String value = Get_AsciiString(key);
 

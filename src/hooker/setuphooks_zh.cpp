@@ -132,6 +132,7 @@
 #include "pointgr.h"
 #include "polygontrigger.h"
 #include "projectilestreamupdate.h"
+#include "quotedprintable.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
 #include "rayeffect.h"
@@ -738,12 +739,16 @@ void Setup_Hooks()
     Hook_Method(0x0051D7B0, &OrCondition::Duplicate);
     Hook_Method(0x0051D8A0, &OrCondition::Duplicate_And_Qualify);
     Hook_Function(0x0051D9B0, OrCondition::Parse_OrCondition_Chunk);
+    Hook_Any(0x0051DB90, Condition::Set_Condition_Type);
+    Hook_Any(0x0051E540, Condition::Parse_Condition_Data_Chunk);
 
     // scriptaction.h ScriptAction
     Hook_Method(0x0051FF80, &ScriptAction::Duplicate);
     Hook_Method(0x00520240, &ScriptAction::Duplicate_And_Qualify);
     Hook_Function(0x00521240, &ScriptAction::Parse_Action_Data_Chunk);
     Hook_Function(0x00521280, &ScriptAction::Parse_Action_False_Data_Chunk);
+    Hook_Any(0x0051FE50, ScriptAction::Set_Action_Type);
+    Hook_Any(0x005208A0, ScriptAction::Parse_Action);
 
     // script.h Script
     Hook_Any(0x0051CD70, Script::Xfer_Snapshot);
@@ -779,6 +784,7 @@ void Setup_Hooks()
     Hook_Method(0x004D6A60, &SidesList::Find_Side_Info);
     Hook_Method(0x004D6BD0, &SidesList::Find_Skirmish_Side_Info);
     Hook_Function(0x004D62A0, &SidesList::Parse_Sides_Data_Chunk);
+    Hook_Any(0x004D6DA0, SidesList::Prepare_For_MP_Or_Skirmish);
 
     // keyboard.h Keyboard
     Hook_Any(0x0040A120, Keyboard::Init);
@@ -3478,6 +3484,18 @@ void Setup_Hooks()
     // gadgetlistbox.h
     Hook_Any(0x005E76A0, Gadget_List_Box_Set_Colors);
     Hook_Any(0x005E85C0, Gadget_List_Box_Set_Audio_Feedback);
+    Hook_Any(0x005E8540, Gadget_List_Box_Set_Top_Visible_Entry);
+    Hook_Function(0x005E83E0, static_cast<void (*)(GameWindow *, int, int *)>(&Gadget_List_Box_Set_Selected));
+    Hook_Any(0x005E8440, Gadget_List_Box_Set_Item_Data);
+    Hook_Any(0x005E8410, Gadget_List_Box_Reset);
+    Hook_Any(0x005E84F0, Gadget_List_Box_Get_Top_Visible_Entry);
+    Hook_Any(0x005E85E0, Gadget_List_Box_Get_Num_Columns);
+    Hook_Any(0x005E8600, Gadget_List_Box_Get_Column_Width);
+    Hook_Any(0x005E84D0, Gadget_List_Box_Get_Bottom_Visible_Entry);
+    Hook_Any(0x005E7B60, Gadget_List_Box_Add_Entry_Text);
+    Hook_Function(0x005E7D60,
+        static_cast<int (*)(GameWindow *, const Image *, int, int, int, int, bool, int)>(&Gadget_List_Box_Add_Entry_Image));
+    Hook_Function(0x005E83B0, static_cast<void (*)(GameWindow *, int)>(&Gadget_List_Box_Set_Selected));
 
     // gadgetprogressbar.h
     Hook_Any(0x005A2C60, Gadget_Progress_Bar_System);
@@ -3642,6 +3660,20 @@ void Setup_Hooks()
 
     // maputil.h
     Hook_Any(0x00483510, Find_Draw_Positions);
+    Hook_Any(0x0047EA80, MapCache::Write_Cache_INI);
+    Hook_Any(0x0047F3B0, MapCache::Update_Cache);
+    Hook_Any(0x0047F510, MapCache::Clear_Unseen_Maps);
+    Hook_Any(0x0047F6B0, MapCache::Load_Standard_Maps);
+    Hook_Any(0x0047F7D0, MapCache::Load_User_Maps);
+    Hook_Any(0x0047FF00, MapCache::Add_Map);
+    Hook_Any(0x00481A70, Would_Map_Transfer);
+    Hook_Any(0x00481B00, Populate_Map_List_Box_No_Reset);
+    Hook_Any(0x004827A0, Populate_Map_List_Box);
+    Hook_Any(0x004828A0, Is_Valid_Map);
+    Hook_Any(0x004829F0, Get_Default_Map);
+    Hook_Any(0x00482AF0, Get_Official_Multiplayer_Map);
+    Hook_Any(0x00482BF0, Is_Map_Official);
+    Hook_Any(0x00482DF0, Get_Map_Preview_Image);
 
     // w3dcontrolbar.h
     Hook_Any(0x007C8860, W3D_Cameo_Movie_Draw);
@@ -3655,4 +3687,7 @@ void Setup_Hooks()
     Hook_Any(0x007C95F0, W3D_Command_Bar_Foreground_Draw);
     Hook_Any(0x007C9740, W3D_Draw_Map_Preview);
     Hook_Any(0x007CA250, W3D_Command_Bar_Help_Popup_Draw);
+
+    // quotedprintable.h
+    Hook_Any(0x005E4B20, Ascii_String_To_Quoted_Printable);
 }

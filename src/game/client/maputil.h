@@ -21,6 +21,10 @@
 #include <map>
 #include <set>
 
+struct FileInfo;
+class GameWindow;
+class Image;
+
 class WaypointMap : public std::map<Utf8String, Coord3D>
 {
 public:
@@ -44,7 +48,7 @@ struct MapMetaData
     int m_numPlayers;
     bool m_isMultiplayer;
     bool m_isOfficial;
-    unsigned int m_filesize;
+    unsigned int m_fileSize;
     unsigned int m_CRC;
     WinTimeStamp m_timestamp;
     WaypointMap m_waypoints;
@@ -70,6 +74,7 @@ public:
     void Load_Standard_Maps();
     bool Load_User_Maps();
     MapMetaData *Find_Map(Utf8String map_name);
+    bool Add_Map(Utf8String dir, Utf8String name, FileInfo *info, bool build_cache);
 
 private:
     static const char *const s_mapDirName;
@@ -80,6 +85,14 @@ private:
     std::set<Utf8String> m_unk;
 };
 
+bool Would_Map_Transfer(const Utf8String &path);
+int Populate_Map_List_Box_No_Reset(GameWindow *listbox, bool is_official, bool is_multiplayer, Utf8String map_name);
+int Populate_Map_List_Box(GameWindow *listbox, bool is_official, bool is_multiplayer, Utf8String map_name);
+bool Is_Valid_Map(Utf8String map_name, bool is_multiplayer);
+Utf8String Get_Default_Map(bool is_multiplayer);
+Utf8String Get_Official_Multiplayer_Map();
+bool Is_Map_Official(Utf8String map_name);
+Image *Get_Map_Preview_Image(Utf8String map_name);
 void Find_Draw_Positions(int start_x, int start_y, int width, int height, Region3D extent, ICoord2D *ul, ICoord2D *lr);
 
 #ifdef GAME_DLL

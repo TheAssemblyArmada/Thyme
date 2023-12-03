@@ -140,6 +140,10 @@ endif()
 # Custom default install location.
 if(BUILD_DLL)
     get_filename_component(DLL_INSTALL_PREFIX  "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Electronic Arts\\EA Games\\Command and Conquer Generals Zero Hour;InstallPath]" ABSOLUTE CACHE)
+    if(MSVC)
+        # Include INSTALL to build by default. This copies dll's and pdb's to game directory.
+        set(CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1)
+    endif()
 endif()
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")

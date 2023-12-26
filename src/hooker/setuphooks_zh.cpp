@@ -1594,6 +1594,22 @@ void Setup_Hooks()
     // w3dview.h
     Hook_Any(0x0076E2F0, W3DView::Set_Fade_Parameters);
     Hook_Any(0x0076E330, W3DView::Set_View_Filter_Pos);
+    Hook_Any(0x0076D420, W3DView::Init);
+    Hook_Any(0x0076D600, W3DView::Reset);
+    Hook_Any(0x0076D200, W3DView::Set_Camera_Transform);
+    Hook_Any(0x0076CF10, W3DView::Calc_Camera_Constraints);
+    Hook_Any(0x0076D0C0, W3DView::Get_Pick_Ray);
+    Hook_Any(0x0076C780, W3DView::Build_Camera_Transform);
+    Hook_Any(0x0076F5D0, W3DView::Pick_Drawable);
+    Hook_Any(0x0076F3B0, W3DView::Iterate_Drawables_In_Region);
+    Hook_Any(0x0076C5B0, W3DView::Set_Width);
+    Hook_Any(0x0076C4F0, W3DView::Set_Height);
+    Hook_Any(0x0076C6B0, W3DView::Set_Origin);
+    Hook_Any(0x0076D680, W3DView::Update_Camera_Movements);
+    Hook_Any(0x00771B60, W3DView::Zoom_Camera_One_Frame);
+    Hook_Any(0x007716E0, W3DView::Rotate_Camera_One_Frame);
+    Hook_Any(0x00771C00, W3DView::Pitch_Camera_One_Frame);
+    Hook_Any(0x00771CA0, W3DView::Move_Along_Waypoint_Path);
 
     // scene.h
     Hook_Any(0x00832550, SceneClass::Render);

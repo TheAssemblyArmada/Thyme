@@ -41,7 +41,7 @@ if(MSVC)
 
     # Set warning level 3
     # disable C4244: conversion from 'double' to 'float', possible loss of data
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4244 /w14456 /w15038")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4244 /w14456 /w15038 /w14552")
 
     if (MSVC_VERSION LESS 1920)
         # MSVC lower than 19

@@ -227,6 +227,7 @@ public:
     bool Get_Unk7() const { return m_unk7; }
     void Set_Unk6(bool b) { m_unk6 = b; }
     void Clear_Attack_Move_To_Mode() { m_attackMoveToMode = false; }
+    bool Is_In_Force_To_Attack_Mode() { return m_forceToAttackMode; }
 
 protected:
     struct MoveHintStruct
@@ -344,7 +345,7 @@ protected:
     PopupMessageData *m_popupMessageData;
     int m_popupMessageColor;
     bool m_waypointMode;
-    bool m_unk2; // not 100% identified yet
+    bool m_forceToAttackMode; // not 100% identified yet
     bool m_unk3; // not 100% identified yet
     bool m_attackMoveToMode; // not 100% identified yet
     bool m_unk5; // not 100% identified yet

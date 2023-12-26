@@ -171,41 +171,41 @@ void View::Scroll_By(Coord2D *pos)
     m_pos.y += pos->y;
 }
 
-void View::Move_Camera_To(const Coord3D *o, int i1, int i2, bool b, float f1, float f2)
+void View::Move_Camera_To(const Coord3D *o, int frames, int shutter, bool orient, float in, float out)
 {
     Look_At(o);
 }
 
-void View::Move_Camera_Along_Waypoint_Path(Waypoint *w, int i1, int i2, bool b, float f1, float f2) {}
+void View::Move_Camera_Along_Waypoint_Path(Waypoint *way, int frames, int stutter, bool orient, float in, float out) {}
 
 bool View::Is_Camera_Movement_Finished()
 {
     return true;
 }
 
-void View::Camera_Mod_Final_Zoom(float f1, float f2, float f3) {}
+void View::Camera_Mod_Final_Zoom(float final_zoom, float in, float out) {}
 
-void View::Camera_Mod_Rolling_Average(int i) {}
+void View::Camera_Mod_Rolling_Average(int frames_to_average) {}
 
-void View::Camera_Mod_Final_Time_Multiplier(int i) {}
+void View::Camera_Mod_Final_Time_Multiplier(int final_multiplier) {}
 
-void View::Camera_Mod_Final_Pitch(float f1, float f2, float f3) {}
+void View::Camera_Mod_Final_Pitch(float final_pitch, float in, float out) {}
 
 void View::Camera_Mod_Freeze_Time() {}
 
 void View::Camera_Mod_Freeze_Angle() {}
 
-void View::Camera_Mod_Look_Toward(Coord3D *o) {}
+void View::Camera_Mod_Look_Toward(Coord3D *p_loc) {}
 
-void View::Camera_Mod_Final_Look_Toward(Coord3D *o) {}
+void View::Camera_Mod_Final_Look_Toward(Coord3D *p_loc) {}
 
-void View::Camera_Mod_Final_Move_To(Coord3D *o) {}
+void View::Camera_Mod_Final_Move_To(Coord3D *p_loc) {}
 
-void View::Camera_Enable_Slave_Mode(const Utf8String &s1, const Utf8String &s2) {}
+void View::Camera_Enable_Slave_Mode(const Utf8String &thing, const Utf8String &bone) {}
 
 void View::Camera_Disable_Slave_Mode() {}
 
-void View::Add_Camera_Shake(const Coord3D &o, float f1, float f2, float f3) {}
+void View::Add_Camera_Shake(const Coord3D &position, float radius, float duration, float amplitude) {}
 
 FilterModes View::Get_View_Filter_Mode()
 {
@@ -229,17 +229,17 @@ bool View::Set_View_Filter(FilterTypes filter)
     return false;
 }
 
-void View::Set_Fade_Parameters(int i1, int i2) {}
+void View::Set_Fade_Parameters(int fade_frames, int direction) {}
 
 void View::Set_3D_Wireframe_Mode(bool on) {}
 
-void View::Reset_Camera(const Coord3D *o, int i, float f1, float f2) {}
+void View::Reset_Camera(const Coord3D *location, int frames, float in, float out) {}
 
-void View::Rotate_Camera(float f1, int i, float f2, float f3) {}
+void View::Rotate_Camera(float rotations, int frames, float in, float out) {}
 
-void View::Rotate_Camera_Toward_Object(ObjectID id, int i1, int i2, float f1, float f2) {}
+void View::Rotate_Camera_Toward_Object(ObjectID id, int milliseconds, int hold_milliseconds, float in, float out) {}
 
-void View::Rotate_Camera_Toward_Position(const Coord3D *o, int i, float f1, float f2, bool b) {}
+void View::Rotate_Camera_Toward_Position(const Coord3D *p_loc, int milliseconds, float in, float out, bool b) {}
 
 bool View::Is_Time_Frozen()
 {
@@ -251,13 +251,13 @@ int View::Get_Time_Multiplier()
     return 1;
 }
 
-void View::Set_Time_Multiplier(int multiplier) {}
+void View::Set_Time_Multiplier(int multiple) {}
 
-void View::Set_Default_View(float f1, float f2, float f3) {}
+void View::Set_Default_View(float pitch, float angle, float max_height) {}
 
-void View::Zoom_Camera(float f1, int i, float f2, float f3) {}
+void View::Zoom_Camera(float final_zoom, int milliseconds, float in, float out) {}
 
-void View::Pitch_Camera(float f1, int i, float f2, float f3) {}
+void View::Pitch_Camera(float final_pitch, int milliseconds, float in, float out) {}
 
 void View::Set_Angle(float angle)
 {
@@ -269,9 +269,9 @@ float View::Get_Angle()
     return m_angle;
 }
 
-void View::Set_Pitch(float pitch)
+void View::Set_Pitch(float angle)
 {
-    m_pitchAngle = std::clamp(pitch, DEG_TO_RADF(-36.f), DEG_TO_RADF(36.f));
+    m_pitchAngle = std::clamp(angle, DEG_TO_RADF(-36.f), DEG_TO_RADF(36.f));
 }
 
 float View::Get_Pitch()
@@ -295,16 +295,16 @@ float View::Get_Zoom()
     return m_zoom;
 }
 
-void View::Set_Zoom(float zoom) {}
+void View::Set_Zoom(float z) {}
 
 float View::Get_Height_Above_Ground()
 {
     return m_heightAboveGround;
 }
 
-void View::Set_Height_Above_Ground(float height)
+void View::Set_Height_Above_Ground(float z)
 {
-    m_heightAboveGround = height;
+    m_heightAboveGround = z;
 }
 
 void View::Zoom_In()

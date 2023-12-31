@@ -157,6 +157,7 @@ set(GAMEENGINE_SRC
     game/client/messagestream/selectionxlat.cpp
     game/client/optionpreferences.cpp
     game/client/parabolicease.cpp
+    game/client/selectioninfo.cpp
     game/client/shader/bwfilter.cpp
     game/client/shader/cloudshader.cpp
     game/client/shader/crossfadefilter.cpp

@@ -112,10 +112,11 @@ public:
     virtual void Init();
     virtual void Reset() { m_zoomLimited = true; };
     virtual uint32_t Get_ID();
-    virtual void Set_Zoom_Limited(bool b);
+    virtual void Set_Zoom_Limited(bool limit);
     virtual bool Is_Zoom_Limited();
-    virtual Drawable *Pick_Drawable(const ICoord2D *o, bool b, PickType type) = 0;
-    virtual int Iterate_Drawables_In_Region(IRegion2D *r, bool (*func)(Drawable *, void *), void *) = 0;
+    virtual Drawable *Pick_Drawable(const ICoord2D *screen, bool force_attack, PickType type) = 0;
+    virtual int Iterate_Drawables_In_Region(
+        IRegion2D *screen_region, bool (*callback)(Drawable *, void *), void *user_data) = 0;
     virtual void Get_Screen_Corner_World_Points_At_Z(
         Coord3D *top_left, Coord3D *top_right, Coord3D *bottom_left, Coord3D *bottom_right, float z);
     virtual void Set_Width(int32_t width) { m_width = width; }
@@ -128,38 +129,38 @@ public:
     virtual void Look_At(const Coord3D *pos);
     virtual void Init_Height_For_Map();
     virtual void Scroll_By(Coord2D *pos);
-    virtual void Move_Camera_To(const Coord3D *o, int i1, int i2, bool b, float f1, float f2);
-    virtual void Move_Camera_Along_Waypoint_Path(Waypoint *w, int i1, int i2, bool b, float f1, float f2);
+    virtual void Move_Camera_To(const Coord3D *o, int frames, int shutter, bool orient, float in, float out);
+    virtual void Move_Camera_Along_Waypoint_Path(Waypoint *way, int frames, int stutter, bool orient, float in, float out);
     virtual bool Is_Camera_Movement_Finished();
-    virtual void Camera_Mod_Final_Zoom(float f1, float f2, float f3);
-    virtual void Camera_Mod_Rolling_Average(int i);
-    virtual void Camera_Mod_Final_Time_Multiplier(int i);
-    virtual void Camera_Mod_Final_Pitch(float f1, float f2, float f3);
+    virtual void Camera_Mod_Final_Zoom(float final_zoom, float in, float out);
+    virtual void Camera_Mod_Rolling_Average(int frames_to_average);
+    virtual void Camera_Mod_Final_Time_Multiplier(int final_multiplier);
+    virtual void Camera_Mod_Final_Pitch(float final_pitch, float in, float out);
     virtual void Camera_Mod_Freeze_Time();
     virtual void Camera_Mod_Freeze_Angle();
-    virtual void Camera_Mod_Look_Toward(Coord3D *o);
-    virtual void Camera_Mod_Final_Look_Toward(Coord3D *o);
-    virtual void Camera_Mod_Final_Move_To(Coord3D *o);
-    virtual void Camera_Enable_Slave_Mode(const Utf8String &s1, const Utf8String &s2);
+    virtual void Camera_Mod_Look_Toward(Coord3D *p_loc);
+    virtual void Camera_Mod_Final_Look_Toward(Coord3D *p_loc);
+    virtual void Camera_Mod_Final_Move_To(Coord3D *p_loc);
+    virtual void Camera_Enable_Slave_Mode(const Utf8String &thing, const Utf8String &bone);
     virtual void Camera_Disable_Slave_Mode();
-    virtual void Add_Camera_Shake(const Coord3D &o, float f1, float f2, float f3);
+    virtual void Add_Camera_Shake(const Coord3D &position, float radius, float duration, float amplitude);
     virtual FilterModes Get_View_Filter_Mode();
     virtual FilterTypes Get_View_Filter_Type();
     virtual bool Set_View_Filter_Mode(FilterModes mode);
     virtual void Set_View_Filter_Pos(const Coord3D *pos);
     virtual bool Set_View_Filter(FilterTypes filter);
-    virtual void Set_Fade_Parameters(int frames, int direction);
+    virtual void Set_Fade_Parameters(int fade_frames, int direction);
     virtual void Set_3D_Wireframe_Mode(bool on);
-    virtual void Reset_Camera(const Coord3D *o, int i, float f1, float f2);
-    virtual void Rotate_Camera(float f1, int i, float f2, float f3);
-    virtual void Rotate_Camera_Toward_Object(ObjectID id, int i1, int i2, float f1, float f2);
-    virtual void Rotate_Camera_Toward_Position(const Coord3D *o, int i, float f1, float f2, bool b);
+    virtual void Reset_Camera(const Coord3D *location, int frames, float in, float out);
+    virtual void Rotate_Camera(float rotations, int frames, float in, float out);
+    virtual void Rotate_Camera_Toward_Object(ObjectID id, int milliseconds, int hold_milliseconds, float in, float out);
+    virtual void Rotate_Camera_Toward_Position(const Coord3D *p_loc, int milliseconds, float in, float out, bool b);
     virtual bool Is_Time_Frozen();
     virtual int Get_Time_Multiplier();
-    virtual void Set_Time_Multiplier(int multiplier);
-    virtual void Set_Default_View(float f1, float f2, float f3);
-    virtual void Zoom_Camera(float f1, int i, float f2, float f3);
-    virtual void Pitch_Camera(float f1, int i, float f2, float f3);
+    virtual void Set_Time_Multiplier(int multiple);
+    virtual void Set_Default_View(float pitch, float angle, float max_height);
+    virtual void Zoom_Camera(float final_zoom, int milliseconds, float in, float out);
+    virtual void Pitch_Camera(float final_pitch, int milliseconds, float in, float out);
     virtual void Set_Angle(float angle);
     virtual float Get_Angle();
     virtual void Set_Pitch(float pitch);
@@ -168,24 +169,24 @@ public:
     virtual void Get_Position(Coord3D *pos);
     virtual const Coord3D &Get_3D_Camera_Position() = 0;
     virtual float Get_Zoom();
-    virtual void Set_Zoom(float zoom);
+    virtual void Set_Zoom(float z);
     virtual float Get_Height_Above_Ground();
-    virtual void Set_Height_Above_Ground(float height);
+    virtual void Set_Height_Above_Ground(float z);
     virtual void Zoom_In();
     virtual void Zoom_Out();
     virtual void Set_Zoom_To_Default() {}
     virtual float Get_Max_Zoom() { return m_maxZoom; }
-    virtual void Set_Ok_To_Adjust_Height(bool ok) { m_okToAdjustHeight = ok; }
+    virtual void Set_Ok_To_Adjust_Height(bool val) { m_okToAdjustHeight = val; }
     virtual float Get_Terrain_Height_Under_Camera() { return m_terrainHeightUnderCamera; }
     virtual void Set_Terrain_Height_Under_Camera(float height) { m_terrainHeightUnderCamera = height; }
     virtual float Get_Current_Height_Above_Ground() { return m_currentHeightAboveGround; }
     virtual void Set_Current_Height_Above_Ground(float height) { m_currentHeightAboveGround = height; }
-    virtual void Set_Field_Of_View(float fov) { m_FOV = fov; }
+    virtual void Set_Field_Of_View(float angle) { m_FOV = angle; }
     virtual float Get_Field_Of_View() { return m_FOV; }
-    virtual int World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) = 0;
-    virtual void Screen_To_World(const ICoord2D *o1, Coord3D *o2) = 0;
-    virtual void Screen_To_Terrain(const ICoord2D *o1, Coord3D *o2) = 0;
-    virtual void Screen_To_World_At_Z(const ICoord2D *o1, Coord3D *o2, float f) = 0;
+    virtual int World_To_Screen_Tri_Return(const Coord3D *w, ICoord2D *s) = 0;
+    virtual void Screen_To_World(const ICoord2D *s, Coord3D *w) = 0;
+    virtual void Screen_To_Terrain(const ICoord2D *screen, Coord3D *world) = 0;
+    virtual void Screen_To_World_At_Z(const ICoord2D *s, Coord3D *w, float z) = 0;
     virtual void Get_Location(ViewLocation *location);
     virtual void Set_Location(const ViewLocation *location);
     virtual void Draw_View() = 0;
@@ -198,10 +199,10 @@ public:
         m_lockType = LOCK_FOLLOW;
     };
     virtual void Snap_To_Camera_Lock() { m_snapImmediate = true; }
-    virtual void Set_Snap_Mode(CameraLockType type, float dist)
+    virtual void Set_Snap_Mode(CameraLockType lock_type, float lock_dist)
     {
-        m_lockType = type;
-        m_lockDist = dist;
+        m_lockType = lock_type;
+        m_lockDist = lock_dist;
     };
     virtual Drawable *Get_Camera_Lock_Drawable() { return m_cameraLockDrawable; }
     virtual void Set_Camera_Lock_Drawable(Drawable *drawable)
@@ -211,19 +212,19 @@ public:
     }
     virtual void Set_Mouse_Lock(bool locked) { m_mouseLocked = locked; }
     virtual bool Is_Mouse_Locked() { return m_mouseLocked; }
-    virtual void Shake(const Coord3D *o, CameraShakeType type) {}
+    virtual void Shake(const Coord3D *epicenter, CameraShakeType shake_type) {}
     virtual float Get_FX_Pitch() { return 1.0f; }
     virtual void Force_Camera_Constraint_Recalc() {}
-    virtual void Set_Guard_Band_Bias(Coord2D *) = 0;
-    virtual View *Prepend_View_To_List(View *view)
+    virtual void Set_Guard_Band_Bias(Coord2D *bias) = 0;
+    virtual View *Prepend_View_To_List(View *list)
     {
-        m_next = view;
+        m_next = list;
         return this;
     };
     virtual View *Get_Next_View() { return m_next; }
     Coord3D &Get_Position() { return m_pos; }
     void Set_Position(const Coord3D *pos) { m_pos = *pos; }
-    bool World_To_Screen_Tri(const Coord3D *o1, ICoord2D *o2) { return World_To_Screen_Tri_Return(o1, o2) == 0; }
+    bool World_To_Screen_Tri(const Coord3D *w, ICoord2D *s) { return World_To_Screen_Tri_Return(w, s) == 0; }
 
 protected:
     View *m_next;

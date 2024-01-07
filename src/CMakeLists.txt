@@ -447,6 +447,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3dfilesystem.cpp
     platform/w3dengine/client/w3dgameclient.cpp
     platform/w3dengine/client/w3dgamelogic.cpp
+    platform/w3dengine/client/w3dingameui.cpp
     platform/w3dengine/client/w3dmouse.cpp
     platform/w3dengine/client/w3dparticlesys.cpp
     platform/w3dengine/client/w3dpoly.cpp

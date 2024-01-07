@@ -202,6 +202,7 @@
 #include "w3dgamelogic.h"
 #include "w3dgamewindow.h"
 #include "w3dgamewindowmanager.h"
+#include "w3dingameui.h"
 #include "w3dmodeldraw.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
@@ -3738,4 +3739,7 @@ void Setup_Hooks()
 
     // quotedprintable.h
     Hook_Any(0x005E4B20, Ascii_String_To_Quoted_Printable);
+
+    // w3dingameui.h
+    Hook_Any(0x007A9B30, W3DInGameUI::Create_View);
 }

@@ -77,6 +77,7 @@ private:
     friend class WaterTracksRenderSystem;
     friend class BaseHeightMapRenderObjClass;
     friend class W3DDisplay;
+    friend class W3DView;
 };
 
 #ifdef GAME_DLL

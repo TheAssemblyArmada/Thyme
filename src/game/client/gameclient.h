@@ -165,6 +165,9 @@ public:
     void Add_Text_Bearing_Drawable(Drawable *drawable);
     void Remove_Drawable_From_Lookup_Table(Drawable *drawable);
     void Add_Drawable_To_Lookup_Table(Drawable *drawable);
+    void Reset_On_Screen_Object_Count() { m_onScreenObjectCount = 0; }
+    void Add_On_Screen_Object() { m_onScreenObjectCount++; }
+    void Flush_Text_Bearing_Drawables();
 
 protected:
     uint32_t m_frame;

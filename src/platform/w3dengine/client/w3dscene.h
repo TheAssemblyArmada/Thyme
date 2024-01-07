@@ -56,7 +56,7 @@ public:
     void Update_Player_Color_Passes();
 
     void Draw_Terrain_Only(bool draw) { m_drawTerrainOnly = draw; }
-    void setCustomScenePassMode(CustomScenePassModes mode) { m_customScenePassMode = mode; }
+    void Set_Custom_Scene_Pass_Mode(CustomScenePassModes mode) { m_customScenePassMode = mode; }
     CustomScenePassModes Get_Custom_Scene_Pass_Mode() { return m_customScenePassMode; }
     RefMultiListClass<RenderObjClass> *Get_Dynamic_Lights() { return &m_dynamicLightList; }
 

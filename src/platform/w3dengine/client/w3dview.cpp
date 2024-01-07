@@ -13,22 +13,29 @@
  *            LICENSE
  */
 #include "w3dview.h"
+#include "ai.h"
+#include "aipathfind.h"
 #include "baseheightmap.h"
 #include "camera.h"
 #include "camerashakesystem.h"
 #include "coltest.h"
 #include "drawable.h"
 #include "drawmodule.h"
+#include "dx8renderer.h"
 #include "gamewindowmanager.h"
 #include "globaldata.h"
 #include "ingameui.h"
 #include "object.h"
+#include "playerlist.h"
+#include "rinfo.h"
 #include "scriptengine.h"
 #include "selectioninfo.h"
 #include "shadermanager.h"
 #include "terrainlogic.h"
 #include "w3ddisplay.h"
 #include "w3dscene.h"
+#include "water.h"
+
 static const int g_theW3DFrameLengthInMsec = 33;
 
 void W3DView::Init()
@@ -789,4 +796,961 @@ void W3DView::Move_Along_Waypoint_Path(int milliseconds)
             m_cameraConstraint.hi.y = GameMath::Max(m_cameraConstraint.hi.y, pos.y);
         }
     }
+}
+
+const Coord3D &W3DView::Get_3D_Camera_Position()
+{
+    static Coord3D pos;
+    Vector3 v = m_3DCamera->Get_Position();
+    pos.Set(v.X, v.Y, v.Z);
+    return pos;
+}
+
+void W3DView::Update_View()
+{
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO Subsystem debug stuff
+#endif
+    Update();
+}
+
+float Get_Height_Around_Pos(float x, float y)
+{
+    float z1 = g_theTerrainLogic->Get_Ground_Height(x, y, nullptr);
+    float z2 = GameMath::Max(z1, g_theTerrainLogic->Get_Ground_Height(x + 40.0f, y - 40.0f, nullptr));
+    float z3 = GameMath::Max(z2, g_theTerrainLogic->Get_Ground_Height(x - 40.0f, y - 40.0f, nullptr));
+    float z4 = GameMath::Max(z3, g_theTerrainLogic->Get_Ground_Height(x + 40.0f, y + 40.0f, nullptr));
+    return GameMath::Max(z4, g_theTerrainLogic->Get_Ground_Height(x - 40.0f, y + 40.0f, nullptr));
+}
+
+void Draw_Drawable(Drawable *draw, void *user_data)
+{
+    draw->Draw(static_cast<View *>(user_data));
+}
+
+void W3DView::Update()
+{
+    static float follow_factor = -1.0f;
+    bool camera_changed = false;
+    bool b2 = false;
+
+    if (g_theTerrainRenderObject->Get_Need_Full_Update()) {
+        RefMultiListIterator<RenderObjClass> *iter = W3DDisplay::s_3DScene->Create_Lights_Iterator();
+        g_theTerrainRenderObject->Update_Center(m_3DCamera, iter);
+
+        if (iter != nullptr) {
+            W3DDisplay::s_3DScene->Destroy_Lights_Iterator(iter);
+            iter = nullptr;
+        }
+    }
+
+    ObjectID camera_lock = Get_Camera_Lock();
+
+    if (camera_lock == INVALID_OBJECT_ID) {
+        follow_factor = -1.0f;
+    }
+
+    if (camera_lock != INVALID_OBJECT_ID) {
+        m_doingMoveCameraOnWaypointPath = false;
+        m_doingMoveCameraAlongWaypointPath = false;
+        Object *obj = g_theGameLogic->Find_Object_By_ID(camera_lock);
+
+        if (obj != nullptr) {
+            if (follow_factor >= 0.0f) {
+                follow_factor += 0.05f;
+
+                if (follow_factor > 1.0f) {
+                    follow_factor = 1.0f;
+                }
+            } else {
+                follow_factor = 0.05f;
+            }
+
+            if (Get_Camera_Lock_Drawable() != nullptr) {
+                Drawable *drawable = Get_Camera_Lock_Drawable();
+
+                if (drawable != nullptr) {
+                    Matrix3D tm;
+                    Coord3D position;
+                    float radius;
+
+                    if (drawable->Client_Only_Get_First_Render_Obj_Info(&position, &radius, &tm)) {
+                        Vector3 v1(0.0f, 0.0f, 1.0f);
+                        Vector3 v2;
+                        v2.X = position.x;
+                        v2.Y = position.y;
+                        v2.Z = position.z;
+                        float f1 = radius * 1.0f;
+                        v2 += f1 * v1;
+                        Vector3 v3 = tm.Get_X_Vector();
+                        Vector3 v4 = v3 * radius;
+                        Vector3 v5 = v4 * 4.5f;
+                        Vector3 v6 = v2 - v5;
+                        Vector3 v7 = m_3DCamera->Get_Position();
+                        Vector3 v8 = v6 - v7;
+                        Vector3 v9 = v8 * 0.1f;
+                        v6 = v7 + v9;
+                        Matrix3D new_tm;
+                        new_tm.Look_At(v6, v2, 0.0f);
+                        m_3DCamera->Set_Transform(new_tm);
+                        camera_changed = false;
+                    }
+                } else {
+                    Set_Camera_Lock_Drawable(nullptr);
+                }
+            } else {
+                Coord3D obj_pos = *obj->Get_Position();
+                Coord3D view_pos = Get_Position();
+                float cell_size_sqr = GameMath::Square(g_theWriteableGlobalData->m_partitionCellSize);
+                float view_to_obj_len_sqr =
+                    GameMath::Square(view_pos.y - obj_pos.y) + GameMath::Square(view_pos.x - obj_pos.x);
+
+                if (m_snapImmediate) {
+                    view_pos.x = obj_pos.x;
+                    view_pos.y = obj_pos.y;
+                } else {
+                    float f7 = obj_pos.x - view_pos.x;
+                    float f8 = obj_pos.y - view_pos.y;
+
+                    if (m_lockType == LOCK_TETHER) {
+                        if (view_to_obj_len_sqr < cell_size_sqr) {
+                            float f9 = 0.01f * m_lockDist;
+                            view_pos.x += (obj_pos.x - view_pos.x) * f9;
+                            view_pos.y += (obj_pos.y - view_pos.y) * f9;
+                        } else {
+                            float f12 = 1.0f - cell_size_sqr / view_to_obj_len_sqr;
+                            view_pos.x += f7 * f12 * 0.5f;
+                            view_pos.y += f8 * f12 * 0.5f;
+                        }
+                    } else {
+                        view_pos.x += f7 * follow_factor;
+                        view_pos.y += f8 * follow_factor;
+                    }
+                }
+
+                if (!g_theScriptEngine->Is_Time_Frozen_Debug() && !g_theScriptEngine->Is_Time_Frozen_Script()
+                    && !g_theGameLogic->Is_Game_Paused()) {
+                    m_previousLookAtPosition = Get_Position();
+                }
+
+                Set_Position(&view_pos);
+
+                if (m_lockType == LOCK_FOLLOW && obj->Is_Using_Airborne_Locomotor() && obj->Is_Above_Terrain_Or_Water()) {
+                    float view_angle = m_angle;
+                    float obj_back_angle = obj->Get_Orientation() - 1.570796326794897f;
+                    Norm_Angle(&view_angle);
+                    Norm_Angle(&obj_back_angle);
+                    float angle_delta = obj_back_angle - view_angle;
+                    Norm_Angle(&angle_delta);
+
+                    if (m_snapImmediate) {
+                        m_angle = obj_back_angle;
+                    } else {
+                        m_angle += angle_delta * 0.1f;
+                    }
+
+                    Norm_Angle(&m_angle);
+                }
+
+                if (m_snapImmediate) {
+                    m_snapImmediate = false;
+                }
+
+                m_groundLevel = obj_pos.z;
+                b2 = true;
+                camera_changed = true;
+            }
+        } else {
+            Set_Camera_Lock(INVALID_OBJECT_ID);
+            Set_Camera_Lock_Drawable(nullptr);
+            follow_factor = -1.0f;
+        }
+    }
+
+    if (g_theScriptEngine->Is_Time_Frozen_Debug() || g_theGameLogic->Is_Game_Paused()) {
+        if (m_doingRotateCamera || m_doingMoveCameraOnWaypointPath || m_doingPitchCamera || m_doingZoomCamera
+            || m_doingScriptedCameraLock) {
+            b2 = true;
+        }
+    } else if (Update_Camera_Movements()) {
+        b2 = true;
+        camera_changed = true;
+    }
+
+    if (m_shakeIntensity <= 0.01f) {
+        m_shakeIntensity = 0.0f;
+        m_shakeOffset.x = 0.0f;
+        m_shakeOffset.y = 0.0f;
+    } else {
+        m_shakeOffset.x = m_shakeIntensity * m_shakeAngleCos;
+        m_shakeOffset.y = m_shakeIntensity * m_shakeAngleSin;
+        m_shakeIntensity *= 0.75f;
+        m_shakeAngleCos = -m_shakeAngleCos;
+        m_shakeAngleSin = -m_shakeAngleSin;
+        camera_changed = true;
+    }
+
+    if (g_theCameraShakerSystem.Is_Camera_Shaking()) {
+        camera_changed = true;
+    }
+
+    m_terrainHeightUnderCamera = Get_Height_Around_Pos(m_pos.x, m_pos.y);
+    m_currentHeightAboveGround = m_cameraOffset.z * m_zoom - m_terrainHeightUnderCamera;
+
+    if (g_theTerrainLogic != nullptr && g_theWriteableGlobalData != nullptr && g_theInGameUI != nullptr && m_okToAdjustHeight
+        && !g_theGameLogic->Is_Game_Paused()) {
+        float f16 = m_terrainHeightUnderCamera + m_heightAboveGround;
+        float f17 = f16 / m_cameraOffset.z;
+
+        if (b2 || (g_theGameLogic->Is_In_Replay_Game() && g_theWriteableGlobalData->m_useCameraInReplays)) {
+            m_heightAboveGround = m_currentHeightAboveGround;
+        }
+
+        if (g_theInGameUI->Is_Scrolling()) {
+            if (m_scrollAmount.Length() < m_scrollAmountCutoff || m_currentHeightAboveGround < m_minHeightAboveGround
+                || (g_theWriteableGlobalData->m_enforceMaxCameraHeight
+                    && m_currentHeightAboveGround > m_maxHeightAboveGround)) {
+                float add_zoom = (f17 - m_zoom) * g_theWriteableGlobalData->m_cameraAdjustSpeed;
+
+                if (GameMath::Fabs(add_zoom) >= 0.0001f) {
+                    m_zoom += add_zoom;
+                    camera_changed = true;
+                }
+            }
+        } else {
+            float sub_zoom = (m_zoom - f17) * g_theWriteableGlobalData->m_cameraAdjustSpeed;
+
+            if (GameMath::Fabs(sub_zoom) >= 0.0001f && !b2) {
+                m_zoom -= sub_zoom;
+                camera_changed = true;
+            }
+        }
+    }
+
+    if (!g_theScriptEngine->Is_Time_Fast()) {
+        if (camera_changed || m_cameraSlaveMode) {
+            Set_Camera_Transform();
+        }
+
+        Region3D region;
+
+        Get_Axis_Aligned_View_Region(region);
+
+        if (W3D::Get_Frame_Time() != 0) {
+            g_theGameClient->Iterate_Drawables_In_Region(&region, Draw_Drawable, this);
+        }
+    }
+}
+
+void W3DView::Get_Axis_Aligned_View_Region(Region3D &axis_aligned_region)
+{
+    Coord3D box[4];
+    Get_Screen_Corner_World_Points_At_Z(&box[0], &box[1], &box[2], &box[3], 0.0f);
+    axis_aligned_region.lo = box[0];
+    axis_aligned_region.hi = box[0];
+
+    for (int i = 0; i < 4; i++) {
+        if (box[i].x < axis_aligned_region.lo.x) {
+            axis_aligned_region.lo.x = box[i].x;
+        }
+
+        if (box[i].y < axis_aligned_region.lo.y) {
+            axis_aligned_region.lo.y = box[i].y;
+        }
+
+        if (box[i].x > axis_aligned_region.hi.x) {
+            axis_aligned_region.hi.x = box[i].x;
+        }
+
+        if (box[i].y > axis_aligned_region.hi.y) {
+            axis_aligned_region.hi.y = box[i].y;
+        }
+    }
+
+    float f1 = 999999.0f;
+    Region3D extent;
+    g_theTerrainLogic->Get_Extent(&extent);
+    axis_aligned_region.lo.z = extent.lo.z - f1;
+    axis_aligned_region.hi.z = extent.hi.z + f1;
+    axis_aligned_region.lo.x -= m_guardBandBias.x + 75.0f;
+    axis_aligned_region.lo.y -= m_guardBandBias.y + 75.0f + 60.0f;
+    axis_aligned_region.hi.x += m_guardBandBias.x + 75.0f;
+    axis_aligned_region.hi.y += m_guardBandBias.y + 75.0f;
+}
+
+void W3DView::Set_3D_Wireframe_Mode(bool on)
+{
+    m_wireframeMode = on;
+}
+
+bool W3DView::Set_View_Filter_Mode(FilterModes mode)
+{
+    FilterModes old_mode = m_viewFilterMode;
+    m_viewFilterMode = mode;
+
+    if (m_viewFilterMode == FM_NULL_MODE || m_viewFilter == FT_NULL_FILTER
+        || W3DShaderManager::Filter_Setup(m_viewFilter, m_viewFilterMode)) {
+        return true;
+    }
+
+    m_viewFilterMode = old_mode;
+    return false;
+}
+
+bool W3DView::Set_View_Filter(FilterTypes filter)
+{
+    FilterTypes old_filter = m_viewFilter;
+    m_viewFilter = filter;
+
+    if (m_viewFilterMode == FM_NULL_MODE || m_viewFilter == FT_NULL_FILTER
+        || W3DShaderManager::Filter_Setup(m_viewFilter, m_viewFilterMode)) {
+        return true;
+    }
+
+    m_viewFilter = old_filter;
+    return false;
+}
+
+void W3DView::Draw_View()
+{
+#ifdef GAME_DEBUG_STRUCTS
+    // TODO Subsystem debug stuff
+#endif
+    Draw();
+}
+
+void W3DView::Calc_Delta_Scroll(Coord2D &screen_delta)
+{
+    screen_delta.x = 0.0f;
+    screen_delta.y = 0.0f;
+    Vector3 ws_point(m_previousLookAtPosition.x, m_previousLookAtPosition.y, m_groundLevel);
+    Vector3 dest;
+
+    if (m_3DCamera->Project(dest, ws_point) == CameraClass::INSIDE_FRUSTUM) {
+        Vector3 ws_point2(m_pos.x, m_pos.y, m_groundLevel);
+        Vector3 dest2;
+
+        if (m_3DCamera->Project(dest2, ws_point2) == CameraClass::INSIDE_FRUSTUM) {
+            screen_delta.x = dest2.X - dest.X;
+            screen_delta.y = dest2.Y - dest.Y;
+        }
+    }
+}
+
+void Drawable_Post_Draw(Drawable *draw, void *user_data)
+{
+    if (!draw->Is_Hidden() && g_theTacticalView->Get_FX_Pitch() >= 0.0f) {
+        Object *obj = draw->Get_Object();
+        int index;
+
+        if (g_thePlayerList != nullptr) {
+            index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
+        } else {
+            index = 0;
+        }
+
+#ifdef GAME_DEBUG_STRUCTS
+        ObjectShroudStatus status =
+            obj != nullptr && g_theWriteableGlobalData->m_shroudOn ? obj->Get_Shrouded_Status(index) : SHROUDED_NONE;
+#else
+        ObjectShroudStatus status = obj != nullptr ? obj->Get_Shrouded_Status(index) : SHROUDED_NONE;
+#endif
+
+        if (status <= SHROUDED_PARTIAL) {
+            draw->Draw_Icon_UI();
+
+#ifdef GAME_DEBUG_STRUCTS
+            if (g_theWriteableGlobalData->m_showCollisionExtents) {
+                // TODO collision debug
+            }
+
+            if (g_theWriteableGlobalData->m_showAudioLocations) {
+                // TODO audio debug
+            }
+
+            if (g_theWriteableGlobalData->m_showTerrainNormals) {
+                // TODO terrain debug
+            }
+#endif
+
+            g_theGameClient->Add_On_Screen_Object();
+        }
+    }
+}
+
+void W3DView::Draw()
+{
+    bool b = false;
+    bool b2 = false;
+    CustomScenePassModes mode = MODE_DEFAULT;
+    bool b3 = false;
+
+    if (m_viewFilterMode != FM_NULL_MODE) {
+        if (m_viewFilter > FT_NULL_FILTER && m_viewFilter < FT_MAX) {
+            b3 = W3DShaderManager::Filter_Pre_Render(m_viewFilter, b, mode);
+
+            if (!b) {
+                if (Get_Camera_Lock() != INVALID_OBJECT_ID) {
+                    Object *obj = g_theGameLogic->Find_Object_By_ID(Get_Camera_Lock());
+
+                    if (obj != nullptr) {
+                        obj->Get_Drawable()->Set_Drawable_Hidden(true);
+                    }
+                }
+            }
+        }
+    }
+
+    if (!b) {
+        W3DDisplay::s_3DScene->Set_Custom_Scene_Pass_Mode(mode);
+
+        if (m_extraPass) {
+            W3DDisplay::s_3DScene->Set_Extra_Pass_Polygon_Mode(SceneClass::EXTRA_PASS_CLEAR_LINE);
+        }
+
+        W3DDisplay::s_3DScene->Do_Render(m_3DCamera);
+        W3DDisplay::s_3DScene->Set_Extra_Pass_Polygon_Mode(SceneClass::EXTRA_PASS_DISABLE);
+
+        m_extraPass = m_wireframeMode;
+    }
+
+    if (m_viewFilterMode != FM_NULL_MODE && m_viewFilter > FT_NULL_FILTER && m_viewFilter < FT_MAX) {
+        Coord2D screen_delta;
+        Calc_Delta_Scroll(screen_delta);
+        bool b4 = false;
+
+        if (b3) {
+            b4 = W3DShaderManager::Filter_Post_Render(m_viewFilter, m_viewFilterMode, screen_delta, b2);
+        }
+
+        if (!b) {
+            if (Get_Camera_Lock() != INVALID_OBJECT_ID) {
+                Object *obj = g_theGameLogic->Find_Object_By_ID(Get_Camera_Lock());
+
+                if (obj != nullptr) {
+                    Drawable *drawable = obj->Get_Drawable();
+                    drawable->Set_Drawable_Hidden(false);
+                    RenderInfoClass rinfo(*m_3DCamera);
+                    m_3DCamera->Apply();
+                    g_theDX8MeshRenderer.Set_Camera(&rinfo.m_camera);
+                    W3DDisplay::s_3DScene->Render_Specific_Drawables(rinfo, 1, &drawable);
+                    W3D::Flush(rinfo);
+                }
+            }
+        }
+
+        if (!b4) {
+            m_viewFilter = FT_VIEW_SCREEN_DEFAULT_FILTER;
+            m_viewFilterMode = FM_13;
+        }
+    }
+
+    if (b2) {
+        DX8Wrapper::Clear(false, true, Vector3(0.0f, 0.0f, 0.0f), g_theWaterTransparency->m_transparentWaterMinOpacity);
+        W3DDisplay::s_3DScene->Set_Custom_Scene_Pass_Mode(MODE_DEFAULT);
+        W3DDisplay::s_3DScene->Do_Render(m_3DCamera);
+
+        Coord2D delta;
+        W3DShaderManager::Filter_Post_Render(m_viewFilter, m_viewFilterMode, delta, b2);
+    }
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (g_theWriteableGlobalData->m_debugAI) {
+        // TODO path debug
+    }
+
+    if (g_theWriteableGlobalData->m_cameraDebug) {
+        // TODO camera debug
+    }
+
+    if (g_theWriteableGlobalData->m_showAudioLocations) {
+        // TODO audio debug
+    }
+#endif
+
+    Region3D axis_aligned_region;
+    Get_Axis_Aligned_View_Region(axis_aligned_region);
+    g_theGameClient->Reset_On_Screen_Object_Count();
+    g_theGameClient->Iterate_Drawables_In_Region(&axis_aligned_region, Drawable_Post_Draw, this);
+    g_theGameClient->Flush_Text_Bearing_Drawables();
+    W3DDisplay::s_2DScene->Do_Render(m_2DCamera);
+}
+
+void W3DView::Set_Camera_Lock(ObjectID id)
+{
+    if (!g_theWriteableGlobalData->m_disableCameraMovements || id == INVALID_OBJECT_ID) {
+        View::Set_Camera_Lock(id);
+        m_doingScriptedCameraLock = false;
+    }
+}
+
+void W3DView::Set_Snap_Mode(CameraLockType lock_type, float lock_dist)
+{
+    View::Set_Snap_Mode(lock_type, lock_dist);
+    m_doingScriptedCameraLock = true;
+}
+
+void W3DView::Scroll_By(Coord2D *pos)
+{
+    if (pos && (pos->x != 0.0f || pos->y != 0.0f)) {
+        float f1 = 250.0f;
+        Vector3 world_view_transform;
+        Vector3 world_view_origin;
+        Vector3 world_view_dest;
+        Vector2 local_view_origin;
+        Vector2 local_view_dest;
+
+        m_scrollAmount.x = pos->x;
+        m_scrollAmount.y = pos->y;
+        local_view_origin.X = Get_Width();
+        local_view_origin.Y = Get_Height();
+
+        float aspect_ratio = (Get_Width() / Get_Height());
+        local_view_dest.X = f1 * pos->x + local_view_origin.X;
+        local_view_dest.Y = f1 * pos->y * aspect_ratio + local_view_origin.Y;
+        m_3DCamera->Device_To_World_Space(local_view_origin, &world_view_origin);
+        m_3DCamera->Device_To_World_Space(local_view_dest, &world_view_dest);
+
+        world_view_transform.X = world_view_dest.X - world_view_origin.X;
+        world_view_transform.Y = world_view_dest.Y - world_view_origin.Y;
+        world_view_transform.Z = world_view_dest.Z - world_view_origin.Z;
+        Coord3D pos = Get_Position();
+        pos.x += world_view_transform.X;
+        pos.y += world_view_transform.Y;
+        Set_Position(&pos);
+        m_doingRotateCamera = false;
+        Set_Camera_Transform();
+    }
+}
+
+void W3DView::Force_Redraw()
+{
+    Set_Camera_Transform();
+}
+
+void W3DView::Set_Angle(float angle)
+{
+    Norm_Angle(&angle);
+    View::Set_Angle(angle);
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingMoveCameraAlongWaypointPath = false;
+    m_doingRotateCamera = false;
+    m_doingPitchCamera = false;
+    m_doingZoomCamera = false;
+    m_doingScriptedCameraLock = false;
+    Set_Camera_Transform();
+}
+
+void W3DView::Set_Pitch(float pitch)
+{
+    View::Set_Pitch(pitch);
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingRotateCamera = false;
+    m_doingPitchCamera = false;
+    m_doingZoomCamera = false;
+    m_doingScriptedCameraLock = false;
+    Set_Camera_Transform();
+}
+
+void W3DView::Set_Angle_And_Pitch_To_Default()
+{
+    View::Set_Angle_And_Pitch_To_Default();
+    m_FXPitch = 1.0f;
+    Set_Camera_Transform();
+}
+
+void W3DView::Set_Default_View(float pitch, float angle, float max_height)
+{
+    m_defaultPitchAngle = pitch;
+    m_maxHeightAboveGround = max_height * g_theWriteableGlobalData->m_maxCameraHeight;
+
+    if (m_minHeightAboveGround > m_maxHeightAboveGround) {
+        m_maxHeightAboveGround = m_minHeightAboveGround;
+    }
+}
+
+void W3DView::Set_Height_Above_Ground(float z)
+{
+    m_heightAboveGround = z;
+
+    if (m_zoomLimited) {
+        if (m_heightAboveGround < m_minHeightAboveGround) {
+            m_heightAboveGround = m_minHeightAboveGround;
+        }
+
+        if (m_heightAboveGround > m_maxHeightAboveGround) {
+            m_heightAboveGround = m_maxHeightAboveGround;
+        }
+    }
+
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingMoveCameraAlongWaypointPath = false;
+    m_doingRotateCamera = false;
+    m_doingPitchCamera = false;
+    m_doingZoomCamera = false;
+    m_doingScriptedCameraLock = false;
+    m_cameraConstraintValid = false;
+    Set_Camera_Transform();
+}
+
+void W3DView::Set_Zoom(float z)
+{
+    m_zoom = z;
+
+    if (m_zoom < m_minZoom) {
+        m_zoom = m_minZoom;
+    }
+
+    if (m_zoom > m_maxZoom) {
+        m_zoom = m_maxZoom;
+    }
+
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingMoveCameraAlongWaypointPath = false;
+    m_doingRotateCamera = false;
+    m_doingPitchCamera = false;
+    m_doingZoomCamera = false;
+    m_doingScriptedCameraLock = false;
+    m_cameraConstraintValid = false;
+    Set_Camera_Transform();
+}
+
+void W3DView::Set_Zoom_To_Default()
+{
+    float ground_height = Get_Height_Around_Pos(m_pos.x, m_pos.y);
+    m_zoom = (ground_height + m_maxHeightAboveGround) / m_cameraOffset.z;
+    m_heightAboveGround = m_maxHeightAboveGround;
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingMoveCameraAlongWaypointPath = false;
+    m_doingRotateCamera = false;
+    m_doingPitchCamera = false;
+    m_doingZoomCamera = false;
+    m_doingScriptedCameraLock = false;
+    m_cameraConstraintValid = false;
+    Set_Camera_Transform();
+}
+
+void W3DView::Set_Field_Of_View(float angle)
+{
+    View::Set_Field_Of_View(angle);
+    Set_Camera_Transform();
+}
+
+void W3D_Logical_Screen_To_Pixel_Screen(
+    float log_x, float log_y, int *screen_x, int *screen_y, int screen_width, int screen_height)
+{
+    *screen_x = GameMath::Fast_To_Int_Truncate(screen_width * (log_x + 1.0f) / 2.0f);
+    *screen_y = GameMath::Fast_To_Int_Truncate(screen_height * (1.0f - log_y) / 2.0f);
+}
+
+int W3DView::World_To_Screen_Tri_Return(const Coord3D *w, ICoord2D *s)
+{
+    if (w == nullptr || s == nullptr) {
+        return 2;
+    }
+
+    if (m_3DCamera == nullptr) {
+        return 2;
+    }
+
+    Vector3 ws_point;
+    Vector3 dest;
+    ws_point.Set(w->x, w->y, w->z);
+    CameraClass::ProjectionResType res = m_3DCamera->Project(dest, ws_point);
+
+    if (res < CameraClass::OUTSIDE_NEAR_CLIP) {
+        W3D_Logical_Screen_To_Pixel_Screen(dest.X, dest.Y, &s->x, &s->y, Get_Width(), Get_Height());
+        s->x += m_originX;
+        s->y += m_originY;
+        return res != CameraClass::INSIDE_FRUSTUM ? 1 : 0;
+    } else {
+        s->x = 0;
+        s->y = 0;
+        return 2;
+    }
+}
+
+void W3DView::Screen_To_World(const ICoord2D *s, Coord3D *w)
+{
+    captainslog_dbgassert(false, "implement me");
+}
+
+void W3DView::Screen_To_Terrain(const ICoord2D *screen, Coord3D *world)
+{
+    if (screen != nullptr && world != nullptr && g_theTerrainRenderObject != nullptr) {
+        if (m_cameraHasMovedSinceRequest) {
+            m_locationRequests.clear();
+            m_cameraHasMovedSinceRequest = false;
+        }
+
+        if (m_locationRequests.size() > 40) {
+            m_locationRequests.erase(m_locationRequests.begin(), m_locationRequests.begin() + 10);
+        }
+
+        for (int i = m_locationRequests.size() - 1; i >= 0; i--) {
+            if (m_locationRequests[i].first.x == screen->x && m_locationRequests[i].first.y == screen->y) {
+                *world = m_locationRequests[i].second;
+                return;
+            }
+        }
+
+        Vector3 ray_start;
+        Vector3 ray_end;
+        LineSegClass line;
+        CastResultStruct result;
+        Vector3 collision_pos(0.0f, 0.0f, 0.0f);
+        Get_Pick_Ray(screen, &ray_start, &ray_end);
+        line.Set(ray_start, ray_end);
+        RayCollisionTestClass ray(line, &result);
+
+        if (g_theTerrainRenderObject->Cast_Ray(ray)) {
+            collision_pos = result.contact_point;
+        }
+
+        Vector3 bridge_pos;
+
+        if (g_theTerrainLogic->Pick_Bridge(ray_start, ray_end, &bridge_pos) && bridge_pos.Z > collision_pos.Z) {
+            collision_pos = bridge_pos;
+        }
+
+        world->x = collision_pos.X;
+        world->y = collision_pos.Y;
+        world->z = collision_pos.Z;
+        m_locationRequests.push_back(std::make_pair(*screen, *world));
+    }
+}
+
+void W3DView::Look_At(const Coord3D *pos)
+{
+    Coord3D c = *pos;
+
+    if (g_theTerrainLogic->Get_Ground_Height(c.x, c.y, nullptr) + 10.0f < pos->z) {
+        Vector3 v1;
+        Vector3 v2;
+        LineSegClass line;
+        CastResultStruct result;
+        Vector3 v3(0.0f, 0.0f, 0.0f);
+        v1 = m_3DCamera->Get_Position();
+        Vector2 v4(0.0f, 0.0f);
+        m_3DCamera->Un_Project(v2, v4);
+        v2 -= v1;
+        v2.Normalize();
+        v2 *= m_3DCamera->Get_Depth();
+        v1.Set(c.x, c.y, c.z);
+        v2 += v1;
+        line.Set(v1, v2);
+        RayCollisionTestClass ray(line, &result);
+
+        if (g_theTerrainRenderObject->Cast_Ray(ray)) {
+            c.x = result.contact_point.X;
+            c.y = result.contact_point.Y;
+        }
+    }
+
+    c.z = 0.0f;
+    Set_Position(&c);
+    m_doingRotateCamera = false;
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingMoveCameraAlongWaypointPath = false;
+    m_doingScriptedCameraLock = false;
+    Set_Camera_Transform();
+}
+
+void W3DView::Init_Height_For_Map()
+{
+    m_groundLevel = g_theTerrainLogic->Get_Ground_Height(m_pos.x, m_pos.y, nullptr);
+
+    if (m_groundLevel > 120.0f) {
+        m_groundLevel = 120.0f;
+    }
+
+    m_cameraOffset.z = m_groundLevel + g_theWriteableGlobalData->m_cameraHeight;
+    m_cameraOffset.y = -(m_cameraOffset.z / GameMath::Tan(g_theWriteableGlobalData->m_cameraPitch * 0.01745329300562541f));
+    m_cameraOffset.x = -(GameMath::Tan(g_theWriteableGlobalData->m_cameraYaw * 0.01745329300562541f) * m_cameraOffset.y);
+    m_cameraConstraintValid = false;
+    Set_Camera_Transform();
+}
+
+void W3DView::Move_Camera_To(const Coord3D *o, int frames, int shutter, bool orient, float in, float out)
+{
+    m_mcwpInfo.waypoints[0] = Get_Position();
+    m_mcwpInfo.camera_angle[0] = Get_Angle();
+    m_mcwpInfo.way_seg_length[0] = 0.0f;
+    m_mcwpInfo.waypoints[1] = Get_Position();
+    m_mcwpInfo.way_seg_length[1] = 0.0f;
+    m_mcwpInfo.waypoints[2] = *o;
+    m_mcwpInfo.way_seg_length[2] = 0.0f;
+    m_mcwpInfo.num_waypoints = 2;
+
+    if (frames < 1) {
+        frames = 1;
+    }
+
+    m_mcwpInfo.total_time_milliseconds = frames;
+    m_mcwpInfo.shutter = 1;
+
+    m_mcwpInfo.ease.Set_Ease_Times(in / frames, out / frames);
+    m_mcwpInfo.cur_segment = 1;
+    m_mcwpInfo.cur_seg_distance = 0.0f;
+    m_mcwpInfo.total_distance = 0.0f;
+    Setup_Waypoint_Path(orient);
+
+    if (m_mcwpInfo.total_time_milliseconds == 1) {
+        Move_Along_Waypoint_Path(1);
+        m_doingMoveCameraOnWaypointPath = true;
+        m_doingMoveCameraAlongWaypointPath = false;
+    }
+}
+
+void W3DView::Setup_Waypoint_Path(bool orient)
+{
+    m_mcwpInfo.cur_segment = 1;
+    m_mcwpInfo.cur_seg_distance = 0.0f;
+    m_mcwpInfo.total_distance = 0;
+    m_mcwpInfo.rolling_average_frames = 1;
+    float angle = Get_Angle();
+
+    for (int i = 1; i < m_mcwpInfo.num_waypoints; i++) {
+        Vector2 v(m_mcwpInfo.waypoints[i + 1].x - m_mcwpInfo.waypoints[i].x,
+            m_mcwpInfo.waypoints[i + 1].y - m_mcwpInfo.waypoints[i].y);
+        m_mcwpInfo.way_seg_length[i] = v.Length();
+        m_mcwpInfo.total_distance += m_mcwpInfo.way_seg_length[i];
+
+        if (orient) {
+            angle = GameMath::Acos(v.X / m_mcwpInfo.way_seg_length[i]);
+
+            if (v.Y < 0.0f) {
+                angle = -angle;
+            }
+
+            angle -= 1.5707964f;
+            Norm_Angle(&angle);
+        }
+
+        m_mcwpInfo.camera_angle[i] = angle;
+    }
+
+    m_mcwpInfo.camera_angle[1] = Get_Angle();
+    m_mcwpInfo.camera_angle[m_mcwpInfo.num_waypoints] = m_mcwpInfo.camera_angle[m_mcwpInfo.num_waypoints - 1];
+
+    for (int i = m_mcwpInfo.num_waypoints - 1; i > 1; i--) {
+        m_mcwpInfo.camera_angle[i] = (m_mcwpInfo.camera_angle[i] + m_mcwpInfo.camera_angle[i - 1]) / 2.0f;
+    }
+
+    m_mcwpInfo.way_seg_length[m_mcwpInfo.num_waypoints + 1] = m_mcwpInfo.way_seg_length[m_mcwpInfo.num_waypoints];
+
+    if (m_mcwpInfo.total_distance < 1.0f) {
+        m_mcwpInfo.way_seg_length[m_mcwpInfo.num_waypoints - 1] += 1.0f - m_mcwpInfo.total_distance;
+        m_mcwpInfo.total_distance = 1.0f;
+    }
+
+    float total_way_seg_length = 0.0f;
+    Coord3D wp = m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints];
+    float ground_height = g_theTerrainLogic->Get_Ground_Height(wp.x, wp.y, nullptr);
+
+    for (int i = 0; i <= m_mcwpInfo.num_waypoints + 1; i++) {
+        float f2 = total_way_seg_length / m_mcwpInfo.total_distance;
+        float f3 = 1.0f - total_way_seg_length / m_mcwpInfo.total_distance;
+        m_mcwpInfo.time_multiplier[i] = m_timeMultiplier;
+        m_mcwpInfo.ground_height[i] = f3 * m_groundLevel + ground_height * f2;
+        total_way_seg_length += m_mcwpInfo.way_seg_length[i];
+    }
+
+    m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints + 1] = m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints];
+    Coord3D waypoints1 = m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints];
+    Coord3D waypoints2 = m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints - 1];
+    m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints + 1].x += waypoints1.x - waypoints2.x;
+    m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints + 1].y += waypoints1.y - waypoints2.y;
+    m_mcwpInfo.camera_angle[m_mcwpInfo.num_waypoints + 1] = m_mcwpInfo.camera_angle[m_mcwpInfo.num_waypoints];
+    m_mcwpInfo.ground_height[m_mcwpInfo.num_waypoints + 1] = ground_height;
+    waypoints1 = m_mcwpInfo.waypoints[2];
+    waypoints2 = m_mcwpInfo.waypoints[1];
+    m_mcwpInfo.waypoints[0].x -= waypoints1.x - waypoints2.x;
+    m_mcwpInfo.waypoints[0].y -= waypoints1.y - waypoints2.y;
+    m_doingMoveCameraOnWaypointPath = m_mcwpInfo.num_waypoints > 1;
+    m_doingMoveCameraAlongWaypointPath = false;
+    m_doingRotateCamera = false;
+    m_mcwpInfo.elapsed_time_milliseconds = 0;
+    m_mcwpInfo.cur_shutter = m_mcwpInfo.shutter;
+}
+
+void W3DView::Rotate_Camera(float rotations, int frames, float in, float out)
+{
+    m_rcInfo.num_hold_frames = 0;
+    m_rcInfo.track_object = 0;
+
+    if (frames < 1) {
+        frames = 1;
+    }
+
+    m_rcInfo.num_frames = frames / g_theW3DFrameLengthInMsec;
+
+    if (m_rcInfo.num_frames < 1) {
+        m_rcInfo.num_frames = 1;
+    }
+
+    m_rcInfo.cur_frame = 0;
+    m_doingRotateCamera = true;
+    m_rcInfo.angle = m_angle;
+    m_rcInfo.angle2 = 6.2831855f * rotations + m_angle;
+    m_rcInfo.start_time_multiplier = m_timeMultiplier;
+    m_rcInfo.end_time_multiplier = m_timeMultiplier;
+    m_rcInfo.ease.Set_Ease_Times(in / frames, out / frames);
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingMoveCameraAlongWaypointPath = false;
+}
+
+bool W3DView::Is_Camera_Movement_At_Waypoint_Along_Path()
+{
+    bool b = m_doingMoveCameraAlongWaypointPath;
+    m_doingMoveCameraAlongWaypointPath = false;
+    return b;
+}
+
+void W3DView::Move_Camera_Along_Waypoint_Path(Waypoint *way, int frames, int shutter, bool orient, float in, float out)
+{
+    float way_len_threshold = 10.0f;
+    m_mcwpInfo.waypoints[0] = Get_Position();
+    m_mcwpInfo.camera_angle[0] = Get_Angle();
+    m_mcwpInfo.way_seg_length[0] = 0.0f;
+    m_mcwpInfo.waypoints[1] = Get_Position();
+    m_mcwpInfo.num_waypoints = 1;
+
+    if (frames < 1) {
+        frames = 1;
+    }
+
+    m_mcwpInfo.total_time_milliseconds = frames;
+    m_mcwpInfo.shutter = shutter / g_theW3DFrameLengthInMsec;
+
+    if (m_mcwpInfo.shutter < 1) {
+        m_mcwpInfo.shutter = 1;
+    }
+
+    m_rcInfo.ease.Set_Ease_Times(in / frames, out / frames);
+
+    while (way != nullptr && m_mcwpInfo.num_waypoints < 25) {
+        m_mcwpInfo.num_waypoints++;
+        m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints] = *way->Get_Location();
+
+        if (way->Get_Num_Links() <= 0) {
+            way = nullptr;
+        } else {
+            way = way->Get_Link(0);
+        }
+
+        Vector2 v1(m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints].x - m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints - 1].x,
+            m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints].y - m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints - 1].y);
+
+        if (v1.Length() < way_len_threshold) {
+            if (way != nullptr) {
+                m_mcwpInfo.num_waypoints--;
+            } else {
+                m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints - 1] = m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints];
+                m_mcwpInfo.num_waypoints--;
+            }
+        }
+    }
+
+    Setup_Waypoint_Path(orient);
 }

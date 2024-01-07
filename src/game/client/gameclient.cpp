@@ -89,3 +89,12 @@ void GameClient::Add_Drawable_To_Lookup_Table(Drawable *drawable)
         m_drawableLUT[id] = drawable;
     }
 }
+
+void GameClient::Flush_Text_Bearing_Drawables()
+{
+    for (auto it = m_drawableTB.begin(); it != m_drawableTB.end(); it++) {
+        (*it)->Draw_UI_Text();
+    }
+
+    m_drawableTB.clear();
+}

@@ -106,7 +106,7 @@ public:
     virtual void Scroll_By(Coord2D *pos) override;
     virtual void Move_Camera_To(const Coord3D *o, int frames, int shutter, bool orient, float in, float out) override;
     virtual void Move_Camera_Along_Waypoint_Path(
-        Waypoint *way, int frames, int stutter, bool orient, float in, float out) override;
+        Waypoint *way, int frames, int shutter, bool orient, float in, float out) override;
     virtual bool Is_Camera_Movement_Finished() override;
     virtual void Camera_Mod_Final_Zoom(float final_zoom, float in, float out) override;
     virtual void Camera_Mod_Rolling_Average(int frames_to_average) override;
@@ -174,7 +174,7 @@ private:
     void Set_Camera_Transform();
     void Get_Axis_Aligned_View_Region(Region3D &axis_aligned_region);
     void Calc_Delta_Scroll(Coord2D &screen_delta);
-    void Setup_Waypoint_Path(bool b);
+    void Setup_Waypoint_Path(bool orient);
     void Rotate_Camera_One_Frame();
     void Zoom_Camera_One_Frame();
     void Pitch_Camera_One_Frame();

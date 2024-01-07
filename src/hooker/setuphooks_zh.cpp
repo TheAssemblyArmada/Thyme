@@ -1611,6 +1611,38 @@ void Setup_Hooks()
     Hook_Any(0x00771C00, W3DView::Pitch_Camera_One_Frame);
     Hook_Any(0x00771CA0, W3DView::Move_Along_Waypoint_Path);
 
+    Hook_Any(0x0076D5C0, W3DView::Get_3D_Camera_Position);
+    Hook_Any(0x0076D720, W3DView::Update_View);
+    Hook_Any(0x0076D730, W3DView::Update);
+    Hook_Any(0x0076E1D0, W3DView::Get_Axis_Aligned_View_Region);
+    Hook_Any(0x0076E320, W3DView::Set_3D_Wireframe_Mode);
+    Hook_Any(0x0076E360, W3DView::Set_View_Filter_Mode);
+    Hook_Any(0x0076E3B0, W3DView::Set_View_Filter);
+    Hook_Any(0x0076E4A0, W3DView::Draw_View);
+    Hook_Any(0x0076E400, W3DView::Calc_Delta_Scroll);
+    Hook_Any(0x0076E4B0, W3DView::Draw);
+    Hook_Any(0x0076EDA0, W3DView::Set_Camera_Lock);
+    Hook_Any(0x0076EDD0, W3DView::Set_Snap_Mode);
+    Hook_Any(0x0076EDF0, W3DView::Scroll_By);
+    Hook_Any(0x0076EF30, W3DView::Force_Redraw);
+    Hook_Any(0x0076EF40, W3DView::Set_Angle);
+    Hook_Any(0x0076F010, W3DView::Set_Pitch);
+    Hook_Any(0x0076F050, W3DView::Set_Angle_And_Pitch_To_Default);
+    Hook_Any(0x0076F070, W3DView::Set_Default_View);
+    Hook_Any(0x0076F0A0, W3DView::Set_Height_Above_Ground);
+    Hook_Any(0x0076F110, W3DView::Set_Zoom);
+    Hook_Any(0x0076F180, W3DView::Set_Zoom_To_Default);
+    Hook_Any(0x0076F2E0, W3DView::Set_Field_Of_View);
+    Hook_Any(0x0076F2F0, W3DView::World_To_Screen_Tri_Return);
+    Hook_Any(0x0076F820, W3DView::Screen_To_Terrain);
+    Hook_Any(0x0076FB70, W3DView::Look_At);
+    Hook_Any(0x0076FE50, W3DView::Init_Height_For_Map);
+    Hook_Any(0x0076FEF0, W3DView::Move_Camera_To);
+    Hook_Any(0x00771330, W3DView::Setup_Waypoint_Path);
+    Hook_Any(0x00770000, W3DView::Rotate_Camera);
+    Hook_Any(0x00771180, W3DView::Is_Camera_Movement_At_Waypoint_Along_Path);
+    Hook_Any(0x00771190, W3DView::Move_Camera_Along_Waypoint_Path);
+
     // scene.h
     Hook_Any(0x00832550, SceneClass::Render);
     Hook_Any(0x00832B70, SimpleSceneClass::Add_Render_Object);

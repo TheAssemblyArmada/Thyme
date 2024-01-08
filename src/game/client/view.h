@@ -91,15 +91,18 @@ class View : public SnapShot
 public:
     enum CameraLockType
     {
-        LOCK_FOLLOW = 0x0,
-        LOCK_TETHER = 0x1,
+        LOCK_FOLLOW,
+        LOCK_TETHER,
     };
+
     enum CameraShakeType
     {
-        SHAKE_SUBTLE = 0x0,
-        SHAKE_NORMAL = 0x1,
-        SHAKE_STRONG = 0x2,
-        SHAKE_SEVERE = 0x3,
+        SHAKE_SUBTLE,
+        SHAKE_NORMAL,
+        SHAKE_STRONG,
+        SHAKE_SEVERE,
+        SHAKE_EXTREME,
+        SHAKE_INSANE,
     };
 
     View();

@@ -1,0 +1,39 @@
+/**
+ * @file
+ *
+ * @author Jonathan Wilson
+ *
+ * @brief W3D In Game UI
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#pragma once
+#include "always.h"
+#include "ingameui.h"
+class RenderObjClass;
+class HAnimClass;
+
+class W3DInGameUI : public InGameUI
+{
+public:
+    virtual ~W3DInGameUI();
+    virtual void Reset();
+    virtual void Update();
+    virtual void Draw();
+    virtual View *Create_View();
+    virtual void Draw_Selection_Region();
+    virtual void Draw_Move_Hints(View *view);
+    virtual void Draw_Attack_Hints(View *view);
+    virtual void Draw_Place_Angle(View *view);
+
+private:
+    RenderObjClass *m_moveHintRenderObj[256];
+    HAnimClass *m_moveHintAnim[256];
+    RenderObjClass *m_locator01;
+    RenderObjClass *m_locator02;
+};

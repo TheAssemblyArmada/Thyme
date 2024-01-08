@@ -38,6 +38,57 @@
 
 static const int g_theW3DFrameLengthInMsec = 33;
 
+W3DView::W3DView() :
+    m_3DCamera(nullptr),
+    m_2DCamera(nullptr),
+    m_viewFilterMode(FM_13),
+    m_viewFilter(FT_VIEW_SCREEN_DEFAULT_FILTER),
+    m_extraPass(false),
+    m_wireframeMode(false),
+    m_shakeAngleCos(0.0f),
+    m_shakeAngleSin(0.0f),
+    m_shakeIntensity(0.0f),
+    m_cameraShakeAngles(0.0f, 0.0f, 0.0f),
+    m_doingRotateCamera(false),
+    m_doingPitchCamera(false),
+    m_doingZoomCamera(false),
+    m_doingScriptedCameraLock(false),
+    m_FXPitch(1.0f),
+    m_doingMoveCameraOnWaypointPath(false),
+    m_doingMoveCameraAlongWaypointPath(false),
+    m_freezeTimeForCameraMovement(false),
+    m_timeMultiplier(0),
+    m_cameraHasMovedSinceRequest(true),
+    m_scrollAmountCutoff(0.0f),
+    m_groundLevel(0.0f),
+    m_cameraConstraintValid(false),
+    m_cameraSlaveMode(false),
+    m_realZoom(false)
+{
+    m_cameraOffset.z = g_theWriteableGlobalData->m_cameraHeight;
+    m_cameraOffset.y = -(m_cameraOffset.z / GameMath::Tan(g_theWriteableGlobalData->m_cameraPitch * 0.01745329300562541f));
+    m_cameraOffset.x = -(GameMath::Tan(g_theWriteableGlobalData->m_cameraYaw * 0.01745329300562541f) * m_cameraOffset.y);
+    m_shakeOffset.x = 0.0f;
+    m_shakeOffset.y = 0.0f;
+    m_locationRequests.clear();
+    m_locationRequests.reserve(50);
+    m_previousLookAtPosition.x = 0.0f;
+    m_previousLookAtPosition.y = 0.0f;
+    m_previousLookAtPosition.z = 0.0f;
+    m_scrollAmount.x = 0.0f;
+    m_scrollAmount.y = 0.0f;
+    m_cameraConstraint.hi.x = 0.0f;
+    m_cameraConstraint.hi.y = 0.0f;
+    m_cameraConstraint.lo.x = 0.0f;
+    m_cameraConstraint.lo.y = 0.0f;
+}
+
+W3DView::~W3DView()
+{
+    Ref_Ptr_Release(m_2DCamera);
+    Ref_Ptr_Release(m_3DCamera);
+}
+
 void W3DView::Init()
 {
     View::Init();
@@ -597,7 +648,7 @@ void W3DView::Rotate_Camera_One_Frame()
                         angle = -angle;
                     }
 
-                    angle -= 1.5707964f;
+                    angle -= DEG_TO_RADF(90.0f);
                     Norm_Angle(&angle);
 
                     if (m_rcInfo.cur_frame > m_rcInfo.num_frames) {
@@ -618,7 +669,7 @@ void W3DView::Rotate_Camera_One_Frame()
         } else if (m_rcInfo.cur_frame <= m_rcInfo.num_frames) {
             float f1 = (float)m_rcInfo.cur_frame / (float)m_rcInfo.num_frames;
             float f2 = m_rcInfo.ease(f1);
-            m_angle = GameMath::Lerp(m_rcInfo.angle, m_rcInfo.angle2, f2);
+            m_angle = GameMath::Lerp(m_rcInfo.start_angle, m_rcInfo.end_angle, f2);
             Norm_Angle(&m_angle);
             float f3 = (m_rcInfo.end_time_multiplier - m_rcInfo.start_time_multiplier) * f2 + 0.5f;
             m_timeMultiplier = GameMath::Fast_To_Int_Floor(f3) + m_rcInfo.start_time_multiplier;
@@ -629,7 +680,7 @@ void W3DView::Rotate_Camera_One_Frame()
             m_freezeTimeForCameraMovement = false;
 
             if (!m_rcInfo.track_object) {
-                m_angle = m_rcInfo.angle2;
+                m_angle = m_rcInfo.end_angle;
             }
         }
     }
@@ -1623,7 +1674,7 @@ void W3DView::Setup_Waypoint_Path(bool orient)
                 angle = -angle;
             }
 
-            angle -= 1.5707964f;
+            angle -= DEG_TO_RADF(90.0f);
             Norm_Angle(&angle);
         }
 
@@ -1691,8 +1742,8 @@ void W3DView::Rotate_Camera(float rotations, int frames, float in, float out)
 
     m_rcInfo.cur_frame = 0;
     m_doingRotateCamera = true;
-    m_rcInfo.angle = m_angle;
-    m_rcInfo.angle2 = 6.2831855f * rotations + m_angle;
+    m_rcInfo.start_angle = m_angle;
+    m_rcInfo.end_angle = 6.2831855f * rotations + m_angle;
     m_rcInfo.start_time_multiplier = m_timeMultiplier;
     m_rcInfo.end_time_multiplier = m_timeMultiplier;
     m_rcInfo.ease.Set_Ease_Times(in / frames, out / frames);
@@ -1753,4 +1804,476 @@ void W3DView::Move_Camera_Along_Waypoint_Path(Waypoint *way, int frames, int shu
     }
 
     Setup_Waypoint_Path(orient);
+}
+
+void W3DView::Rotate_Camera_Toward_Object(ObjectID id, int milliseconds, int hold_milliseconds, float in, float out)
+{
+    m_rcInfo.track_object = true;
+
+    if (hold_milliseconds < 1) {
+        hold_milliseconds = 0;
+    }
+
+    m_rcInfo.num_hold_frames = hold_milliseconds / g_theW3DFrameLengthInMsec;
+
+    if (m_rcInfo.num_hold_frames < 1) {
+        m_rcInfo.num_hold_frames = 0;
+    }
+
+    if (milliseconds < 1) {
+        milliseconds = 1;
+    }
+
+    m_rcInfo.num_frames = milliseconds / g_theW3DFrameLengthInMsec;
+
+    if (m_rcInfo.num_frames < 1) {
+        m_rcInfo.num_frames = 1;
+    }
+
+    m_rcInfo.cur_frame = 0;
+    m_doingRotateCamera = true;
+    m_rcInfo.target_object_id = id;
+    m_rcInfo.start_time_multiplier = m_timeMultiplier;
+    m_rcInfo.end_time_multiplier = m_timeMultiplier;
+    m_rcInfo.ease.Set_Ease_Times(in / milliseconds, out / milliseconds);
+    m_doingMoveCameraOnWaypointPath = false;
+    m_doingMoveCameraAlongWaypointPath = false;
+}
+
+void W3DView::Rotate_Camera_Toward_Position(const Coord3D *p_loc, int milliseconds, float in, float out, bool b)
+{
+    m_rcInfo.num_hold_frames = 0;
+    m_rcInfo.track_object = false;
+
+    if (milliseconds < 1) {
+        milliseconds = 1;
+    }
+
+    m_rcInfo.num_frames = milliseconds / g_theW3DFrameLengthInMsec;
+
+    if (m_rcInfo.num_frames < 1) {
+        m_rcInfo.num_frames = 1;
+    }
+
+    Coord3D pos = Get_Position();
+    Vector2 transform(p_loc->x - pos.x, p_loc->y - pos.y);
+    float length = transform.Length();
+
+    if (length >= 0.1f) {
+        float angle = GameMath::Acos(transform.X / length);
+
+        if (transform.Y < 0.0f) {
+            angle = -angle;
+        }
+
+        angle -= DEG_TO_RADF(90.0f);
+        Norm_Angle(&angle);
+
+        if (b) {
+            if (m_angle >= angle) {
+                angle += 6.2831855f;
+            } else {
+                angle -= 6.2831855f;
+            }
+        }
+
+        m_rcInfo.cur_frame = 0;
+        m_doingRotateCamera = true;
+        m_rcInfo.start_angle = m_angle;
+        m_rcInfo.end_angle = angle;
+        m_rcInfo.start_time_multiplier = m_timeMultiplier;
+        m_rcInfo.end_time_multiplier = m_timeMultiplier;
+        m_rcInfo.ease.Set_Ease_Times(in / milliseconds, out / milliseconds);
+        m_doingMoveCameraOnWaypointPath = false;
+        m_doingMoveCameraAlongWaypointPath = false;
+    }
+}
+
+void W3DView::Zoom_Camera(float final_zoom, int milliseconds, float in, float out)
+{
+    if (milliseconds < 1) {
+        milliseconds = 1;
+    }
+
+    m_zcInfo.num_frames = milliseconds / g_theW3DFrameLengthInMsec;
+
+    if (m_zcInfo.num_frames < 1) {
+        m_zcInfo.num_frames = 1;
+    }
+
+    m_zcInfo.cur_frame = 0;
+    m_doingZoomCamera = true;
+    m_zcInfo.start_zoom = m_zoom;
+    m_zcInfo.end_zoom = final_zoom;
+    m_zcInfo.ease.Set_Ease_Times(in / milliseconds, out / milliseconds);
+}
+
+void W3DView::Pitch_Camera(float final_pitch, int milliseconds, float in, float out)
+{
+    if (milliseconds < 1) {
+        milliseconds = 1;
+    }
+
+    m_pcInfo.num_frames = milliseconds / g_theW3DFrameLengthInMsec;
+    if (m_pcInfo.num_frames < 1) {
+        m_pcInfo.num_frames = 1;
+    }
+
+    m_pcInfo.cur_frame = 0;
+    m_doingPitchCamera = true;
+    m_pcInfo.start_pitch = m_FXPitch;
+    m_pcInfo.end_pitch = final_pitch;
+    m_pcInfo.ease.Set_Ease_Times(in / milliseconds, out / milliseconds);
+}
+
+void W3DView::Camera_Mod_Final_Zoom(float final_zoom, float in, float out)
+{
+    if (m_doingRotateCamera) {
+        float ground_height = Get_Height_Around_Pos(m_pos.x, m_pos.y);
+        float zoom = (ground_height + m_maxHeightAboveGround) / m_cameraOffset.z;
+        float milliseconds =
+            g_theW3DFrameLengthInMsec * (m_rcInfo.num_hold_frames + m_rcInfo.num_frames - m_rcInfo.cur_frame);
+        Zoom_Camera(final_zoom * zoom, milliseconds, milliseconds * in, milliseconds * out);
+    }
+
+    if (m_doingMoveCameraOnWaypointPath) {
+        float ground_height = Get_Height_Around_Pos(
+            m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints].x, m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints].y);
+        float zoom = (ground_height + m_maxHeightAboveGround) / m_cameraOffset.z;
+        float milliseconds = m_mcwpInfo.total_time_milliseconds - m_mcwpInfo.elapsed_time_milliseconds;
+        Zoom_Camera(final_zoom * zoom, milliseconds, milliseconds * in, milliseconds * out);
+    }
+}
+
+void W3DView::Camera_Mod_Freeze_Angle()
+{
+    if (m_doingRotateCamera) {
+        if (m_rcInfo.track_object != INVALID_OBJECT_ID) {
+            m_rcInfo.track_object = INVALID_OBJECT_ID;
+        } else {
+            m_rcInfo.end_angle = m_angle;
+            m_rcInfo.start_angle = m_rcInfo.end_angle;
+        }
+    }
+
+    if (m_doingMoveCameraOnWaypointPath) {
+        for (int i = 0; i < m_mcwpInfo.num_waypoints; i++) {
+            m_mcwpInfo.camera_angle[i + 1] = m_mcwpInfo.camera_angle[0];
+        }
+    }
+}
+
+void W3DView::Camera_Mod_Final_Look_Toward(Coord3D *p_loc)
+{
+    if (!m_doingRotateCamera && m_doingMoveCameraOnWaypointPath) {
+        for (int i = 2; i <= m_mcwpInfo.num_waypoints; i++) {
+            float x1 = (m_mcwpInfo.waypoints[i - 1].x + m_mcwpInfo.waypoints[i].x) / 2.0f;
+            float y1 = (m_mcwpInfo.waypoints[i - 1].y + m_mcwpInfo.waypoints[i].y) / 2.0f;
+            Coord3D c1 = m_mcwpInfo.waypoints[i];
+            Coord3D c2 = m_mcwpInfo.waypoints[i];
+            c2.x += m_mcwpInfo.waypoints[i + 1].x;
+            c2.y += m_mcwpInfo.waypoints[i + 1].y;
+            c2.x /= 2.0f;
+            c2.y /= 2.0f;
+            float x2 = (c2.x - x1) * 0.5f + x1;
+            float y2 = (c2.y - y1) * 0.5f + y1;
+            x2 += (1.0f - 0.5f) * 0.5f * (c1.x - c2.x + c1.x - x1);
+            y2 += (1.0f - 0.5f) * 0.5f * (c1.y - c2.y + c1.y - y1);
+            Vector2 transform(p_loc->x - x2, p_loc->y - y2);
+            float length = transform.Length();
+
+            if (length >= 0.1f) {
+                float angle = GameMath::Acos(transform.X / length);
+
+                if (transform.Y < 0.0f) {
+                    angle = -angle;
+                }
+
+                angle -= DEG_TO_RADF(90.0f);
+                Norm_Angle(&angle);
+                m_mcwpInfo.camera_angle[i] = angle;
+            }
+        }
+
+        if (m_mcwpInfo.total_time_milliseconds == 1) {
+            Move_Along_Waypoint_Path(1);
+            m_doingMoveCameraOnWaypointPath = true;
+            m_doingMoveCameraAlongWaypointPath = false;
+        }
+    }
+}
+
+void W3DView::Camera_Mod_Final_Move_To(Coord3D *p_loc)
+{
+    if (!m_doingRotateCamera && m_doingMoveCameraOnWaypointPath) {
+        float x = p_loc->x - m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints].x;
+        float y = p_loc->y - m_mcwpInfo.waypoints[m_mcwpInfo.num_waypoints].y;
+
+        for (int i = 2; i <= m_mcwpInfo.num_waypoints; i++) {
+            m_mcwpInfo.waypoints[i].x += x;
+            m_mcwpInfo.waypoints[i].y += y;
+        }
+    }
+}
+
+void W3DView::Camera_Mod_Look_Toward(Coord3D *p_loc)
+{
+    if (!m_doingRotateCamera && m_doingMoveCameraOnWaypointPath) {
+        int count = m_mcwpInfo.num_waypoints - 1;
+
+        if (count < 2) {
+            count = 2;
+        }
+
+        for (int i = count; i <= m_mcwpInfo.num_waypoints; i++) {
+            Coord3D c1 = m_mcwpInfo.waypoints[i - 1];
+            c1.x += m_mcwpInfo.waypoints[i].x;
+            c1.y += m_mcwpInfo.waypoints[i].y;
+            c1.x /= 2.0f;
+            c1.y /= 2.0f;
+
+            Coord3D c2 = m_mcwpInfo.waypoints[i];
+            Coord3D c3 = m_mcwpInfo.waypoints[i];
+            c3.x += m_mcwpInfo.waypoints[i + 1].x;
+            c3.y += m_mcwpInfo.waypoints[i + 1].y;
+            c3.x /= 2.0f;
+            c3.y /= 2.0f;
+
+            float x = (c3.x - c1.x) * 0.5f + c1.x;
+            float y = (c3.y - c1.y) * 0.5f + c1.y;
+            x += (1.0f - 0.5f) * 0.5f * (c2.x - c3.x + c2.x - c1.x);
+            y += (1.0f - 0.5f) * 0.5f * (c2.y - c3.y + c2.y - c1.y);
+            Vector2 transform(p_loc->x - x, p_loc->y - y);
+            float length = transform.Length();
+
+            if (length >= 0.1f) {
+                float angle = GameMath::Acos(transform.X / length);
+
+                if (transform.Y < 0.0f) {
+                    angle = -angle;
+                }
+
+                angle -= DEG_TO_RADF(90.0f);
+                Norm_Angle(&angle);
+
+                if (i != m_mcwpInfo.num_waypoints) {
+                    float angle2 = angle - m_mcwpInfo.camera_angle[i];
+                    Norm_Angle(&angle2);
+                    angle = angle2 / 2.0f + m_mcwpInfo.camera_angle[i];
+                    Norm_Angle(&angle);
+                }
+
+                m_mcwpInfo.camera_angle[i] = angle;
+            }
+        }
+    }
+}
+
+void W3DView::Camera_Mod_Final_Time_Multiplier(int final_multiplier)
+{
+    if (m_doingZoomCamera) {
+        m_zcInfo.end_time_multiplier = final_multiplier;
+    }
+
+    if (m_doingPitchCamera) {
+        m_pcInfo.end_time_multiplier = final_multiplier;
+    }
+
+    if (m_doingRotateCamera) {
+        m_rcInfo.end_time_multiplier = final_multiplier;
+    } else if (m_doingMoveCameraOnWaypointPath) {
+        float total_length = 0.0f;
+
+        for (int i = 0; i < m_mcwpInfo.num_waypoints; i++) {
+            total_length += m_mcwpInfo.way_seg_length[i];
+            float f1 = total_length / m_mcwpInfo.total_distance;
+            float f2 = 1.0f - f1;
+            float f3 = m_mcwpInfo.time_multiplier[i + 1] * f2 + 0.5f + final_multiplier * f1;
+            m_mcwpInfo.time_multiplier[i + 1] = GameMath::Fast_To_Int_Floor(f3);
+        }
+    } else {
+        m_timeMultiplier = final_multiplier;
+    }
+}
+
+void W3DView::Camera_Mod_Rolling_Average(int frames_to_average)
+{
+    if (frames_to_average < 1) {
+        frames_to_average = 1;
+    }
+
+    m_mcwpInfo.rolling_average_frames = frames_to_average;
+}
+
+void W3DView::Camera_Mod_Final_Pitch(float final_pitch, float in, float out)
+{
+    if (m_doingRotateCamera) {
+        float milliseconds =
+            g_theW3DFrameLengthInMsec * (m_rcInfo.num_hold_frames + m_rcInfo.num_frames - m_rcInfo.cur_frame);
+        Pitch_Camera(final_pitch, milliseconds, milliseconds * in, milliseconds * out);
+    }
+
+    if (m_doingMoveCameraOnWaypointPath) {
+        float milliseconds = m_mcwpInfo.total_time_milliseconds - m_mcwpInfo.elapsed_time_milliseconds;
+        Pitch_Camera(final_pitch, milliseconds, milliseconds * in, milliseconds * out);
+    }
+}
+
+void W3DView::Reset_Camera(const Coord3D *location, int frames, float in, float out)
+{
+    Move_Camera_To(location, frames, 0, false, in, out);
+    m_mcwpInfo.camera_angle[2] = 0.0f;
+    m_angle = m_mcwpInfo.camera_angle[0];
+    float ground_height = Get_Height_Around_Pos(location->x, location->y);
+    float zoom = (ground_height + m_maxHeightAboveGround) / m_cameraOffset.z;
+    Zoom_Camera(zoom, frames, in, out);
+    Pitch_Camera(1.0f, frames, in, out);
+}
+
+bool W3DView::Is_Camera_Movement_Finished()
+{
+    if (m_viewFilter == FT_VIEW_MOTION_BLUR_FILTER
+        && (m_viewFilterMode == FM_VIEW_MB_IN_AND_OUT_ALPHA || m_viewFilterMode == FM_VIEW_MB_IN_AND_OUT_STATURATE
+            || m_viewFilterMode == FM_8 || m_viewFilterMode == FM_VIEW_MB_OUT_ALPHA
+            || m_viewFilterMode == FM_VIEW_MB_IN_STATURATE || m_viewFilterMode == FM_VIEW_MB_OUT_STATURATE)) {
+        return true;
+    }
+
+    return !m_doingMoveCameraOnWaypointPath && !m_doingRotateCamera && !m_doingPitchCamera && !m_doingZoomCamera;
+}
+
+void W3DView::Shake(const Coord3D *epicenter, CameraShakeType shake_type)
+{
+    float angle = Get_Client_Random_Value_Real(0.0f, 6.2831855f);
+    m_shakeAngleCos = GameMath::Cos(angle);
+    m_shakeAngleSin = GameMath::Sin(angle);
+    float intensity = 0.0f;
+
+    switch (shake_type) {
+        case SHAKE_SUBTLE:
+            intensity = g_theWriteableGlobalData->m_shakeSubtleIntensity;
+            break;
+        case SHAKE_NORMAL:
+            intensity = g_theWriteableGlobalData->m_shakeNormalIntensity;
+            break;
+        case SHAKE_STRONG:
+            intensity = g_theWriteableGlobalData->m_shakeStrongIntensity;
+            break;
+        case SHAKE_SEVERE:
+            intensity = g_theWriteableGlobalData->m_shakeSevereIntensity;
+            break;
+        case SHAKE_EXTREME:
+            intensity = g_theWriteableGlobalData->m_shakeCineExtremeIntensity;
+            break;
+        case SHAKE_INSANE:
+            intensity = g_theWriteableGlobalData->m_shakeCineInsaneIntensity;
+            break;
+        default:
+            break;
+    }
+
+    Coord3D &pos = Get_Position();
+    float x = epicenter->x - pos.x;
+    float y = epicenter->y - pos.y;
+    float range = GameMath::Sqrt(x * x + y * y);
+
+    if (range <= g_theWriteableGlobalData->m_maxShakeRange) {
+        m_shakeIntensity += (1.0f - range / g_theWriteableGlobalData->m_maxShakeRange) * intensity;
+
+        if (m_shakeIntensity > g_theWriteableGlobalData->m_maxShakeIntensity) {
+            m_shakeIntensity = 3.0f;
+        }
+    }
+}
+
+void W3DView::Screen_To_World_At_Z(const ICoord2D *s, Coord3D *w, float z)
+{
+    Vector3 ray_start;
+    Vector3 ray_end;
+    Get_Pick_Ray(s, &ray_start, &ray_end);
+    w->x = Vector3::Find_X_At_Z(z, ray_start, ray_end);
+    w->y = Vector3::Find_Y_At_Z(z, ray_start, ray_end);
+    w->z = z;
+}
+
+void W3DView::Camera_Enable_Slave_Mode(const Utf8String &thing, const Utf8String &bone)
+{
+    m_cameraSlaveMode = true;
+    m_cameraSlaveThing = thing;
+    m_cameraSlaveBone = bone;
+}
+
+void W3DView::Camera_Disable_Slave_Mode()
+{
+    m_cameraSlaveMode = false;
+}
+
+void W3DView::Camera_Enable_Real_Zoom_Mode()
+{
+    m_realZoom = true;
+    m_FXPitch = 1.0f;
+    Update_View();
+}
+
+void W3DView::Camera_Disable_Real_Zoom_Mode()
+{
+    m_realZoom = false;
+    m_FXPitch = 1.0f;
+    m_FOV = 0.87266463f;
+    Set_Camera_Transform();
+    Update_View();
+}
+
+void W3DView::Add_Camera_Shake(const Coord3D &position, float radius, float duration, float amplitude)
+{
+    Vector3 pos;
+    pos.X = position.x;
+    pos.Y = position.y;
+    pos.Z = position.z;
+    g_theCameraShakerSystem.Add_Camera_Shake(pos, radius, duration, amplitude);
+}
+
+void W3DView::Camera_Mod_Freeze_Time()
+{
+    m_freezeTimeForCameraMovement = true;
+}
+
+bool W3DView::Is_Time_Frozen()
+{
+    return m_freezeTimeForCameraMovement;
+}
+
+int W3DView::Get_Time_Multiplier()
+{
+    return m_timeMultiplier;
+}
+
+void W3DView::Set_Time_Multiplier(int multiple)
+{
+    m_timeMultiplier = multiple;
+}
+
+float W3DView::Get_FX_Pitch()
+{
+    return m_FXPitch;
+}
+
+FilterModes W3DView::Get_View_Filter_Mode()
+{
+    return m_viewFilterMode;
+}
+
+FilterTypes W3DView::Get_View_Filter_Type()
+{
+    return m_viewFilter;
+}
+
+void W3DView::Force_Camera_Constraint_Recalc()
+{
+    Calc_Camera_Constraints();
+}
+
+void W3DView::Set_Guard_Band_Bias(Coord2D *bias)
+{
+    m_guardBandBias = *bias;
 }

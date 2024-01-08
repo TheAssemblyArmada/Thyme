@@ -34,8 +34,8 @@ struct TRotateCameraInfo
     {
         struct
         {
-            float angle;
-            float angle2;
+            float start_angle;
+            float end_angle;
         };
         struct
         {
@@ -43,6 +43,8 @@ struct TRotateCameraInfo
             Coord3D target_object_pos;
         };
     };
+
+    TRotateCameraInfo() : ease(0.0f, 0.0f) {}
 };
 
 struct TPitchCameraInfo
@@ -55,6 +57,8 @@ struct TPitchCameraInfo
     int start_time_multiplier;
     int end_time_multiplier;
     ParabolicEase ease;
+
+    TPitchCameraInfo() : ease(0.0f, 0.0f) {}
 };
 
 struct TZoomCameraInfo
@@ -66,6 +70,8 @@ struct TZoomCameraInfo
     int start_time_multiplier;
     int end_time_multiplier;
     ParabolicEase ease;
+
+    TZoomCameraInfo() : ease(0.0f, 0.0f) {}
 };
 
 struct TMoveAlongWaypointPathInfo
@@ -85,6 +91,8 @@ struct TMoveAlongWaypointPathInfo
     int cur_shutter;
     int rolling_average_frames;
     ParabolicEase ease;
+
+    TMoveAlongWaypointPathInfo() : ease(0.0f, 0.0f) {}
 };
 
 class W3DView : public View, public SubsystemInterface

@@ -1921,8 +1921,8 @@ void W3DModelDraw::Set_Terrain_Decal(TerrainDecalType decal)
         info.m_offsetX = tmplate->Get_Shadow_Offset_X();
         info.m_offsetY = tmplate->Get_Shadow_Offset_Y();
 
-        if (g_theW3DProjectedShadowManager != nullptr) {
-            m_decalShadow = g_theW3DProjectedShadowManager->Add_Decal(m_renderObject, &info);
+        if (g_theProjectedShadowManager != nullptr) {
+            m_decalShadow = g_theProjectedShadowManager->Add_Decal(m_renderObject, &info);
         }
 
         if (m_decalShadow != nullptr) {

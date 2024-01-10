@@ -15,12 +15,18 @@
 #pragma once
 #include "always.h"
 #include "coord.h"
+#ifdef BUILD_WITH_D3D8
+#include "dx8wrapper.h"
+#endif
+#include "gametype.h"
 #include "vector3.h"
+
 class RenderInfoClass;
 class ThingTemplate;
 class DebugDrawStats;
 class RenderObjClass;
 class Drawable;
+class FrustumClass;
 
 enum ShadowType
 {
@@ -134,8 +140,26 @@ protected:
 class W3DShadowManager
 {
 public:
+    W3DShadowManager();
+    ~W3DShadowManager();
+
+#ifdef GAME_DLL
+    W3DShadowManager *Hook_Ctor() { return new (this) W3DShadowManager; }
+    void Hook_Dtor() { W3DShadowManager::~W3DShadowManager(); }
+#endif
+
+    bool Init();
+    void Reset();
+    void Release_Resources();
+    bool Re_Acquire_Resources();
+
     Shadow *Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
     void Remove_Shadow(Shadow *shadow);
+    void Remove_All_Shadows();
+    void Invalidate_Cached_Light_Positions();
+    Vector3 &Get_Light_Pos_World(int light_index);
+    void Set_Light_Position(int light_index, float x, float y, float z);
+    void Set_Time_Of_Day(TimeOfDayType tod);
 
     unsigned int Get_Shadow_Color() const { return m_shadowColor; }
     void Set_Shadow_Color(unsigned int color) { m_shadowColor = color; }
@@ -146,23 +170,20 @@ public:
     unsigned int Get_Stencil_Mask() const { return m_stencilMask; }
     void Set_Stencil_Mask(unsigned int mask) { m_stencilMask = mask; }
 
-    Vector3 &Get_Light_Pos_World(int light_index);
-
-    void Release_Resources();
-    void Re_Acquire_Resources();
-
 protected:
     bool m_isShadowScene;
     unsigned int m_shadowColor;
     unsigned int m_stencilMask;
 };
 
-#ifdef GAME_DLL
-#include "hooker.h"
+void Do_Shadows(RenderInfoClass &rinfo, bool stencil_pass);
 
+#ifdef GAME_DLL
 extern W3DShadowManager *&g_theW3DShadowManager;
+extern const FrustumClass *&g_shadowCameraFrustum;
 #else
 extern W3DShadowManager *g_theW3DShadowManager;
+extern const FrustumClass *g_shadowCameraFrustum;
 #endif
 
-void Do_Shadows(RenderInfoClass &rinfo, bool stencil_pass);
+extern Vector3 g_lightPosWorld[1];

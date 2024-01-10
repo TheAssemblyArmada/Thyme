@@ -211,6 +211,7 @@
 #include "w3dpropbuffer.h"
 #include "w3droadbuffer.h"
 #include "w3dscene.h"
+#include "w3dshadow.h"
 #include "w3dshroud.h"
 #include "w3dsmudge.h"
 #include "w3dsnow.h"
@@ -2070,6 +2071,7 @@ void Setup_Hooks()
     Hook_Any(0x00762F90, W3DShadowTextureManager::Create_Texture);
     Hook_Any(0x00762130, W3DProjectedShadowManager::Remove_Shadow);
     Hook_Any(0x00761290, W3DProjectedShadow::Release);
+    Hook_Any(0x0075F1D0, W3DProjectedShadowManager::Render_Projected_Terrain_Shadow);
 
     // worldheightmap.cpp
     Hook_Any(0x007440C0, WorldHeightMap::Hook_Dtor);
@@ -2123,6 +2125,29 @@ void Setup_Hooks()
     Hook_Any(0x007A39F0, W3DShadowGeometryMesh::Build_Polygon_Normals);
     Hook_Any(0x007A7AF0, W3DShadowGeometryManager::Free_All_Geoms);
     Hook_Any(0x007A7B70, W3DShadowGeometryManager::Load_Geom);
+
+    Hook_Any(0x007A3BA0, W3DVolumetricShadow::Update_Optimal_Extrusion_Padding);
+    Hook_Any(0x007A4110, W3DVolumetricShadow::Render_Volume);
+    Hook_Any(0x007A41A0, W3DVolumetricShadow::Render_Mesh_Volume);
+    Hook_Any(0x007A43D0, W3DVolumetricShadow::Render_Dynamic_Mesh_Volume);
+    Hook_Any(0x007A4970, W3DVolumetricShadow::Update);
+    Hook_Any(0x007A4C10, W3DVolumetricShadow::Update_Volumes);
+    Hook_Any(0x007A4F10, W3DVolumetricShadow::Update_Mesh_Volume);
+    Hook_Any(0x007A5B20, W3DVolumetricShadow::Add_Silhouette_Edge);
+    Hook_Any(0x007A5C30, W3DVolumetricShadow::Add_Neighborless_Edges);
+    Hook_Any(0x007A5D30, W3DVolumetricShadow::Build_Silhouette);
+    Hook_Any(0x007A5F50, W3DVolumetricShadow::Construct_Volume);
+    Hook_Any(0x007A6530, W3DVolumetricShadow::Construct_Volume_VB);
+    Hook_Any(0x007A6B20, W3DVolumetricShadow::Allocate_Shadow_Volume);
+    Hook_Any(0x007A6C50, W3DVolumetricShadow::Reset_Shadow_Volume);
+    Hook_Any(0x007A6D00, W3DVolumetricShadow::Allocate_Silhouette);
+    Hook_Any(0x007A6D50, W3DVolumetricShadowManager::Render_Stencil_Shadows);
+    Hook_Any(0x007A6FB0, W3DVolumetricShadowManager::Render_Shadows);
+    Hook_Any(0x007A7760, W3DVolumetricShadowManager::Release_Resources);
+    Hook_Any(0x007A77D0, W3DVolumetricShadowManager::Re_Acquire_Resources);
+    Hook_Any(0x007A78B0, W3DVolumetricShadowManager::Reset);
+    Hook_Any(0x007A78D0, W3DVolumetricShadowManager::Add_Shadow);
+    Hook_Any(0x007A7DB0, W3DVolumetricShadow::Release);
 
     // w3dbuffermanager.h
     Hook_Any(0x007D5420, W3DBufferManager::Hook_Ctor);
@@ -3742,4 +3767,17 @@ void Setup_Hooks()
 
     // w3dingameui.h
     Hook_Any(0x007A9B30, W3DInGameUI::Create_View);
+
+    // w3dshadow.h
+    Hook_Any(0x00781F40, Do_Shadows);
+    Hook_Any(0x00781FC0, W3DShadowManager::Hook_Ctor);
+    Hook_Any(0x00782120, W3DShadowManager::Hook_Dtor);
+    Hook_Any(0x00782170, W3DShadowManager::Init);
+    Hook_Any(0x007821B0, W3DShadowManager::Reset);
+    Hook_Any(0x007821D0, W3DShadowManager::Re_Acquire_Resources);
+    Hook_Any(0x00782210, W3DShadowManager::Release_Resources);
+    Hook_Any(0x00782230, W3DShadowManager::Add_Shadow);
+    Hook_Any(0x00782290, W3DShadowManager::Remove_Shadow);
+    Hook_Any(0x007822A0, W3DShadowManager::Get_Light_Pos_World);
+    Hook_Any(0x007822C0, W3DShadowManager::Set_Time_Of_Day);
 }

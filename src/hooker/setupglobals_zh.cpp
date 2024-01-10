@@ -503,6 +503,7 @@ RTS3DInterfaceScene *&W3DDisplay::s_3DInterfaceScene =
 
 // w3dshadow.cpp
 #include "w3dshadow.h"
+const FrustumClass *&g_shadowCameraFrustum = Make_Global<const FrustumClass *>(PICK_ADDRESS(0x00A3AE3C, 0x00E1A604));
 W3DShadowManager *&g_theW3DShadowManager = Make_Global<W3DShadowManager *>(PICK_ADDRESS(0x00A3AE4C, 0x00E1A614));
 
 // thingfactory.cpp
@@ -578,10 +579,12 @@ ScriptEngine *&g_theScriptEngine = Make_Global<ScriptEngine *>(PICK_ADDRESS(0x00
 
 // w3dprojectedshadow.cpp
 class W3DProjectedShadowManager;
+class ProjectedShadowManager;
 W3DProjectedShadowManager *&g_theW3DProjectedShadowManager =
     Make_Global<W3DProjectedShadowManager *>(PICK_ADDRESS(0x00A3ACD4, 0x00E1AFC8));
+ProjectedShadowManager *&g_theProjectedShadowManager =
+    Make_Global<ProjectedShadowManager *>(PICK_ADDRESS(0x00A3AC58, 0x00E1AF44));
 class FrustumClass;
-FrustumClass *&g_shadowCameraFrustum = Make_Global<FrustumClass *>(PICK_ADDRESS(0x00A3AE3C, 0x00E1A604));
 #ifdef BUILD_WITH_D3D8
 IDirect3DVertexBuffer8 *&g_shadowDecalVertexBufferD3D =
     Make_Global<IDirect3DVertexBuffer8 *>(PICK_ADDRESS(0x00A3ACE8, 0x00E1AFDC));
@@ -836,3 +839,17 @@ HotKeyManager *&g_theHotKeyManager = Make_Global<HotKeyManager *>(PICK_ADDRESS(0
 // disconnectmenu.cpp
 class DisconnectMenu;
 DisconnectMenu *&g_theDisconnectMenu = Make_Global<DisconnectMenu *>(PICK_ADDRESS(0x00A31DA0, 0x04CAD314));
+
+// w3dbuffermanager.cpp
+class W3DBufferManager;
+W3DBufferManager *&g_theW3DBufferManager = Make_Global<W3DBufferManager *>(PICK_ADDRESS(0x00A3C2B8, 0x00E1B298));
+
+// w3dvolumetricshadow.cpp
+class W3DVolumetricShadowManager;
+W3DVolumetricShadowManager *&g_theW3DVolumetricShadowManager =
+    Make_Global<W3DVolumetricShadowManager *>(PICK_ADDRESS(0x00A3B0F0, 0x00E1AE90));
+#ifdef BUILD_WITH_D3D8
+IDirect3DVertexBuffer8 *&g_shadowVertexBufferD3D =
+    Make_Global<IDirect3DVertexBuffer8 *>(PICK_ADDRESS(0x00A3B0F4, 0x00E1AE94));
+IDirect3DIndexBuffer8 *&g_shadowIndexBufferD3D = Make_Global<IDirect3DIndexBuffer8 *>(PICK_ADDRESS(0x00A3B0F8, 0x00E1AE98));
+#endif

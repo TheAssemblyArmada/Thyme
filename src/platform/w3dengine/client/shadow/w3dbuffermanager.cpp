@@ -18,6 +18,10 @@
 #include "dx8vertexbuffer.h"
 #include <algorithm>
 
+#ifndef GAME_DLL
+W3DBufferManager *g_theW3DBufferManager;
+#endif
+
 // TODO need general cleanup advice
 // TODO what is going on with count
 

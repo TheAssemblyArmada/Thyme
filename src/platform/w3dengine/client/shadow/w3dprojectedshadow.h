@@ -157,7 +157,7 @@ public:
     virtual Shadow *Add_Decal(Shadow::ShadowTypeInfo *shadow_info) = 0;
 };
 
-class W3DProjectedShadowManager : ProjectedShadowManager
+class W3DProjectedShadowManager : public ProjectedShadowManager
 {
 public:
     W3DProjectedShadowManager();
@@ -207,8 +207,8 @@ private:
 
 #ifdef GAME_DLL
 extern W3DProjectedShadowManager *&g_theW3DProjectedShadowManager;
-extern FrustumClass *&g_shadowCameraFrustum;
+extern ProjectedShadowManager *&g_theProjectedShadowManager;
 #else
 extern W3DProjectedShadowManager *g_theW3DProjectedShadowManager;
-extern FrustumClass *g_shadowCameraFrustum;
+extern ProjectedShadowManager *g_theProjectedShadowManager;
 #endif

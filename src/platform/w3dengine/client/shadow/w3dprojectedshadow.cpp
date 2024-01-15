@@ -32,6 +32,7 @@
 #include "texproject.h"
 #include "texture.h"
 #include "w3dmodeldraw.h"
+#include "w3dvolumetricshadow.h"
 #include "worldheightmap.h"
 #include <cstring>
 #ifdef BUILD_WITH_D3D8
@@ -54,7 +55,7 @@ IDirect3DVertexBuffer8 *g_shadowDecalVertexBufferD3D;
 IDirect3DIndexBuffer8 *g_shadowDecalIndexBufferD3D;
 #endif
 W3DProjectedShadowManager *g_theW3DProjectedShadowManager = nullptr;
-FrustumClass *g_shadowCameraFrustum;
+ProjectedShadowManager *g_theProjectedShadowManager = nullptr;
 int g_nShadowDecalVertsInBuf;
 int g_nShadowDecalStartBatchVertex;
 int g_nShadowDecalIndicesInBuf;
@@ -555,12 +556,175 @@ void W3DProjectedShadowManager::Update_Render_Target_Textures()
 
 int W3DProjectedShadowManager::Render_Projected_Terrain_Shadow(W3DProjectedShadow *shadow, AABoxClass &box)
 {
-#ifdef GAME_DLL
-    return Call_Method<int, W3DProjectedShadowManager, W3DProjectedShadow *, AABoxClass &>(
-        PICK_ADDRESS(0x0075F1D0, 0x0067D4FB), this, shadow, box);
-#else
-    return 0;
+#ifdef BUILD_WITH_D3D8
+    struct SHADOW_VOLUME_VERTEX
+    {
+        float x;
+        float y;
+        float z;
+    };
+
+    static Matrix4 mWorld(true);
+
+    if (g_theTerrainRenderObject == nullptr) {
+        return 0;
+    }
+
+    WorldHeightMap *map = g_theTerrainRenderObject->Get_Map();
+    float cx = box.m_center.X;
+    float cy = box.m_center.Y;
+    float dx = box.m_extent.X;
+    float dy = box.m_extent.Y;
+    IDirect3DDevice8 *dev = DX8Wrapper::Get_D3D_Device8();
+
+    if (dev == nullptr) {
+        return 0;
+    }
+
+    int start_x = GameMath::Fast_To_Int_Floor((cx - dx) * 0.1f);
+    int end_x = GameMath::Fast_To_Int_Floor((cx + dx) * 0.1f);
+    int start_y = GameMath::Fast_To_Int_Floor((cy - dy) * 0.1f);
+    int end_y = GameMath::Fast_To_Int_Floor((cy + dy) * 0.1f);
+    start_x &= (start_x <= 0) - 1;
+
+    if (end_x >= map->Get_X_Extent() - 1) {
+        end_x = map->Get_X_Extent() - 1;
+    }
+
+    start_y &= (start_y <= 0) - 1;
+
+    if (end_y >= map->Get_Y_Extent() - 1) {
+        end_y = map->Get_Y_Extent() - 1;
+    }
+
+    int width = end_x - start_x + 1;
+    int height = end_y - start_y + 1;
+
+    if (end_x == start_x || height == 1) {
+        return 0;
+    }
+
+    int num_verts = height * width;
+    SHADOW_VOLUME_VERTEX *vertices;
+
+    if (g_nShadowVertsInBuf <= SHADOW_VERTEX_SIZE - num_verts) {
+
+        if (g_shadowVertexBufferD3D->Lock(
+                12 * g_nShadowVertsInBuf, 12 * num_verts, reinterpret_cast<BYTE **>(&vertices), D3DLOCK_NOOVERWRITE)
+            != S_OK) {
+            return 0;
+        }
+    } else {
+        if (g_shadowVertexBufferD3D->Lock(0, 12 * num_verts, reinterpret_cast<BYTE **>(&vertices), D3DLOCK_DISCARD)
+            != S_OK) {
+            return 0;
+        }
+
+        g_nShadowVertsInBuf = 0;
+        g_nShadowStartBatchVertex = 0;
+    }
+
+    if (vertices != nullptr) {
+        for (int y = start_y; y <= end_y; y++) {
+            float f1 = y * 10.0f;
+
+            for (int x = start_x; x <= end_x; x++) {
+                vertices->x = x * 10.0f;
+                vertices->y = f1;
+                vertices->z = map->Get_Height(x, y) * HEIGHTMAP_SCALE;
+                vertices++;
+            }
+        }
+    }
+
+    g_shadowVertexBufferD3D->Unlock();
+    int num_indices = 6 * (end_y - start_y) * (end_x - start_x);
+    short *indices;
+
+    if (g_nShadowIndicesInBuf <= SHADOW_INDEX_SIZE - num_indices) {
+        if (g_shadowIndexBufferD3D->Lock(
+                2 * g_nShadowIndicesInBuf, 2 * num_indices, reinterpret_cast<BYTE **>(&indices), D3DLOCK_NOOVERWRITE)
+            != S_OK) {
+            return 0;
+        }
+    } else {
+        if (g_shadowIndexBufferD3D->Lock(0, 2 * num_indices, reinterpret_cast<BYTE **>(&indices), D3DLOCK_DISCARD) != S_OK) {
+            return 0;
+        }
+
+        g_nShadowIndicesInBuf = 0;
+        g_nShadowStartBatchIndex = 0;
+    }
+
+    if (indices != nullptr) {
+        int y = start_y;
+        int x = 0;
+
+        while (y < end_y) {
+            for (int x_index = start_x; x_index < end_x; x_index++) {
+                float ua[4];
+                float va[4];
+                unsigned char alpha[4];
+                bool flip_for_blend;
+                map->Get_Alpha_UV_Data(x_index, y, ua, va, alpha, &flip_for_blend, false);
+
+                if (flip_for_blend) {
+                    indices[0] = x + 1;
+                    indices[1] = width + x;
+                    indices[2] = x;
+                    indices[3] = x + 1;
+                    indices[4] = x + width + 1;
+                    indices[5] = width + x;
+                } else {
+                    indices[0] = x;
+                    indices[1] = x + width + 1;
+                    indices[2] = width + x;
+                    indices[3] = x;
+                    indices[4] = x + 1;
+                    indices[5] = x + width + 1;
+                }
+
+                indices += 6;
+                x++;
+            }
+
+            y++;
+            x += width;
+        }
+    }
+
+    g_shadowIndexBufferD3D->Unlock();
+    dev->SetIndices(g_shadowIndexBufferD3D, g_nShadowStartBatchVertex);
+    dev->SetTransform(D3DTS_WORLD, reinterpret_cast<D3DMATRIX *>(&mWorld));
+    dev->SetStreamSource(0, g_shadowVertexBufferD3D, sizeof(SHADOW_VOLUME_VERTEX));
+    dev->SetVertexShader(D3DFVF_XYZ);
+    int count = 2 * (end_y - start_y) * (end_x - start_x);
+    dev->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+    dev->SetRenderState(D3DRS_STENCILENABLE, TRUE);
+    dev->SetRenderState(D3DRS_STENCILFUNC, D3DCMP_ALWAYS);
+    dev->SetRenderState(D3DRS_STENCILREF, 1);
+    dev->SetRenderState(D3DRS_STENCILMASK, -1);
+    dev->SetRenderState(D3DRS_STENCILWRITEMASK, -1);
+    dev->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_KEEP);
+    dev->SetRenderState(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
+    dev->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCR);
+    dev->SetRenderState(D3DRS_LIGHTING, FALSE);
+    dev->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
+    dev->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+
+    if (DX8Wrapper::Is_Triangle_Draw_Enabled()) {
+        dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, num_verts, g_nShadowStartBatchIndex, count);
+    }
+
+    dev->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    dev->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+    dev->SetRenderState(D3DRS_LIGHTING, TRUE);
+    g_nShadowVertsInBuf += num_verts;
+    g_nShadowStartBatchVertex = g_nShadowVertsInBuf;
+    g_nShadowIndicesInBuf += num_indices;
+    g_nShadowStartBatchIndex = g_nShadowIndicesInBuf;
 #endif
+    return 1;
 }
 
 void W3DProjectedShadowManager::Flush_Decals(W3DShadowTexture *texture, ShadowType type)

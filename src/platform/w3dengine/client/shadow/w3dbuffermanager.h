@@ -12,7 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-
+#pragma once
 #include "always.h"
 #include <new>
 
@@ -173,3 +173,9 @@ private:
     W3DIndexBuffer m_W3DEmptyIndexBuffers[MAX_INDEX_BUFFERS_CREATED];
     int m_numEmptyIndexBuffersAllocated;
 };
+
+#ifdef GAME_DLL
+extern W3DBufferManager *&g_theW3DBufferManager;
+#else
+extern W3DBufferManager *g_theW3DBufferManager;
+#endif

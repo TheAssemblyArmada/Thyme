@@ -13,7 +13,56 @@
  *            LICENSE
  */
 #include "terrainvisual.h"
+#include "xfer.h"
 
 #ifndef GAME_DLL
 TerrainVisual *g_theTerrainVisual;
 #endif
+
+TerrainVisual::TerrainVisual() {}
+
+TerrainVisual::~TerrainVisual() {}
+
+void TerrainVisual::CRC_Snapshot(Xfer *xfer) {}
+
+void TerrainVisual::Xfer_Snapshot(Xfer *xfer)
+{
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
+}
+
+void TerrainVisual::Load_Post_Process() {}
+
+bool TerrainVisual::Load(Utf8String filename)
+{
+    if (filename.Is_Empty()) {
+        return false;
+    } else {
+        m_filenameString = filename;
+        return true;
+    }
+}
+
+bool TerrainVisual::Intersect_Terrain(Coord3D *ray_start, Coord3D *ray_end, Coord3D *result)
+{
+    return false;
+}
+
+WorldHeightMap *TerrainVisual::Get_Logic_Height_Map()
+{
+    return nullptr;
+}
+
+WorldHeightMap *TerrainVisual::Get_Client_Height_Map()
+{
+    return nullptr;
+}
+
+void TerrainVisual::Init() {}
+
+void TerrainVisual::Reset()
+{
+    m_filenameString.Clear();
+}
+
+void TerrainVisual::Update() {}

@@ -22,6 +22,7 @@
 #include "w3dmouse.h"
 #include "w3dsnow.h"
 #include "w3dstatuscircle.h"
+#include "w3dterrainvisual.h"
 #ifdef BUILD_WITH_FFMPEG
 #include "ffmpegvideoplayer.h"
 #endif
@@ -46,6 +47,11 @@ Display *W3DGameClient::Create_GameDisplay()
 FontLibrary *W3DGameClient::Create_FontLibrary()
 {
     return new W3DFontLibrary;
+}
+
+TerrainVisual *W3DGameClient::Create_TerrainVisual()
+{
+    return new W3DTerrainVisual;
 }
 
 void W3DGameClient::Set_Team_Color(int red, int green, int blue)

@@ -120,11 +120,14 @@ public:
     void Update();
     void Update_Map_Overrides();
     void Update_Render_Target_Textures(CameraClass *cam);
-
-protected:
+    void Toggle_Cloud_Layer(bool toggle) { m_useCloudLayer = toggle; }
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
+    bool World_To_Grid_Space(float wx, float wy, float &gx, float &gy);
+    void Get_Grid_Vertex_Height(int x, int y, float *height);
+
+protected:
     void Draw_River_Water(PolygonTrigger *ptrig);
     void Draw_Sea(RenderInfoClass &rinfo);
     void Draw_Trapezoid_Water(Vector3 *const points);
@@ -141,7 +144,6 @@ protected:
     void Render_Water_Mesh();
     void Setup_Flat_Water_Shader();
     void Setup_Jba_Water_Shader();
-    bool World_To_Grid_Space(float wx, float wy, float &gx, float &gy);
 
     DX8IndexBufferClass *m_indexBuffer;
     SceneClass *m_parentScene;

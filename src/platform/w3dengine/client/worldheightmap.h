@@ -176,10 +176,19 @@ public:
     {
         int i = x + m_width * y;
 
-        if (i >= 0 && i < m_dataSize && m_data) {
+        if (i >= 0 && i < m_dataSize && m_data != nullptr) {
             return m_data[i];
         } else {
             return 0;
+        }
+    }
+
+    void Set_Height(int x, int y, unsigned char height) const
+    {
+        int i = x + m_width * y;
+
+        if (i >= 0 && i < m_dataSize && m_data != nullptr) {
+            m_data[i] = height;
         }
     }
 

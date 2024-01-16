@@ -132,6 +132,11 @@ StaticNameKey g_waypointPathLabel2("waypointPathLabel2");
 StaticNameKey g_waypointPathLabel3("waypointPathLabel3");
 StaticNameKey g_waypointPathBiDirectional("waypointPathBiDirectional");
 StaticNameKey g_mapName("mapName");
+StaticNameKey g_lightAmbientColor("lightAmbientColor");
+StaticNameKey g_lightDiffuseColor("lightDiffuseColor");
+StaticNameKey g_lightOuterRadius("lightOuterRadius");
+StaticNameKey g_lightInnerRadius("lightInnerRadius");
+StaticNameKey g_objectRadius("objectRadius");
 
 NameKeyType StaticNameKey::Key()
 {

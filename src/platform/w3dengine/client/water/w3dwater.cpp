@@ -1757,6 +1757,11 @@ bool WaterRenderObjClass::World_To_Grid_Space(float wx, float wy, float &gx, flo
     return true;
 }
 
+void WaterRenderObjClass::Get_Grid_Vertex_Height(int x, int y, float *height)
+{
+    *height = m_meshData[y + 1 + (m_gridCellsX + 3) * (x + 1)].height + Get_Transform().Get_Z_Translation();
+}
+
 bool s_wireframedebug = false;
 
 void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)

@@ -14,6 +14,7 @@
  */
 #include "water.h"
 #include "gametype.h"
+#include "terrainvisual.h"
 #include <captainslog.h>
 #include <cstddef>
 
@@ -124,8 +125,7 @@ void WaterTransparencySetting::Parse_Water_Transparency_Definition(INI *ini)
             newtex[3] = &newsetting->m_skyboxTextureW;
             oldtex[4] = &oldsetting->m_skyboxTextureT;
             newtex[4] = &newsetting->m_skyboxTextureT;
-            // TODO requires TerrainVisual virtual table layout implementing.
-            // g_theTerrainVisual->Replace_Skybox_Textures(oldtex, newtex);
+            g_theTerrainVisual->Replace_Skybox_Textures(oldtex, newtex);
         }
     }
 }

@@ -175,3 +175,8 @@ extern StaticNameKey g_waypointPathLabel2;
 extern StaticNameKey g_waypointPathLabel3;
 extern StaticNameKey g_waypointPathBiDirectional;
 extern StaticNameKey g_mapName;
+extern StaticNameKey g_lightAmbientColor;
+extern StaticNameKey g_lightDiffuseColor;
+extern StaticNameKey g_lightOuterRadius;
+extern StaticNameKey g_lightInnerRadius;
+extern StaticNameKey g_objectRadius;

@@ -275,15 +275,7 @@ bool W3DShaderManager::Filter_Setup(FilterTypes filter, FilterModes mode)
 void W3DShaderManager::Draw_Viewport(unsigned int color)
 {
 #ifdef BUILD_WITH_D3D8
-    struct _TRANS_LIT_TEX_VERTEX
-    {
-        D3DXVECTOR4 p;
-        unsigned long color;
-        float u;
-        float v;
-    };
-
-    _TRANS_LIT_TEX_VERTEX vertex[4];
+    VertexFormatXYZWDUV1 vertex[4];
 
     int32_t x;
     int32_t y;
@@ -293,25 +285,41 @@ void W3DShaderManager::Draw_Viewport(unsigned int color)
     int32_t w2 = g_theDisplay->Get_Width();
     int32_t h2 = g_theDisplay->Get_Height();
 
-    vertex[0].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+    vertex[0].x = (float)(w + x) - 0.5f;
+    vertex[0].y = (float)(h + y) - 0.5f;
+    vertex[0].z = 0.0f;
+    vertex[0].w = 1.0f;
     vertex[0].u = (float)(w + x) / (float)w2;
     vertex[0].v = (float)(h + y) / (float)h2;
-    vertex[1].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[1].x = (float)(w + x) - 0.5f;
+    vertex[1].y = (float)y - 0.5f;
+    vertex[1].z = 0.0f;
+    vertex[1].w = 1.0f;
     vertex[1].u = (float)(w + x) / (float)w2;
     vertex[1].v = (float)y / (float)h2;
-    vertex[2].p = D3DXVECTOR4((float)x - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+
+    vertex[2].x = (float)x - 0.5f;
+    vertex[2].y = (float)(h + y) - 0.5f;
+    vertex[2].z = 0.0f;
+    vertex[2].w = 1.0f;
     vertex[2].u = (float)x / (float)w2;
     vertex[2].v = (float)(h + y) / (float)h2;
-    vertex[3].p = D3DXVECTOR4((float)x - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[3].x = (float)x - 0.5f;
+    vertex[3].y = (float)y - 0.5f;
+    vertex[3].z = 0.0f;
+    vertex[3].w = 1.0f;
     vertex[3].u = (float)x / (float)w2;
     vertex[3].v = (float)y / (float)h2;
+
     vertex[0].color = color;
     vertex[1].color = color;
     vertex[2].color = color;
     vertex[3].color = color;
 
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(VertexFormatXYZWDUV1::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZWDUV1));
 #endif
 }
 

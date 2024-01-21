@@ -71,16 +71,6 @@ bool ScreenCrossFadeFilter::Pre_Render(bool &skip, CustomScenePassModes &mode)
 bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 {
 #ifdef BUILD_WITH_D3D8
-    struct _TRANS_LIT_TEX_VERTEX
-    {
-        D3DXVECTOR4 p;
-        unsigned long color;
-        float u1;
-        float v1;
-        float u2;
-        float v2;
-    };
-
     if (s_skipRender) {
         s_skipRender = false;
         b = true;
@@ -99,7 +89,7 @@ bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &
         return false;
     }
 
-    _TRANS_LIT_TEX_VERTEX vertex[4];
+    VertexFormatXYZWDUV2 vertex[4];
     float f1 = 0.0f;
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
 
@@ -121,32 +111,49 @@ bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &
     int32_t h = g_theTacticalView->Get_Height();
     int32_t w2 = g_theDisplay->Get_Width();
     int32_t h2 = g_theDisplay->Get_Height();
-    vertex[0].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+
+    vertex[0].x = (float)(w + x) - 0.5f;
+    vertex[0].y = (float)(h + y) - 0.5f;
+    vertex[0].z = 0.0f;
+    vertex[0].w = 1.0f;
     vertex[0].u1 = (float)(w + x) / (float)w2;
     vertex[0].v1 = (float)(h + y) / (float)h2;
     vertex[0].u2 = f1 + 0.5f;
     vertex[0].v2 = f1 + 0.5f;
-    vertex[1].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[1].x = (float)(w + x) - 0.5f;
+    vertex[1].y = (float)y - 0.5f;
+    vertex[1].z = 0.0f;
+    vertex[1].w = 1.0f;
     vertex[1].u1 = (float)(w + x) / (float)w2;
     vertex[1].v1 = (float)y / (float)h2;
     vertex[1].u2 = f1 + 0.5f;
     vertex[1].v2 = 0.5f - f1;
-    vertex[2].p = D3DXVECTOR4((float)x - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+
+    vertex[2].x = (float)x - 0.5f;
+    vertex[2].y = (float)(h + y) - 0.5f;
+    vertex[2].z = 0.0f;
+    vertex[2].w = 1.0f;
     vertex[2].u1 = (float)x / (float)w2;
     vertex[2].v1 = (float)(h + y) / (float)h2;
     vertex[2].u2 = 0.5f - f1;
     vertex[2].v2 = f1 + 0.5f;
-    vertex[3].p = D3DXVECTOR4((float)x - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[3].x = (float)x - 0.5f;
+    vertex[3].y = (float)y - 0.5f;
+    vertex[3].z = 0.0f;
+    vertex[3].w = 1.0f;
     vertex[3].u1 = (float)x / (float)w2;
     vertex[3].v1 = (float)y / (float)h2;
     vertex[3].u2 = 0.5f - f1;
     vertex[3].v2 = 0.5f - f1;
+
     vertex[0].color = 0xFFFFFFFF;
     vertex[1].color = 0xFFFFFFFF;
     vertex[2].color = 0xFFFFFFFF;
     vertex[3].color = 0xFFFFFFFF;
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(D3DFVF_TEX2 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(VertexFormatXYZWDUV2::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZWDUV2));
     Reset();
     return true;
 #else

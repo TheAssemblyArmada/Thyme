@@ -117,12 +117,15 @@ void ParticleSystemManager::Update()
     if (m_frame != g_theGameLogic->Get_Frame()) {
         m_frame = g_theGameLogic->Get_Frame();
 
-        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); it++) {
+        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end();) {
             ParticleSystem *system = *it;
 
             if (system != nullptr) {
                 if (!system->Update(m_playerIndex)) {
+                    it++;
                     system->Delete_Instance();
+                } else {
+                    it++;
                 }
             }
         }

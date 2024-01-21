@@ -22,6 +22,6 @@ PickType Get_Pick_Types_For_Context(bool force_to_attack)
 #ifdef GAME_DLL
     return Call_Function<PickType, bool>(PICK_ADDRESS(0x00723550, 0x0086D346), force_to_attack);
 #else
-    return PICKTYPE_UNK;
+    return PICK_TYPE_UNK1;
 #endif
 }

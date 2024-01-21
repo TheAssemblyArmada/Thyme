@@ -27,6 +27,9 @@
 #include "w3dbuffermanager.h"
 #include "w3dshadow.h"
 #include <new>
+#ifdef BUILD_WITH_D3D8
+#include "dx8wrapper.h"
+#endif
 
 class RenderObjClass;
 class W3DShadowGeometry;

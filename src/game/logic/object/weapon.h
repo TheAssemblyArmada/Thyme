@@ -266,6 +266,7 @@ public:
     const Utf8String &Get_Laser_Bone_Name() const { return m_laserBoneName; }
     float Get_Request_Assist_Range() const { return m_requestAssistRange; }
     float Get_Scatter_Target_Scalar() const { return m_scatterTargetScalar; }
+    float Get_Scatter_Radius() const { return m_scatterRadius; }
     AttackType Get_Pre_Attack_Type() const { return m_preAttackType; }
     float Get_Continue_Attack_Range() const { return m_continueAttackRange; }
     float Get_Aim_Delta() const { return m_aimDelta; }
@@ -492,6 +493,7 @@ public:
     unsigned int Get_Suspend_FX_Delay() const { return m_suspendFXDelay; }
     unsigned int Get_Next_Shot() const { return m_whenWeCanFireAgain; }
     float Get_Scatter_Target_Scalar() const { return m_template->Get_Scatter_Target_Scalar(); }
+    float Get_Scatter_Radius() const { return m_template->Get_Scatter_Radius(); }
     unsigned int Get_Last_Reload_Started() const { return m_whenLastReloadStarted; }
     int Get_Clip_Size() const { return m_template->Get_Clip_Size(); }
     int Get_Last_Fire_Frame() const { return m_lastFireFrame; }

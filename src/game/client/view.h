@@ -39,6 +39,8 @@ public:
         m_valid = true;
     }
 
+    const Coord3D *Get_Pos() const { return &m_pos; }
+
 private:
     bool m_valid;
     Coord3D m_pos;
@@ -78,11 +80,15 @@ enum FilterTypes
     FT_MAX,
 };
 
-// dunno
 enum PickType
 {
-    PICKTYPE_UNK2 = -1,
-    PICKTYPE_UNK,
+    PICK_TYPE_UNK = -1,
+    PICK_TYPE_UNK1 = 1,
+    PICK_TYPE_UNK2 = 2,
+    PICK_TYPE_SELECTABLE = 4,
+    PICK_TYPE_SHRUBBERY = 8,
+    PICK_TYPE_MINES = 16,
+    PICK_TYPE_FORCEATTACKABLE = 32,
 };
 
 // wip

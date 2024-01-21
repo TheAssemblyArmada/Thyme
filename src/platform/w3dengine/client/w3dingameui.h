@@ -21,11 +21,13 @@ class HAnimClass;
 class W3DInGameUI : public InGameUI
 {
 public:
-    virtual ~W3DInGameUI();
-    virtual void Reset();
-    virtual void Update();
-    virtual void Draw();
-    virtual View *Create_View();
+    W3DInGameUI();
+    virtual ~W3DInGameUI() override;
+    virtual void Init() override;
+    virtual void Reset() override;
+    virtual void Update() override;
+    virtual void Draw() override;
+    virtual View *Create_View() override;
     virtual void Draw_Selection_Region();
     virtual void Draw_Move_Hints(View *view);
     virtual void Draw_Attack_Hints(View *view);

@@ -2160,8 +2160,9 @@ void Player::Remove_Battle_Plan_Bonuses_For_Object(Object *obj)
 
 bool Player::Ok_To_Play_Radar_Edge_Sound()
 {
-    return !g_theVictoryConditions->Has_Single_Player_Been_Defeated(this) && !m_playerIsDead && !g_theInGameUI->Get_Unk7()
-        && g_theGameLogic->Get_In_Game_Logic_Update() && g_theGameLogic->Get_Frame() != 0;
+    return !g_theVictoryConditions->Has_Single_Player_Been_Defeated(this) && !m_playerIsDead
+        && !g_theInGameUI->Is_No_Radar_Edge_Sound() && g_theGameLogic->Get_In_Game_Logic_Update()
+        && g_theGameLogic->Get_Frame() != 0;
 }
 
 void Player::Add_Radar(bool disable_proof)

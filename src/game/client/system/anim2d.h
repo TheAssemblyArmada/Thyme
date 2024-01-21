@@ -98,6 +98,7 @@ public:
     unsigned char Get_Status() const { return m_status; }
     void Set_Status(unsigned char status) { m_status |= status; }
     void Set_First_Frame(unsigned short frame) { m_firstFrame = frame; }
+    void Set_Alpha(float alpha) { m_alpha = alpha; }
     const Anim2DTemplate *Get_Template() const { return m_template; }
 
 #ifdef GAME_DLL

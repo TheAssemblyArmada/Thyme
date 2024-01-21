@@ -993,7 +993,7 @@ GlobalData::GlobalData()
     m_playIntro = true;
     m_playSizzle = true;
     m_afterIntro = false;
-    m_unkBool16 = false;
+    m_allowSkipMovie = false;
     m_unkBool17 = false;
     m_musicVolumeFactor = 0.5f;
     m_SFXVolumeFactor = 0.5f;

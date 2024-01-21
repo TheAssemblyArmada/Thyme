@@ -200,3 +200,12 @@ int AI::Get_Next_Formation_ID()
 {
     return ++m_formationID;
 }
+
+float AI::Get_Adjusted_Vision_Range_For_Object(Object *obj, int factors_to_consider)
+{
+#ifdef GAME_DLL
+    return Call_Function<float, Object *, int>(PICK_ADDRESS(0x004AB690, 0x0086AB43), obj, factors_to_consider);
+#else
+    return 0.0f;
+#endif
+}

@@ -768,9 +768,13 @@ public:
     void Set_Attack_Priority_Info(const AttackPriorityInfo *info) { m_attackInfo = info; }
     void Set_Is_Recruitable(bool is) { m_isRecruitable = is; }
     void Set_Unk3(int i) { m_unk3 = i; }
+#ifdef GAME_DEBUG_STRUCTS
+    Utf8String Get_Current_State_Name() { return m_stateMachine->Get_Current_State_Name(); }
+#endif
 
     bool Are_Turrets_Linked() const { return Get_AI_Update_Module_Data()->m_turretsLinked; }
     int Get_Current_Goal_Path_Index() const { return m_currentGoalPathIndex; }
+    const AttackPriorityInfo *Get_Attack_Priority_Info() const { return m_attackInfo; }
 
 private:
     unsigned int m_unkWaypoint1;

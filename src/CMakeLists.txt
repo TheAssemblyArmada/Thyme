@@ -41,6 +41,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/object/helper
     game/logic/object/update
     game/logic/object/update/aiupdate
+    game/logic/object/update/dockupdate
     game/logic/object/upgrade
     game/logic/scriptengine
     game/logic/system
@@ -153,10 +154,12 @@ set(GAMEENGINE_SRC
     game/client/maputil.cpp
     game/client/messagestream/commandxlat.cpp
     game/client/messagestream/hotkey.cpp
+    game/client/messagestream/lookatxlat.cpp
     game/client/messagestream/metaevent.cpp
     game/client/messagestream/selectionxlat.cpp
     game/client/optionpreferences.cpp
     game/client/parabolicease.cpp
+    game/client/radiusdecal.cpp
     game/client/selectioninfo.cpp
     game/client/shader/bwfilter.cpp
     game/client/shader/cloudshader.cpp
@@ -296,6 +299,7 @@ set(GAMEENGINE_SRC
     game/force_nocd.cpp
     game/logic/ai/ai.cpp
     game/logic/ai/aigroup.cpp
+    game/logic/ai/aiguard.cpp
     game/logic/ai/aipathfind.cpp
     game/logic/ai/aiplayer.cpp
     game/logic/ai/aistates.cpp
@@ -341,7 +345,10 @@ set(GAMEENGINE_SRC
     game/logic/object/update/assistedtargetingupdate.cpp
     game/logic/object/update/autodepositupdate.cpp
     game/logic/object/update/battleplanupdate.cpp
+    game/logic/object/update/dockupdate/dockupdate.cpp
+    game/logic/object/update/dockupdate/supplywarehousedockupdate.cpp
     game/logic/object/update/laserupdate.cpp
+    game/logic/object/update/mobmemberslavedupdate.cpp
     game/logic/object/update/oclupdate.cpp
     game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp

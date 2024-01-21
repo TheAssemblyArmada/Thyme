@@ -16,3 +16,4 @@
 #include "always.h"
 
 bool Is_In_Game_Chat_Active();
+void Reset_In_Game_Chat();

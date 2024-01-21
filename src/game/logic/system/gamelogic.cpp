@@ -102,7 +102,7 @@ GameLogic::GameLogic() :
 #ifdef GAME_DEBUG_STRUCTS
     m_failedPathFinds(0),
 #endif
-    m_unkFrame(0)
+    m_frameTriggerAreasChanged(0)
 {
     memset(m_progressComplete, 0, sizeof(m_progressComplete));
     memset(m_progressCompleteTimeout, 0, sizeof(m_progressCompleteTimeout));
@@ -921,7 +921,7 @@ void GameLogic::Reset()
     Set_FP_Mode();
     Destroy_All_Objects_Immediate();
     m_nextObjID = static_cast<ObjectID>(1);
-    m_unkFrame = 0;
+    m_frameTriggerAreasChanged = 0;
     g_theGhostObjectManager->Reset();
     g_thePartitionManager->Reset();
     g_theTerrainLogic->Reset();
@@ -2076,7 +2076,7 @@ void GameLogic::Start_New_Game(bool restart)
 
     Update_Load_Progress(16);
     g_theRadar->New_Map(g_theTerrainLogic);
-    g_theInGameUI->Set_Unk6(false);
+    g_theInGameUI->Set_No_Radar_Edge_Sound(false);
     g_theVictoryConditions->Cache_Player_Ptrs();
     g_theVictoryConditions->Set_Victory_Conditions(1);
     Update_Load_Progress(17);

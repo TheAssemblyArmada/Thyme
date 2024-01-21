@@ -1834,7 +1834,7 @@ void W3DDisplay::Gather_Debug_Stats()
 
         const Object *object = nullptr;
 #ifdef GAME_DEBUG_STRUCTS
-        Drawable *drawable = g_theTacticalView->Pick_Drawable(&s_leftClickReleased, false, PICKTYPE_UNK2);
+        Drawable *drawable = g_theTacticalView->Pick_Drawable(&s_leftClickReleased, false, PICK_TYPE_UNK);
 #else
         DrawableID id = g_theInGameUI->Get_Moused_Over_Drawable_ID();
         Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(id);

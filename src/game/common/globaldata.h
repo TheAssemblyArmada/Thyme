@@ -299,7 +299,7 @@ public:
     bool m_playIntro;
     bool m_playSizzle;
     bool m_afterIntro;
-    bool m_unkBool16;
+    bool m_allowSkipMovie;
     bool m_unkBool17;
     // char pad[2]
     float m_keyboardScrollFactor;

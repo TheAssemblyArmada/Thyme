@@ -853,3 +853,7 @@ IDirect3DVertexBuffer8 *&g_shadowVertexBufferD3D =
     Make_Global<IDirect3DVertexBuffer8 *>(PICK_ADDRESS(0x00A3B0F4, 0x00E1AE94));
 IDirect3DIndexBuffer8 *&g_shadowIndexBufferD3D = Make_Global<IDirect3DIndexBuffer8 *>(PICK_ADDRESS(0x00A3B0F8, 0x00E1AE98));
 #endif
+
+// lookatxlat.cpp
+class LookAtTranslator;
+LookAtTranslator *&g_theLookAtTranslator = Make_Global<LookAtTranslator *>(PICK_ADDRESS(0x00A2F450, 0x04CAB628));

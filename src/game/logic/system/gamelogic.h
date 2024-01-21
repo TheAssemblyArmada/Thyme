@@ -71,7 +71,7 @@ public:
     int Get_Rank_Level_Limit() { return m_rankLevelLimit; }
     int Get_Hulk_Lifetime_Override() { return m_hulkLifetimeOverride; }
     int Get_Rank_Points_To_Add_At_Game_Start() { return m_rankPointsToAddAtGameStart; }
-    int Get_Unk_Frame() { return m_unkFrame; }
+    int Get_Unk_Frame() { return m_frameTriggerAreasChanged; }
 
     bool Get_Occlusion_Enabled() const { return m_occlusionEnabled; }
     bool Get_In_Game_Logic_Update() const { return m_inGameLogicUpdate; }
@@ -116,7 +116,7 @@ public:
         return m_objectLookupTable[id];
     }
 
-    void Save_Frame() { m_unkFrame = m_frame; }
+    void Save_Frame() { m_frameTriggerAreasChanged = m_frame; }
 #ifdef GAME_DEBUG_STRUCTS
     void Add_Failed_Pathfind() { m_failedPathFinds++; }
 #endif
@@ -254,7 +254,7 @@ private:
 #ifdef GAME_DEBUG_STRUCTS
     int m_failedPathFinds;
 #endif
-    int m_unkFrame;
+    int m_frameTriggerAreasChanged;
     std::list<ObjectTOCEntry> m_objectTOCEntries;
 };
 

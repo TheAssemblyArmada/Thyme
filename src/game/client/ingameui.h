@@ -31,13 +31,7 @@ class Drawable;
 class VideoBuffer;
 class VideoStream;
 class GameWindow;
-class PopupMessageData;
 class WindowLayout;
-class SuperweaponInfo;
-class NamedTimerInfo;
-class FloatingTextData;
-class WorldAnimationData;
-class MilitarySubtitleData;
 class Shadow;
 class GameMessage;
 
@@ -86,6 +80,11 @@ enum RadiusCursorType
     RADIUS_CURSOR_AMBULANCE,
 };
 
+enum
+{
+    MAX_BUILD_PROGRESS = 64,
+};
+
 struct BuildProgress
 {
     ThingTemplate *m_thingTemplate;
@@ -98,21 +97,199 @@ enum WorldAnimationOptions
     WORLD_ANIMATION_UNK = 1,
 };
 
+class SuperweaponInfo : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(SuperweaponInfo);
+
+public:
+    SuperweaponInfo(ObjectID object_id,
+        unsigned int unk1,
+        bool hidden,
+        bool unk2,
+        bool unk3,
+        bool unk4,
+        const Utf8String *font_name,
+        int font_size,
+        bool font_bold,
+        int color,
+        const SpecialPowerTemplate *power_template);
+    ~SuperweaponInfo();
+    void Set_Font(const Utf8String *name, int size, bool bold);
+    void Set_Text(Utf16String *name, Utf16String *time);
+    void Draw_Name(int x, int y, int color, int border_color);
+    void Draw_Time(int x, int y, int color, int border_color);
+    float Get_Height() const;
+
+    SpecialPowerTemplate *Get_Special_Power_Template() const { return m_powerTemplate; }
+
+private:
+    DisplayString *m_name;
+    DisplayString *m_time;
+    int m_color;
+    SpecialPowerTemplate *m_powerTemplate;
+    Utf8String m_unk1;
+    ObjectID m_objectID;
+    unsigned int m_unk2;
+    bool m_hidden;
+    bool m_unk3;
+    bool m_unk4;
+    bool m_unk5;
+    bool m_unk6;
+    friend class InGameUI;
+};
+
+class FloatingTextData : public MemoryPoolObject
+{
+public:
+    FloatingTextData();
+    ~FloatingTextData();
+
+private:
+    int m_color;
+    Utf16String m_text;
+    DisplayString *m_dString;
+    Coord3D m_pos3D;
+    int m_frameTimeOut;
+    int m_frameCount;
+    friend class InGameUI;
+};
+
+class WorldAnimationData
+{
+public:
+    WorldAnimationData();
+
+private:
+    Anim2D *m_anim;
+    Coord3D m_pos;
+    int m_frame;
+    WorldAnimationOptions m_options;
+    float m_zRise;
+    friend class InGameUI;
+};
+
+class PopupMessageData : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(PopupMessageData);
+
+private:
+    Utf16String m_message;
+    int m_xPos;
+    int m_yPos;
+    int m_width;
+    int m_color;
+    bool m_pause;
+    bool m_pauseMusic;
+    WindowLayout *m_windowLayout;
+    friend class InGameUI;
+};
+
+class NamedTimerInfo : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(NamedTimerInfo);
+
+private:
+    Utf8String m_timerName;
+    Utf16String m_timerText;
+    DisplayString *m_displayString;
+    unsigned int m_timestamp;
+    int m_color;
+    bool m_countdown;
+    friend class InGameUI;
+};
+
 class InGameUI : public SubsystemInterface, public SnapShot
 {
 public:
+    struct MilitarySubtitleData
+    {
+        Utf16String subtitle;
+        unsigned int index;
+        ICoord2D position;
+        DisplayString *display_strings[4];
+        unsigned int current_display_string;
+        unsigned int lifetime;
+        bool block_drawn;
+        unsigned int block_begin_frame;
+        ICoord2D block_pos;
+        unsigned int increment_on_frame;
+        int color;
+    };
+
+    enum MouseMode
+    {
+        MOUSEMODE_DEFAULT,
+        MOUSEMODE_BUILD_PLACE,
+        MOUSEMODE_GUI_COMMAND,
+        MOUSEMODE_MAX,
+    };
+
+    enum HintType
+    {
+        MOVE_HINT,
+        ATTACK_HINT,
+        NUM_HINT_TYPES,
+    };
+
+    enum SelectionRules
+    {
+        SELECTION_ANY,
+        SELECTION_ALL,
+    };
+
+    enum ActionType
+    {
+        ACTIONTYPE_NONE,
+        ACTIONTYPE_ATTACK_OBJECT,
+        ACTIONTYPE_GET_REPAIRED_AT,
+        ACTIONTYPE_DOCK_AT,
+        ACTIONTYPE_GET_HEALED_AT,
+        ACTIONTYPE_REPAIR_OBJECT,
+        ACTIONTYPE_RESUME_CONSTRUCTION,
+        ACTIONTYPE_ENTER_OBJECT,
+        ACTIONTYPE_HIJACK_VEHICLE,
+        ACTIONTYPE_CONVERT_OBJECT_TO_CARBOMB,
+        ACTIONTYPE_CAPTURE_BUILDING_VIA_HACKING,
+        ACTIONTYPE_DISABLE_VEHICLE_VIA_HACKING,
+        ACTIONTYPE_STEAL_CASH_VIA_HACKING,
+        ACTIONTYPE_DISABLE_BUILDING_VIA_HACKING,
+        ACTIONTYPE_MAKE_OBJECT_DEFECTOR,
+        ACTIONTYPE_SET_RALLY_POINT,
+        ACTIONTYPE_COMBAT_DROP,
+        ACTIONTYPE_SABOTAGE_BUILDING,
+        NUM_ACTIONTYPES,
+    };
+
+    enum
+    {
+        MAX_MOVE_HINTS = 256,
+    };
+
+    enum
+    {
+        MAX_UI_MESSAGES = 6,
+    };
+
+    InGameUI();
     virtual ~InGameUI() override;
     virtual void Init() override;
     virtual void Reset() override;
     virtual void Update() override;
     virtual void Draw() override = 0;
-    virtual void Popup_Message(Utf8String const &message, int i1, int i2, int i3, bool b1, bool b2);
-    virtual void Popup_Message(Utf8String const &message, int i1, int i2, int i3, int i4, bool b1, bool b2);
+    virtual void Popup_Message(
+        Utf8String const &message, int width_percent, int height_percent, int width, bool pause, bool pause_music);
+    virtual void Popup_Message(Utf8String const &message,
+        int width_percent,
+        int height_percent,
+        int width,
+        int color,
+        bool pause,
+        bool pause_music);
     virtual void Message_Color(RGBColor const *color, wchar_t const *message);
     virtual void Message(Utf16String message, ...);
     virtual void Message(Utf8String message, ...);
-    virtual void Toggle_Messages();
-    virtual bool Is_Messages_On();
+    virtual void Toggle_Messages() { m_messagesOn = !m_messagesOn; }
+    virtual bool Is_Messages_On() { return m_messagesOn; }
     virtual void Military_Subtitle(Utf8String const &subtitle, int duration);
     virtual void Remove_Military_Subtitle();
     virtual void Display_Cant_Build_Message(LegalBuildCode code);
@@ -146,7 +323,7 @@ public:
     virtual ObjectID const Get_Pending_Place_Source_Object_ID();
 #ifndef GAME_DEBUG_STRUCTS
     virtual bool Get_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_One_Click();
-    virtual void Set_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_One_Click(bool b);
+    virtual void Set_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_One_Click(bool prevent);
 #endif
     virtual void Set_Placement_Start(ICoord2D const *start);
     virtual void Set_Placement_End(ICoord2D const *end);
@@ -156,21 +333,21 @@ public:
     virtual void Select_Drawable(Drawable *drawable);
     virtual void Deselect_Drawable(Drawable *drawable);
     virtual void Deselect_All_Drawables(bool post_msg);
-    virtual int Get_Select_Count();
-    virtual int Get_Max_Select_Count();
-    virtual unsigned int Get_Frame_Selection_Changed();
+    virtual int Get_Select_Count() { return m_selectCount; }
+    virtual int Get_Max_Select_Count() { return m_maxSelectCount; }
+    virtual unsigned int Get_Frame_Selection_Changed() { return m_frameSelectionChanged; }
     virtual std::list<Drawable *> const *Get_All_Selected_Drawables();
     virtual std::list<Drawable *> const *Get_All_Selected_Local_Drawables();
     virtual Drawable *Get_First_Selected_Drawable();
-    virtual DrawableID Get_Solo_Nexus_Selected_Drawable_ID();
+    virtual DrawableID Get_Solo_Nexus_Selected_Drawable_ID() { return m_soloNexusSelectedDrawableID; }
     virtual bool Is_Drawable_Selected(DrawableID id_to_check);
     virtual bool Is_Any_Selected_KindOf(KindOfType kindof);
     virtual bool Is_All_Selected_KindOf(KindOfType kindof);
     virtual void Set_Radius_Cursor(
         RadiusCursorType cursor, SpecialPowerTemplate const *power_template, WeaponSlotType weapon_slot);
-    virtual void Set_Radius_Cursor_None();
+    virtual void Set_Radius_Cursor_None() { Set_Radius_Cursor(RADIUS_CURSOR_NONE, nullptr, WEAPONSLOT_PRIMARY); }
     virtual void Set_Input_Enabled(bool enable);
-    virtual bool Get_Input_Enabled();
+    virtual bool Get_Input_Enabled() { return m_inputEnabled; }
     virtual void Disregard_Drawable(Drawable *draw);
     virtual void Pre_Draw();
     virtual void Post_Draw();
@@ -181,21 +358,23 @@ public:
     virtual void Stop_Cameo_Movie();
     virtual VideoBuffer *Cameo_Video_Buffer();
     virtual DrawableID Get_Moused_Over_Drawable_ID();
-    virtual void Set_Quit_Menu_Visible(bool visible);
-    virtual bool Is_Quit_Menu_Visible();
-    virtual FieldParse const *Get_Field_Parse();
+    virtual void Set_Quit_Menu_Visible(bool visible) { m_isQuitMenuVisible = visible; }
+    virtual bool Is_Quit_Menu_Visible() { return m_isQuitMenuVisible; }
+    virtual FieldParse const *Get_Field_Parse() { return s_fieldParseTable; }
     virtual int Select_Units_Matching_Current_Selection();
     virtual int Select_Matching_Across_Screen();
     virtual int Select_Matching_Across_Map();
-    virtual int Select_Matching_Across_Region(IRegion2D *);
-    virtual int Select_All_Units_By_Type(BitFlags<KINDOF_COUNT> flags1, BitFlags<KINDOF_COUNT> flags2);
-    virtual int Select_All_Units_By_Type_Across_Screen(BitFlags<KINDOF_COUNT> flags1, BitFlags<KINDOF_COUNT> flags2);
-    virtual int Select_All_Units_By_Type_Across_Map(BitFlags<KINDOF_COUNT> flags1, BitFlags<KINDOF_COUNT> flags2);
+    virtual int Select_Matching_Across_Region(IRegion2D *region);
+    virtual int Select_All_Units_By_Type(BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
+    virtual int Select_All_Units_By_Type_Across_Screen(
+        BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
+    virtual int Select_All_Units_By_Type_Across_Map(
+        BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
     virtual int Select_All_Units_By_Type_Across_Region(
-        IRegion2D *region, BitFlags<KINDOF_COUNT> flags1, BitFlags<KINDOF_COUNT> flags2);
+        IRegion2D *region, BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
     virtual void Build_Region(ICoord2D const *anchor, ICoord2D const *dest, IRegion2D *region);
-    virtual bool Get_Displayed_Max_Warning();
-    virtual void Set_Displayed_Max_Warning(bool selected);
+    virtual bool Get_Displayed_Max_Warning() { return m_displayedMaxWarning; }
+    virtual void Set_Displayed_Max_Warning(bool selected) { m_displayedMaxWarning = selected; }
     virtual void Add_Floating_Text(Utf16String const &text, Coord3D const *pos, int color);
     virtual void Add_Idle_Worker(Object *obj);
     virtual void Remove_Idle_Worker(Object *obj, int slot);
@@ -218,16 +397,92 @@ public:
     void Add_World_Animation(
         Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise);
     bool Are_Selected_Objects_Controllable();
+    void Set_Mouse_Cursor(MouseCursor cursor);
+    SuperweaponInfo *Find_SW_Info(
+        int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template);
+    void Add_Named_Timer(const Utf8String &timer_name, const Utf16String &text, bool countdown);
+    void Remove_Named_Timer(const Utf8String &timer_name);
+    void Show_Named_Timer_Display(bool show);
+    void Handle_Radius_Cursor();
+    void Trigger_Double_Click_Attack_Move_Guard_Hint();
+    void Evaluate_Solo_Nexus(Drawable *drawable);
+    void Handle_Build_Placements();
+    void Register_Window_Layout(WindowLayout *layout);
+    void Unregister_Window_Layout(WindowLayout *layout);
+    void Free_Message_Resources();
+    void Add_Message_Text(const Utf16String &formatted_message, const RGBColor *rgb_color);
+    void Remove_Message_At_Index(int index);
+    void Destroy_Placement_Icons();
+    void Expire_Hint(HintType type, unsigned int hint_index);
+    void Create_Control_Bar();
+    void Create_Replay_Control();
+    bool Are_Selected_Objects_Controllable() const;
+    void Reset_Camera();
+    bool Can_Selected_Objects_Non_Attack_Interact_With_Object(const Object *object_to_interact_with, SelectionRules rule);
+    CanAttackResult Get_Can_Selected_Objects_Attack(
+        ActionType action, const Object *object_to_interact_with, SelectionRules rule, bool force_to_attack) const;
+    bool Can_Selected_Objects_Do_Action(
+        ActionType action, const Object *object_to_interact_with, SelectionRules rule, bool additional_checking) const;
+    bool Can_Selected_Objects_Do_Special_Power(
+        CommandButton *command, const Object *object_to_interact_with, Coord3D *position, SelectionRules rule) const;
+    bool Can_Selected_Objects_Override_Special_Power_Destination(
+        const Coord3D *pos, SelectionRules rule, SpecialPowerType type) const;
+    bool Can_Selected_Objects_Effectively_Use_Weapon(
+        CommandButton *command, const Object *object_to_interact_with, Coord3D *position, SelectionRules rule) const;
+    void Update_Floating_Text();
+    void Draw_Floating_Text();
+    void Clear_Floating_Text();
+    void Clear_Popup_Message_Data();
+    void Clear_World_Animations();
+    void Update_And_Draw_World_Animations();
+
+    static void Parse_In_Game_UI_Definition(INI *ini);
 
     bool Get_Drawable_Caption_Bold() const { return m_drawableCaptionBold; }
     int Get_Drawable_Caption_Size() const { return m_drawableCaptionPointSize; }
     Utf8String Get_Drawable_Caption_Font() const { return m_drawableCaptionFont; }
     int Get_Drawable_Caption_Color() const { return m_drawableCaptionColor; }
-    bool Is_In_Waypoint_Mode() const { return m_waypointMode; }
-    bool Get_Unk7() const { return m_unk7; }
-    void Set_Unk6(bool b) { m_unk6 = b; }
+    bool Get_Draw_RMB_Scroll_Anchor() const { return m_drawRMBScrollAnchor; }
+    bool Get_Move_RMB_Scroll_Anchor() const { return m_moveRMBScrollAnchor; }
+    const PopupMessageData *Get_Popup_Message_Data() const { return m_popupMessageData; }
+
+    int Get_Message_Color(bool secondary) const
+    {
+        if (secondary) {
+            return m_messageColor2;
+        } else {
+            return m_messageColor1;
+        }
+    }
+
+    void Set_No_Radar_Edge_Sound(bool b) { m_noRadarEdgeSound = b; }
+    void Set_Prefer_Selection(bool b) { m_preferSelection = b; }
+    void Set_Waypoint_Mode(bool b) { m_waypointMode = b; }
+    void Set_Force_To_Move_Mode(bool b) { m_forceToMoveMode = b; }
+    void Set_Force_To_Attack_Mode(bool b) { m_forceToAttackMode = b; }
+    void Toggle_Attack_Move_To_Mode() { m_attackMoveToMode = !m_attackMoveToMode; }
     void Clear_Attack_Move_To_Mode() { m_attackMoveToMode = false; }
-    bool Is_In_Force_To_Attack_Mode() { return m_forceToAttackMode; }
+    void Set_Camera_Rotating_Left(bool b) { m_cameraRotateLeft = b; }
+    void Set_Camera_Rotating_Right(bool b) { m_cameraRotateRight = b; }
+    void Set_Camera_Zooming_In(bool b) { m_cameraZoomIn = b; }
+    void Set_Camera_Zooming_Out(bool b) { m_cameraZoomOut = b; }
+    void Set_Camera_Drawing_Trackable(bool b) { m_cameraDrawingTrackable = b; }
+    void Increment_Select_Count() { m_selectCount++; }
+    void Decrement_Select_Count() { m_selectCount--; }
+    void Set_Draw_RMB_Scroll_Anchor(bool set) { m_drawRMBScrollAnchor = set; }
+    void Set_Move_RMB_Scroll_Anchor(bool set) { m_moveRMBScrollAnchor = set; }
+
+    bool Is_No_Radar_Edge_Sound() const { return m_noRadarEdgeSound; }
+    bool Is_Prefer_Selection() const { return m_preferSelection; }
+    bool Is_In_Waypoint_Mode() const { return m_waypointMode; }
+    bool Is_In_Force_To_Attack_Mode() const { return m_forceToAttackMode; }
+    bool Is_In_Force_To_Move_Mode() const { return m_forceToMoveMode; }
+    bool Is_In_Attack_Move_To_Mode() const { return m_attackMoveToMode; }
+    bool Is_Camera_Rotating_Left() const { return m_cameraRotateLeft; }
+    bool Is_Camera_Rotating_Right() const { return m_cameraRotateRight; }
+    bool Is_Camera_Zooming_In() const { return m_cameraZoomIn; }
+    bool Is_Camera_Zooming_Out() const { return m_cameraZoomOut; }
+    bool Is_Camera_Tracking_Drawable() const { return m_cameraDrawingTrackable; }
 
 protected:
     struct MoveHintStruct
@@ -254,10 +509,10 @@ protected:
     bool m_isDragSelecting;
     IRegion2D m_dragSelectRegion;
     bool m_displayedMaxWarning;
-    MoveHintStruct m_moveHint[256];
+    MoveHintStruct m_moveHint[MAX_MOVE_HINTS];
     int m_nextMoveHint;
     CommandButton *m_pendingGUICommand;
-    BuildProgress m_buildProgress[64];
+    BuildProgress m_buildProgress[MAX_BUILD_PROGRESS];
     CommandButton *m_pendingPlaceType;
     ObjectID m_pendingPlaceSourceObjectID;
 #ifndef GAME_DEBUG_STRUCTS
@@ -276,8 +531,8 @@ protected:
     VideoStream *m_videoStream;
     VideoBuffer *m_cameoVideoBuffer;
     VideoStream *m_cameoVideoStream;
-    UIMessage m_uiMessages[6];
-    std::map<Utf8String, std::list<SuperweaponInfo *>> m_superweapons[16];
+    UIMessage m_uiMessages[MAX_UI_MESSAGES];
+    std::map<Utf8String, std::list<SuperweaponInfo *>> m_superweapons[MAX_PLAYER_COUNT];
     Coord2D m_superweaponPosition;
     float m_superweaponFlashDuration;
     Utf8String m_superweaponNormalFont;
@@ -312,7 +567,7 @@ protected:
     MilitarySubtitleData *m_militarySubtitle;
     bool m_isScrolling;
     bool m_isSelecting;
-    int m_mouseMode;
+    MouseMode m_mouseMode;
     MouseCursor m_mouseCursor; // not 100% identified yet
     ObjectID m_mousedOverObjectID;
     Coord2D m_scrollAmt;
@@ -346,22 +601,24 @@ protected:
     int m_popupMessageColor;
     bool m_waypointMode;
     bool m_forceToAttackMode; // not 100% identified yet
-    bool m_unk3; // not 100% identified yet
+    bool m_forceToMoveMode; // not 100% identified yet
     bool m_attackMoveToMode; // not 100% identified yet
-    bool m_unk5; // not 100% identified yet
+    bool m_preferSelection; // not 100% identified yet
     bool m_cameraRotateLeft; // not 100% identified yet
     bool m_cameraRotateRight; // not 100% identified yet
     bool m_cameraZoomIn; // not 100% identified yet
-    bool m_unk6; // not 100% identified yet
+    bool m_cameraDrawingTrackable; // not 100% identified yet
     bool m_cameraZoomOut; // not 100% identified yet
     bool m_drawRMBScrollAnchor;
     bool m_moveRMBScrollAnchor;
-    bool m_unk7; // not 100% identified yet
+    bool m_noRadarEdgeSound; // not 100% identified yet
     std::list<WorldAnimationData *> m_worldAnimations;
-    std::list<Object *> m_idleWorkerLists[16];
+    std::list<Object *> m_idleWorkerLists[MAX_PLAYER_COUNT];
     GameWindow *m_idleWorkerWin;
     int m_idleWorkerCount; // not 100% identified yet
     DrawableID m_soloNexusSelectedDrawableID;
+
+    static const FieldParse s_fieldParseTable[];
 };
 
 void Hide_Replay_Controls();

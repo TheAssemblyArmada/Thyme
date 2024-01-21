@@ -100,7 +100,7 @@ public:
     CursorInfo();
 
 public:
-    Utf8String unk_string;
+    Utf8String cursor_name;
     Utf8String cursor_text;
     RGBAColorInt cursor_text_color;
     RGBAColorInt cursor_text_drop_color;

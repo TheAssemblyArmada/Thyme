@@ -14,5 +14,8 @@
  */
 #pragma once
 #include "always.h"
+#include "asciistring.h"
 
 void Toggle_Diplomacy(bool immediate);
+
+void Update_Diplomacy_Briefing_Text(Utf8String text, bool clear);

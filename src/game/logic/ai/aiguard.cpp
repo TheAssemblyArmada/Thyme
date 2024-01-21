@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief In Game Chat
+ * @brief AI guard
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,24 +12,10 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "ingamechat.h"
+#include "aiguard.h"
+#include "ai.h"
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
-bool Is_In_Game_Chat_Active()
+float AIGuardMachine::Get_Std_Guard_Range(Object *obj)
 {
-#ifdef GAME_DLL
-    return Call_Function<bool>(PICK_ADDRESS(0x005AE1A0, 0x008F7E4F));
-#else
-    return false;
-#endif
-}
-
-void Reset_In_Game_Chat()
-{
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x005ADFC0, 0x008F7C03));
-#endif
+    return AI::Get_Adjusted_Vision_Range_For_Object(obj, 7);
 }

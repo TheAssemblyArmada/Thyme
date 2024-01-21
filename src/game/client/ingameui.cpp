@@ -16,6 +16,9 @@
 #include "drawable.h"
 #include "object.h"
 
+static float LOGICFRAMES_PER_SECONDS_REAL = 30.0f;
+static float SECONDS_PER_LOGICFRAME_REAL = 1.0f / LOGICFRAMES_PER_SECONDS_REAL;
+
 #ifndef GAME_DLL
 InGameUI *g_theInGameUI;
 #endif

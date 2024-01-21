@@ -32,7 +32,7 @@ Win32Mouse *g_theWin32Mouse = nullptr;
 
 // 0x0073C0A0
 Win32Mouse::Win32Mouse() :
-    m_nextFreeIndex(0), m_nextGetIndex(0), m_currentWin32Cursor(0), m_cursorDirection(0), m_unknownbool(false)
+    m_nextFreeIndex(0), m_nextGetIndex(0), m_currentWin32Cursor(0), m_cursorDirection(0), m_lostFocus(false)
 {
     std::memset(m_eventBuffer, 0, sizeof(m_eventBuffer));
 #ifdef PLATFORM_WINDOWS
@@ -87,7 +87,7 @@ void Win32Mouse::Set_Cursor(MouseCursor cursor)
 {
     Set_Mouse_Text(cursor);
 
-    if (m_unknownbool == false) {
+    if (m_lostFocus == false) {
 #ifdef PLATFORM_WINDOWS
         HCURSOR hCursor = NULL;
         if (cursor != MouseCursor::CURSOR_NONE && m_visible != false) {

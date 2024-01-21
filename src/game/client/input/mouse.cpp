@@ -88,7 +88,7 @@ CursorInfo::CursorInfo() :
     fps(20.0f),
     directions(1)
 {
-    unk_string.Clear();
+    cursor_name.Clear();
     cursor_text.Clear();
     texture_name.Clear();
     image_name.Clear();

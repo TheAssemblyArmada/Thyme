@@ -73,3 +73,12 @@ bool Radar::Radar_To_World(const ICoord2D *radar, Coord3D *world)
     return false;
 #endif
 }
+
+bool Radar::Screen_Pixel_To_World(const ICoord2D *screen, Coord3D *world)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Radar, const ICoord2D *, Coord3D *>(PICK_ADDRESS(0x0049A300, 0x0090A47B), this, screen, world);
+#else
+    return false;
+#endif
+}

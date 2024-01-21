@@ -45,7 +45,7 @@ public:
     virtual uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) override;
 
     void Add_Win32_Event(uint32_t msg, uint32_t wParam, uint32_t lParam, uint32_t wheel_position);
-    void Set_Ignore_Events(bool state) { m_unknownbool = state; }
+    void Set_Lost_Focus(bool state) { m_lostFocus = state; }
 
 private:
     void Translate_Event(uint32_t message_num, MouseIO *io);
@@ -71,5 +71,5 @@ protected:
     uint32_t m_nextGetIndex;
     uint32_t m_currentWin32Cursor;
     uint32_t m_cursorDirection;
-    bool m_unknownbool;
+    bool m_lostFocus;
 };

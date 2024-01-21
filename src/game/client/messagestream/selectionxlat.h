@@ -18,6 +18,7 @@
 #include <map>
 
 class ThingTemplate;
+class Drawable;
 
 class SelectionTranslator : public GameMessageTranslator
 {
@@ -43,6 +44,8 @@ private:
     bool m_handOfGodMode;
 #endif
 };
+
+bool Can_Select_Drawable(const Drawable *drawable, bool drag_selecting);
 
 #ifdef GAME_DLL
 extern SelectionTranslator *&g_theSelectionTranslator;

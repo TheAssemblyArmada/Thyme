@@ -42,7 +42,12 @@ class SnowManager;
 
 enum Scorches
 {
-    SCORCHES_UNK,
+    SCORCH_1,
+    SCORCH_2,
+    SCORCH_3,
+    SCORCH_4,
+    SHADOW_SCORCH,
+    SCORCH_COUNT,
 };
 
 // Temp until class properly implemented.

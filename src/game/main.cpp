@@ -234,7 +234,7 @@ static LRESULT __stdcall Wnd_Proc(HWND window_handle, UINT message, WPARAM w_par
                 g_theKeyboard->Reset_Keys();
             }
             if (g_theWin32Mouse != nullptr) {
-                g_theWin32Mouse->Set_Ignore_Events(false);
+                g_theWin32Mouse->Set_Lost_Focus(false);
             }
             break;
 
@@ -243,7 +243,7 @@ static LRESULT __stdcall Wnd_Proc(HWND window_handle, UINT message, WPARAM w_par
                 g_theKeyboard->Reset_Keys();
             }
             if (g_theWin32Mouse != nullptr) {
-                g_theWin32Mouse->Set_Ignore_Events(true);
+                g_theWin32Mouse->Set_Lost_Focus(true);
             }
             break;
 
@@ -271,7 +271,7 @@ static LRESULT __stdcall Wnd_Proc(HWND window_handle, UINT message, WPARAM w_par
                     g_theKeyboard->Reset_Keys();
                 }
                 if (g_theWin32Mouse != nullptr) {
-                    g_theWin32Mouse->Set_Ignore_Events(false);
+                    g_theWin32Mouse->Set_Lost_Focus(false);
                 }
                 break;
             }

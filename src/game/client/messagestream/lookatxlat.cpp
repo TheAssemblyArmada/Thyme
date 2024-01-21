@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief In Game Chat
+ * @brief Look At Translator
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,24 +12,18 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "ingamechat.h"
+#include "lookatxlat.h"
+#include "gamelogic.h"
 
-#ifdef GAME_DLL
-#include "hooker.h"
+#ifndef GAME_DLL
+LookAtTranslator *g_theLookAtTranslator;
 #endif
 
-bool Is_In_Game_Chat_Active()
+bool LookAtTranslator::Has_Mouse_Moved_Recently()
 {
-#ifdef GAME_DLL
-    return Call_Function<bool>(PICK_ADDRESS(0x005AE1A0, 0x008F7E4F));
-#else
-    return false;
-#endif
-}
+    if (m_lastMouseMoveFrame > g_theGameLogic->Get_Frame()) {
+        m_lastMouseMoveFrame = 0;
+    }
 
-void Reset_In_Game_Chat()
-{
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x005ADFC0, 0x008F7C03));
-#endif
+    return m_lastMouseMoveFrame + 30 >= g_theGameLogic->Get_Frame();
 }

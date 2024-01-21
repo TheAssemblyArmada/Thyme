@@ -167,7 +167,7 @@ private:
     HDIGDRIVER m_milesDigitalDriver;
     H3DPOBJECT m_miles3DPositionObject;
     int m_milesDelayFilter;
-    std::list<HAUDIO> m_quickAudioList; // Possibly stream audio list?
+    std::list<HAUDIO> m_forcePlayedAudioList; // Possibly stream audio list?
     std::list<HSAMPLE> m_sampleHandleList;
     std::list<H3DSAMPLE> m_3dSampleHandleList;
     std::list<PlayingAudio *> m_globalAudioList;

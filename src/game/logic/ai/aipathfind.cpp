@@ -405,3 +405,10 @@ PathNode *PathNode::Get_Next_Optimized(Coord2D *pos, float *length)
 
     return m_nextOpti;
 }
+
+void Pathfinder::Set_Debug_Path(Path *new_debug_path)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder, Path *>(PICK_ADDRESS(0x0056B600, 0x0089C822), this, new_debug_path);
+#endif
+}

@@ -51,10 +51,12 @@ public:
     void Try_Event(RadarEventType event, const Coord3D *pos);
     bool Local_Pixel_To_Radar(const ICoord2D *pixel, ICoord2D *radar);
     bool Radar_To_World(const ICoord2D *radar, Coord3D *world);
+    bool Screen_Pixel_To_World(const ICoord2D *screen, Coord3D *world);
 
     void Force_On(bool on) { m_radarForceOn = on; }
     bool Is_Radar_Forced() const { return m_radarForceOn; }
     bool Is_Radar_Hidden() const { return m_radarHidden; }
+    bool Is_Radar_Window(GameWindow *window) const { return m_radarWindow == window && m_radarWindow != nullptr; }
 
 private:
     enum

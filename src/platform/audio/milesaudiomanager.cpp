@@ -1020,7 +1020,7 @@ void MilesAudioManager::friend_Force_Play_Audio_Event(AudioEventRTS *event)
 
     HAUDIO quick_aud = AIL_quick_load_and_play(tmp_event.Get_File_Name().Str(), 1, 0);
     AIL_quick_set_volume(quick_aud, tmp_event.Get_Volume() * Get_Volume(AUDIOAFFECT_SPEECH), 0.5f);
-    m_quickAudioList.push_back(quick_aud);
+    m_forcePlayedAudioList.push_back(quick_aud);
 }
 
 /**
@@ -1492,13 +1492,13 @@ void MilesAudioManager::Stop_All_Audio_Immediately()
         }
     }
 
-    for (auto it = m_quickAudioList.begin(); it != m_quickAudioList.end(); ++it) {
+    for (auto it = m_forcePlayedAudioList.begin(); it != m_forcePlayedAudioList.end(); ++it) {
         if (*it != nullptr) {
             AIL_quick_unload(*it);
         }
     }
 
-    m_quickAudioList.clear();
+    m_forcePlayedAudioList.clear();
 }
 
 /**

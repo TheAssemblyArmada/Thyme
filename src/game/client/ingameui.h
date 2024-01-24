@@ -103,38 +103,38 @@ class SuperweaponInfo : public MemoryPoolObject
 
 public:
     SuperweaponInfo(ObjectID object_id,
-        unsigned int unk1,
+        unsigned int countdown_seconds,
         bool hidden,
-        bool unk2,
-        bool unk3,
-        bool unk4,
-        const Utf8String *font_name,
+        bool is_missing_science,
+        bool is_ready,
+        bool has_played_sound,
+        const Utf8String &font_name,
         int font_size,
         bool font_bold,
         int color,
         const SpecialPowerTemplate *power_template);
     ~SuperweaponInfo();
-    void Set_Font(const Utf8String *name, int size, bool bold);
-    void Set_Text(Utf16String *name, Utf16String *time);
+    void Set_Font(const Utf8String &name, int size, bool bold);
+    void Set_Text(Utf16String &name, Utf16String &time);
     void Draw_Name(int x, int y, int color, int border_color);
     void Draw_Time(int x, int y, int color, int border_color);
     float Get_Height() const;
 
-    SpecialPowerTemplate *Get_Special_Power_Template() const { return m_powerTemplate; }
+    const SpecialPowerTemplate *Get_Special_Power_Template() const { return m_powerTemplate; }
 
 private:
     DisplayString *m_name;
     DisplayString *m_time;
     int m_color;
-    SpecialPowerTemplate *m_powerTemplate;
-    Utf8String m_unk1;
+    const SpecialPowerTemplate *m_powerTemplate;
+    Utf8String m_unk;
     ObjectID m_objectID;
-    unsigned int m_unk2;
+    unsigned int m_countdownSeconds;
     bool m_hidden;
-    bool m_unk3;
-    bool m_unk4;
-    bool m_unk5;
-    bool m_unk6;
+    bool m_isMissingScience;
+    bool m_isReady;
+    bool m_hasPlayedSound;
+    bool m_refreshCountdown;
     friend class InGameUI;
 };
 
@@ -276,6 +276,9 @@ public:
     virtual void Reset() override;
     virtual void Update() override;
     virtual void Draw() override = 0;
+    virtual void CRC_Snapshot(Xfer *xfer) override;
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override;
     virtual void Popup_Message(
         Utf8String const &message, int width_percent, int height_percent, int width, bool pause, bool pause_music);
     virtual void Popup_Message(Utf8String const &message,
@@ -396,7 +399,6 @@ public:
 
     void Add_World_Animation(
         Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise);
-    bool Are_Selected_Objects_Controllable();
     void Set_Mouse_Cursor(MouseCursor cursor);
     SuperweaponInfo *Find_SW_Info(
         int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template);
@@ -511,9 +513,9 @@ protected:
     bool m_displayedMaxWarning;
     MoveHintStruct m_moveHint[MAX_MOVE_HINTS];
     int m_nextMoveHint;
-    CommandButton *m_pendingGUICommand;
+    const CommandButton *m_pendingGUICommand;
     BuildProgress m_buildProgress[MAX_BUILD_PROGRESS];
-    CommandButton *m_pendingPlaceType;
+    const ThingTemplate *m_pendingPlaceType;
     ObjectID m_pendingPlaceSourceObjectID;
 #ifndef GAME_DEBUG_STRUCTS
     bool m_preventLeftClickDeselectionInAlternateMouseModeForOneClick; // not 100% identified yet
@@ -569,7 +571,7 @@ protected:
     bool m_isSelecting;
     MouseMode m_mouseMode;
     MouseCursor m_mouseCursor; // not 100% identified yet
-    ObjectID m_mousedOverObjectID;
+    DrawableID m_mousedOverObjectID;
     Coord2D m_scrollAmt;
     bool m_isQuitMenuVisible;
     bool m_messagesOn;
@@ -627,6 +629,8 @@ void Toggle_Replay_Controls();
 
 #ifdef GAME_DLL
 extern InGameUI *&g_theInGameUI;
+extern GameWindow *&g_replayWindow;
 #else
 extern InGameUI *g_theInGameUI;
+extern GameWindow *g_replayWindow;
 #endif

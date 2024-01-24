@@ -62,6 +62,14 @@ public:
     const FontDesc &Debug_Display_Font() const { return m_nativeDebugDisplayFont; }
     const FontDesc &Default_Window_Font() const { return m_defaultWindowFont; }
     const FontDesc &Default_Display_String_Font() const { return m_defaultDisplayStringFont; }
+    const FontDesc &Drawable_Caption_Font() const { return m_drawableCaptionFont; }
+    const FontDesc &Message_Font() const { return m_messageFont; }
+    const FontDesc &Military_Caption_Title_Font() const { return m_militaryCaptionTitleFont; }
+    const FontDesc &Military_Caption_Font() const { return m_militaryCaptionFont; }
+    const FontDesc &Superweapon_Countdown_Normal_Font() const { return m_superweaponCountdownNormalFont; }
+    const FontDesc &Superweapon_Countdown_Ready_Font() const { return m_superweaponCountdownReadyFont; }
+    const FontDesc &Named_Timer_Countdown_Normal_Font() const { return m_namedTimerCountdownNormalFont; }
+    const FontDesc &Named_Timer_Countdown_Ready_Font() const { return m_namedTimerCountdownReadyFont; }
 
     static void Parse_Language_Definition(INI *ini);
     static void Parse_Font_Filename(INI *ini, void *formal, void *store, void const *user_data);

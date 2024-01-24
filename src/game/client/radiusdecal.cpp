@@ -148,9 +148,9 @@ void RadiusDecal::Set_Opacity(float opacity)
     }
 }
 
-void RadiusDecal::Set_Position(const Coord3D *pos)
+void RadiusDecal::Set_Position(const Coord3D &pos)
 {
     if (m_shadow != nullptr) {
-        m_shadow->Set_Position(pos->x, pos->y, pos->z);
+        m_shadow->Set_Position(pos.x, pos.y, pos.z);
     }
 }

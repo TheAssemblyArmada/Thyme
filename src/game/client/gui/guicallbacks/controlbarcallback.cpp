@@ -159,7 +159,7 @@ WindowMsgHandledType Left_HUD_Input(GameWindow *window, unsigned int message, un
             }
 
             if (!needs_target) {
-                const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
+                const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Local_Drawables();
                 MouseCursor cursor = CURSOR_ARROW;
 
                 if (!drawables->empty() && message != GWM_MOUSE_LEAVING) {
@@ -191,7 +191,7 @@ WindowMsgHandledType Left_HUD_Input(GameWindow *window, unsigned int message, un
 
             if ((!g_theRadar->Is_Radar_Hidden() || g_theRadar->Is_Radar_Forced())
                 && g_theRadar->Local_Pixel_To_Radar(&pixel, &radar) && g_theRadar->Radar_To_World(&radar, &world)) {
-                if (g_theInGameUI->Get_All_Selected_Drawables()->empty()
+                if (g_theInGameUI->Get_All_Selected_Local_Drawables()->empty()
                     || (!g_theWriteableGlobalData->m_alternateMouseEnabled && message == GWM_RIGHT_DOWN)
                     || (g_theWriteableGlobalData->m_alternateMouseEnabled && message == GWM_LEFT_DOWN)) {
                     g_theTacticalView->Look_At(&world);
@@ -212,7 +212,7 @@ WindowMsgHandledType Left_HUD_Input(GameWindow *window, unsigned int message, un
                         GameMessage *msg = g_theMessageStream->Append_Message(GameMessage::MSG_DO_MOVETO);
                         msg->Append_Location_Arg(world);
                         Pick_And_Play_Unit_Voice_Response(
-                            g_theInGameUI->Get_All_Selected_Drawables(), GameMessage::MSG_DO_MOVETO, nullptr);
+                            g_theInGameUI->Get_All_Selected_Local_Drawables(), GameMessage::MSG_DO_MOVETO, nullptr);
                     }
                 }
             }
@@ -250,7 +250,7 @@ WindowMsgHandledType Left_HUD_Input(GameWindow *window, unsigned int message, un
                         g_theMouse->Set_Cursor(index);
                     }
                 } else {
-                    const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
+                    const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Local_Drawables();
                     MouseCursor cursor = CURSOR_ARROW;
 
                     if (!drawables->empty() && message != GWM_MOUSE_LEAVING) {

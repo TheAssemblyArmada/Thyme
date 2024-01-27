@@ -617,6 +617,7 @@ Network *&g_theNetwork = Make_Global<Network *>(PICK_ADDRESS(0x00A2B92C, 0x00E26
 // ingameui.cpp
 #include "ingameui.h"
 InGameUI *&g_theInGameUI = Make_Global<InGameUI *>(PICK_ADDRESS(0x00A2C088, 0x00E26268));
+GameWindow *&g_replayWindow = Make_Global<GameWindow *>(PICK_ADDRESS(0x00A2C08C, 0x00E2626C));
 
 // waterrenderobj.cpp
 class WaterRenderObjClass;

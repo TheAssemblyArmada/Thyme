@@ -3718,6 +3718,9 @@ void Setup_Hooks()
     Hook_Any(0x00489930, Left_HUD_Input);
     Hook_Any(0x00489D00, Control_Bar_System);
     Hook_Any(0x0048A540, Toggle_Control_Bar);
+    Hook_Memory(0x009DF438, Left_HUD_Input);
+    Hook_Memory(0x0050B307, Left_HUD_Input);
+    Hook_Memory(0x0050BC60, Left_HUD_Input);
 
     // controlbarscheme.h
     Hook_Any(0x005A66B0, ControlBarSchemeManager::Draw_Foreground);
@@ -3781,4 +3784,35 @@ void Setup_Hooks()
     Hook_Any(0x00782290, W3DShadowManager::Remove_Shadow);
     Hook_Any(0x007822A0, W3DShadowManager::Get_Light_Pos_World);
     Hook_Any(0x007822C0, W3DShadowManager::Set_Time_Of_Day);
+
+    // ingameui.h
+    Hook_Any(0x00506FB0, Show_Replay_Controls);
+    Hook_Any(0x00506FD0, Hide_Replay_Controls);
+    Hook_Any(0x00506FF0, Toggle_Replay_Controls);
+    Hook_Any(0x005072F0, InGameUI::Xfer_Snapshot);
+    Hook_Any(0x00507A30, InGameUI::Find_SW_Info);
+    Hook_Any(0x00508020, InGameUI::Add_Named_Timer);
+    Hook_Any(0x005083C0, InGameUI::Remove_Named_Timer);
+    Hook_Any(0x00507A80, InGameUI::Add_Superweapon);
+    Hook_Any(0x00507CE0, InGameUI::Remove_Superweapon);
+    Hook_Any(0x00507D90, InGameUI::Object_Changed_Team);
+    Hook_Any(0x00507F40, InGameUI::Hide_Object_Superweapon_Display_By_Script);
+    Hook_Any(0x00507FA0, InGameUI::Show_Object_Superweapon_Display_By_Script);
+    Hook_Any(0x00508000, InGameUI::Set_Superweapon_Display_Enabled_By_Script);
+    Hook_Any(0x00508010, InGameUI::Get_Superweapon_Display_Enabled_By_Script);
+    Hook_Any(0x005093A0, InGameUI::Init);
+    Hook_Any(0x0050A8A0, InGameUI::Reset);
+    Hook_Any(0x0050AC10, InGameUI::Free_Message_Resources);
+    Hook_Any(0x00510890, InGameUI::Clear_Popup_Message_Data);
+    Hook_Any(0x0050CD70, InGameUI::Post_Draw);
+    Hook_Any(0x0050E540, InGameUI::Are_Selected_Objects_Controllable);
+    Hook_Any(0x00508430, InGameUI::Show_Named_Timer_Display);
+    Hook_Any(0x005097E0, InGameUI::Set_Radius_Cursor);
+    Hook_Any(0x00509A30, InGameUI::Handle_Radius_Cursor);
+    Hook_Any(0x00509B10, InGameUI::Trigger_Double_Click_Attack_Move_Guard_Hint);
+    Hook_Any(0x0050BB10, InGameUI::Create_Command_Hint);
+    Hook_Any(0x0050C5F0, InGameUI::Set_GUI_Command);
+    Hook_Any(0x0050C6D0, InGameUI::Place_Build_Available);
+    Hook_Any(0x00511120, InGameUI::Recreate_Control_Bar);
+    Hook_Any(0x00508D50, InGameUI::Get_Field_Parse);
 }

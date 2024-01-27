@@ -37,7 +37,7 @@ public:
     unsigned int Get_Reload_Time() const { return Get_FO()->m_reloadTime; }
     ScienceType Get_Required_Science() const { return m_requiredScience; }
     AcademyClassificationType Get_Academy_Classify() const { return m_academyClassify; }
-    float Get_Radius_Cusror_Radius() const { return Get_FO()->m_radiusCursorRadius; }
+    float Get_Radius_Cursor_Radius() const { return Get_FO()->m_radiusCursorRadius; }
 
     void Set_Name_ID(Utf8String const &name, unsigned int id)
     {

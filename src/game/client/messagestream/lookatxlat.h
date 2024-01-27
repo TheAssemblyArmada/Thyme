@@ -22,7 +22,7 @@ class LookAtTranslator : public GameMessageTranslator
 public:
     virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
     virtual ~LookAtTranslator() override;
-    const ICoord2D *Get_RMB_Scroll_Anchor();
+    virtual const ICoord2D *Get_RMB_Scroll_Anchor();
     bool Has_Mouse_Moved_Recently();
 
 private:

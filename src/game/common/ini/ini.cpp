@@ -99,7 +99,7 @@ const BlockParse TheTypeTable[] = {
     {"EvaEvent", HOOK_BLOCK(0x00512BE0) /*&INI::parseEvaEvent*/},
     {"FXList", &FXListStore::Parse_FXList_Definition},
     {"GameData", &GlobalData::Parse_Game_Data_Definition},
-    {"InGameUI", HOOK_BLOCK(0x00508440) /*&INI::parseInGameUIDefinition*/},
+    {"InGameUI", &InGameUI::Parse_In_Game_UI_Definition},
     {"Locomotor", &LocomotorStore::Parse_Locomotor_Template_Definition},
     {"Language", &GlobalLanguage::Parse_Language_Definition},
     {"MapCache", HOOK_BLOCK(0x00506760) /*&INI::parseMapCacheDefinition*/},

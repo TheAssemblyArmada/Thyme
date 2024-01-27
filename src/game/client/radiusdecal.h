@@ -64,7 +64,7 @@ public:
     void Clear();
     void Update();
     void Set_Opacity(float opacity);
-    void Set_Position(const Coord3D *pos);
+    void Set_Position(const Coord3D &pos);
 
 private:
     RadiusDecalTemplate *m_template;

@@ -17,6 +17,17 @@
 #include "subsysteminterface.h"
 #include <list>
 
+enum LegalBuildCode
+{
+    LBC_OK,
+    LBC_RESTRICTED_TERRAIN,
+    LBC_NOT_FLAT_ENOUGH,
+    LBC_OBJECTS_IN_THE_WAY,
+    LBC_NO_CLEAR_PATH,
+    LBC_SHROUD,
+    LBC_TOO_CLOSE_TO_SUPPLIES,
+};
+
 class ObjectSellInfo;
 class Coord3D;
 class Object;
@@ -58,7 +69,7 @@ public:
         const Coord3D *end,
         float angle,
         Player *owning_player);
-    virtual bool Is_Location_Clear_To_Build(const Coord3D *pos,
+    virtual LegalBuildCode Is_Location_Legal_To_Build(const Coord3D *pos,
         const ThingTemplate *what,
         float angle,
         unsigned int options,

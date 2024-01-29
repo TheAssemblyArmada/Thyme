@@ -744,7 +744,7 @@ public:
     const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
     Locomotor *Get_Cur_Locomotor() { return m_curLocomotor; }
     LocomotorSetType Get_Cur_Locomotor_Set() const { return m_curLocomotorSet; }
-    const Path *Get_Path() const { return m_path; }
+    Path *Get_Path() const { return m_path; }
     ObjectID Get_Ignored_Obstacle_ID() { return m_ignoreObstacleID; }
     const AIStateMachine *Get_State_Machine() const { return m_stateMachine; }
     AIStateMachine *Get_State_Machine() { return m_stateMachine; }

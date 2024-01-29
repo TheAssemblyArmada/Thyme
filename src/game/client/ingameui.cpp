@@ -13,7 +13,9 @@
  *            LICENSE
  */
 #include "ingameui.h"
+#include "ai.h"
 #include "aiguard.h"
+#include "aipathfind.h"
 #include "behaviormodule.h"
 #include "colorspace.h"
 #include "controlbar.h"
@@ -21,6 +23,7 @@
 #include "displaystringmanager.h"
 #include "drawable.h"
 #include "eva.h"
+#include "gadgetstatictext.h"
 #include "gameclient.h"
 #include "gamefont.h"
 #include "gamelogic.h"
@@ -30,6 +33,7 @@
 #include "globallanguage.h"
 #include "ingamechat.h"
 #include "lookatxlat.h"
+#include "mobmemberslavedupdate.h"
 #include "mouse.h"
 #include "object.h"
 #include "player.h"
@@ -39,8 +43,13 @@
 #include "scriptengine.h"
 #include "selectionxlat.h"
 #include "specialpower.h"
+#include "stealthupdate.h"
+#include "supplywarehousedockupdate.h"
+#include "team.h"
 #include "terrainvisual.h"
 #include "thingfactory.h"
+#include "videobuffer.h"
+#include "videostream.h"
 #include "w3ddisplay.h"
 #include "w3dview.h"
 #include "windowlayout.h"
@@ -1102,7 +1111,7 @@ void InGameUI::Post_Draw()
                     timer_x_aligned -= timer_info->m_displayString->Get_Width(-1);
                 }
 
-                if (timer_frame2 != 0 || !timer_info->m_countdown || this->m_namedTimerFlashDuration == 0.0f) {
+                if (timer_frame2 != 0 || !timer_info->m_countdown || m_namedTimerFlashDuration == 0.0f) {
                     timer_info->m_displayString->Draw(timer_x_aligned, timer_y, timer_info->m_color, border_color);
                 } else {
                     if (g_theGameLogic->Get_Frame()
@@ -1144,10 +1153,15 @@ void InGameUI::Post_Draw()
 void InGameUI::Add_World_Animation(
     Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise)
 {
-#ifdef GAME_DLL
-    Call_Method<void, InGameUI, Anim2DTemplate *, const Coord3D *, WorldAnimationOptions, float, float>(
-        PICK_ADDRESS(0x00510A10, 0x00812ED9), this, anim, pos, options, time, z_rise);
-#endif
+    if (anim != nullptr && pos != nullptr && time > 0.0f) {
+        WorldAnimationData *world = new WorldAnimationData();
+        world->m_anim = new Anim2D(anim, g_theAnim2DCollection);
+        world->m_frame = g_theGameLogic->Get_Frame() + time * 30.0f;
+        world->m_options = options;
+        world->m_pos = *pos;
+        world->m_zRise = z_rise;
+        m_worldAnimations.push_front(world);
+    }
 }
 
 bool InGameUI::Are_Selected_Objects_Controllable() const
@@ -1696,8 +1710,8 @@ void InGameUI::Place_Build_Available(ThingTemplate const *build, Drawable *build
                 ghost_drawable != nullptr, "Unable to create icon at cursor for placement '%s'", build->Get_Name().Str());
             ghost_drawable->Set_Orientation(build->Get_Placement_View_Angle());
             ghost_drawable->Set_Opacity(0.44999999f);
-            captainslog_dbgassert(*m_placeIcon == nullptr, "Place_Build_Available, build icon array is not empty!");
-            *m_placeIcon = ghost_drawable;
+            captainslog_dbgassert(m_placeIcon[0] == nullptr, "Place_Build_Available, build icon array is not empty!");
+            m_placeIcon[0] = ghost_drawable;
         } else {
             if (m_mouseMode == MOUSEMODE_BUILD_PLACE) {
                 m_mouseMode = MOUSEMODE_DEFAULT;
@@ -1749,5 +1763,1233 @@ void InGameUI::Recreate_Control_Bar()
         delete g_theControlBar;
         g_theControlBar = new ControlBar();
         g_theControlBar->Init();
+    }
+}
+
+void InGameUI::Update()
+{
+    if (m_videoStream != nullptr && m_videoBuffer != nullptr && m_videoStream->Is_Frame_Ready()) {
+        m_videoStream->Decompress_Frame();
+        m_videoStream->Render_Frame(m_videoBuffer);
+        m_videoStream->Next_Frame();
+
+        if (m_videoStream->Frame_Index() == 0) {
+            Stop_Movie();
+        }
+    }
+
+    if (m_cameoVideoStream != nullptr && m_cameoVideoBuffer != nullptr && m_cameoVideoStream->Is_Frame_Ready()) {
+        m_cameoVideoStream->Decompress_Frame();
+        m_cameoVideoStream->Render_Frame(m_cameoVideoBuffer);
+        m_cameoVideoStream->Next_Frame();
+
+        if (m_cameoVideoStream->Frame_Index() == 0) {
+            Stop_Movie();
+        }
+    }
+
+    unsigned int frame = g_theGameLogic->Get_Frame();
+    unsigned int message_timeout = m_messageDelayMS / 30 / 1000;
+
+    for (int i = MAX_UI_MESSAGES - 1; i >= 0; i--) {
+        if (frame - m_uiMessages[i].timestamp > message_timeout) {
+            unsigned char red;
+            unsigned char green;
+            unsigned char blue;
+            unsigned char alpha;
+            Get_Color_Components(m_uiMessages[i].color, &red, &green, &blue, &alpha);
+            int alpha_adjust = GameMath::Fast_To_Int_Truncate((frame - m_uiMessages[i].timestamp) * 0.01f);
+
+            if (alpha - alpha_adjust >= 0) {
+                alpha -= alpha_adjust;
+            } else {
+                alpha = 0;
+            }
+
+            m_uiMessages[i].color = Make_Color(red, green, blue, alpha);
+
+            if (alpha == 0) {
+                Remove_Message_At_Index(i);
+            }
+        }
+    }
+
+    if (m_militarySubtitle != nullptr) {
+        if (g_theScriptEngine->Is_Time_Frozen_Script()) {
+            m_militarySubtitle->lifetime--;
+            m_militarySubtitle->block_begin_frame--;
+            m_militarySubtitle->increment_on_frame--;
+        }
+
+        if (m_militarySubtitle->lifetime >= frame) {
+            if (m_militarySubtitle->block_begin_frame + 9 < frame) {
+                m_militarySubtitle->block_begin_frame = frame;
+                m_militarySubtitle->block_drawn = !m_militarySubtitle->block_drawn;
+            }
+
+            if (m_militarySubtitle->increment_on_frame < frame) {
+                unichar_t c = m_militarySubtitle->subtitle.Get_Char(m_militarySubtitle->index);
+
+                if (c == U_CHAR('\n')) {
+                    int y_size;
+                    m_militarySubtitle->display_strings[m_militarySubtitle->current_display_string]->Get_Size(
+                        nullptr, &y_size);
+                    m_militarySubtitle->block_pos.y += y_size;
+
+                    if (++m_militarySubtitle->current_display_string >= 4) {
+                        m_militarySubtitle->index = m_militarySubtitle->subtitle.Get_Length();
+
+                        captainslog_dbgassert(false, "You're Only Allowed to use %d lines of subtitle text", 4);
+                    } else {
+                        m_militarySubtitle->block_pos.x = m_militarySubtitle->position.x;
+                        m_militarySubtitle->display_strings[m_militarySubtitle->current_display_string] =
+                            g_theDisplayStringManager->New_Display_String();
+                        m_militarySubtitle->display_strings[m_militarySubtitle->current_display_string]->Reset();
+
+                        m_militarySubtitle->display_strings[m_militarySubtitle->current_display_string]->Set_Font(
+                            g_theFontLibrary->Get_Font(m_militaryCaptionFont,
+                                g_theGlobalLanguage->Adjust_Font_Size(m_militaryCaptionPointSize),
+                                m_militaryCaptionBold));
+                        m_militarySubtitle->block_drawn = true;
+                        m_militarySubtitle->increment_on_frame =
+                            g_theGlobalLanguage->Get_Military_Caption_Delay_MS() * 30.0f / 1000.0f + frame;
+                    }
+                } else {
+                    int x_size;
+                    m_militarySubtitle->display_strings[m_militarySubtitle->current_display_string]->Add_Char(c);
+                    m_militarySubtitle->display_strings[m_militarySubtitle->current_display_string]->Get_Size(
+                        &x_size, nullptr);
+                    m_militarySubtitle->block_pos.x = x_size + m_militarySubtitle->position.x;
+
+                    static AudioEventRTS click("MilitarySubtitlesTyping");
+                    g_theAudio->Add_Audio_Event(&click);
+
+                    if (g_theGlobalLanguage != nullptr) {
+                        m_militarySubtitle->increment_on_frame = g_theGlobalLanguage->Get_Military_Caption_Speed() + frame;
+                    } else {
+                        m_militarySubtitle->increment_on_frame = m_militaryCaptionSpeed + frame;
+                    }
+                }
+
+                m_militarySubtitle->index++;
+
+                if (m_militarySubtitle->index >= (unsigned int)m_militarySubtitle->subtitle.Get_Length()) {
+                    m_militarySubtitle->increment_on_frame = m_militarySubtitle->lifetime + 1;
+                }
+            }
+        } else {
+            unsigned char red;
+            unsigned char green;
+            unsigned char blue;
+            unsigned char alpha;
+            Get_Color_Components(m_militarySubtitle->color, &red, &green, &blue, &alpha);
+            int alpha_adjust = GameMath::Fast_To_Int_Truncate((frame - m_militarySubtitle->lifetime) * 0.1f);
+
+            if (alpha - alpha_adjust >= 0) {
+                alpha -= alpha_adjust;
+                m_militarySubtitle->color = Make_Color(red, green, blue, alpha);
+            } else {
+                Remove_Military_Subtitle();
+            }
+        }
+    }
+
+    static const NameKeyType moneyWindowKey = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:MoneyDisplay");
+    static const NameKeyType powerWindowKey = g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:PowerWindow");
+    GameWindow *money_window = g_theWindowManager->Win_Get_Window_From_Id(nullptr, moneyWindowKey);
+    GameWindow *power_window = g_theWindowManager->Win_Get_Window_From_Id(nullptr, powerWindowKey);
+
+    Player *player = nullptr;
+
+    if (g_theControlBar->Is_Observer()) {
+        player = g_theControlBar->Get_Observer_Player();
+    } else {
+        player = g_thePlayerList->Get_Local_Player();
+    }
+
+    if (player != nullptr) {
+        static int lastMoney = -1;
+        int money = player->Get_Money()->Count_Money();
+
+        if (lastMoney != money) {
+            Utf16String money_display;
+            money_display.Format(g_theGameText->Fetch("GUI:ControlBarMoneyDisplay"), money);
+            Gadget_Static_Text_Set_Text(money_window, money_display);
+            lastMoney = money;
+        }
+
+        money_window->Win_Hide(false);
+        power_window->Win_Hide(false);
+    } else {
+        money_window->Win_Hide(true);
+        power_window->Win_Hide(true);
+    }
+
+    Update_Floating_Text();
+    g_theControlBar->Update();
+    Update_Idle_Worker();
+
+    for (auto it = m_windowLayoutList.begin(); it != m_windowLayoutList.end(); it++) {
+        (*it)->Run_Update(nullptr);
+    }
+
+    if (m_cameraRotateLeft && !m_cameraRotateRight) {
+        g_theTacticalView->Set_Angle(g_theTacticalView->Get_Angle() - g_theWriteableGlobalData->m_keyboardCameraRotateSpeed);
+    }
+
+    if (m_cameraRotateRight && !m_cameraRotateLeft) {
+        g_theTacticalView->Set_Angle(g_theTacticalView->Get_Angle() + g_theWriteableGlobalData->m_keyboardCameraRotateSpeed);
+    }
+
+    if (m_cameraZoomIn && !m_cameraZoomOut) {
+        g_theTacticalView->Zoom_In();
+    }
+
+    if (m_cameraZoomOut && !m_cameraZoomIn) {
+        g_theTacticalView->Zoom_Out();
+    }
+}
+
+void InGameUI::Remove_Message_At_Index(int index)
+{
+    m_uiMessages[index].full_text.Clear();
+
+    if (m_uiMessages[index].display_string != nullptr) {
+        g_theDisplayStringManager->Free_Display_String(m_uiMessages[index].display_string);
+        m_uiMessages[index].display_string = nullptr;
+    }
+
+    m_uiMessages[index].timestamp = 0;
+}
+
+void InGameUI::Update_Floating_Text()
+{
+    unsigned int frame = g_theGameLogic->Get_Frame();
+    static unsigned int lastLogicFrameUpdate = frame;
+
+    if (lastLogicFrameUpdate != frame) {
+        lastLogicFrameUpdate = frame;
+
+        for (auto it = m_floatingTextList.begin(); it != m_floatingTextList.end();) {
+            FloatingTextData *data = *it;
+            data->m_frameCount++;
+
+            if (frame <= (unsigned int)data->m_frameTimeOut) {
+                it++;
+                continue;
+            }
+
+            unsigned char red;
+            unsigned char green;
+            unsigned char blue;
+            unsigned char alpha;
+            Get_Color_Components(data->m_color, &red, &green, &blue, &alpha);
+            int alpha_adjust = GameMath::Fast_To_Int_Truncate((frame - data->m_frameTimeOut) * m_floatingTextMoveVanishRate);
+
+            if (alpha - alpha_adjust >= 0) {
+                alpha -= alpha_adjust;
+            } else {
+                alpha = 0;
+            }
+
+            data->m_color = Make_Color(red, green, blue, alpha);
+
+            if (alpha != 0) {
+                it++;
+                continue;
+            } else {
+                it = m_floatingTextList.erase(it);
+                data->Delete_Instance();
+            }
+        }
+    }
+}
+
+void InGameUI::Popup_Message(
+    Utf8String const &message, int width_percent, int height_percent, int width, bool pause, bool pause_music)
+{
+    Popup_Message(message, width_percent, height_percent, width, m_popupMessageColor, pause, pause_music);
+}
+
+void InGameUI::Popup_Message(
+    Utf8String const &message, int width_percent, int height_percent, int width, int color, bool pause, bool pause_music)
+{
+    if (m_popupMessageData != nullptr) {
+        Clear_Popup_Message_Data();
+    }
+
+    Update_Diplomacy_Briefing_Text(message, false);
+    Utf16String text = g_theGameText->Fetch(message);
+    m_popupMessageData = new PopupMessageData();
+    m_popupMessageData->m_message = text;
+
+    if (width_percent > 100) {
+        width_percent = 100;
+    }
+
+    if (width_percent < 0) {
+        width_percent = 0;
+    }
+
+    if (height_percent > 100) {
+        height_percent = 100;
+    }
+
+    if (height_percent < 0) {
+        height_percent = 0;
+    }
+
+    m_popupMessageData->m_xPos = g_theDisplay->Get_Width() * (width_percent / 100.0f);
+    m_popupMessageData->m_yPos = g_theDisplay->Get_Height() * (height_percent / 100.0f);
+
+    if (width < 50) {
+        width = 50;
+    }
+
+    m_popupMessageData->m_width = width;
+    m_popupMessageData->m_color = color;
+    m_popupMessageData->m_pause = pause;
+    m_popupMessageData->m_pauseMusic = pause_music;
+    m_popupMessageData->m_windowLayout = g_theWindowManager->Win_Create_Layout("InGamePopupMessage.wnd");
+    m_popupMessageData->m_windowLayout->Run_Init(nullptr);
+}
+
+void InGameUI::Message_Color(RGBColor const *color, Utf16String message, ...)
+{
+    va_list va;
+    va_start(va, message);
+    Utf16String formatted_message;
+    formatted_message.Format_VA(message, va);
+    Add_Message_Text(formatted_message, color);
+    va_end(va);
+}
+
+void InGameUI::Message(Utf16String message, ...)
+{
+    va_list va;
+    va_start(va, message);
+    Utf16String formatted_message;
+    formatted_message.Format_VA(message, va);
+    Add_Message_Text(formatted_message, nullptr);
+    va_end(va);
+}
+
+void InGameUI::Message(Utf8String message, ...)
+{
+    va_list va;
+    va_start(va, message);
+    Utf16String text = g_theGameText->Fetch(message.Str());
+    Utf16String formatted_message;
+    formatted_message.Format_VA(text, va);
+    Add_Message_Text(formatted_message, nullptr);
+    va_end(va);
+}
+
+void InGameUI::Add_Message_Text(const Utf16String &formatted_message, const RGBColor *rgb_color)
+{
+    int color1 = m_messageColor1;
+    int color2 = m_messageColor2;
+
+    if (rgb_color != nullptr) {
+        color1 = Make_Color(0, 0, 0, 255) | rgb_color->Get_As_Int();
+        color2 = Make_Color(0, 0, 0, 255) | rgb_color->Get_As_Int();
+    }
+
+    m_uiMessages[MAX_UI_MESSAGES - 1].full_text.Clear();
+
+    if (m_uiMessages[MAX_UI_MESSAGES - 1].display_string != nullptr) {
+        g_theDisplayStringManager->Free_Display_String(m_uiMessages[MAX_UI_MESSAGES - 1].display_string);
+        m_uiMessages[MAX_UI_MESSAGES - 1].display_string = nullptr;
+    }
+
+    m_uiMessages[5].timestamp = 0;
+
+    for (int i = MAX_UI_MESSAGES - 1; i >= 1; i--) {
+        m_uiMessages[i] = m_uiMessages[i - 1];
+    }
+
+    m_uiMessages[0].full_text = formatted_message;
+    m_uiMessages[0].timestamp = g_theGameLogic->Get_Frame();
+    m_uiMessages[0].display_string = g_theDisplayStringManager->New_Display_String();
+    m_uiMessages[0].display_string->Set_Font(
+        g_theFontLibrary->Get_Font(m_messageFont, g_theGlobalLanguage->Adjust_Font_Size(m_messagePointSize), m_messageBold));
+    m_uiMessages[0].display_string->Set_Text(m_uiMessages[0].full_text);
+
+    if (m_uiMessages[1].display_string != nullptr && m_uiMessages[1].color != color2) {
+        m_uiMessages[0].color = color2;
+    } else {
+        m_uiMessages[0].color = color1;
+    }
+}
+
+void InGameUI::Military_Subtitle(Utf8String const &subtitle, int duration)
+{
+    Remove_Military_Subtitle();
+    Update_Diplomacy_Briefing_Text(subtitle, false);
+    Utf16String text = g_theGameText->Fetch(subtitle);
+
+    if (text.Is_Empty() || duration <= 0) {
+        captainslog_dbgassert(false,
+            "Trying to create a military subtitle but either title is empty (%ls) or duration is <= 0 (%d)",
+            text.Str(),
+            duration);
+    } else {
+        unsigned int frame = g_theGameLogic->Get_Frame();
+        unsigned int lifetime = (duration * 30.0f / 1000.0f) + frame;
+        g_theInGameUI->Disable_Tooltips_Until(lifetime);
+        float width = g_theDisplay->Get_Width() / 800.0f;
+        float height = g_theDisplay->Get_Height() / 600.0f;
+        m_militarySubtitle = new MilitarySubtitleData();
+        m_militarySubtitle->subtitle.Set(text);
+        m_militarySubtitle->block_drawn = true;
+        m_militarySubtitle->block_begin_frame = frame;
+        m_militarySubtitle->lifetime = lifetime;
+        m_militarySubtitle->position.x = m_militaryCaptionPosition.x * width;
+        m_militarySubtitle->block_pos.x = m_militarySubtitle->position.x;
+        m_militarySubtitle->position.y = m_militaryCaptionPosition.y * height;
+        m_militarySubtitle->block_pos.y = m_militarySubtitle->position.y;
+        m_militarySubtitle->increment_on_frame =
+            (g_theGlobalLanguage->Get_Military_Caption_Delay_MS() * 30.0f / 1000.0f) + frame;
+        m_militarySubtitle->index = 0;
+
+        for (int i = 1; i < 4; i++) {
+            m_militarySubtitle->display_strings[i] = nullptr;
+        }
+
+        m_militarySubtitle->current_display_string = 0;
+        m_militarySubtitle->display_strings[0] = g_theDisplayStringManager->New_Display_String();
+        m_militarySubtitle->display_strings[0]->Reset();
+        m_militarySubtitle->display_strings[0]->Set_Font(g_theFontLibrary->Get_Font(m_militaryCaptionTitleFont,
+            g_theGlobalLanguage->Adjust_Font_Size(m_militaryCaptionTitlePointSize),
+            m_militaryCaptionTitleBold));
+        m_militarySubtitle->color = Make_Color(m_militaryCaptionColor.red,
+            m_militaryCaptionColor.green,
+            m_militaryCaptionColor.blue,
+            m_militaryCaptionColor.alpha);
+    }
+}
+
+void InGameUI::Remove_Military_Subtitle()
+{
+    if (m_militarySubtitle != nullptr) {
+        g_theInGameUI->Clear_Tooltips_Disabled();
+
+        for (unsigned int i = 0; i <= m_militarySubtitle->current_display_string; i++) {
+            g_theDisplayStringManager->Free_Display_String(m_militarySubtitle->display_strings[i]);
+            m_militarySubtitle->display_strings[i] = nullptr;
+        }
+
+        delete m_militarySubtitle;
+        m_militarySubtitle = nullptr;
+    }
+}
+
+void InGameUI::Display_Cant_Build_Message(LegalBuildCode code)
+{
+    switch (code) {
+        case LBC_RESTRICTED_TERRAIN:
+            g_theInGameUI->Message("GUI:CantBuildRestrictedTerrain");
+            break;
+        case LBC_NOT_FLAT_ENOUGH:
+            g_theInGameUI->Message("GUI:CantBuildNotFlatEnough");
+            break;
+        case LBC_OBJECTS_IN_THE_WAY:
+            g_theInGameUI->Message("GUI:CantBuildObjectsInTheWay");
+            break;
+        case LBC_NO_CLEAR_PATH:
+            g_theInGameUI->Message("GUI:CantBuildNoClearPath");
+            break;
+        case LBC_SHROUD:
+            g_theInGameUI->Message("GUI:CantBuildShroud");
+            break;
+        case LBC_TOO_CLOSE_TO_SUPPLIES:
+            g_theInGameUI->Message("GUI:CantBuildTooCloseToSupplies");
+            break;
+        default:
+            g_theInGameUI->Message("GUI:CantBuildThere");
+            break;
+    }
+}
+
+void InGameUI::Begin_Area_Select_Hint(GameMessage const *msg)
+{
+    m_isDragSelecting = true;
+    m_dragSelectRegion = msg->Get_Argument(0)->region;
+}
+
+void InGameUI::End_Area_Select_Hint(GameMessage const *msg)
+{
+    m_isDragSelecting = false;
+}
+
+void InGameUI::Create_Move_Hint(GameMessage const *msg)
+{
+    for (int i = 0; i < MAX_MOVE_HINTS; i++) {
+        if (m_moveHint[i].source_id == msg->Get_Argument(0)->integer) {
+            if (m_moveHint[i].frame != 0) {
+                Expire_Hint(MOVE_HINT, i);
+            }
+        }
+    }
+
+    Drawable *drawable;
+    Object *object;
+
+    if (Get_Select_Count() != 1
+        || ((drawable = Get_First_Selected_Drawable()) == nullptr ? (object = nullptr) : (object = drawable->Get_Object()),
+            object == nullptr || !object->Is_KindOf(KINDOF_IMMOBILE))) {
+        m_moveHint[m_nextMoveHint].frame = g_theGameLogic->Get_Frame();
+        m_moveHint[m_nextMoveHint].pos = msg->Get_Argument(0)->position;
+    }
+
+    if (++m_nextMoveHint == MAX_MOVE_HINTS) {
+        m_nextMoveHint = 0;
+    }
+}
+
+void InGameUI::Expire_Hint(HintType type, unsigned int hint_index)
+{
+    if (type != MOVE_HINT) {
+        captainslog_dbgassert(false, "undefined hint type");
+    } else if (hint_index < MAX_MOVE_HINTS) {
+        m_moveHint[hint_index].source_id = 0;
+        m_moveHint[hint_index].frame = 0;
+    }
+}
+
+void InGameUI::Create_Attack_Hint(GameMessage const *msg) {}
+
+void InGameUI::Create_Force_Attack_Hint(GameMessage const *msg) {}
+
+void InGameUI::Create_Mouseover_Hint(GameMessage const *msg)
+{
+    if (!m_isScrolling && !m_isSelecting) {
+        GameWindow *parent = nullptr;
+        MouseIO *status = g_theMouse->Get_Mouse_Status();
+        bool is_blocking_window_under_cursor = false;
+
+        if (status != nullptr && g_theWindowManager != nullptr) {
+            parent = g_theWindowManager->Get_Window_Under_Cursor(status->pos.x, status->pos.y, false);
+        }
+
+        while (parent != nullptr) {
+            if (parent->Win_Get_Input_Func() == Left_HUD_Input) {
+                is_blocking_window_under_cursor = false;
+                break;
+            }
+
+            if ((parent->Win_Get_Status() & WIN_STATUS_SEE_THRU) == 0) {
+                is_blocking_window_under_cursor = true;
+                break;
+            }
+
+            parent = parent->Win_Get_Parent();
+        }
+
+        if (is_blocking_window_under_cursor) {
+            Set_Mouse_Cursor(CURSOR_ARROW);
+        } else {
+            DrawableID old_moused_over_id = m_mousedOverObjectID;
+
+            if (msg->Get_Type() == GameMessage::MSG_MOUSEOVER_DRAWABLE_HINT) {
+                g_theMouse->Set_Cursor_Tooltip(Utf16String::s_emptyString, -1, nullptr, 1.0f);
+                m_mousedOverObjectID = DrawableID::INVALID_DRAWABLE_ID;
+                Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(msg->Get_Argument(0)->drawableID);
+                Object *object;
+
+                if (drawable != nullptr) {
+                    object = drawable->Get_Object();
+                } else {
+                    object = nullptr;
+                }
+
+                if (object != nullptr) {
+                    if (object->Is_KindOf(KINDOF_IGNORED_IN_GUI)) {
+                        static const NameKeyType key_MobMemberSlavedUpdate =
+                            g_theNameKeyGenerator->Name_To_Key("MobMemberSlavedUpdate");
+                        MobMemberSlavedUpdate *update =
+                            static_cast<MobMemberSlavedUpdate *>(object->Find_Update_Module(key_MobMemberSlavedUpdate));
+
+                        if (update != nullptr) {
+                            Object *slaver = g_theGameLogic->Find_Object_By_ID(update->Get_Slaver_ID());
+
+                            if (slaver != nullptr) {
+                                Drawable *slaver_draw = slaver->Get_Drawable();
+
+                                if (slaver_draw != nullptr) {
+                                    m_mousedOverObjectID = slaver_draw->Get_ID();
+                                }
+                            }
+                        }
+                    } else {
+                        m_mousedOverObjectID = drawable->Get_ID();
+                    }
+
+                    if (g_theWriteableGlobalData->m_constantDebugUpdate) {
+                        m_mousedOverObjectID = drawable->Get_ID();
+                    }
+
+                    const Player *player = nullptr;
+                    const ThingTemplate *tmplate = object->Get_Template();
+                    ContainModuleInterface *contain = object->Get_Contain();
+
+                    if (contain != nullptr) {
+                        player = contain->Get_Apparent_Controlling_Player(g_thePlayerList->Get_Local_Player());
+                    }
+
+                    if (player == nullptr) {
+                        player = object->Get_Controlling_Player();
+                    }
+
+                    bool is_disguised = false;
+
+                    if (object->Is_KindOf(KINDOF_DISGUISER)) {
+                        StealthUpdate *stealth = object->Get_Stealth_Update();
+
+                        if (stealth != nullptr) {
+                            if (stealth->Has_Disguised_Template()) {
+                                Player *local_player = g_thePlayerList->Get_Local_Player();
+                                Player *nth_player = g_thePlayerList->Get_Nth_Player(stealth->Get_Player_Index());
+
+                                if (player->Get_Relationship(local_player->Get_Default_Team()) != ALLIES
+                                    && local_player->Is_Player_Active()) {
+                                    player = nth_player;
+                                    ThingTemplate *disguised = stealth->Get_Disguised_Template();
+
+                                    if (disguised != nullptr) {
+                                        tmplate = disguised;
+                                        is_disguised = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Utf16String display_name(tmplate->Get_Display_Name());
+                    Utf16String display_name_2(tmplate->Get_Display_Name());
+
+                    if (display_name.Is_Empty()) {
+                        Utf8String template_string;
+                        template_string.Format("ThingTemplate:%s", tmplate->Get_Name().Str());
+                        display_name = g_theGameText->Fetch(template_string);
+                    }
+
+#ifdef GAME_DEBUG_STRUCTS
+                    if (g_theWriteableGlobalData->m_debugAI) {
+                        Team *team = object->Get_Team();
+                        Utf8String object_name = object->Get_Name();
+                        Utf8String team_name;
+                        Utf8String state_name;
+                        AIUpdateInterface *ai_update = object->Get_AI_Update_Interface();
+
+                        if (ai_update != nullptr) {
+                            if (ai_update->Get_Path() != nullptr) {
+                                g_theAI->Get_Pathfinder()->Set_Debug_Path(ai_update->Get_Path());
+                            }
+
+                            state_name = ai_update->Get_Current_State_Name();
+
+                            if (ai_update->Get_Attack_Priority_Info() != nullptr) {
+                                state_name.Concat(" AttackPriority=");
+                                state_name += ai_update->Get_Attack_Priority_Info()->Get_Name();
+                            }
+                        }
+
+                        if (team != nullptr) {
+                            team_name = team->Get_Name();
+                        }
+
+                        if (object_name.Is_Empty()) {
+                            if (!team_name.Is_Empty()) {
+                                display_name.Format(U_CHAR("%hs: %s"), team_name.Str(), display_name.Str());
+                            }
+                        } else if (team_name.Is_Empty()) {
+                            display_name.Format(U_CHAR("%hs: %s"), object_name.Str(), display_name.Str());
+                        } else {
+                            display_name.Format(
+                                U_CHAR("%hs(%hs): %s"), team_name.Str(), object_name.Str(), display_name.Str());
+                        }
+
+                        display_name.Format(U_CHAR("%s - %hs"), display_name.Str(), state_name.Str());
+                    }
+#endif
+
+                    Utf16String tooltip;
+                    static const NameKeyType warehouseModuleKey =
+                        g_theNameKeyGenerator->Name_To_Key("SupplyWarehouseDockUpdate");
+                    SupplyWarehouseDockUpdate *warehouse =
+                        static_cast<SupplyWarehouseDockUpdate *>(object->Find_Update_Module(warehouseModuleKey));
+
+                    if (warehouse != nullptr) {
+                        tooltip.Format(g_theGameText->Fetch("TOOLTIP:SupplyWarehouse"),
+                            g_theWriteableGlobalData->m_valuesPerSupplyBox * warehouse->Get_Boxes_Stored());
+                        display_name.Concat(tooltip);
+                    }
+
+                    if (player != nullptr) {
+                        Utf16String player_display;
+
+                        if (g_theRecorder->Is_Multiplayer() && player->Is_Playable_Side()) {
+                            player_display.Format(
+                                U_CHAR("%s\n%s"), display_name.Str(), player->Get_Player_Display_Name().Str());
+                        } else {
+                            player_display = display_name;
+                        }
+
+                        int index;
+
+                        if (g_thePlayerList != nullptr) {
+                            index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
+                        } else {
+                            index = 0;
+                        }
+
+                        int x;
+                        int y;
+                        g_thePartitionManager->World_To_Cell(object->Get_Position()->x, object->Get_Position()->y, &x, &y);
+
+                        if (g_thePartitionManager->Get_Shroud_Status_For_Player(index, x, y) == SHROUD_STATUS_CLEAR) {
+                            RGBColor color;
+
+                            if (is_disguised) {
+                                color.Set_From_Int(player->Get_Color());
+                            } else {
+                                color.Set_From_Int(drawable->Get_Object()->Get_Indicator_Color());
+
+                                const Object *obj = drawable->Get_Object();
+
+                                if (obj != nullptr) {
+                                    ContainModuleInterface *contain2 = obj->Get_Contain();
+
+                                    if (contain2 != nullptr) {
+                                        if (contain2->Is_Garrisonable()) {
+                                            const Player *controlling_player = contain2->Get_Apparent_Controlling_Player(
+                                                g_thePlayerList->Get_Local_Player());
+
+                                            if (controlling_player != nullptr) {
+                                                color.Set_From_Int(controlling_player->Get_Color());
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (display_name_2.Compare(g_theGameText->Fetch("OBJECT:Prop")) != 0) {
+                                g_theMouse->Set_Cursor_Tooltip(player_display, -1, &color, 1.0f);
+                            }
+                        }
+                    }
+                }
+            } else {
+                m_mousedOverObjectID = INVALID_DRAWABLE_ID;
+            }
+
+            if (old_moused_over_id != m_mousedOverObjectID) {
+                g_theMouse->Reset_Tooltip_Delay();
+            }
+
+            if (m_mouseMode != MOUSEMODE_DEFAULT || m_isScrolling || m_isSelecting || g_theInGameUI->Get_Select_Count() != 0
+                || (g_theRecorder->Get_Mode() == RECORDERMODETYPE_PLAYBACK
+                    && g_theLookAtTranslator->Has_Mouse_Moved_Recently())) {
+                if (m_mouseMode >= MOUSEMODE_GUI_COMMAND) {
+                    Set_Mouse_Cursor(m_mouseCursor);
+                }
+            } else {
+                if (m_mousedOverObjectID == INVALID_DRAWABLE_ID) {
+                    Set_Mouse_Cursor(CURSOR_ARROW);
+                    return;
+                }
+
+                Drawable *moused_over_drawable = g_theGameClient->Find_Drawable_By_ID(m_mousedOverObjectID);
+                Object *moused_over_object = moused_over_drawable ? moused_over_drawable->Get_Object() : nullptr;
+                bool can_select = Can_Select_Drawable(moused_over_drawable, false);
+
+                if (moused_over_object == nullptr) {
+                    can_select = false;
+                }
+
+                if (can_select && moused_over_object->Is_Locally_Controlled()) {
+                    Set_Mouse_Cursor(CURSOR_SELECT);
+                } else {
+                    Set_Mouse_Cursor(CURSOR_ARROW);
+                }
+            }
+        }
+    }
+}
+
+void InGameUI::Create_Garrison_Hint(GameMessage const *msg)
+{
+    Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(msg->Get_Argument(0)->drawableID);
+
+    if (drawable != nullptr) {
+        drawable->On_Selected();
+    }
+}
+
+void InGameUI::Set_Scrolling(bool is_scrolling)
+{
+    if (m_isScrolling != is_scrolling) {
+        if (is_scrolling) {
+            g_theMouse->Capture();
+            Set_Mouse_Cursor(CURSOR_SCROLL);
+            g_theTacticalView->Set_Camera_Lock(INVALID_OBJECT_ID);
+            g_theTacticalView->Set_Camera_Lock_Drawable(nullptr);
+        } else {
+            Set_Mouse_Cursor(CURSOR_ARROW);
+            g_theMouse->Release_Capture();
+        }
+
+        m_isScrolling = is_scrolling;
+    }
+}
+
+bool InGameUI::Is_Scrolling()
+{
+    return m_isScrolling;
+}
+
+void InGameUI::Set_Selecting(bool is_selecting)
+{
+    if (m_isSelecting != is_selecting) {
+        m_isSelecting = is_selecting;
+    }
+}
+
+bool InGameUI::Is_Selecting()
+{
+    return m_isSelecting;
+}
+
+void InGameUI::Set_Scroll_Amount(Coord2D amt)
+{
+    m_scrollAmt = amt;
+}
+
+Coord2D InGameUI::Get_Scroll_Amount()
+{
+    return m_scrollAmt;
+}
+
+CommandButton const *InGameUI::Get_GUI_Command()
+{
+    return m_pendingGUICommand;
+}
+
+ThingTemplate const *InGameUI::Get_Pending_Place_Type()
+{
+    return m_pendingPlaceType;
+}
+
+ObjectID const InGameUI::Get_Pending_Place_Source_Object_ID()
+{
+    return m_pendingPlaceSourceObjectID;
+}
+
+#ifndef GAME_DEBUG_STRUCTS
+bool InGameUI::Get_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_One_Click()
+{
+    return m_preventLeftClickDeselectionInAlternateMouseModeForOneClick;
+}
+
+void InGameUI::Set_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_One_Click(bool prevent)
+{
+    m_preventLeftClickDeselectionInAlternateMouseModeForOneClick = prevent;
+}
+#endif
+
+void InGameUI::Set_Placement_Start(ICoord2D const *start)
+{
+    if (start != nullptr) {
+        m_placeAnchorStart.x = start->x;
+        m_placeAnchorStart.y = start->y;
+        m_placeAnchorEnd.x = start->x;
+        m_placeAnchorEnd.y = start->y;
+        m_placeAnchorInProgress = true;
+    } else {
+        m_placeAnchorInProgress = false;
+    }
+}
+
+void InGameUI::Set_Placement_End(ICoord2D const *end)
+{
+    if (end != nullptr) {
+        m_placeAnchorEnd.x = end->x;
+        m_placeAnchorEnd.y = end->y;
+    }
+}
+
+bool InGameUI::Is_Placement_Anchored()
+{
+    return m_placeAnchorInProgress;
+}
+
+void InGameUI::Get_Placement_Points(ICoord2D *start, ICoord2D *end)
+{
+    if (start != nullptr) {
+        *start = m_placeAnchorStart;
+    }
+
+    if (end != nullptr) {
+        *end = m_placeAnchorEnd;
+    }
+}
+
+float InGameUI::Get_Placement_Angle()
+{
+    if (m_placeIcon[0] != nullptr) {
+        return m_placeIcon[0]->Get_Orientation();
+    } else {
+        return 0.0f;
+    }
+}
+
+void InGameUI::Select_Drawable(Drawable *drawable)
+{
+    if (!drawable->Is_Selected()) {
+        m_frameSelectionChanged = g_theGameLogic->Get_Frame();
+        drawable->Friend_Set_Selected();
+        m_selectedDrawables.push_front(drawable);
+        Increment_Select_Count();
+        Evaluate_Solo_Nexus(drawable);
+        g_theControlBar->On_Drawable_Selected(drawable);
+    }
+}
+
+void InGameUI::Evaluate_Solo_Nexus(Drawable *drawable)
+{
+    m_soloNexusSelectedDrawableID = INVALID_DRAWABLE_ID;
+    Object *object;
+
+    if (drawable == nullptr || (object = drawable->Get_Object()) == nullptr || object->Is_KindOf(KINDOF_MOB_NEXUS)
+        || object->Is_KindOf(KINDOF_IGNORED_IN_GUI)) {
+        short count = 0;
+
+        for (auto it = m_selectedDrawables.begin(); it != m_selectedDrawables.end(); it++) {
+            Drawable *draw = *it;
+            Object *obj = draw->Get_Object();
+
+            if (obj != nullptr) {
+                if (obj->Is_KindOf(KINDOF_MOB_NEXUS)) {
+                    if (++count != 1) {
+                        m_soloNexusSelectedDrawableID = INVALID_DRAWABLE_ID;
+                        return;
+                    }
+
+                    m_soloNexusSelectedDrawableID = draw->Get_ID();
+                } else if (obj->Is_KindOf(KINDOF_IGNORED_IN_GUI)) {
+                    m_soloNexusSelectedDrawableID = INVALID_DRAWABLE_ID;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+void InGameUI::Deselect_Drawable(Drawable *drawable)
+{
+    if (drawable->Is_Selected()) {
+        m_frameSelectionChanged = g_theGameLogic->Get_Frame();
+        drawable->Friend_Clear_Selected();
+        auto it = std::find(m_selectedDrawables.begin(), m_selectedDrawables.end(), drawable);
+
+        captainslog_dbgassert(it != m_selectedDrawables.end(),
+            "Deselect_Drawable: Drawable not found in the selected drawable list '%s'\n",
+            drawable->Get_Template()->Get_Name().Str());
+        m_selectedDrawables.erase(it);
+        Decrement_Select_Count();
+        Evaluate_Solo_Nexus(nullptr);
+        g_theControlBar->On_Drawable_Deselected(drawable);
+    }
+}
+
+void InGameUI::Deselect_All_Drawables(bool post_msg)
+{
+    const std::list<Drawable *> *drawables = Get_All_Selected_Drawables();
+
+    for (auto it = drawables->begin(); it != drawables->end();) {
+        Deselect_Drawable(*(it++));
+    }
+
+    m_selectedDrawables.clear();
+    m_soloNexusSelectedDrawableID = INVALID_DRAWABLE_ID;
+
+    if (post_msg) {
+        GameMessage *msg = g_theMessageStream->Append_Message(GameMessage::MSG_DESTROY_SELECTED_GROUP);
+        msg->Append_Bool_Arg(true);
+    }
+}
+
+const std::list<Drawable *> *InGameUI::Get_All_Selected_Drawables()
+{
+    return &m_selectedDrawables;
+}
+
+const std::list<Drawable *> *InGameUI::Get_All_Selected_Local_Drawables()
+{
+    m_selectedLocalDrawables.clear();
+
+    for (auto it = m_selectedDrawables.begin(); it != m_selectedDrawables.end(); it++) {
+        Drawable *drawable = *it;
+
+        if (drawable != nullptr && drawable->Get_Object() != nullptr) {
+            if (drawable->Get_Object()->Is_Locally_Controlled()) {
+                m_selectedLocalDrawables.push_back(drawable);
+            }
+        }
+    }
+
+    return &m_selectedLocalDrawables;
+}
+
+Drawable *InGameUI::Get_First_Selected_Drawable()
+{
+    if (m_selectedDrawables.empty()) {
+        return nullptr;
+    } else {
+        return m_selectedDrawables.front();
+    }
+}
+
+bool InGameUI::Is_Drawable_Selected(DrawableID id_to_check)
+{
+    for (auto it = m_selectedDrawables.begin(); it != m_selectedDrawables.end(); it++) {
+        if ((*it)->Get_ID() == id_to_check) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool InGameUI::Is_Any_Selected_KindOf(KindOfType kindof)
+{
+    for (auto it = m_selectedDrawables.begin(); it != m_selectedDrawables.end(); it++) {
+        Drawable *drawable = *it;
+
+        if (drawable != nullptr && drawable->Is_KindOf(kindof)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool InGameUI::Is_All_Selected_KindOf(KindOfType kindof)
+{
+    for (auto it = m_selectedDrawables.begin(); it != m_selectedDrawables.end(); it++) {
+        Drawable *drawable = *it;
+
+        if (drawable != nullptr && !drawable->Is_KindOf(kindof)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+WorldAnimationData::WorldAnimationData() : m_anim(nullptr), m_frame(0), m_options(WORLD_ANIMATION_UNK2), m_zRise(0.0f)
+{
+    m_pos.Zero();
+}
+
+void InGameUI::Set_Input_Enabled(bool enable)
+{
+    if (!enable) {
+        Set_Selecting(false);
+    }
+
+    bool old_enabled = m_inputEnabled;
+    m_inputEnabled = enable;
+
+    if (old_enabled && !enable) {
+        Set_Force_To_Attack_Mode(false);
+        Set_Force_To_Move_Mode(false);
+        Set_Waypoint_Mode(false);
+        Set_Prefer_Selection(false);
+        Set_Camera_Rotating_Left(false);
+        Set_Camera_Rotating_Right(false);
+        Set_Camera_Zooming_In(false);
+        Set_Camera_Zooming_Out(false);
+    }
+}
+
+void InGameUI::Disregard_Drawable(Drawable *draw)
+{
+    Deselect_Drawable(draw);
+}
+
+void InGameUI::Pre_Draw()
+{
+    Handle_Build_Placements();
+    Handle_Radius_Cursor();
+    Draw_Floating_Text();
+    Update_And_Draw_World_Animations();
+}
+
+RGBColor illegalBuildColor{ 1.0f, 0.0f, 0.0f };
+
+void InGameUI::Handle_Build_Placements()
+{
+    if (m_pendingPlaceType != nullptr) {
+        float orientation = m_placeIcon[0]->Get_Orientation();
+        ICoord2D pos;
+
+        if (Is_Placement_Anchored()) {
+            ICoord2D start;
+            ICoord2D end;
+            Get_Placement_Points(&start, &end);
+            pos = start;
+
+            if (start.x != end.x || start.y != end.y) {
+                Coord3D start_terrain;
+                Coord3D end_terrain;
+                g_theTacticalView->Screen_To_Terrain(&start, &start_terrain);
+                g_theTacticalView->Screen_To_Terrain(&end, &end_terrain);
+                Coord2D terrain;
+                terrain.x = end_terrain.x - start_terrain.x;
+                terrain.y = end_terrain.y - start_terrain.y;
+                orientation = terrain.To_Angle();
+            }
+        } else {
+            pos = g_theMouse->Get_Mouse_Status()->pos;
+        }
+
+        Coord3D pos_terrain;
+        g_theTacticalView->Screen_To_Terrain(&pos, &pos_terrain);
+        m_placeIcon[0]->Set_Position(&pos_terrain);
+        m_placeIcon[0]->Set_Orientation(orientation);
+
+        if ((g_theGameClient->Get_Frame() & 1) != 0) {
+            g_theTerrainVisual->Remove_All_Bibs();
+            Object *obj = g_theGameLogic->Find_Object_By_ID(Get_Pending_Place_Source_Object_ID());
+            LegalBuildCode legal = g_theBuildAssistant->Is_Location_Legal_To_Build(
+                &pos_terrain, m_pendingPlaceType, orientation, 95, obj, nullptr);
+
+            if (legal != LBC_OK) {
+                m_placeIcon[0]->Color_Tint(&illegalBuildColor);
+            } else {
+                m_placeIcon[0]->Color_Tint(nullptr);
+            }
+
+            if (legal != LBC_OK) {
+                g_theTerrainVisual->Add_Faction_Bib_Drawable(m_placeIcon[0], legal != LBC_OK, 0.0f);
+            } else {
+                g_theTerrainVisual->Remove_Faction_Bib_Drawable(m_placeIcon[0]);
+            }
+        }
+
+        if (Is_Placement_Anchored() && g_theBuildAssistant->Is_Line_Build_Template(m_pendingPlaceType)) {
+            ICoord2D start;
+            ICoord2D end;
+            Get_Placement_Points(&start, &end);
+            Coord3D start_terrain;
+            Coord3D end_terrain;
+            g_theTacticalView->Screen_To_Terrain(&start, &start_terrain);
+            g_theTacticalView->Screen_To_Terrain(&end, &end_terrain);
+            float major_radius = m_pendingPlaceType->Get_Template_Geometry_Info().Get_Major_Radius();
+            float major_diameter = major_radius + major_radius;
+            BuildAssistant::TileBuildInfo *info = g_theBuildAssistant->Build_Tiled_Locations(m_pendingPlaceType,
+                orientation,
+                &start_terrain,
+                &end_terrain,
+                major_diameter,
+                g_theWriteableGlobalData->m_maxLineBuildObjects,
+                g_theGameLogic->Find_Object_By_ID(g_theInGameUI->Get_Pending_Place_Source_Object_ID()));
+
+            for (int i = 0; i < info->tiles_used; i++) {
+                if (m_placeIcon[i] == nullptr) {
+                    m_placeIcon[i] = g_theThingFactory->New_Drawable(m_pendingPlaceType, DRAWABLE_STATUS_8);
+                }
+            }
+
+            for (int i = info->tiles_used; i < g_theWriteableGlobalData->m_maxLineBuildObjects; i++) {
+                if (m_placeIcon[i] != nullptr) {
+                    g_theGameClient->Destroy_Drawable(m_placeIcon[i]);
+                    m_placeIcon[i] = nullptr;
+                }
+            }
+
+            for (int i = 0; i < info->tiles_used; i++) {
+                m_placeIcon[i]->Set_Position(&info->positions[i]);
+                m_placeIcon[i]->Set_Opacity(0.45f);
+                m_placeIcon[i]->Set_Orientation(orientation);
+            }
+        }
+    }
+}
+
+void InGameUI::Draw_Floating_Text()
+{
+    for (auto it = m_floatingTextList.begin(); it != m_floatingTextList.end(); it++) {
+        FloatingTextData *data = *it;
+        int index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
+        int x;
+        int y;
+        g_thePartitionManager->World_To_Cell(data->m_pos3D.x, data->m_pos3D.y, &x, &y);
+        ICoord2D screen;
+
+        if (g_theTacticalView->World_To_Screen_Tri(&data->m_pos3D, &screen) && data->m_dString != nullptr
+            && g_thePartitionManager->Get_Shroud_Status_For_Player(index, x, y) == SHROUD_STATUS_CLEAR) {
+            screen.y -= data->m_frameCount * m_floatingTextMoveUpSpeed;
+
+            unsigned char red;
+            unsigned char green;
+            unsigned char blue;
+            unsigned char alpha;
+            Get_Color_Components(data->m_color, &red, &green, &blue, &alpha);
+            int color = Make_Color(0, 0, 0, alpha);
+
+            int width;
+            data->m_dString->Get_Size(&width, nullptr);
+            data->m_dString->Draw(screen.x - width / 2, screen.y, data->m_color, color);
+        }
+    }
+}
+
+void InGameUI::Update_And_Draw_World_Animations()
+{
+    for (auto it = m_worldAnimations.begin(); it != m_worldAnimations.end(); it++) {
+        WorldAnimationData *data = *it;
+
+        if (data == nullptr || g_theGameLogic->Is_Game_Paused()) {
+            goto label1;
+        }
+
+        if (g_theGameLogic->Get_Frame() >= (unsigned int)data->m_frame
+            || ((data->m_options & 2) == 0 && (data->m_anim->Get_Status() & Anim2D::STATUS_ANIM_COMPLETE) != 0)) {
+            data->m_anim->Delete_Instance();
+            delete data;
+            it = m_worldAnimations.erase(it);
+        } else {
+            if (data->m_zRise != 0.0f) {
+                data->m_pos.z = data->m_zRise / 30.0f + data->m_pos.z;
+            }
+        label1:
+            int index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
+
+            if (g_thePartitionManager->Get_Shroud_Status_For_Player(index, &data->m_pos) == SHROUD_STATUS_CLEAR) {
+                if ((data->m_options & 1) != 0) {
+                    unsigned int new_frame = data->m_frame - g_theGameLogic->Get_Frame();
+
+                    if (new_frame < 30) {
+                        data->m_anim->Set_Alpha(new_frame / 30.0f);
+                    }
+                }
+
+                ICoord2D screen;
+
+                if (g_theTacticalView->World_To_Screen_Tri(&data->m_pos, &screen)) {
+                    unsigned int width = data->m_anim->Get_Current_Frame_Width();
+                    unsigned int height = data->m_anim->Get_Current_Frame_Height();
+                    float zoom = g_theTacticalView->Get_Max_Zoom() / g_theTacticalView->Get_Zoom();
+                    width *= zoom;
+                    height *= zoom;
+                    screen.x -= width >> 1;
+                    screen.y -= height >> 1;
+                    data->m_anim->Draw(screen.x, screen.y, width, height);
+                }
+            }
+        }
     }
 }

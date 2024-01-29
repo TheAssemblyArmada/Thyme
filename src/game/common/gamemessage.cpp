@@ -60,7 +60,7 @@ GameMessageArgument *GameMessage::Allocate_Arg()
     return arg;
 }
 
-ArgumentType *GameMessage::Get_Argument(int arg)
+ArgumentType *GameMessage::Get_Argument(int arg) const
 {
     static ArgumentType junkconst;
 

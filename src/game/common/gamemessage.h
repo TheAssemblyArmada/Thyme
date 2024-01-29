@@ -360,8 +360,8 @@ public:
     GameMessage(MessageType type);
 
     GameMessageArgument *Allocate_Arg();
-    ArgumentType *Get_Argument(int arg);
-    int Get_Argument_Count() { return m_argCount; }
+    ArgumentType *Get_Argument(int arg) const;
+    int Get_Argument_Count() const { return m_argCount; }
     ArgumentDataType Get_Argument_Type(int arg);
     Utf8String Get_Command_As_Ascii(MessageType command);
 

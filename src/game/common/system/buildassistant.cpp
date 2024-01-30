@@ -82,7 +82,7 @@ void BuildAssistant::Build_Object_Line_Now(Object *constructor_object,
 #endif
 }
 
-bool BuildAssistant::Is_Location_Clear_To_Build(const Coord3D *pos,
+LegalBuildCode BuildAssistant::Is_Location_Legal_To_Build(const Coord3D *pos,
     const ThingTemplate *what,
     float angle,
     unsigned int options,
@@ -90,7 +90,7 @@ bool BuildAssistant::Is_Location_Clear_To_Build(const Coord3D *pos,
     Player *owning_player)
 {
 #ifdef GAME_DLL
-    return Call_Method<bool,
+    return Call_Method<LegalBuildCode,
         BuildAssistant,
         const Coord3D *,
         const ThingTemplate *,
@@ -99,7 +99,7 @@ bool BuildAssistant::Is_Location_Clear_To_Build(const Coord3D *pos,
         Object *,
         Player *>(PICK_ADDRESS(0x004B4910, 0x009FA0AD), this, pos, what, angle, options, constructor_object, owning_player);
 #else
-    return false;
+    return LBC_OK;
 #endif
 }
 

@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "bitflags.h"
+#include "buildassistant.h"
 #include "color.h"
 #include "coord.h"
 #include "drawable.h"
@@ -34,17 +35,6 @@ class GameWindow;
 class WindowLayout;
 class Shadow;
 class GameMessage;
-
-enum LegalBuildCode
-{
-    LBC_OK,
-    LBC_RESTRICTED_TERRAIN,
-    LBC_NOT_FLAT_ENOUGH,
-    LBC_OBJECTS_IN_THE_WAY,
-    LBC_NO_CLEAR_PATH,
-    LBC_SHROUD,
-    LBC_TOO_CLOSE_TO_SUPPLIES,
-};
 
 enum RadiusCursorType
 {
@@ -94,6 +84,7 @@ struct BuildProgress
 
 enum WorldAnimationOptions
 {
+    WORLD_ANIMATION_UNK2 = 0,
     WORLD_ANIMATION_UNK = 1,
 };
 
@@ -288,7 +279,7 @@ public:
         int color,
         bool pause,
         bool pause_music);
-    virtual void Message_Color(RGBColor const *color, wchar_t const *message);
+    virtual void Message_Color(RGBColor const *color, Utf16String message, ...);
     virtual void Message(Utf16String message, ...);
     virtual void Message(Utf8String message, ...);
     virtual void Toggle_Messages() { m_messagesOn = !m_messagesOn; }
@@ -301,7 +292,7 @@ public:
     virtual void Create_Move_Hint(GameMessage const *msg);
     virtual void Create_Attack_Hint(GameMessage const *msg);
     virtual void Create_Force_Attack_Hint(GameMessage const *msg);
-    virtual void create_Mouseover_Hint(GameMessage const *msg);
+    virtual void Create_Mouseover_Hint(GameMessage const *msg);
     virtual void Create_Command_Hint(GameMessage const *msg);
     virtual void Create_Garrison_Hint(GameMessage const *msg);
     virtual void Add_Superweapon(
@@ -339,8 +330,8 @@ public:
     virtual int Get_Select_Count() { return m_selectCount; }
     virtual int Get_Max_Select_Count() { return m_maxSelectCount; }
     virtual unsigned int Get_Frame_Selection_Changed() { return m_frameSelectionChanged; }
-    virtual std::list<Drawable *> const *Get_All_Selected_Drawables();
-    virtual std::list<Drawable *> const *Get_All_Selected_Local_Drawables();
+    virtual const std::list<Drawable *> *Get_All_Selected_Drawables();
+    virtual const std::list<Drawable *> *Get_All_Selected_Local_Drawables();
     virtual Drawable *Get_First_Selected_Drawable();
     virtual DrawableID Get_Solo_Nexus_Selected_Drawable_ID() { return m_soloNexusSelectedDrawableID; }
     virtual bool Is_Drawable_Selected(DrawableID id_to_check);

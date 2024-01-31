@@ -429,22 +429,22 @@ CanAttackResult WeaponSet::Get_Able_To_Attack_Specific_Object(AbleToAttackType t
     if (source_obj == nullptr || victim_obj == nullptr || source_obj->Is_Effectively_Dead()
         || victim_obj->Is_Effectively_Dead() || source_obj->Is_Destroyed() || victim_obj->Is_Destroyed()
         || victim_obj == source_obj) {
-        return ATTACK_RESULT_0;
+        return ATTACK_RESULT_CANNOT_ATTACK;
     }
 
     bool same_player =
         source_obj->Get_Controlling_Player() == victim_obj->Get_Controlling_Player() && Is_Attack_Type_1(type);
 
     if (victim_obj->Get_Status(OBJECT_STATUS_MASKED)) {
-        return ATTACK_RESULT_0;
+        return ATTACK_RESULT_CANNOT_ATTACK;
     }
 
     if (victim_obj->Is_KindOf(KINDOF_UNATTACKABLE)) {
-        return ATTACK_RESULT_0;
+        return ATTACK_RESULT_CANNOT_ATTACK;
     }
 
     if (victim_obj->Get_Status(OBJECT_STATUS_NO_ATTACK_FROM_AI) && source == COMMANDSOURCE_AI) {
-        return ATTACK_RESULT_0;
+        return ATTACK_RESULT_CANNOT_ATTACK;
     }
 
     bool check_stealth = true;
@@ -464,7 +464,7 @@ CanAttackResult WeaponSet::Get_Able_To_Attack_Specific_Object(AbleToAttackType t
     }
 
     if (!victim_obj->Is_KindOf(KINDOF_DISGUISER)) {
-        return ATTACK_RESULT_0;
+        return ATTACK_RESULT_CANNOT_ATTACK;
     }
 
     {
@@ -478,7 +478,7 @@ CanAttackResult WeaponSet::Get_Able_To_Attack_Specific_Object(AbleToAttackType t
                 if (player != nullptr) {
                     if (player2 != nullptr) {
                         if (player->Get_Relationship(player2->Get_Default_Team()) != ENEMIES) {
-                            return ATTACK_RESULT_0;
+                            return ATTACK_RESULT_CANNOT_ATTACK;
                         }
                     }
                 }
@@ -491,14 +491,14 @@ l1:
 
     if (relationship != ENEMIES && !Is_Attack_Type_1(type) && (!victim_obj->Is_KindOf(KINDOF_MINE) || relationship == ALLIES)
         && source == COMMANDSOURCE_PLAYER && (!victim_obj->Get_Script_Status(STATUS_TARGETABLE) || relationship == ALLIES)) {
-        return ATTACK_RESULT_0;
+        return ATTACK_RESULT_CANNOT_ATTACK;
     }
 
     const Object *containedby = victim_obj->Get_Contained_By();
 
     if (containedby != nullptr) {
         if (containedby->Get_Contain()->Is_Enclosing_Container_For(victim_obj)) {
-            return ATTACK_RESULT_0;
+            return ATTACK_RESULT_CANNOT_ATTACK;
         }
     }
 
@@ -513,7 +513,7 @@ l1:
                 if (source_obj->Get_Team()->Get_Relationship(controlling_player->Get_Default_Team()) != ENEMIES) {
                     if (source == COMMANDSOURCE_PLAYER
                         && (!victim_obj->Get_Script_Status(STATUS_TARGETABLE) || relationship == ALLIES)) {
-                        return ATTACK_RESULT_0;
+                        return ATTACK_RESULT_CANNOT_ATTACK;
                     }
                 }
             }
@@ -620,14 +620,14 @@ CanAttackResult WeaponSet::Get_Able_To_Use_Weapon_Against_Target(AbleToAttackTyp
     if ((source_obj->Is_KindOf(KINDOF_IMMOBILE) || source_obj->Is_KindOf(KINDOF_SPAWNS_ARE_THE_WEAPONS)
             || containedby != nullptr)
         && has_weapon && !weapon_in_range && type != ATTACK_TYPE_4) {
-        return ATTACK_RESULT_1;
+        return ATTACK_RESULT_UNREACHABLE;
     }
 
-    CanAttackResult result = is_in_range ? ATTACK_RESULT_3 : ATTACK_RESULT_2;
+    CanAttackResult result = is_in_range ? ATTACK_RESULT_CAN_ATTACK : ATTACK_RESULT_OUT_OF_RANGE;
 
     if (Has_Any_Damage_Weapon()) {
         if ((mask & m_totalAntiMask) == 0) {
-            return ATTACK_RESULT_1;
+            return ATTACK_RESULT_UNREACHABLE;
         }
 
         if (victim_obj == nullptr) {
@@ -635,7 +635,7 @@ CanAttackResult WeaponSet::Get_Able_To_Use_Weapon_Against_Target(AbleToAttackTyp
         }
 
         if (!Is_Any_Within_Target_Pitch(source_obj, victim_obj)) {
-            return ATTACK_RESULT_1;
+            return ATTACK_RESULT_UNREACHABLE;
         }
 
         WeaponSlotType start_slot;
@@ -677,7 +677,7 @@ CanAttackResult WeaponSet::Get_Able_To_Use_Weapon_Against_Target(AbleToAttackTyp
                         CanAttackResult can =
                             obj->Get_Able_To_Use_Weapon_Against_Target(type, victim_obj, location, source, WEAPONSLOT_UNK);
 
-                        if (can == ATTACK_RESULT_2 || can == ATTACK_RESULT_3) {
+                        if (can == ATTACK_RESULT_OUT_OF_RANGE || can == ATTACK_RESULT_CAN_ATTACK) {
                             return can;
                         }
                     }
@@ -689,13 +689,14 @@ CanAttackResult WeaponSet::Get_Able_To_Use_Weapon_Against_Target(AbleToAttackTyp
     SpawnBehaviorInterface *behavior = source_obj->Get_Spawn_Behavior_Interface();
 
     if (behavior == nullptr
-        || behavior->Get_Can_Any_Slaves_Use_Weapon_Against_Target(type, victim_obj, location, source) != ATTACK_RESULT_3) {
-        return ATTACK_RESULT_1;
+        || behavior->Get_Can_Any_Slaves_Use_Weapon_Against_Target(type, victim_obj, location, source)
+            != ATTACK_RESULT_CAN_ATTACK) {
+        return ATTACK_RESULT_UNREACHABLE;
     }
 
     if (source_obj->Is_KindOf(KINDOF_IMMOBILE) && source_obj->Is_KindOf(KINDOF_SPAWNS_ARE_THE_WEAPONS)
-        && result == ATTACK_RESULT_2) {
-        return ATTACK_RESULT_3;
+        && result == ATTACK_RESULT_OUT_OF_RANGE) {
+        return ATTACK_RESULT_CAN_ATTACK;
     }
 
     return result;

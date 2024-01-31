@@ -2055,6 +2055,7 @@ void Setup_Hooks()
     Hook_Any(0x00775260, W3DGameClient::Create_WindowManager);
     Hook_Any(0x00775340, W3DGameClient::Create_DisplayStringManager);
     Hook_Any(0x00775400, W3DGameClient::Create_TerrainVisual);
+    Hook_Any(0x00775200, W3DGameClient::Create_InGameUI);
 
     // w3dprojectedshadow.cpp
     Hook_Any(0x0075ECC0, W3DProjectedShadowManager::Hook_Ctor);
@@ -3771,6 +3772,13 @@ void Setup_Hooks()
 
     // w3dingameui.h
     Hook_Any(0x007A9B30, W3DInGameUI::Create_View);
+    Hook_Any(0x007A95A0, W3DInGameUI::Init);
+    Hook_Any(0x007A95C0, W3DInGameUI::Reset);
+    Hook_Any(0x007A95B0, W3DInGameUI::Update);
+    Hook_Any(0x007A95D0, W3DInGameUI::Draw);
+    Hook_Any(0x007A9650, W3DInGameUI::Draw_Selection_Region);
+    Hook_Any(0x007A9690, W3DInGameUI::Draw_Move_Hints);
+    Hook_Any(0x007A9920, W3DInGameUI::Draw_Place_Angle);
 
     // w3dshadow.h
     Hook_Any(0x00781F40, Do_Shadows);
@@ -3861,4 +3869,43 @@ void Setup_Hooks()
     Hook_Any(0x00509BF0, InGameUI::Handle_Build_Placements);
     Hook_Any(0x00510330, InGameUI::Draw_Floating_Text);
     Hook_Any(0x00510BB0, InGameUI::Update_And_Draw_World_Animations);
+
+    Hook_Any(0x0050DC40, InGameUI::Play_Movie);
+    Hook_Any(0x0050DD00, InGameUI::Stop_Movie);
+    Hook_Any(0x0050DD80, InGameUI::Video_Buffer);
+    Hook_Any(0x0050DD90, InGameUI::Play_Cameo_Movie);
+    Hook_Any(0x0050DF20, InGameUI::Stop_Cameo_Movie);
+    Hook_Any(0x0050E030, InGameUI::Cameo_Video_Buffer);
+    Hook_Any(0x0050C4E0, InGameUI::Get_Moused_Over_Drawable_ID);
+    Hook_Any(0x0050FF50, InGameUI::Select_Units_Matching_Current_Selection);
+    Hook_Any(0x0050FA70, InGameUI::Select_Matching_Across_Screen);
+    Hook_Any(0x0050FD40, InGameUI::Select_Matching_Across_Map);
+    Hook_Any(0x0050F320, InGameUI::Select_Matching_Across_Region);
+    Hook_Any(0x0050FEA0, InGameUI::Select_All_Units_By_Type);
+    Hook_Any(0x0050F900, InGameUI::Select_All_Units_By_Type_Across_Screen);
+    Hook_Any(0x0050FBA0, InGameUI::Select_All_Units_By_Type_Across_Map);
+    Hook_Any(0x0050EEC0, InGameUI::Select_All_Units_By_Type_Across_Region);
+    Hook_Any(0x0050FF80, InGameUI::Build_Region);
+    Hook_Any(0x0050FFD0, InGameUI::Add_Floating_Text);
+    Hook_Any(0x00510DC0, InGameUI::Add_Idle_Worker);
+    Hook_Any(0x00510E10, InGameUI::Remove_Idle_Worker);
+    Hook_Any(0x00510E60, InGameUI::Select_Next_Idle_Worker);
+    Hook_Any(0x00511290, InGameUI::Disable_Tooltips_Until);
+    Hook_Any(0x005112B0, InGameUI::Clear_Tooltips_Disabled);
+    Hook_Any(0x005112C0, InGameUI::Are_Tooltips_Disabled);
+    Hook_Any(0x00510F60, InGameUI::Get_Idle_Worker_Count);
+    Hook_Any(0x00510D80, InGameUI::Find_Idle_Worker);
+    Hook_Any(0x00510F90, InGameUI::Show_Idle_Worker_Layout);
+    Hook_Any(0x00510FF0, InGameUI::Hide_Idle_Worker_Layout);
+    Hook_Any(0x00511040, InGameUI::Update_Idle_Worker);
+    Hook_Any(0x005110A0, InGameUI::Reset_Idle_Worker);
+    Hook_Any(0x005112E0, Idle_Worker_System);
+    Hook_Any(0x0050A810, InGameUI::Register_Window_Layout);
+    Hook_Any(0x0050A860, InGameUI::Unregister_Window_Layout);
+    Hook_Any(0x0050E570, InGameUI::Reset_Camera);
+    Hook_Any(0x0050E5E0, InGameUI::Get_Can_Selected_Objects_Attack);
+    Hook_Any(0x0050E6D0, InGameUI::Can_Selected_Objects_Do_Action);
+    Hook_Any(0x0050E9E0, InGameUI::Can_Selected_Objects_Do_Special_Power);
+    Hook_Any(0x0050ED00, InGameUI::Can_Selected_Objects_Override_Special_Power_Destination);
+    Hook_Any(0x0050ED90, InGameUI::Can_Selected_Objects_Effectively_Use_Weapon);
 }

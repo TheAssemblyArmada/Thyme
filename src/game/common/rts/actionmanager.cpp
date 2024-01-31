@@ -299,7 +299,7 @@ CanAttackResult ActionManager::Get_Can_Attack_Object(
     return Call_Method<CanAttackResult, ActionManager, const Object *, const Object *, CommandSourceType, AbleToAttackType>(
         PICK_ADDRESS(0x00496850, 0x008E0B72), this, obj, object_to_attack, source, attack);
 #else
-    return ATTACK_RESULT_0;
+    return ATTACK_RESULT_CANNOT_ATTACK;
 #endif
 }
 

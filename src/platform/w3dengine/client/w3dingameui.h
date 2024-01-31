@@ -36,6 +36,6 @@ public:
 private:
     RenderObjClass *m_moveHintRenderObj[MAX_MOVE_HINTS];
     HAnimClass *m_moveHintAnim[MAX_MOVE_HINTS];
-    RenderObjClass *m_locator01;
-    RenderObjClass *m_locator02;
+    RenderObjClass *m_locater01;
+    RenderObjClass *m_locater02;
 };

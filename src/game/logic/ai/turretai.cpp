@@ -94,7 +94,7 @@ StateReturnType TurretAIAimTurretState::Update()
                 target_obj,
                 owner_update->Get_Last_Command_Source(),
                 WEAPONSLOT_UNK);
-        is_able_to_attack = attack == ATTACK_RESULT_3 || attack == ATTACK_RESULT_2;
+        is_able_to_attack = attack == ATTACK_RESULT_CAN_ATTACK || attack == ATTACK_RESULT_OUT_OF_RANGE;
     }
 
     not_in_range = !turret->Friend_Is_Any_Weapon_In_Range_Of(target_obj);

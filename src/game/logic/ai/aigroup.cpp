@@ -1846,7 +1846,7 @@ void AIGroup::Group_Attack_Object_Private(bool force, Object *victim, int max_sh
                             CanAttackResult attack = member_obj->Get_Able_To_Attack_Specific_Object(
                                 static_cast<AbleToAttackType>(force), victim, cmd_source, WEAPONSLOT_UNK);
 
-                            if (attack == ATTACK_RESULT_3 || attack == ATTACK_RESULT_2) {
+                            if (attack == ATTACK_RESULT_CAN_ATTACK || attack == ATTACK_RESULT_OUT_OF_RANGE) {
                                 AIUpdateInterface *update = member_obj->Get_AI_Update_Interface();
 
                                 if (update != nullptr) {
@@ -1919,7 +1919,7 @@ void AIGroup::Group_Attack_Position(const Coord3D *pos, int max_shots_to_fire, C
                     CanAttackResult attack = contain_obj->Get_Able_To_Use_Weapon_Against_Target(
                         ATTACK_TYPE_0, nullptr, &attack_pos, cmd_source, WEAPONSLOT_UNK);
 
-                    if (attack == ATTACK_RESULT_3 || attack == ATTACK_RESULT_2) {
+                    if (attack == ATTACK_RESULT_CAN_ATTACK || attack == ATTACK_RESULT_OUT_OF_RANGE) {
                         AIUpdateInterface *contain_update = contain_obj->Get_AI_Update_Interface();
 
                         if (contain_update != nullptr) {

@@ -19,6 +19,7 @@
 #include "color.h"
 #include "coord.h"
 #include "drawable.h"
+#include "gamewindow.h"
 #include "mouse.h"
 #include "object.h"
 #include "radiusdecal.h"
@@ -131,6 +132,8 @@ private:
 
 class FloatingTextData : public MemoryPoolObject
 {
+    IMPLEMENT_POOL(FloatingTextData);
+
 public:
     FloatingTextData();
     ~FloatingTextData();
@@ -271,56 +274,56 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
     virtual void Popup_Message(
-        Utf8String const &message, int width_percent, int height_percent, int width, bool pause, bool pause_music);
-    virtual void Popup_Message(Utf8String const &message,
+        const Utf8String &message, int width_percent, int height_percent, int width, bool pause, bool pause_music);
+    virtual void Popup_Message(const Utf8String &message,
         int width_percent,
         int height_percent,
         int width,
         int color,
         bool pause,
         bool pause_music);
-    virtual void Message_Color(RGBColor const *color, Utf16String message, ...);
+    virtual void Message_Color(const RGBColor *color, Utf16String message, ...);
     virtual void Message(Utf16String message, ...);
     virtual void Message(Utf8String message, ...);
     virtual void Toggle_Messages() { m_messagesOn = !m_messagesOn; }
     virtual bool Is_Messages_On() { return m_messagesOn; }
-    virtual void Military_Subtitle(Utf8String const &subtitle, int duration);
+    virtual void Military_Subtitle(const Utf8String &subtitle, int duration);
     virtual void Remove_Military_Subtitle();
     virtual void Display_Cant_Build_Message(LegalBuildCode code);
-    virtual void Begin_Area_Select_Hint(GameMessage const *msg);
-    virtual void End_Area_Select_Hint(GameMessage const *msg);
-    virtual void Create_Move_Hint(GameMessage const *msg);
-    virtual void Create_Attack_Hint(GameMessage const *msg);
-    virtual void Create_Force_Attack_Hint(GameMessage const *msg);
-    virtual void Create_Mouseover_Hint(GameMessage const *msg);
-    virtual void Create_Command_Hint(GameMessage const *msg);
-    virtual void Create_Garrison_Hint(GameMessage const *msg);
+    virtual void Begin_Area_Select_Hint(const GameMessage *msg);
+    virtual void End_Area_Select_Hint(const GameMessage *msg);
+    virtual void Create_Move_Hint(const GameMessage *msg);
+    virtual void Create_Attack_Hint(const GameMessage *msg);
+    virtual void Create_Force_Attack_Hint(const GameMessage *msg);
+    virtual void Create_Mouseover_Hint(const GameMessage *msg);
+    virtual void Create_Command_Hint(const GameMessage *msg);
+    virtual void Create_Garrison_Hint(const GameMessage *msg);
     virtual void Add_Superweapon(
-        int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template);
+        int player_index, const Utf8String &power_name, ObjectID id, const SpecialPowerTemplate *power_template);
     virtual bool Remove_Superweapon(
-        int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template);
-    virtual void Object_Changed_Team(Object const *obj, int old_player_index, int new_player_index);
+        int player_index, const Utf8String &power_name, ObjectID id, const SpecialPowerTemplate *power_template);
+    virtual void Object_Changed_Team(const Object *obj, int old_player_index, int new_player_index);
     virtual void Set_Superweapon_Display_Enabled_By_Script(bool enable);
     virtual bool Get_Superweapon_Display_Enabled_By_Script();
-    virtual void Hide_Object_Superweapon_Display_By_Script(Object const *obj);
-    virtual void Show_Object_Superweapon_Display_By_Script(Object const *obj);
+    virtual void Hide_Object_Superweapon_Display_By_Script(const Object *obj);
+    virtual void Show_Object_Superweapon_Display_By_Script(const Object *obj);
     virtual void Set_Scrolling(bool is_scrolling);
     virtual bool Is_Scrolling();
     virtual void Set_Selecting(bool is_selecting);
     virtual bool Is_Selecting();
     virtual void Set_Scroll_Amount(Coord2D amt);
     virtual Coord2D Get_Scroll_Amount();
-    virtual void Set_GUI_Command(CommandButton const *command);
-    virtual CommandButton const *Get_GUI_Command();
-    virtual void Place_Build_Available(ThingTemplate const *build, Drawable *build_drawable);
-    virtual ThingTemplate const *Get_Pending_Place_Type();
-    virtual ObjectID const Get_Pending_Place_Source_Object_ID();
+    virtual void Set_GUI_Command(const CommandButton *command);
+    virtual const CommandButton *Get_GUI_Command();
+    virtual void Place_Build_Available(const ThingTemplate *build, Drawable *build_drawable);
+    virtual const ThingTemplate *Get_Pending_Place_Type();
+    virtual ObjectID Get_Pending_Place_Source_Object_ID();
 #ifndef GAME_DEBUG_STRUCTS
     virtual bool Get_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_One_Click();
     virtual void Set_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_One_Click(bool prevent);
 #endif
-    virtual void Set_Placement_Start(ICoord2D const *start);
-    virtual void Set_Placement_End(ICoord2D const *end);
+    virtual void Set_Placement_Start(const ICoord2D *start);
+    virtual void Set_Placement_End(const ICoord2D *end);
     virtual bool Is_Placement_Anchored();
     virtual void Get_Placement_Points(ICoord2D *start, ICoord2D *end);
     virtual float Get_Placement_Angle();
@@ -338,23 +341,23 @@ public:
     virtual bool Is_Any_Selected_KindOf(KindOfType kindof);
     virtual bool Is_All_Selected_KindOf(KindOfType kindof);
     virtual void Set_Radius_Cursor(
-        RadiusCursorType cursor, SpecialPowerTemplate const *power_template, WeaponSlotType weapon_slot);
+        RadiusCursorType cursor, const SpecialPowerTemplate *power_template, WeaponSlotType weapon_slot);
     virtual void Set_Radius_Cursor_None() { Set_Radius_Cursor(RADIUS_CURSOR_NONE, nullptr, WEAPONSLOT_PRIMARY); }
     virtual void Set_Input_Enabled(bool enable);
     virtual bool Get_Input_Enabled() { return m_inputEnabled; }
     virtual void Disregard_Drawable(Drawable *draw);
     virtual void Pre_Draw();
     virtual void Post_Draw();
-    virtual void Play_Movie(Utf8String const &movie_name);
+    virtual void Play_Movie(const Utf8String &movie_name);
     virtual void Stop_Movie();
     virtual VideoBuffer *Video_Buffer();
-    virtual void Play_Cameo_Movie(Utf8String const &movie_name);
+    virtual void Play_Cameo_Movie(const Utf8String &movie_name);
     virtual void Stop_Cameo_Movie();
     virtual VideoBuffer *Cameo_Video_Buffer();
     virtual DrawableID Get_Moused_Over_Drawable_ID();
     virtual void Set_Quit_Menu_Visible(bool visible) { m_isQuitMenuVisible = visible; }
     virtual bool Is_Quit_Menu_Visible() { return m_isQuitMenuVisible; }
-    virtual FieldParse const *Get_Field_Parse() { return s_fieldParseTable; }
+    virtual const FieldParse *Get_Field_Parse() { return s_fieldParseTable; }
     virtual int Select_Units_Matching_Current_Selection();
     virtual int Select_Matching_Across_Screen();
     virtual int Select_Matching_Across_Map();
@@ -366,15 +369,15 @@ public:
         BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
     virtual int Select_All_Units_By_Type_Across_Region(
         IRegion2D *region, BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
-    virtual void Build_Region(ICoord2D const *anchor, ICoord2D const *dest, IRegion2D *region);
+    virtual void Build_Region(const ICoord2D *anchor, const ICoord2D *dest, IRegion2D *region);
     virtual bool Get_Displayed_Max_Warning() { return m_displayedMaxWarning; }
     virtual void Set_Displayed_Max_Warning(bool selected) { m_displayedMaxWarning = selected; }
-    virtual void Add_Floating_Text(Utf16String const &text, Coord3D const *pos, int color);
+    virtual void Add_Floating_Text(const Utf16String &text, const Coord3D *pos, int color);
     virtual void Add_Idle_Worker(Object *obj);
     virtual void Remove_Idle_Worker(Object *obj, int slot);
     virtual void Select_Next_Idle_Worker();
     virtual void Recreate_Control_Bar();
-    virtual void Disable_Tooltips_Until(unsigned int until);
+    virtual void Disable_Tooltips_Until(unsigned int frame);
     virtual void Clear_Tooltips_Disabled();
     virtual bool Are_Tooltips_Disabled();
     virtual int Get_Idle_Worker_Count();
@@ -384,7 +387,7 @@ public:
     virtual void Update_Idle_Worker();
     virtual void Reset_Idle_Worker();
 #ifdef GAME_DEBUG_STRUCTS
-    virtual void Debug_Add_Floating_Text(Utf8String const &text, Coord3D const *pos, int color);
+    virtual void Debug_Add_Floating_Text(const Utf8String &text, const Coord3D *pos, int color);
 #endif
     virtual View *Create_View() = 0;
 
@@ -392,7 +395,7 @@ public:
         Anim2DTemplate *anim, const Coord3D *pos, WorldAnimationOptions options, float time, float z_rise);
     void Set_Mouse_Cursor(MouseCursor cursor);
     SuperweaponInfo *Find_SW_Info(
-        int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template);
+        int player_index, const Utf8String &power_name, ObjectID id, const SpecialPowerTemplate *power_template);
     void Add_Named_Timer(const Utf8String &timer_name, const Utf16String &text, bool countdown);
     void Remove_Named_Timer(const Utf8String &timer_name);
     void Show_Named_Timer_Display(bool show);
@@ -416,8 +419,12 @@ public:
         ActionType action, const Object *object_to_interact_with, SelectionRules rule, bool force_to_attack) const;
     bool Can_Selected_Objects_Do_Action(
         ActionType action, const Object *object_to_interact_with, SelectionRules rule, bool additional_checking) const;
-    bool Can_Selected_Objects_Do_Special_Power(
-        CommandButton *command, const Object *object_to_interact_with, Coord3D *position, SelectionRules rule) const;
+    bool Can_Selected_Objects_Do_Special_Power(CommandButton *command,
+        const Object *object_to_interact_with,
+        Coord3D *position,
+        SelectionRules rule,
+        unsigned int options,
+        Object *custom_object) const;
     bool Can_Selected_Objects_Override_Special_Power_Destination(
         const Coord3D *pos, SelectionRules rule, SpecialPowerType type) const;
     bool Can_Selected_Objects_Effectively_Use_Weapon(
@@ -562,7 +569,7 @@ protected:
     bool m_isSelecting;
     MouseMode m_mouseMode;
     MouseCursor m_mouseCursor; // not 100% identified yet
-    DrawableID m_mousedOverObjectID;
+    DrawableID m_mousedOverDrawableID;
     Coord2D m_scrollAmt;
     bool m_isQuitMenuVisible;
     bool m_messagesOn;
@@ -617,6 +624,8 @@ protected:
 void Hide_Replay_Controls();
 void Show_Replay_Controls();
 void Toggle_Replay_Controls();
+
+WindowMsgHandledType Idle_Worker_System(GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
 
 #ifdef GAME_DLL
 extern InGameUI *&g_theInGameUI;

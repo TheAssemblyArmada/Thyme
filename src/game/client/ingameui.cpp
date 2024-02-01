@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "ingameui.h"
+#include "actionmanager.h"
 #include "ai.h"
 #include "aiguard.h"
 #include "aipathfind.h"
@@ -23,12 +24,12 @@
 #include "displaystringmanager.h"
 #include "drawable.h"
 #include "eva.h"
+#include "gadgetpushbutton.h"
 #include "gadgetstatictext.h"
 #include "gameclient.h"
 #include "gamefont.h"
 #include "gamelogic.h"
 #include "gametext.h"
-#include "gamewindow.h"
 #include "gamewindowmanager.h"
 #include "globallanguage.h"
 #include "ingamechat.h"
@@ -49,10 +50,12 @@
 #include "terrainvisual.h"
 #include "thingfactory.h"
 #include "videobuffer.h"
+#include "videoplayer.h"
 #include "videostream.h"
 #include "w3ddisplay.h"
 #include "w3dview.h"
 #include "windowlayout.h"
+#include <set>
 
 static float LOGICFRAMES_PER_SECONDS_REAL = 30.0f;
 static float SECONDS_PER_LOGICFRAME_REAL = 1.0f / LOGICFRAMES_PER_SECONDS_REAL;
@@ -253,6 +256,174 @@ void Toggle_Replay_Controls()
     if (g_replayWindow != nullptr) {
         g_replayWindow->Win_Hide(!(g_theGameLogic->Is_In_Replay_Game() && g_replayWindow->Win_Is_Hidden()));
     }
+}
+
+InGameUI::InGameUI() :
+    m_superweaponDisplayEnabledByScript(false),
+    m_inputEnabled(true),
+    m_isDragSelecting(false),
+    m_displayedMaxWarning(false),
+    m_nextMoveHint(0),
+    m_pendingGUICommand(nullptr),
+    m_pendingPlaceType(nullptr),
+    m_pendingPlaceSourceObjectID(INVALID_OBJECT_ID),
+#ifndef GAME_DEBUG_STRUCTS
+    m_preventLeftClickDeselectionInAlternateMouseModeForOneClick(false),
+#endif
+    m_placeAnchorInProgress(false),
+    m_selectCount(0),
+    m_maxSelectCount(-1),
+    m_frameSelectionChanged(0),
+    m_doubleClickCounter(0),
+    m_videoBuffer(nullptr),
+    m_videoStream(nullptr),
+    m_cameoVideoBuffer(nullptr),
+    m_cameoVideoStream(nullptr),
+    m_superweaponFlashDuration(1.0f),
+    m_superweaponNormalFont("Arial"),
+    m_superweaponNormalPointSize(10),
+    m_superweaponNormalBold(false),
+    m_superweaponReadyFont("Arial"),
+    m_superweaponReadyPointSize(10),
+    m_superweaponReadyBold(false),
+    m_superweaponLastFlashFrame(0),
+    m_superweaponHidden(true),
+    m_namedTimerFlashDuration(0.0f),
+    m_namedTimerLastFlashFrame(0),
+    m_namedTimerUsedFlashColor(true),
+    m_showNamedTimers(true),
+    m_namedTimerNormalFont("Arial"),
+    m_namedTimerNormalPointSize(10),
+    m_namedTimerNormalBold(false),
+    m_namedTimerReadyFont("Arial"),
+    m_namedTimerReadyPointSize(10),
+    m_namedTimerReadyBold(false),
+    m_drawableCaptionFont("Arial"),
+    m_drawableCaptionPointSize(10),
+    m_drawableCaptionBold(false),
+    m_tooltipsDisabled(0),
+    m_militarySubtitle(nullptr),
+    m_isScrolling(false),
+    m_isSelecting(false),
+    m_mouseMode(MOUSEMODE_DEFAULT),
+    m_mouseCursor(CURSOR_ARROW),
+    m_mousedOverDrawableID(INVALID_DRAWABLE_ID),
+    m_isQuitMenuVisible(false),
+    m_messagesOn(true),
+    m_messageFont("Arial"),
+    m_messagePointSize(10),
+    m_messageBold(false),
+    m_messageDelayMS(5000),
+    m_militaryCaptionTitleFont("Courier"),
+    m_militaryCaptionTitlePointSize(12),
+    m_militaryCaptionTitleBold(true),
+    m_militaryCaptionFont("Courier"),
+    m_militaryCaptionPointSize(12),
+    m_militaryCaptionBold(false),
+    m_militaryCaptionRandomizeTyping(false),
+    m_militaryCaptionSpeed(1),
+    m_radiusDecalType(RADIUS_CURSOR_NONE),
+    m_floatingTextTimeOut(10),
+    m_floatingTextMoveUpSpeed(1.0f),
+    m_floatingTextMoveVanishRate(0.1f),
+    m_popupMessageData(nullptr),
+    m_waypointMode(false),
+    m_forceToAttackMode(false),
+    m_forceToMoveMode(false),
+    m_attackMoveToMode(false),
+    m_preferSelection(false),
+    m_cameraRotateLeft(false),
+    m_cameraRotateRight(false),
+    m_cameraZoomIn(false),
+    m_cameraDrawingTrackable(false),
+    m_cameraZoomOut(false),
+    m_drawRMBScrollAnchor(false),
+    m_moveRMBScrollAnchor(false),
+    m_noRadarEdgeSound(false),
+    m_idleWorkerWin(nullptr),
+    m_idleWorkerCount(-1),
+    m_soloNexusSelectedDrawableID(INVALID_DRAWABLE_ID)
+{
+    m_radiusDecalPos.Zero();
+    m_currentlyPlayingMovie.Clear();
+    m_messageColor1 = Make_Color(255, 255, 255, 255);
+    m_messageColor2 = Make_Color(180, 180, 180, 255);
+    m_messagePosition.x = 10;
+    m_messagePosition.y = 10;
+    m_militaryCaptionColor.red = 200;
+    m_militaryCaptionColor.green = 200;
+    m_militaryCaptionColor.blue = 30;
+    m_militaryCaptionColor.alpha = 255;
+    m_militaryCaptionPosition.x = 10;
+    m_militaryCaptionPosition.y = 380;
+    m_popupMessageColor = Make_Color(255, 255, 255, 255);
+
+    for (int i = 0; i < MAX_MOVE_HINTS; i++) {
+        m_moveHint[i].pos.Zero();
+        m_moveHint[i].source_id = 0;
+        m_moveHint[i].frame = 0;
+    }
+
+    for (int i = 0; i < MAX_BUILD_PROGRESS; i++) {
+        m_buildProgress[i].m_thingTemplate = nullptr;
+        m_buildProgress[i].m_percentComplete = 0.0f;
+        m_buildProgress[i].m_control = nullptr;
+    }
+
+    m_placeIcon = new Drawable *[g_theWriteableGlobalData->m_maxLineBuildObjects];
+
+    for (int i = 0; i < g_theWriteableGlobalData->m_maxLineBuildObjects; i++) {
+        m_placeIcon[i] = nullptr;
+    }
+
+    m_placeAnchorStart.x = 0;
+    m_placeAnchorStart.y = 0;
+    m_placeAnchorEnd.x = 0;
+    m_placeAnchorEnd.y = 0;
+
+    for (int i = 0; i < MAX_UI_MESSAGES; i++) {
+        m_uiMessages[i].full_text.Clear();
+        m_uiMessages[i].display_string = nullptr;
+        m_uiMessages[i].timestamp = 0;
+        m_uiMessages[i].color = 0;
+    }
+
+    g_replayWindow = nullptr;
+    m_superweaponPosition.x = 0.7f;
+    m_superweaponPosition.y = 0.7f;
+    m_superweaponFlashColor = Make_Color(255, 255, 255, 255);
+    m_namedTimerPosition.x = 0.05f;
+    m_namedTimerPosition.y = 0.7f;
+    m_namedTimerNormalColor = Make_Color(255, 255, 0, 255);
+    m_namedTimerReadyColor = Make_Color(255, 0, 255, 255);
+    m_namedTimerFlashColor = Make_Color(0, 255, 255, 255);
+    m_drawableCaptionColor = Make_Color(255, 255, 255, 255);
+    m_scrollAmt.x = 0;
+    m_scrollAmt.y = 0;
+    m_dragSelectRegion.hi.x = 0;
+    m_dragSelectRegion.hi.y = 0;
+    m_dragSelectRegion.lo.x = 0;
+    m_dragSelectRegion.lo.y = 0;
+}
+
+InGameUI::~InGameUI()
+{
+    if (g_theControlBar != nullptr) {
+        delete g_theControlBar;
+        g_theControlBar = nullptr;
+    }
+
+    Remove_Military_Subtitle();
+    Stop_Movie();
+    Stop_Cameo_Movie();
+    Place_Build_Available(nullptr, nullptr);
+    Set_Radius_Cursor_None();
+    Free_Message_Resources();
+    delete[] m_placeIcon;
+    m_placeIcon = nullptr;
+    Clear_Floating_Text();
+    Clear_World_Animations();
+    Reset_Idle_Worker();
 }
 
 SuperweaponInfo::SuperweaponInfo(ObjectID object_id,
@@ -456,7 +627,7 @@ void InGameUI::Xfer_Snapshot(Xfer *xfer)
 void InGameUI::Load_Post_Process() {}
 
 SuperweaponInfo *InGameUI::Find_SW_Info(
-    int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template)
+    int player_index, const Utf8String &power_name, ObjectID id, const SpecialPowerTemplate *power_template)
 {
     auto it = m_superweapons[player_index].find(power_name);
 
@@ -511,7 +682,7 @@ void InGameUI::Set_Mouse_Cursor(MouseCursor cursor)
 }
 
 void InGameUI::Add_Superweapon(
-    int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template)
+    int player_index, const Utf8String &power_name, ObjectID id, const SpecialPowerTemplate *power_template)
 {
     if (power_template != nullptr && !Find_SW_Info(player_index, power_name, id, power_template)) {
         Player *player = g_thePlayerList->Get_Nth_Player(player_index);
@@ -540,7 +711,7 @@ void InGameUI::Add_Superweapon(
 }
 
 bool InGameUI::Remove_Superweapon(
-    int player_index, Utf8String const &power_name, ObjectID id, SpecialPowerTemplate const *power_template)
+    int player_index, const Utf8String &power_name, ObjectID id, const SpecialPowerTemplate *power_template)
 {
     captainslog_debug("Removing superweapon UI timer");
     auto it = m_superweapons[player_index].find(power_name);
@@ -564,7 +735,7 @@ bool InGameUI::Remove_Superweapon(
     return false;
 }
 
-void InGameUI::Object_Changed_Team(Object const *obj, int old_player_index, int new_player_index)
+void InGameUI::Object_Changed_Team(const Object *obj, int old_player_index, int new_player_index)
 {
     if (obj != nullptr && old_player_index >= 0 && new_player_index >= 0) {
         ObjectID id = obj->Get_ID();
@@ -601,7 +772,7 @@ void InGameUI::Object_Changed_Team(Object const *obj, int old_player_index, int 
     }
 }
 
-void InGameUI::Hide_Object_Superweapon_Display_By_Script(Object const *obj)
+void InGameUI::Hide_Object_Superweapon_Display_By_Script(const Object *obj)
 {
     ObjectID id = obj->Get_ID();
 
@@ -616,7 +787,7 @@ void InGameUI::Hide_Object_Superweapon_Display_By_Script(Object const *obj)
     }
 }
 
-void InGameUI::Show_Object_Superweapon_Display_By_Script(Object const *obj)
+void InGameUI::Show_Object_Superweapon_Display_By_Script(const Object *obj)
 {
     ObjectID id = obj->Get_ID();
 
@@ -1166,9 +1337,9 @@ void InGameUI::Add_World_Animation(
 
 bool InGameUI::Are_Selected_Objects_Controllable() const
 {
-    const std::list<Drawable *> *list = g_theInGameUI->Get_All_Selected_Drawables();
+    const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
 
-    for (auto it = list->begin(); it != list->end(); it++) {
+    for (auto it = drawables->begin(); it != drawables->end(); it++) {
         return (*it)->Get_Object()->Is_Locally_Controlled();
     }
 
@@ -1188,7 +1359,7 @@ void InGameUI::Show_Named_Timer_Display(bool show)
 }
 
 void InGameUI::Set_Radius_Cursor(
-    RadiusCursorType cursor, SpecialPowerTemplate const *power_template, WeaponSlotType weapon_slot)
+    RadiusCursorType cursor, const SpecialPowerTemplate *power_template, WeaponSlotType weapon_slot)
 {
     if (cursor != m_radiusDecalType) {
         m_radiusDecal.Clear();
@@ -1343,13 +1514,13 @@ void InGameUI::Trigger_Double_Click_Attack_Move_Guard_Hint()
     g_theTacticalView->Screen_To_Terrain(&status->pos, &m_radiusDecalPos);
 }
 
-void InGameUI::Create_Command_Hint(GameMessage const *msg)
+void InGameUI::Create_Command_Hint(const GameMessage *msg)
 {
     if (m_isScrolling || m_isSelecting || g_theRecorder->Get_Mode() == RECORDERMODETYPE_PLAYBACK) {
         return;
     }
 
-    Drawable *draw = g_theGameClient->Find_Drawable_By_ID(m_mousedOverObjectID);
+    Drawable *draw = g_theGameClient->Find_Drawable_By_ID(m_mousedOverDrawableID);
     GameMessage::MessageType type = msg->Get_Type();
 
     if (draw != nullptr
@@ -1622,7 +1793,7 @@ void InGameUI::Create_Command_Hint(GameMessage const *msg)
     }
 }
 
-void InGameUI::Set_GUI_Command(CommandButton const *command)
+void InGameUI::Set_GUI_Command(const CommandButton *command)
 {
     if (g_theRecorder->Get_Mode() == RECORDERMODETYPE_PLAYBACK) {
         return;
@@ -1664,7 +1835,7 @@ void InGameUI::Set_GUI_Command(CommandButton const *command)
     m_mouseCursor = g_theMouse->Get_Mouse_Cursor();
 }
 
-void InGameUI::Place_Build_Available(ThingTemplate const *build, Drawable *build_drawable)
+void InGameUI::Place_Build_Available(const ThingTemplate *build, Drawable *build_drawable)
 {
     if (build != nullptr) {
         Set_Radius_Cursor_None();
@@ -2006,13 +2177,13 @@ void InGameUI::Update_Floating_Text()
 }
 
 void InGameUI::Popup_Message(
-    Utf8String const &message, int width_percent, int height_percent, int width, bool pause, bool pause_music)
+    const Utf8String &message, int width_percent, int height_percent, int width, bool pause, bool pause_music)
 {
     Popup_Message(message, width_percent, height_percent, width, m_popupMessageColor, pause, pause_music);
 }
 
 void InGameUI::Popup_Message(
-    Utf8String const &message, int width_percent, int height_percent, int width, int color, bool pause, bool pause_music)
+    const Utf8String &message, int width_percent, int height_percent, int width, int color, bool pause, bool pause_music)
 {
     if (m_popupMessageData != nullptr) {
         Clear_Popup_Message_Data();
@@ -2054,7 +2225,7 @@ void InGameUI::Popup_Message(
     m_popupMessageData->m_windowLayout->Run_Init(nullptr);
 }
 
-void InGameUI::Message_Color(RGBColor const *color, Utf16String message, ...)
+void InGameUI::Message_Color(const RGBColor *color, Utf16String message, ...)
 {
     va_list va;
     va_start(va, message);
@@ -2122,7 +2293,7 @@ void InGameUI::Add_Message_Text(const Utf16String &formatted_message, const RGBC
     }
 }
 
-void InGameUI::Military_Subtitle(Utf8String const &subtitle, int duration)
+void InGameUI::Military_Subtitle(const Utf8String &subtitle, int duration)
 {
     Remove_Military_Subtitle();
     Update_Diplomacy_Briefing_Text(subtitle, false);
@@ -2211,18 +2382,18 @@ void InGameUI::Display_Cant_Build_Message(LegalBuildCode code)
     }
 }
 
-void InGameUI::Begin_Area_Select_Hint(GameMessage const *msg)
+void InGameUI::Begin_Area_Select_Hint(const GameMessage *msg)
 {
     m_isDragSelecting = true;
     m_dragSelectRegion = msg->Get_Argument(0)->region;
 }
 
-void InGameUI::End_Area_Select_Hint(GameMessage const *msg)
+void InGameUI::End_Area_Select_Hint(const GameMessage *msg)
 {
     m_isDragSelecting = false;
 }
 
-void InGameUI::Create_Move_Hint(GameMessage const *msg)
+void InGameUI::Create_Move_Hint(const GameMessage *msg)
 {
     for (int i = 0; i < MAX_MOVE_HINTS; i++) {
         if (m_moveHint[i].source_id == msg->Get_Argument(0)->integer) {
@@ -2257,11 +2428,11 @@ void InGameUI::Expire_Hint(HintType type, unsigned int hint_index)
     }
 }
 
-void InGameUI::Create_Attack_Hint(GameMessage const *msg) {}
+void InGameUI::Create_Attack_Hint(const GameMessage *msg) {}
 
-void InGameUI::Create_Force_Attack_Hint(GameMessage const *msg) {}
+void InGameUI::Create_Force_Attack_Hint(const GameMessage *msg) {}
 
-void InGameUI::Create_Mouseover_Hint(GameMessage const *msg)
+void InGameUI::Create_Mouseover_Hint(const GameMessage *msg)
 {
     if (!m_isScrolling && !m_isSelecting) {
         GameWindow *parent = nullptr;
@@ -2289,11 +2460,11 @@ void InGameUI::Create_Mouseover_Hint(GameMessage const *msg)
         if (is_blocking_window_under_cursor) {
             Set_Mouse_Cursor(CURSOR_ARROW);
         } else {
-            DrawableID old_moused_over_id = m_mousedOverObjectID;
+            DrawableID old_moused_over_id = m_mousedOverDrawableID;
 
             if (msg->Get_Type() == GameMessage::MSG_MOUSEOVER_DRAWABLE_HINT) {
                 g_theMouse->Set_Cursor_Tooltip(Utf16String::s_emptyString, -1, nullptr, 1.0f);
-                m_mousedOverObjectID = DrawableID::INVALID_DRAWABLE_ID;
+                m_mousedOverDrawableID = DrawableID::INVALID_DRAWABLE_ID;
                 Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(msg->Get_Argument(0)->drawableID);
                 Object *object;
 
@@ -2317,16 +2488,16 @@ void InGameUI::Create_Mouseover_Hint(GameMessage const *msg)
                                 Drawable *slaver_draw = slaver->Get_Drawable();
 
                                 if (slaver_draw != nullptr) {
-                                    m_mousedOverObjectID = slaver_draw->Get_ID();
+                                    m_mousedOverDrawableID = slaver_draw->Get_ID();
                                 }
                             }
                         }
                     } else {
-                        m_mousedOverObjectID = drawable->Get_ID();
+                        m_mousedOverDrawableID = drawable->Get_ID();
                     }
 
                     if (g_theWriteableGlobalData->m_constantDebugUpdate) {
-                        m_mousedOverObjectID = drawable->Get_ID();
+                        m_mousedOverDrawableID = drawable->Get_ID();
                     }
 
                     const Player *player = nullptr;
@@ -2481,10 +2652,10 @@ void InGameUI::Create_Mouseover_Hint(GameMessage const *msg)
                     }
                 }
             } else {
-                m_mousedOverObjectID = INVALID_DRAWABLE_ID;
+                m_mousedOverDrawableID = INVALID_DRAWABLE_ID;
             }
 
-            if (old_moused_over_id != m_mousedOverObjectID) {
+            if (old_moused_over_id != m_mousedOverDrawableID) {
                 g_theMouse->Reset_Tooltip_Delay();
             }
 
@@ -2495,12 +2666,12 @@ void InGameUI::Create_Mouseover_Hint(GameMessage const *msg)
                     Set_Mouse_Cursor(m_mouseCursor);
                 }
             } else {
-                if (m_mousedOverObjectID == INVALID_DRAWABLE_ID) {
+                if (m_mousedOverDrawableID == INVALID_DRAWABLE_ID) {
                     Set_Mouse_Cursor(CURSOR_ARROW);
                     return;
                 }
 
-                Drawable *moused_over_drawable = g_theGameClient->Find_Drawable_By_ID(m_mousedOverObjectID);
+                Drawable *moused_over_drawable = g_theGameClient->Find_Drawable_By_ID(m_mousedOverDrawableID);
                 Object *moused_over_object = moused_over_drawable ? moused_over_drawable->Get_Object() : nullptr;
                 bool can_select = Can_Select_Drawable(moused_over_drawable, false);
 
@@ -2518,7 +2689,7 @@ void InGameUI::Create_Mouseover_Hint(GameMessage const *msg)
     }
 }
 
-void InGameUI::Create_Garrison_Hint(GameMessage const *msg)
+void InGameUI::Create_Garrison_Hint(const GameMessage *msg)
 {
     Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(msg->Get_Argument(0)->drawableID);
 
@@ -2571,17 +2742,17 @@ Coord2D InGameUI::Get_Scroll_Amount()
     return m_scrollAmt;
 }
 
-CommandButton const *InGameUI::Get_GUI_Command()
+const CommandButton *InGameUI::Get_GUI_Command()
 {
     return m_pendingGUICommand;
 }
 
-ThingTemplate const *InGameUI::Get_Pending_Place_Type()
+const ThingTemplate *InGameUI::Get_Pending_Place_Type()
 {
     return m_pendingPlaceType;
 }
 
-ObjectID const InGameUI::Get_Pending_Place_Source_Object_ID()
+ObjectID InGameUI::Get_Pending_Place_Source_Object_ID()
 {
     return m_pendingPlaceSourceObjectID;
 }
@@ -2598,7 +2769,7 @@ void InGameUI::Set_Prevent_Left_Click_Deselection_In_Alternate_Mouse_Mode_For_On
 }
 #endif
 
-void InGameUI::Set_Placement_Start(ICoord2D const *start)
+void InGameUI::Set_Placement_Start(const ICoord2D *start)
 {
     if (start != nullptr) {
         m_placeAnchorStart.x = start->x;
@@ -2611,7 +2782,7 @@ void InGameUI::Set_Placement_Start(ICoord2D const *start)
     }
 }
 
-void InGameUI::Set_Placement_End(ICoord2D const *end)
+void InGameUI::Set_Placement_End(const ICoord2D *end)
 {
     if (end != nullptr) {
         m_placeAnchorEnd.x = end->x;
@@ -2992,4 +3163,1020 @@ void InGameUI::Update_And_Draw_World_Animations()
             }
         }
     }
+}
+
+void InGameUI::Play_Movie(const Utf8String &movie_name)
+{
+    Stop_Movie();
+    m_videoStream = g_theVideoPlayer->Open(movie_name);
+
+    if (m_videoStream != nullptr) {
+        m_currentlyPlayingMovie = movie_name;
+        m_videoBuffer = g_theDisplay->Create_VideoBuffer();
+
+        if (m_videoBuffer == nullptr || !m_videoBuffer->Allocate(m_videoStream->Width(), m_videoStream->Height())) {
+            Stop_Movie();
+        }
+    }
+}
+
+void InGameUI::Stop_Movie()
+{
+    if (m_videoBuffer != nullptr) {
+        delete m_videoBuffer;
+        m_videoBuffer = nullptr;
+    }
+
+    if (m_videoStream != nullptr) {
+        delete m_videoStream;
+        m_videoStream = nullptr;
+    }
+
+    if (!m_currentlyPlayingMovie.Is_Empty()) {
+        m_currentlyPlayingMovie = Utf8String::s_emptyString;
+    }
+}
+
+VideoBuffer *InGameUI::Video_Buffer()
+{
+    return m_videoBuffer;
+}
+
+void InGameUI::Play_Cameo_Movie(const Utf8String &movie_name)
+{
+    Stop_Cameo_Movie();
+    m_cameoVideoStream = g_theVideoPlayer->Open(movie_name);
+
+    if (m_cameoVideoStream != nullptr) {
+        m_currentlyPlayingMovie = movie_name;
+        m_cameoVideoBuffer = g_theDisplay->Create_VideoBuffer();
+
+        if (m_cameoVideoBuffer != nullptr
+            && m_cameoVideoBuffer->Allocate(m_cameoVideoStream->Width(), m_cameoVideoStream->Height())) {
+            GameWindow *hud = g_theWindowManager->Win_Get_Window_From_Id(
+                nullptr, g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:RightHUD"));
+            hud->Win_Get_Instance_Data()->Set_VideoBuffer(m_cameoVideoBuffer);
+        } else {
+            Stop_Cameo_Movie();
+        }
+    }
+}
+
+void InGameUI::Stop_Cameo_Movie()
+{
+    GameWindow *hud =
+        g_theWindowManager->Win_Get_Window_From_Id(nullptr, g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:RightHUD"));
+    hud->Win_Get_Instance_Data()->Set_VideoBuffer(nullptr);
+
+    if (m_cameoVideoBuffer != nullptr) {
+        delete m_cameoVideoBuffer;
+        m_cameoVideoBuffer = nullptr;
+    }
+
+    if (m_cameoVideoStream != nullptr) {
+        delete m_cameoVideoStream;
+        m_cameoVideoStream = nullptr;
+    }
+}
+
+VideoBuffer *InGameUI::Cameo_Video_Buffer()
+{
+    return m_cameoVideoBuffer;
+}
+
+DrawableID InGameUI::Get_Moused_Over_Drawable_ID()
+{
+    return m_mousedOverDrawableID;
+}
+
+int InGameUI::Select_Units_Matching_Current_Selection()
+{
+    int ret = Select_Matching_Across_Screen();
+
+    if (ret == -1) {
+        return -1;
+    }
+
+    if (ret != 0) {
+        return ret;
+    }
+
+    return Select_Matching_Across_Map();
+}
+
+int InGameUI::Select_Matching_Across_Screen()
+{
+    ICoord2D origin;
+    g_theTacticalView->Get_Origin(&origin.x, &origin.y);
+
+    ICoord2D size;
+    size.x = g_theTacticalView->Get_Width();
+    size.y = g_theTacticalView->Get_Height();
+
+    IRegion2D region;
+    Build_Region(&origin, &size, &region);
+    int ret = Select_Matching_Across_Region(&region);
+
+    if (ret == -1) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:NothingSelected"));
+    } else if (ret != 0) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:SelectedAcrossScreen"));
+    }
+
+    return ret;
+}
+
+int InGameUI::Select_Matching_Across_Map()
+{
+    int ret = Select_Matching_Across_Region(nullptr);
+
+    if (ret == -1) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:NothingSelected"));
+    } else if (ret != 0) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:SelectedAcrossMap"));
+    } else {
+        Drawable *draw = g_theInGameUI->Get_First_Selected_Drawable();
+
+        if (draw == nullptr || draw->Get_Object() == nullptr || !draw->Get_Object()->Is_KindOf(KINDOF_STRUCTURE)) {
+            g_theInGameUI->Message(g_theGameText->Fetch("GUI:SelectedAcrossMap"));
+        }
+    }
+
+    return ret;
+}
+
+struct SimilarUnitSelectionData
+{
+    const ThingTemplate *tmplate;
+    std::list<Drawable *> selected_units;
+    bool is_carbomb;
+};
+
+bool Similar_Unit_Selection(Drawable *draw, void *user_data)
+{
+    SimilarUnitSelectionData *data = static_cast<SimilarUnitSelectionData *>(user_data);
+    const ThingTemplate *tmplate = data->tmplate;
+
+    if (draw != nullptr) {
+        Object *obj = draw->Get_Object();
+
+        if (obj == nullptr) {
+            return false;
+        }
+
+        bool is_equivalent = obj->Get_Template()->Is_Equivalent_To(tmplate);
+
+        if (data->is_carbomb && !is_equivalent) {
+            is_equivalent = obj->Get_Status(OBJECT_STATUS_IS_CARBOMB);
+        }
+
+        if (is_equivalent && obj->Is_Locally_Controlled() && !obj->Is_Contained()) {
+            if (!obj->Get_Drawable()->Is_Selected() && obj->Is_Mass_Selectable() && !obj->Is_Outside_Map()) {
+                if (g_theInGameUI->Get_Max_Select_Count() <= 0
+                    || g_theInGameUI->Get_Select_Count() < g_theInGameUI->Get_Max_Select_Count()) {
+                    g_theInGameUI->Select_Drawable(draw);
+                    g_theInGameUI->Set_Displayed_Max_Warning(false);
+                    data->selected_units.push_back(draw);
+                    return true;
+                }
+
+                if (!g_theInGameUI->Get_Displayed_Max_Warning()) {
+                    g_theInGameUI->Set_Displayed_Max_Warning(true);
+                    Utf16String message;
+                    message.Format(g_theGameText->Fetch("GUI:MaxSelectionSize"), g_theInGameUI->Get_Max_Select_Count());
+                    g_theInGameUI->Message(message);
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+int InGameUI::Select_Matching_Across_Region(IRegion2D *region)
+{
+    const std::list<Drawable *> *list = Get_All_Selected_Drawables();
+    std::set<const ThingTemplate *> templates;
+
+    bool is_carbomb = false;
+
+    for (auto it = list->begin(); it != list->end(); it++) {
+        Drawable *draw = *it;
+
+        if (draw != nullptr) {
+            if (draw->Get_Object() != nullptr) {
+                if (draw->Get_Object()->Is_Locally_Controlled()) {
+                    templates.insert(draw->Get_Object()->Get_Template());
+                }
+
+                if (draw->Get_Object()->Get_Status(OBJECT_STATUS_IS_CARBOMB)) {
+                    is_carbomb = true;
+                }
+            }
+        }
+    }
+
+    if (templates.size() != 0) {
+        SimilarUnitSelectionData data;
+        int count = 0;
+
+        for (auto it = templates.begin(); it != templates.end(); it++) {
+            data.tmplate = *it;
+            data.is_carbomb = is_carbomb;
+
+            if (region != nullptr) {
+                count += g_theTacticalView->Iterate_Drawables_In_Region(region, Similar_Unit_Selection, &data);
+            } else {
+                for (Drawable *drawable = g_theGameClient->First_Drawable(); drawable != nullptr;
+                     drawable = drawable->Get_Next()) {
+                    count += Similar_Unit_Selection(drawable, &data);
+                }
+            }
+
+            Set_Displayed_Max_Warning(false);
+        }
+
+        if (count > 0) {
+            GameMessage *msg = g_theMessageStream->Append_Message(GameMessage::MSG_CREATE_SELECTED_GROUP_NO_SOUND);
+            msg->Append_Bool_Arg(false);
+
+            for (auto it = data.selected_units.begin(); it != data.selected_units.end(); it++) {
+                Drawable *drawable = *it;
+
+                if (drawable != nullptr && drawable->Get_Object() != nullptr) {
+                    msg->Append_ObjectID_Arg(drawable->Get_Object()->Get_ID());
+                }
+            }
+        }
+
+        return count;
+    } else {
+        return -1;
+    }
+}
+
+int InGameUI::Select_All_Units_By_Type(BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear)
+{
+    int ret = Select_All_Units_By_Type_Across_Screen(must_be_set, must_be_clear);
+
+    if (ret == -1) {
+        return ret;
+    }
+
+    if (ret != 0) {
+        return ret;
+    }
+
+    return Select_All_Units_By_Type_Across_Map(must_be_set, must_be_clear);
+}
+
+int InGameUI::Select_All_Units_By_Type_Across_Screen(
+    BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear)
+{
+    ICoord2D origin;
+    g_theTacticalView->Get_Origin(&origin.x, &origin.y);
+
+    ICoord2D size;
+    size.x = g_theTacticalView->Get_Width();
+    size.y = g_theTacticalView->Get_Height();
+
+    IRegion2D region;
+    Build_Region(&origin, &size, &region);
+    int ret = Select_All_Units_By_Type_Across_Region(&region, must_be_set, must_be_clear);
+
+    if (ret == -1) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:NothingSelected"));
+    } else if (ret != 0) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:SelectedAcrossScreen"));
+    }
+
+    return ret;
+}
+
+int InGameUI::Select_All_Units_By_Type_Across_Map(BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear)
+{
+    int ret = Select_All_Units_By_Type_Across_Region(nullptr, must_be_set, must_be_clear);
+
+    if (ret == -1) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:NothingSelected"));
+    } else if (ret != 0) {
+        g_theInGameUI->Message(g_theGameText->Fetch("GUI:SelectedAcrossMap"));
+    } else {
+        Drawable *draw = g_theInGameUI->Get_First_Selected_Drawable();
+
+        if (draw == nullptr || draw->Get_Object() == nullptr || !draw->Get_Object()->Is_KindOf(KINDOF_STRUCTURE)) {
+            g_theInGameUI->Message(g_theGameText->Fetch("GUI:SelectedAcrossMap"));
+        }
+    }
+
+    return ret;
+}
+
+struct KindOfUnitSelectionData
+{
+    BitFlags<KINDOF_COUNT> must_be_set;
+    BitFlags<KINDOF_COUNT> must_be_clear;
+    std::list<Drawable *> selected_units;
+};
+
+bool KindOf_Unit_Selection(Drawable *draw, void *user_data)
+{
+    KindOfUnitSelectionData *data = static_cast<KindOfUnitSelectionData *>(user_data);
+
+    if (draw != nullptr) {
+        Object *obj = draw->Get_Object();
+
+        if (obj == nullptr) {
+            return false;
+        }
+
+        if (obj->Is_KindOf_Multi(data->must_be_set, data->must_be_clear) && obj->Is_Locally_Controlled()
+            && !obj->Is_Contained()) {
+            if (!obj->Get_Drawable()->Is_Selected() && !obj->Is_Effectively_Dead() && obj->Is_Mass_Selectable()
+                && !obj->Is_Outside_Map()) {
+                if (g_theInGameUI->Get_Max_Select_Count() <= 0
+                    || g_theInGameUI->Get_Select_Count() < g_theInGameUI->Get_Max_Select_Count()) {
+                    g_theInGameUI->Select_Drawable(draw);
+                    g_theInGameUI->Set_Displayed_Max_Warning(false);
+                    data->selected_units.push_back(draw);
+                    return true;
+                }
+
+                if (!g_theInGameUI->Get_Displayed_Max_Warning()) {
+                    g_theInGameUI->Set_Displayed_Max_Warning(true);
+                    Utf16String message;
+                    message.Format(g_theGameText->Fetch("GUI:MaxSelectionSize"), g_theInGameUI->Get_Max_Select_Count());
+                    g_theInGameUI->Message(message);
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+int InGameUI::Select_All_Units_By_Type_Across_Region(
+    IRegion2D *region, BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear)
+{
+    KindOfUnitSelectionData data;
+    int count = 0;
+    int previous_count = Get_All_Selected_Drawables()->size();
+    data.must_be_set = must_be_set;
+    data.must_be_clear = must_be_clear;
+
+    if (region != nullptr) {
+        g_theTacticalView->Iterate_Drawables_In_Region(region, KindOf_Unit_Selection, &data);
+        count += data.selected_units.size();
+    } else {
+        for (Drawable *drawable = g_theGameClient->First_Drawable(); drawable != nullptr; drawable = drawable->Get_Next()) {
+            if (KindOf_Unit_Selection(drawable, &data)) {
+                count++;
+            }
+        }
+    }
+
+    if (count > 0) {
+        GameMessage *msg = g_theMessageStream->Append_Message(GameMessage::MSG_CREATE_SELECTED_GROUP);
+        msg->Append_Bool_Arg(previous_count != 0);
+
+        for (auto it = data.selected_units.begin(); it != data.selected_units.end(); it++) {
+            Drawable *drawable = *it;
+
+            if (drawable != nullptr && drawable->Get_Object() != nullptr) {
+                msg->Append_ObjectID_Arg(drawable->Get_Object()->Get_ID());
+            }
+        }
+    }
+
+    return count;
+}
+
+void InGameUI::Build_Region(const ICoord2D *anchor, const ICoord2D *dest, IRegion2D *region)
+{
+    if (anchor->x >= dest->x) {
+        region->lo.x = dest->x;
+        region->hi.x = anchor->x;
+    } else {
+        region->lo.x = anchor->x;
+        region->hi.x = dest->x;
+    }
+
+    if (anchor->y >= dest->y) {
+        region->lo.y = dest->y;
+        region->hi.y = anchor->y;
+    } else {
+        region->lo.y = anchor->y;
+        region->hi.y = dest->y;
+    }
+}
+
+FloatingTextData::FloatingTextData() : m_color(0), m_frameTimeOut(0), m_frameCount(0)
+{
+    m_pos3D.Zero();
+    m_text.Clear();
+    m_dString = g_theDisplayStringManager->New_Display_String();
+}
+
+FloatingTextData::~FloatingTextData()
+{
+    if (m_dString != nullptr) {
+        g_theDisplayStringManager->Free_Display_String(m_dString);
+        m_dString = nullptr;
+    }
+}
+
+void InGameUI::Add_Floating_Text(const Utf16String &text, const Coord3D *pos, int color)
+{
+    if (g_theGameLogic->Get_Draw_Icon_UI()) {
+        FloatingTextData *data = new FloatingTextData();
+        data->m_frameCount = 0;
+        data->m_color = color;
+        data->m_pos3D.x = pos->x;
+        data->m_pos3D.z = pos->z;
+        data->m_pos3D.y = pos->y;
+        data->m_text = text;
+        data->m_dString->Set_Text(text);
+
+        if (m_floatingTextTimeOut != 0) {
+            data->m_frameTimeOut = m_floatingTextTimeOut + g_theGameLogic->Get_Frame();
+        } else {
+            data->m_frameTimeOut = g_theGameLogic->Get_Frame() + 10;
+        }
+
+        m_floatingTextList.push_front(data);
+    }
+}
+
+void InGameUI::Add_Idle_Worker(Object *obj)
+{
+    if (obj != nullptr) {
+        if (!Find_Idle_Worker(obj)) {
+            m_idleWorkerLists[obj->Get_Controlling_Player()->Get_Player_Index()].push_back(obj);
+        }
+    }
+}
+
+void InGameUI::Remove_Idle_Worker(Object *obj, int slot)
+{
+    if (obj != nullptr && slot < MAX_PLAYER_COUNT && !m_idleWorkerLists[slot].empty()) {
+        for (auto it = m_idleWorkerLists[slot].begin(); it != m_idleWorkerLists[slot].end(); it++) {
+            if (*it == obj) {
+                m_idleWorkerLists[slot].erase(it);
+                return;
+            }
+        }
+    }
+}
+
+void InGameUI::Select_Next_Idle_Worker()
+{
+    int index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
+
+    if (m_idleWorkerLists[index].empty()) {
+        captainslog_dbgassert(false,
+            "InGameUI::Select_Next_Idle_Worker We're trying to select a worker when our list is empty for player %ls",
+            g_thePlayerList->Get_Local_Player()->Get_Player_Display_Name().Str());
+    } else {
+        Object *obj = nullptr;
+
+        if (Get_Select_Count() == 1) {
+            Drawable *draw = g_theInGameUI->Get_First_Selected_Drawable();
+
+            for (auto it = m_idleWorkerLists[index].begin(); it != m_idleWorkerLists[index].end(); it++) {
+                if (*it == draw->Get_Object()) {
+                    it++;
+
+                    if (it != m_idleWorkerLists[index].end()) {
+                        obj = *it;
+                    } else {
+                        obj = *m_idleWorkerLists[index].begin();
+                    }
+
+                    break;
+                }
+            }
+
+            if (obj == nullptr) {
+                obj = *m_idleWorkerLists[index].begin();
+            }
+        } else {
+            obj = *m_idleWorkerLists[index].begin();
+        }
+
+        captainslog_dbgassert(obj != nullptr, "InGameUI::Select_Next_Idle_Worker Could not select the next IDLE worker");
+
+        if (obj != nullptr) {
+            Object *contain = obj->Get_Contained_By();
+
+            if (contain != nullptr) {
+                obj = contain;
+            }
+
+            Deselect_All_Drawables(true);
+            GameMessage *msg = g_theMessageStream->Append_Message(GameMessage::MSG_CREATE_SELECTED_GROUP);
+            msg->Append_Bool_Arg(true);
+            msg->Append_ObjectID_Arg(obj->Get_ID());
+            Select_Drawable(obj->Get_Drawable());
+            g_theTacticalView->Look_At(obj->Get_Position());
+        }
+    }
+}
+
+void InGameUI::Disable_Tooltips_Until(unsigned int frame)
+{
+    if (frame > m_tooltipsDisabled) {
+        m_tooltipsDisabled = frame;
+    }
+}
+
+void InGameUI::Clear_Tooltips_Disabled()
+{
+    m_tooltipsDisabled = 0;
+}
+
+bool InGameUI::Are_Tooltips_Disabled()
+{
+    return g_theGameLogic->Get_Frame() < m_tooltipsDisabled;
+}
+
+int InGameUI::Get_Idle_Worker_Count()
+{
+    return m_idleWorkerLists[g_thePlayerList->Get_Local_Player()->Get_Player_Index()].size();
+}
+
+Object *InGameUI::Find_Idle_Worker(Object *obj)
+{
+    if (obj == nullptr) {
+        return nullptr;
+    }
+
+    int index = obj->Get_Controlling_Player()->Get_Player_Index();
+
+    if (m_idleWorkerLists[index].empty()) {
+        return nullptr;
+    }
+
+    for (auto it = m_idleWorkerLists[index].begin(); it != m_idleWorkerLists[index].end(); it++) {
+        if (*it == obj) {
+            return *it;
+        }
+    }
+
+    return nullptr;
+}
+
+void InGameUI::Show_Idle_Worker_Layout()
+{
+    if (m_idleWorkerWin != nullptr) {
+        m_idleWorkerWin->Win_Enable(true);
+        m_idleWorkerCount = Get_Idle_Worker_Count();
+    } else {
+        m_idleWorkerWin = g_theWindowManager->Win_Get_Window_From_Id(
+            nullptr, g_theNameKeyGenerator->Name_To_Key("ControlBar.wnd:ButtonIdleWorker"));
+        captainslog_dbgassert(
+            m_idleWorkerWin != nullptr, "InGameUI::Show_Idle_Worker_Layout could not find IdleWorker.wnd to load ");
+    }
+}
+
+void InGameUI::Hide_Idle_Worker_Layout()
+{
+    if (m_idleWorkerWin != nullptr) {
+        Gadget_Button_Set_Text(m_idleWorkerWin, Utf16String::s_emptyString);
+        m_idleWorkerWin->Win_Enable(false);
+        m_idleWorkerCount = -1;
+    }
+}
+
+void InGameUI::Update_Idle_Worker()
+{
+    int count = Get_Idle_Worker_Count();
+
+    if (count > 0 && m_idleWorkerCount != count && Get_Input_Enabled()) {
+        Show_Idle_Worker_Layout();
+    }
+
+    if (count <= 0 && (m_idleWorkerWin != nullptr || Get_Input_Enabled())) {
+        Hide_Idle_Worker_Layout();
+    }
+}
+
+void InGameUI::Reset_Idle_Worker()
+{
+    if (m_idleWorkerWin != nullptr) {
+        Gadget_Button_Set_Text(m_idleWorkerWin, Utf16String::s_emptyString);
+    }
+
+    m_idleWorkerCount = -1;
+
+    for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
+        m_idleWorkerLists[i].clear();
+    }
+}
+
+#ifdef GAME_DEBUG_STRUCTS
+void InGameUI::Debug_Add_Floating_Text(const Utf8String &text, const Coord3D *pos, int color)
+{
+    // todo debug stuff
+}
+#endif
+
+WindowMsgHandledType Idle_Worker_System(GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2)
+{
+    if (message == GWM_INPUT_FOCUS) {
+        if (data_1 == 1) {
+            *reinterpret_cast<bool *>(data_2) = false;
+        }
+    } else if (message != GBM_SELECTED) {
+        return MSG_IGNORED;
+    }
+
+    static const NameKeyType buttonSelectID =
+        g_theNameKeyGenerator->Name_To_Key("IdleWorker.wnd:ButtonSelectNextIdleWorker");
+    GameWindow *win = reinterpret_cast<GameWindow *>(data_1);
+
+    if (win != nullptr && win->Win_Get_Window_Id() == buttonSelectID) {
+        g_theInGameUI->Select_Next_Idle_Worker();
+    }
+
+    return MSG_HANDLED;
+}
+
+void InGameUI::Register_Window_Layout(WindowLayout *layout)
+{
+    Unregister_Window_Layout(layout);
+    m_windowLayoutList.push_back(layout);
+}
+
+void InGameUI::Unregister_Window_Layout(WindowLayout *layout)
+{
+    for (auto it = m_windowLayoutList.begin(); it != m_windowLayoutList.end(); it++) {
+        if (*it == layout) {
+            m_windowLayoutList.erase(it);
+            return;
+        }
+    }
+}
+
+void InGameUI::Reset_Camera()
+{
+    ViewLocation loc;
+    g_theTacticalView->Get_Location(&loc);
+    g_theTacticalView->Reset_Camera(loc.Get_Pos(), 1, 0.0f, 0.0f);
+}
+
+bool InGameUI::Can_Selected_Objects_Non_Attack_Interact_With_Object(
+    const Object *object_to_interact_with, SelectionRules rule)
+{
+    for (int i = ACTIONTYPE_ATTACK_OBJECT; i < NUM_ACTIONTYPES; i++) {
+        if (i != ACTIONTYPE_ATTACK_OBJECT
+            && Can_Selected_Objects_Do_Action(static_cast<ActionType>(i), object_to_interact_with, rule, false)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+CanAttackResult InGameUI::Get_Can_Selected_Objects_Attack(
+    ActionType action, const Object *object_to_interact_with, SelectionRules rule, bool force_to_attack) const
+{
+    if ((object_to_interact_with == nullptr && action != ACTIONTYPE_SET_RALLY_POINT)
+        || (object_to_interact_with != nullptr && action == ACTIONTYPE_SET_RALLY_POINT)) {
+        return ATTACK_RESULT_CANNOT_ATTACK;
+    }
+
+    const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
+    int count = 0;
+    CanAttackResult any_can_attack = ATTACK_RESULT_CANNOT_ATTACK;
+    CanAttackResult all_can_attack = ATTACK_RESULT_CAN_ATTACK;
+
+    for (auto it = drawables->begin(); it != drawables->end(); it++) {
+        Drawable *draw = *it;
+        count++;
+
+        if (action != ACTIONTYPE_ATTACK_OBJECT) {
+            captainslog_dbgassert(false,
+                "Called InGameUI::Get_Can_Selected_Objects_Attack() with actiontype %d. Only accepts attack "
+                "types! Should you be calling InGameUI::Can_Selected_Objects_Do_Action() instead?",
+                action);
+            return ATTACK_RESULT_UNREACHABLE;
+        }
+
+        CanAttackResult attack = g_theActionManager->Get_Can_Attack_Object(draw->Get_Object(),
+            object_to_interact_with,
+            COMMANDSOURCE_PLAYER,
+            static_cast<AbleToAttackType>(force_to_attack));
+
+        if (attack > any_can_attack) {
+            any_can_attack = attack;
+        }
+
+        if (attack < all_can_attack) {
+            all_can_attack = attack;
+        }
+    }
+
+    if (count <= 0) {
+        return ATTACK_RESULT_CANNOT_ATTACK;
+    }
+
+    if (rule != SELECTION_ANY) {
+        return all_can_attack;
+    }
+
+    return any_can_attack;
+}
+
+bool InGameUI::Can_Selected_Objects_Do_Action(
+    ActionType action, const Object *object_to_interact_with, SelectionRules rule, bool additional_checking) const
+{
+    if ((object_to_interact_with == nullptr && action != ACTIONTYPE_SET_RALLY_POINT)
+        || (object_to_interact_with != nullptr && action == ACTIONTYPE_SET_RALLY_POINT)) {
+        return ATTACK_RESULT_CANNOT_ATTACK;
+    }
+
+    const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
+    int count = 0;
+    int qualify = 0;
+
+    for (auto it = drawables->begin(); it != drawables->end(); it++) {
+        Drawable *draw = *it;
+        count++;
+        bool can_do = false;
+
+        switch (action) {
+            case ACTIONTYPE_NONE:
+                return true;
+            case ACTIONTYPE_ATTACK_OBJECT:
+                captainslog_dbgassert(false,
+                    "Called InGameUI::Can_Selected_Objects_Do_Action() with ACTIONTYPE_ATTACK_OBJECT. You must use "
+                    "InGameUI::Get_Can_Selected_Objects_Attack() instead.");
+                return false;
+            case ACTIONTYPE_GET_REPAIRED_AT:
+                can_do = g_theActionManager->Can_Get_Repaired_At(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_DOCK_AT:
+                can_do = g_theActionManager->Can_Dock_At(draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_GET_HEALED_AT:
+                can_do =
+                    g_theActionManager->Can_Get_Healed_At(draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+
+                if (can_do) {
+                    ContainModuleInterface *contain = object_to_interact_with->Get_Contain();
+
+                    if (contain != nullptr) {
+                        if (contain->Is_Heal_Contain()) {
+                            can_do = false;
+                        }
+                    }
+                }
+
+                break;
+            case ACTIONTYPE_REPAIR_OBJECT: {
+                ObjectID id = object_to_interact_with->Get_Sole_Healing_Benefactor();
+                can_do =
+                    g_theActionManager->Can_Repair_Object(draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER)
+                    && (id == INVALID_OBJECT_ID || draw->Get_Object()->Get_ID() == id);
+                break;
+            }
+            case ACTIONTYPE_RESUME_CONSTRUCTION:
+                can_do = g_theActionManager->Can_Resume_Construction_Of(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_ENTER_OBJECT:
+                can_do = g_theActionManager->Can_Enter_Object(draw->Get_Object(),
+                    object_to_interact_with,
+                    COMMANDSOURCE_PLAYER,
+                    !additional_checking ? CAN_ENTER_1 : CAN_ENTER_0);
+                break;
+            case ACTIONTYPE_HIJACK_VEHICLE:
+                can_do = g_theActionManager->Can_Hijack_Vehicle(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_CONVERT_OBJECT_TO_CARBOMB:
+                can_do = g_theActionManager->Can_Convert_Object_To_Car_Bomb(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_CAPTURE_BUILDING_VIA_HACKING:
+                can_do = g_theActionManager->Can_Capture_Building(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_DISABLE_VEHICLE_VIA_HACKING:
+                can_do = g_theActionManager->Can_Disable_Vehicle_Via_Hacking(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER, true);
+                break;
+            case ACTIONTYPE_STEAL_CASH_VIA_HACKING:
+                can_do = g_theActionManager->Can_Steal_Cash_Via_Hacking(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_DISABLE_BUILDING_VIA_HACKING:
+                can_do = g_theActionManager->Can_Disable_Building_Via_Hacking(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_MAKE_OBJECT_DEFECTOR:
+                can_do = g_theActionManager->Can_Make_Object_Defector(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            case ACTIONTYPE_SET_RALLY_POINT: {
+                Object *obj = draw->Get_Object();
+
+                if (obj != nullptr) {
+                    can_do = obj->Is_KindOf(KINDOF_AUTO_RALLYPOINT) && obj->Is_Locally_Controlled();
+                } else {
+                    can_do = false;
+                }
+
+                break;
+            }
+            case ACTIONTYPE_COMBAT_DROP:
+                can_do = g_theActionManager->Can_Enter_Object(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER, CAN_ENTER_2);
+                break;
+            case ACTIONTYPE_SABOTAGE_BUILDING:
+                can_do = g_theActionManager->Can_Sabotage_Building(
+                    draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER);
+                break;
+            default:
+                break;
+        }
+
+        if (!can_do) {
+            continue;
+        }
+
+        if (rule == SELECTION_ANY) {
+            return true;
+        }
+
+        qualify++;
+    }
+
+    return rule == SELECTION_ALL && count > 0 && qualify == count;
+}
+
+bool InGameUI::Can_Selected_Objects_Do_Special_Power(CommandButton *command,
+    const Object *object_to_interact_with,
+    Coord3D *position,
+    SelectionRules rule,
+    unsigned int options,
+    Object *custom_object) const
+{
+    const SpecialPowerTemplate *power = command->Get_Special_Power();
+    bool needs_target_pos = (command->Get_Options() & COMMAND_OPTION_NEED_TARGET_POS) != 0;
+    bool needs_target_object = (command->Get_Options() & COMMAND_OPTION_NEED_TARGET_OBJECT) != 0;
+
+    if (needs_target_object && object_to_interact_with == nullptr) {
+        return false;
+    }
+
+    if (needs_target_pos && position == nullptr) {
+        return false;
+    }
+
+    Drawable *custom_drawable;
+
+    if (custom_object != nullptr) {
+        custom_drawable = custom_object->Get_Drawable();
+    } else {
+        custom_drawable = nullptr;
+    }
+
+    std::list<Drawable *> custom_drawables;
+
+    if (custom_drawable != nullptr) {
+        custom_drawables.push_back(custom_drawable);
+    }
+
+    const std::list<Drawable *> *drawables;
+
+    if (custom_drawables.size() != 0) {
+        drawables = &custom_drawables;
+    } else {
+        drawables = g_theInGameUI->Get_All_Selected_Drawables();
+    }
+
+    int count = 0;
+    int qualify = 0;
+
+    for (auto it = drawables->begin(); it != drawables->end(); it++) {
+        Drawable *drawable = *it;
+        count++;
+
+        if (needs_target_object || needs_target_pos) {
+            if (needs_target_object) {
+                if (g_theActionManager->Can_Do_Special_Power_At_Object(
+                        drawable->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER, power, options, true)) {
+                    if (rule == SELECTION_ANY) {
+                        return true;
+                    }
+
+                    qualify++;
+                }
+            } else if (needs_target_pos) {
+                if (g_theActionManager->Can_Do_Special_Power_At_Location(drawable->Get_Object(),
+                        position,
+                        COMMANDSOURCE_PLAYER,
+                        power,
+                        object_to_interact_with,
+                        options,
+                        true)) {
+                    if (rule == SELECTION_ANY) {
+                        return true;
+                    }
+
+                    qualify++;
+                }
+            }
+        } else {
+            if (g_theActionManager->Can_Do_Special_Power(drawable->Get_Object(), power, COMMANDSOURCE_PLAYER, options, 1)) {
+                if (rule == SELECTION_ANY) {
+                    return true;
+                }
+
+                qualify++;
+            }
+        }
+    }
+
+    return rule == SELECTION_ALL && count > 0 && qualify == count;
+}
+
+bool InGameUI::Can_Selected_Objects_Override_Special_Power_Destination(
+    const Coord3D *pos, SelectionRules rule, SpecialPowerType type) const
+{
+    int count = 0;
+    int qualify = 0;
+    const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
+
+    for (auto it = drawables->begin(); it != drawables->end(); it++) {
+        count++;
+
+        if (g_theActionManager->Can_Override_Special_Power_Destination(
+                (*it)->Get_Object(), pos, type, COMMANDSOURCE_PLAYER)) {
+            if (rule == SELECTION_ANY) {
+                return true;
+            }
+
+            qualify++;
+        }
+    }
+
+    return rule == SELECTION_ALL && count > 0 && qualify == count;
+}
+
+bool InGameUI::Can_Selected_Objects_Effectively_Use_Weapon(
+    CommandButton *command, const Object *object_to_interact_with, Coord3D *position, SelectionRules rule) const
+{
+    WeaponSlotType wslot = command->Get_Weapon_Slot();
+    bool needs_target_pos = (command->Get_Options() & COMMAND_OPTION_NEED_TARGET_POS) != 0;
+    bool needs_target_object = (command->Get_Options() & COMMAND_OPTION_NEED_TARGET_OBJECT) != 0;
+
+    if (needs_target_object && object_to_interact_with == nullptr) {
+        return false;
+    }
+
+    if (needs_target_pos && position == nullptr) {
+        return false;
+    }
+
+    const std::list<Drawable *> *drawables = g_theInGameUI->Get_All_Selected_Drawables();
+    int count = 0;
+    int qualify = 0;
+
+    for (auto it = drawables->begin(); it != drawables->end(); it++) {
+        Drawable *draw = *it;
+        if (needs_target_object || needs_target_pos) {
+            if (needs_target_object) {
+                if (g_theActionManager->Can_Fire_Weapon_At_Object(
+                        draw->Get_Object(), object_to_interact_with, COMMANDSOURCE_PLAYER, wslot)) {
+                    if (rule == SELECTION_ANY) {
+                        return true;
+                    }
+
+                    qualify++;
+                }
+            } else if (needs_target_pos) {
+                if (g_theActionManager->Can_Fire_Weapon_At_Location(
+                        draw->Get_Object(), position, COMMANDSOURCE_PLAYER, wslot, object_to_interact_with)) {
+                    if (rule == SELECTION_ANY) {
+                        return true;
+                    }
+
+                    qualify++;
+                }
+            }
+        } else {
+            if (g_theActionManager->Can_Fire_Weapon(draw->Get_Object(), wslot, COMMANDSOURCE_PLAYER)) {
+                if (rule == SELECTION_ANY) {
+                    return true;
+                }
+
+                qualify++;
+            }
+        }
+    }
+
+    return rule == SELECTION_ALL && count > 0 && qualify == count;
 }

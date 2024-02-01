@@ -19,6 +19,7 @@
 #include "w3ddisplaystringmanager.h"
 #include "w3dgamefont.h"
 #include "w3dgamewindowmanager.h"
+#include "w3dingameui.h"
 #include "w3dmouse.h"
 #include "w3dsnow.h"
 #include "w3dstatuscircle.h"
@@ -42,6 +43,11 @@ Mouse *W3DGameClient::Create_Mouse()
 Display *W3DGameClient::Create_GameDisplay()
 {
     return new W3DDisplay;
+}
+
+InGameUI *W3DGameClient::Create_InGameUI()
+{
+    return new W3DInGameUI;
 }
 
 FontLibrary *W3DGameClient::Create_FontLibrary()

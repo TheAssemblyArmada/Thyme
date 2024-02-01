@@ -24,7 +24,9 @@ class Player;
 
 enum CanEnterType
 {
-    CAN_ENTER_UNK,
+    CAN_ENTER_0,
+    CAN_ENTER_1,
+    CAN_ENTER_2,
 };
 
 class ActionManager : public SubsystemInterface

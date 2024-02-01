@@ -2894,7 +2894,7 @@ void Player::Garrison_All_Units(CommandSourceType source)
                                     }
                                 }
 
-                                if (g_theActionManager->Can_Enter_Object(obj, o, source, CAN_ENTER_UNK)) {
+                                if (g_theActionManager->Can_Enter_Object(obj, o, source, CAN_ENTER_0)) {
                                     update->AI_Enter(o, source);
                                 }
                             }

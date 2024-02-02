@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Diplomacy
+ * @brief GUI Command Translator
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,11 +14,12 @@
  */
 #pragma once
 #include "always.h"
-#include "asciistring.h"
-#include <list>
+#include "messagestream.h"
 
-void Toggle_Diplomacy(bool immediate);
-
-void Update_Diplomacy_Briefing_Text(Utf8String text, bool clear);
-
-std::list<Utf8String> *Get_Briefing_Text_List();
+class GUICommandTranslator : public GameMessageTranslator
+{
+public:
+    GUICommandTranslator() {}
+    virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
+    virtual ~GUICommandTranslator() override {}
+};

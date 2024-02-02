@@ -35,6 +35,7 @@ typedef wchar_t unichar_t;
 #define u_isspace iswspace
 #define u_tolower towlower
 #define u_strchr(x, y) wcschr(x, y)
+#define u_strrchr(x, y) wcsrchr(x, y)
 #define U_COMPARE_CODE_POINT_ORDER 0x8000
 #define U_CHAR(str) (L##str)
 #else

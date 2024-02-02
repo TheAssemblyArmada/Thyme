@@ -124,3 +124,5 @@ private:
 };
 
 void Reset_D3D_Device(bool restore_assets);
+
+extern int g_theW3DFrameLengthInMsec;

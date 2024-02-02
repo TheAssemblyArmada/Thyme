@@ -194,6 +194,11 @@ private:
     UnicodeStringData *m_data;
 };
 
+struct UnicodeStringLessThan
+{
+    bool operator()(Utf16String a, Utf16String b) const { return a.Compare_No_Case(b) < 0; }
+};
+
 #ifdef GAME_DLL
 extern SimpleCriticalSectionClass *&g_unicodeStringCriticalSection;
 #else

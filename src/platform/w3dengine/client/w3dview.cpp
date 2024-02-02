@@ -36,8 +36,6 @@
 #include "w3dscene.h"
 #include "water.h"
 
-static const int g_theW3DFrameLengthInMsec = 33;
-
 W3DView::W3DView() :
     m_3DCamera(nullptr),
     m_2DCamera(nullptr),

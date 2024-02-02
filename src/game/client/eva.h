@@ -14,6 +14,11 @@
  */
 #pragma once
 #include "always.h"
+#include "asciistring.h"
+#include "audioeventrts.h"
+#include "mempoolobj.h"
+#include "subsysteminterface.h"
+#include <vector>
 
 enum EvaMessage
 {
@@ -71,12 +76,80 @@ enum EvaMessage
     EVA_MESSAGE_SUPERWEAPONLAUNCHED_OWN_SNEAK_ATTACK,
     EVA_MESSAGE_SUPERWEAPONLAUNCHED_ALLY_SNEAK_ATTACK,
     EVA_MESSAGE_SUPERWEAPONLAUNCHED_ENEMY_SNEAK_ATTACK,
+    NUM_EVA_MESSAGES,
 };
 
-class Eva
+struct EvaSideSounds
+{
+    Utf8String m_side;
+    std::vector<Utf8String> m_sounds;
+
+    static FieldParse *Get_Field_Parse();
+    static const FieldParse s_evaSideSounds[];
+};
+
+class EvaCheckInfo : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(EvaCheckInfo)
+
+public:
+    EvaCheckInfo() : m_messageType(NUM_EVA_MESSAGES), m_timeBetweenChecksMS(900), m_expirationTimeMS(150), m_priority(1) {}
+
+private:
+    EvaMessage m_messageType;
+    unsigned int m_timeBetweenChecksMS;
+    unsigned int m_expirationTimeMS;
+    unsigned int m_priority;
+    std::vector<EvaSideSounds> m_sideSounds;
+};
+
+struct EvaCheck
+{
+    EvaCheck() : check_info(nullptr), unk1(0xFFFFFFFF), unk2(0), unk3(0) {}
+    static FieldParse *Get_Field_Parse();
+    static const FieldParse s_evaEventInfo[];
+
+    EvaCheckInfo *check_info;
+    unsigned int unk1;
+    unsigned int unk2;
+    bool unk3;
+};
+
+class Eva : public SubsystemInterface
 {
 public:
+    Eva();
+    virtual ~Eva() override;
+    virtual void Init() override;
+    virtual void Reset() override;
+    virtual void Update() override;
+
+    EvaCheckInfo *New_Eva_Check_Info(Utf8String name);
+    EvaCheckInfo *Get_Eva_Check_Info(Utf8String name);
     void Set_Should_Play(EvaMessage message);
+    void Set_Eva_Enabled(bool enabled);
+    bool Is_Time_For_Check(EvaMessage message, unsigned int frame);
+    bool Message_Should_Play(EvaMessage message, unsigned int frame);
+    void Play_Message(EvaMessage message, unsigned int frame);
+    void Process_Playing_Message(unsigned int frame);
+
+    static void Parse(INI *ini);
+    static EvaMessage Name_To_Message(Utf8String const &name);
+    static Utf8String Message_To_Name(EvaMessage message);
+    static bool Should_Play_Low_Power(Player *player);
+    static bool Should_Play_Generic_Handler(Player *player);
+    static void Parse_Eva_Message_From_INI(INI *ini, void *formal, void *store, const void *user_data);
+
+private:
+    std::vector<EvaCheckInfo *> m_checkInfo;
+    std::vector<EvaCheck> m_check;
+    AudioEventRTS m_sound;
+    Player *m_player;
+    int m_unk1;
+    int m_unk2;
+    EvaMessage m_currentMessageType;
+    bool m_shouldPlay[NUM_EVA_MESSAGES];
+    bool m_evaEnabled;
 };
 
 #ifdef GAME_DLL

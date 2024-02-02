@@ -143,6 +143,7 @@ set(GAMEENGINE_SRC
     game/client/gui/loadscreen.cpp
     game/client/gui/processanimatewindow.cpp
     game/client/gui/shell/shell.cpp
+    game/client/gui/shell/shellmenuscheme.cpp
     game/client/gui/windowlayout.cpp
     game/client/gui/windowvideomanager.cpp
     game/client/gui/wininstancedata.cpp
@@ -153,10 +154,14 @@ set(GAMEENGINE_SRC
     game/client/line2d.cpp
     game/client/maputil.cpp
     game/client/messagestream/commandxlat.cpp
+    game/client/messagestream/guicommandtranslator.cpp
+    game/client/messagestream/hintspy.cpp
     game/client/messagestream/hotkey.cpp
     game/client/messagestream/lookatxlat.cpp
     game/client/messagestream/metaevent.cpp
+    game/client/messagestream/placeeventtranslator.cpp
     game/client/messagestream/selectionxlat.cpp
+    game/client/messagestream/windowxlat.cpp
     game/client/optionpreferences.cpp
     game/client/parabolicease.cpp
     game/client/radiusdecal.cpp
@@ -761,7 +766,7 @@ if(BUILD_DLL)
 endif()
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    list(APPEND GAME_LINK_LIBRARIES winmm)
+    list(APPEND GAME_LINK_LIBRARIES winmm imm32)
 
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         list(APPEND GAME_LINK_LIBRARIES binkstub milesstub)

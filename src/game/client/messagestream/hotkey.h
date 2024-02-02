@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "always.h"
+#include "messagestream.h"
 #include "subsysteminterface.h"
 #include <map>
 
@@ -33,17 +34,27 @@ private:
 class HotKeyManager : public SubsystemInterface
 {
 public:
+    HotKeyManager();
     virtual ~HotKeyManager() override;
 
     virtual void Init() override;
     virtual void Reset() override;
-    virtual void Update() override;
+    virtual void Update() override {}
+    void Add_Hot_Key(GameWindow *window, const Utf8String &key);
+    bool Execute_Hot_Key(const Utf8String &key);
     Utf8String Search_Hot_Key(const Utf8String &str);
     Utf8String Search_Hot_Key(const Utf16String &str);
-    void Add_Hot_Key(GameWindow *window, const Utf8String &key);
 
 private:
     std::map<Utf8String, HotKey> m_hotKeys;
+};
+
+class HotKeyTranslator : public GameMessageTranslator
+{
+public:
+    HotKeyTranslator() {}
+    virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
+    virtual ~HotKeyTranslator() override {}
 };
 
 #ifdef GAME_DLL

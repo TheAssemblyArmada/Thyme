@@ -31,3 +31,12 @@ void Update_Diplomacy_Briefing_Text(Utf8String text, bool clear)
     Call_Function<void, Utf8String, bool>(PICK_ADDRESS(0x005EE4D0, 0x00A11298), text, clear);
 #endif
 }
+
+std::list<Utf8String> *Get_Briefing_Text_List()
+{
+#ifdef GAME_DLL
+    return Call_Function<std::list<Utf8String> *>(PICK_ADDRESS(0x005EE4C0, 0x00A1128E));
+#else
+    return nullptr;
+#endif
+}

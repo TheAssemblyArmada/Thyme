@@ -18,6 +18,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "coord.h"
+#include "gamemessage.h"
 #include "gametype.h"
 #include "messagestream.h"
 #include "snapshot.h"
@@ -54,6 +55,13 @@ enum Scorches
 class CommandTranslator : public GameMessageTranslator
 {
 public:
+    enum CommandEvaluateType
+    {
+        DO_COMMAND,
+        DO_HINT,
+        EVALUATE_ONLY,
+    };
+
     CommandTranslator() :
         m_objective(0), m_teamExists(false), m_clickDownCoord(), m_clickUpCoord(), m_clickDownTime(0), m_clickUpTime(0)
     {
@@ -61,13 +69,7 @@ public:
     virtual ~CommandTranslator() override {}
 
     GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
-
-    enum CommandEvaluateType
-    {
-        DO_COMMAND,
-        DO_HINT,
-        EVALUATE_ONLY,
-    };
+    GameMessage::MessageType Evaluate_Context_Command(Drawable *drawable, const Coord3D *pos, CommandEvaluateType type);
 
 private:
     int m_objective;
@@ -93,11 +95,11 @@ class GameClient : public SubsystemInterface, public SnapShot
 
 public:
     GameClient();
-    virtual ~GameClient();
+    virtual ~GameClient() override;
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
-    void Load_Post_Process() override;
+    virtual void Load_Post_Process() override;
 
     virtual void Init() override;
     virtual void Reset() override;
@@ -109,13 +111,12 @@ public:
     virtual Drawable *Find_Drawable_By_ID(DrawableID id);
     virtual Drawable *First_Drawable();
 
-    virtual void Evaluate_Context_Command(
+    virtual GameMessage::MessageType Evaluate_Context_Command(
         Drawable *drawable, const Coord3D *pos, CommandTranslator::CommandEvaluateType type);
 
     virtual void Remove_From_Ray_Effects(Drawable *drawable);
     virtual void Get_Ray_Effect_Data(Drawable *drawable, RayEffectData *data);
-    virtual RayEffectData *Create_Ray_Effect_From_Template(
-        const Coord3D *src, const Coord3D *dst, const ThingTemplate *temp) = 0;
+    virtual void Create_Ray_Effect_From_Template(const Coord3D *src, const Coord3D *dst, const ThingTemplate *temp) = 0;
 
     virtual void Add_Scorch(Coord3D *pos, float scale, Scorches scorch) = 0;
 
@@ -142,7 +143,7 @@ public:
 
     virtual Drawable *Get_Drawable_List() { return m_drawableList; }
 
-    virtual int Notify_Terrain_Object_Moved(Object *obj) = 0;
+    virtual void Notify_Terrain_Object_Moved(Object *obj) = 0;
 
     virtual Display *Create_GameDisplay() = 0;
     virtual InGameUI *Create_InGameUI() = 0;
@@ -157,6 +158,16 @@ public:
 
     virtual void Set_Frame_Rate(float fps) = 0;
 
+    void Update_Fake_Drawables();
+    void Add_Text_Bearing_Drawable(Drawable *drawable);
+    void Remove_Drawable_From_Lookup_Table(Drawable *drawable);
+    void Add_Drawable_To_Lookup_Table(Drawable *drawable);
+    void Flush_Text_Bearing_Drawables();
+    DrawableTOCEntry *Find_TOC_Entry_By_Name(Utf8String name);
+    DrawableTOCEntry *Find_TOC_Entry_By_ID(unsigned short id);
+    void Add_TOC_Entry(Utf8String name, unsigned short id);
+    void Xfer_Drawable_TOC(Xfer *xfer);
+
     DrawableID Alloc_Drawable_ID()
     {
         DrawableID id = m_nextDrawableID;
@@ -167,12 +178,8 @@ public:
     DrawableID Get_Next_DrawableID() { return m_nextDrawableID; }
     void Set_Next_DrawableID(DrawableID id) { m_nextDrawableID = id; }
     int Get_On_Screen_Object_Count() { return m_onScreenObjectCount; }
-    void Add_Text_Bearing_Drawable(Drawable *drawable);
-    void Remove_Drawable_From_Lookup_Table(Drawable *drawable);
-    void Add_Drawable_To_Lookup_Table(Drawable *drawable);
     void Reset_On_Screen_Object_Count() { m_onScreenObjectCount = 0; }
     void Add_On_Screen_Object() { m_onScreenObjectCount++; }
-    void Flush_Text_Bearing_Drawables();
 
 protected:
     uint32_t m_frame;

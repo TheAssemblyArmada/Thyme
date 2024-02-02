@@ -83,7 +83,7 @@ RTS2DScene *W3DDisplay::s_2DScene;
 RTS3DInterfaceScene *W3DDisplay::s_3DInterfaceScene;
 #endif
 
-static int g_theW3DFrameLengthInMsec = 33;
+int g_theW3DFrameLengthInMsec = 33;
 
 // PerfStatsClass PerfStats("StatisticsDump.txt");
 

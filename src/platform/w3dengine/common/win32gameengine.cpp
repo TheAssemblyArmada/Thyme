@@ -18,6 +18,7 @@
 #include "main.h"
 #include "thingfactory.h"
 #include "w3dfunctionlexicon.h"
+#include "w3dgameclient.h"
 #include "w3dgamelogic.h"
 #include "w3dmodulefactory.h"
 #include "w3dparticlesys.h"
@@ -127,12 +128,7 @@ GameLogic *Win32GameEngine::Create_Game_Logic()
 
 GameClient *Win32GameEngine::Create_Game_Client()
 {
-#ifdef GAME_DLL
-    // only exists in game exe, not wb exe
-    return Call_Method<GameClient *, Win32GameEngine>(0x00741F40, this);
-#else
-    return nullptr;
-#endif
+    return new W3DGameClient();
 }
 
 ModuleFactory *Win32GameEngine::Create_Module_Factory()

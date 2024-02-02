@@ -26,6 +26,7 @@ enum GameMessageDisposition
 class GameMessageTranslator
 {
 public:
+    GameMessageTranslator() {}
     virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) = 0;
     virtual ~GameMessageTranslator() {}
 };

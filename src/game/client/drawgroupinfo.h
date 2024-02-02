@@ -56,6 +56,7 @@ private:
     static const FieldParse s_parseTable[];
     friend class Drawable;
     friend class W3DDisplayStringManager;
+    friend class GameClient;
 };
 
 #ifdef GAME_DLL

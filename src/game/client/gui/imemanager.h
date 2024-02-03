@@ -16,6 +16,9 @@
 
 #include "always.h"
 #include "imemanagerinterface.h"
+#ifdef PLATFORM_WINDOWS
+#include <imm.h>
+#endif
 
 class GameWindow;
 class Utf16String;
@@ -74,8 +77,13 @@ public:
 private:
     int m_result;
     GameWindow *m_window;
+#ifdef PLATFORM_WINDOWS
+    HIMC m_context;
+    HIMC m_oldContext;
+#else
     unsigned int m_context;
     unsigned int m_oldContext;
+#endif
     int m_disabled;
     bool m_composing;
     unichar_t m_compositionString[2048 + 1];
@@ -96,3 +104,5 @@ private:
     GameWindow *m_candidateUpArrow;
     GameWindow *m_candidateDownArrow;
 };
+
+IMEManagerInterface *Create_IME_Manager_Interface();

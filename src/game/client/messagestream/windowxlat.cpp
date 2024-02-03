@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Diplomacy
+ * @brief Window Xlat
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,13 +12,17 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#pragma once
-#include "always.h"
-#include "asciistring.h"
-#include <list>
+#include "windowxlat.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
-void Toggle_Diplomacy(bool immediate);
-
-void Update_Diplomacy_Briefing_Text(Utf8String text, bool clear);
-
-std::list<Utf8String> *Get_Briefing_Text_List();
+GameMessageDisposition WindowTranslator::Translate_Game_Message(const GameMessage *msg)
+{
+#ifdef GAME_DLL
+    return Call_Method<GameMessageDisposition, WindowTranslator, const GameMessage *>(
+        PICK_ADDRESS(0x006170F0, 0x00A24A6B), this, msg);
+#else
+    return KEEP_MESSAGE;
+#endif
+}

@@ -21,6 +21,23 @@
 HotKeyManager *g_theHotKeyManager;
 #endif
 
+HotKeyManager::HotKeyManager() {}
+
+HotKeyManager::~HotKeyManager()
+{
+    m_hotKeys.clear();
+}
+
+void HotKeyManager::Init()
+{
+    m_hotKeys.clear();
+}
+
+void HotKeyManager::Reset()
+{
+    m_hotKeys.clear();
+}
+
 Utf8String HotKeyManager::Search_Hot_Key(const Utf8String &str)
 {
     return Search_Hot_Key(g_theGameText->Fetch(str));
@@ -60,4 +77,14 @@ void HotKeyManager::Add_Hot_Key(GameWindow *window, const Utf8String &key)
         hotkey.m_window = window;
         m_hotKeys[key_lower] = hotkey;
     }
+}
+
+GameMessageDisposition HotKeyTranslator::Translate_Game_Message(const GameMessage *msg)
+{
+#ifdef GAME_DLL
+    return Call_Method<GameMessageDisposition, HotKeyTranslator, const GameMessage *>(
+        PICK_ADDRESS(0x005AE8C0, 0x008F84E0), this, msg);
+#else
+    return KEEP_MESSAGE;
+#endif
 }

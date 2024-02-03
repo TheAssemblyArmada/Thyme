@@ -19,7 +19,7 @@
 #include "overridable.h"
 #include "subsysteminterface.h"
 
-class SnowManager : SubsystemInterface
+class SnowManager : public SubsystemInterface
 {
 public:
     enum

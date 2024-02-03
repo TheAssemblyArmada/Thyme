@@ -70,6 +70,7 @@ public:
     const FontDesc &Superweapon_Countdown_Ready_Font() const { return m_superweaponCountdownReadyFont; }
     const FontDesc &Named_Timer_Countdown_Normal_Font() const { return m_namedTimerCountdownNormalFont; }
     const FontDesc &Named_Timer_Countdown_Ready_Font() const { return m_namedTimerCountdownReadyFont; }
+    const FontDesc &Draw_Group_Info_Font() const { return m_drawGroupInfoFont; }
     int Get_Military_Caption_Delay_MS() const { return m_militaryCaptionDelayMs; }
     int Get_Military_Caption_Speed() const { return m_militaryCaptionSpeed; }
 

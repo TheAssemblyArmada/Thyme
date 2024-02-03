@@ -13,7 +13,9 @@
  *            LICENSE
  */
 #include "imemanager.h"
-
+#include "gamewindowmanager.h"
+#include "main.h"
+#include "namekeygenerator.h"
 #include "unicodestring.h"
 #ifdef GAME_DLL
 #include "hooker.h"
@@ -49,21 +51,83 @@ IMEManager::IMEManager() :
 
 IMEManager::~IMEManager()
 {
-    // TODO
+    if (m_candidateWindow != nullptr) {
+        g_theWindowManager->Win_Destroy(m_candidateWindow);
+    }
+
+    if (m_statusWindow != nullptr) {
+        g_theWindowManager->Win_Destroy(m_statusWindow);
+    }
+
+    if (m_candidateString != nullptr) {
+        delete m_candidateString;
+    }
 
     Detach();
+#ifdef PLATFORM_WINDOWS
+    ImmAssociateContext(g_applicationHWnd, m_oldContext);
+    ImmReleaseContext(g_applicationHWnd, m_oldContext);
 
-    // TODO
+    if (m_context != nullptr) {
+        ImmDestroyContext(m_context);
+    }
+#endif
 }
 
 void IMEManager::Init()
 {
-    // TODO
+#ifdef PLATFORM_WINDOWS
+    m_context = ImmCreateContext();
+    m_oldContext = ImmGetContext(g_applicationHWnd);
+#endif
+    m_disabled = false;
+    m_candidateWindow = g_theWindowManager->Win_Create_From_Script("IMECandidateWindow.wnd", nullptr);
+
+    if (m_candidateWindow != nullptr) {
+        m_candidateWindow->Win_Set_Status(WIN_STATUS_ABOVE);
+        m_candidateWindow->Win_Hide(true);
+        m_candidateTextArea = g_theWindowManager->Win_Get_Window_From_Id(
+            m_candidateWindow, g_theNameKeyGenerator->Name_To_Key("IMECandidateWindow.wnd:TextArea"));
+        m_candidateUpArrow = g_theWindowManager->Win_Get_Window_From_Id(
+            m_candidateWindow, g_theNameKeyGenerator->Name_To_Key("IMECandidateWindow.wnd:UpArrow"));
+        m_candidateDownArrow = g_theWindowManager->Win_Get_Window_From_Id(
+            m_candidateWindow, g_theNameKeyGenerator->Name_To_Key("IMECandidateWindow.wnd:DownArrow"));
+
+        if (m_candidateTextArea == nullptr) {
+            g_theWindowManager->Win_Destroy(m_candidateWindow);
+            m_candidateWindow = nullptr;
+        }
+    }
+
+    m_statusWindow = g_theWindowManager->Win_Create_From_Script("IMEStatusWindow.wnd", nullptr);
+
+    if (m_statusWindow != nullptr) {
+        m_statusWindow->Win_Hide(true);
+    }
+
+    if (m_candidateWindow != nullptr) {
+        m_candidateWindow->Win_Set_User_Data(g_theIMEManager);
+        m_candidateTextArea->Win_Set_User_Data(g_theIMEManager);
+    }
+
+    Detach();
+    Enable();
 }
 
 void IMEManager::Attach(GameWindow *window)
 {
-    // TODO
+    if (m_window != window) {
+        Detach();
+
+        if (m_disabled == 0) {
+#ifdef PLATFORM_WINDOWS
+            ImmAssociateContext(g_applicationHWnd, m_context);
+#endif
+            Update_Status_Window();
+        }
+
+        m_window = window;
+    }
 }
 
 void IMEManager::Detach()
@@ -73,12 +137,20 @@ void IMEManager::Detach()
 
 void IMEManager::Enable()
 {
-    // TOOD
+    if (--m_disabled <= 0) {
+        m_disabled = 0;
+#ifdef PLATFORM_WINDOWS
+        ImmAssociateContext(g_applicationHWnd, m_context);
+#endif
+    }
 }
 
 void IMEManager::Disable()
 {
-    // TODO
+    m_disabled++;
+#ifdef PLATFORM_WINDOWS
+    ImmAssociateContext(g_applicationHWnd, nullptr);
+#endif
 }
 
 bool IMEManager::Is_Enabled() const
@@ -148,11 +220,22 @@ int IMEManager::Get_Candidate_Page_Start() const
 
 bool IMEManager::Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param)
 {
-    // TODO
-    return 0;
+#ifdef GAME_DLL
+    return Call_Method<bool, IMEManager, void *, unsigned int, int, int>(
+        PICK_ADDRESS(0x00412A30, 0x00A228A1), this, window_handle, message, w_param, l_param);
+#else
+    return false;
+#endif
 }
 
 int IMEManager::Result() const
 {
     return m_result;
+}
+
+void IMEManager::Update_Status_Window() {}
+
+IMEManagerInterface *Create_IME_Manager_Interface()
+{
+    return new IMEManager();
 }

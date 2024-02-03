@@ -23,6 +23,7 @@ class Drawable;
 class SelectionTranslator : public GameMessageTranslator
 {
 public:
+    SelectionTranslator();
     virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
     virtual ~SelectionTranslator() override;
 

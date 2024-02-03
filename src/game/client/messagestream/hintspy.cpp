@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Diplomacy
+ * @brief Hint Spy
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,13 +12,17 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#pragma once
-#include "always.h"
-#include "asciistring.h"
-#include <list>
+#include "hintspy.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
-void Toggle_Diplomacy(bool immediate);
-
-void Update_Diplomacy_Briefing_Text(Utf8String text, bool clear);
-
-std::list<Utf8String> *Get_Briefing_Text_List();
+GameMessageDisposition HintSpyTranslator::Translate_Game_Message(const GameMessage *msg)
+{
+#ifdef GAME_DLL
+    return Call_Method<GameMessageDisposition, HintSpyTranslator, const GameMessage *>(
+        PICK_ADDRESS(0x00613BC0, 0x00A25090), this, msg);
+#else
+    return KEEP_MESSAGE;
+#endif
+}

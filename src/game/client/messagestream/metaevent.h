@@ -16,6 +16,7 @@
 #include "always.h"
 #include "gamemessage.h"
 #include "mempoolobj.h"
+#include "messagestream.h"
 #include "subsysteminterface.h"
 #include "unicodestring.h"
 
@@ -168,6 +169,20 @@ public:
 
 private:
     MetaMapRec *m_metaMaps;
+};
+
+class MetaEventTranslator : public GameMessageTranslator
+{
+public:
+    MetaEventTranslator();
+    virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
+    virtual ~MetaEventTranslator() override {}
+
+private:
+    int m_lastKeyDown;
+    int m_lastModState;
+    ICoord2D m_lastButtonPos[3];
+    bool m_lastButtonState[3];
 };
 
 #ifdef GAME_DLL

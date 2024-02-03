@@ -20,6 +20,7 @@
 class LookAtTranslator : public GameMessageTranslator
 {
 public:
+    LookAtTranslator();
     virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
     virtual ~LookAtTranslator() override;
     virtual const ICoord2D *Get_RMB_Scroll_Anchor();

@@ -15,19 +15,49 @@
 #pragma once
 #include "always.h"
 #include "asciistring.h"
+#include "audioeventrts.h"
 #include "gametype.h"
 #include "mempoolobj.h"
 #include "snapshot.h"
 #include <list>
 
-class Mission;
+class INI;
+
+class Mission : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(Mission);
+
+public:
+    Mission() : m_voiceLength(0) {}
+    virtual ~Mission() override {}
+
+private:
+    Utf8String m_name;
+    Utf8String m_map;
+    Utf8String m_nextMission;
+    Utf8String m_introMovie;
+    Utf8String m_objectiveLines[5];
+    AudioEventRTS m_briefingVoice;
+    Utf8String m_locationNameLabel;
+    Utf8String m_unitNames[3];
+    int m_voiceLength;
+    Utf8String m_generalName;
+    friend class CampaignManager;
+};
 
 class Campaign : public MemoryPoolObject
 {
     IMPLEMENT_POOL(Campaign)
 
 public:
+    Campaign();
     virtual ~Campaign() override;
+    Utf8String Get_Final_Victory_Movie();
+    void New_Mission(Utf8String mission);
+    Mission *Get_Mission(Utf8String mission);
+    Mission *Get_Next_Mission(Mission *mission);
+
+    bool Is_Challenge_Campaign() const { return m_isChallengeCampaign; }
 
 private:
     Utf8String m_name;
@@ -39,17 +69,40 @@ private:
     Utf8String m_playerFaction;
     friend class ScriptEngine;
     friend class GameLogic;
+    friend class CampaignManager;
 };
 
 class CampaignManager : public SnapShot
 {
 public:
-    virtual void CRC_Snapshot(Xfer *xfer) override;
+    CampaignManager();
+    ~CampaignManager();
+    void Init();
+
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    Campaign *Get_Current_Campaign() { return m_currentCampaign; }
+    Mission *Goto_Next_Mission();
+    void Set_Campaign_And_Mission(Utf8String campaign, Utf8String mission);
+    void Set_Campaign(Utf8String campaign);
+    Utf8String Get_Current_Map();
+    int Get_Current_Mission_Number();
+    void New_Campaign(Utf8String campaign);
+
+    static void Parse_Mission_Part(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse(INI *ini);
+    static FieldParse *Get_Field_Parse();
+
+    Mission *Get_Current_Mission() const { return m_currentMission; }
+    Campaign *Get_Current_Campaign() const { return m_currentCampaign; }
+    bool Is_Challenge_Campaign() const { return false; }
+    GameDifficulty Get_Difficulty() const { return m_difficulty; }
+    bool Is_Victory() const { return m_isVictory; }
+
     void Set_Is_Victory(bool set) { m_isVictory = set; }
+    void Set_Difficulty(GameDifficulty difficulty) { m_difficulty = difficulty; }
+    void Set_Skill_Points(int points) { m_skillPoints = points; }
 
 private:
     std::list<Campaign *> m_campaignList;

@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Diplomacy
+ * @brief Place Event Translator
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,11 +14,15 @@
  */
 #pragma once
 #include "always.h"
-#include "asciistring.h"
-#include <list>
+#include "messagestream.h"
 
-void Toggle_Diplomacy(bool immediate);
+class PlaceEventTranslator : public GameMessageTranslator
+{
+public:
+    PlaceEventTranslator() : m_frame(-1) {}
+    virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg) override;
+    virtual ~PlaceEventTranslator() override {}
 
-void Update_Diplomacy_Briefing_Text(Utf8String text, bool clear);
-
-std::list<Utf8String> *Get_Briefing_Text_List();
+private:
+    int m_frame;
+};

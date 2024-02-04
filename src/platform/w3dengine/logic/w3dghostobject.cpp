@@ -624,7 +624,7 @@ void W3DGhostObjectManager::Restore_Partition_Data()
 
         for (int i = 0; i < MAX_PLAYER_COUNT; i++) {
             if (obj->m_parentShapshots[i] != nullptr) {
-                obj->m_parentPartitionData->Friend_Set_Previous_Shrouded_Status(i, SHROUDED_UNK3);
+                obj->m_parentPartitionData->Friend_Set_Previous_Shrouded_Status(i, SHROUDED_SEEN);
             }
         }
     }

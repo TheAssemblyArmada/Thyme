@@ -58,6 +58,10 @@ public:
     bool Is_Shell_Active() const { return m_isShellActive; }
     ShellMenuSchemeManager *Get_Menu_Scheme_Manager() const { return m_shellMenuSchemeManager; }
 
+#ifdef GAME_DLL
+    Shell *Hook_Ctor() { return new (this) Shell; }
+#endif
+
 private:
     WindowLayout *m_screenStack[16];
     int m_screenCount;

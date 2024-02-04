@@ -38,13 +38,13 @@ public:
     HeaderTemplate *Find_Header_Template(Utf8String name);
     HeaderTemplate *New_Header_Template(Utf8String name);
     GameFont *Get_Font_From_Template(Utf8String name);
-    HeaderTemplate *Get_First_Template();
+    HeaderTemplate *Get_First_Header();
     HeaderTemplate *Get_Next_Header(HeaderTemplate *tmplate);
     void Header_Notify_Resolution_Change();
     void Populate_Game_Fonts();
 
     static void Parse(INI *ini);
-    static FieldParse *Get_Field_Parse();
+    static const FieldParse *Get_Field_Parse() { return s_headerFieldParseTable; }
     static const FieldParse s_headerFieldParseTable[];
 
 private:

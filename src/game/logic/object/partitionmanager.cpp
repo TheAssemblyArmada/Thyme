@@ -839,5 +839,5 @@ bool PartitionFilterAcceptByKindOf::Allow(Object *obj)
 void PartitionData::Friend_Set_Previous_Shrouded_Status(int index, ObjectShroudStatus status)
 {
     m_previousShroudedness[index] = status;
-    m_everSeen[index] = status != SHROUDED_UNK4;
+    m_everSeen[index] = status != SHROUDED_NEVERSEEN;
 }

@@ -223,7 +223,7 @@ void W3DPropBuffer::Draw_Props(RenderInfoClass &rinfo)
                     g_thePartitionManager->Get_Prop_Shroud_Status_For_Player(index, &m_props[i].position);
             }
 
-            if (m_props[i].shroud_status < SHROUDED_UNK4 && m_props[i].shroud_status > SHROUDED_INVALID) {
+            if (m_props[i].shroud_status < SHROUDED_NEVERSEEN && m_props[i].shroud_status > SHROUDED_INVALID) {
                 if (g_theTerrainRenderObject->Get_Shroud() != nullptr && m_props[i].shroud_status != SHROUDED_INVALID) {
                     rinfo.Push_Material_Pass(m_shroudMaterial);
                     m_props[i].render_obj->Render(rinfo);

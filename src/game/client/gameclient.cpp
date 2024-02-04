@@ -18,13 +18,17 @@
 #include "campaignmanager.h"
 #include "challengegenerals.h"
 #include "commandxlat.h"
+#include "controlbar.h"
 #include "displaystringmanager.h"
 #include "drawable.h"
 #include "drawgroupinfo.h"
 #include "eva.h"
+#include "fpusetting.h"
 #include "gamefont.h"
 #include "gamemessage.h"
 #include "gamewindowmanager.h"
+#include "ghostobject.h"
+#include "globaldata.h"
 #include "globallanguage.h"
 #include "guicommandtranslator.h"
 #include "headertemplate.h"
@@ -38,14 +42,20 @@
 #include "lookatxlat.h"
 #include "metaevent.h"
 #include "mouse.h"
+#include "objectcreationlist.h"
+#include "particlesysmanager.h"
 #include "placeeventtranslator.h"
+#include "playerlist.h"
 #include "rayeffect.h"
+#include "scriptengine.h"
 #include "selectionxlat.h"
 #include "shell.h"
 #include "snow.h"
 #include "terrainvisual.h"
+#include "thingfactory.h"
 #include "videoplayer.h"
 #include "w3ddisplay.h"
+#include "windowlayout.h"
 #include "windowxlat.h"
 
 #ifdef GAME_DLL
@@ -409,9 +419,177 @@ void GameClient::Reset()
 
 void GameClient::Update()
 {
-#ifdef GAME_DLL
-    Call_Method<void, GameClient>(PICK_ADDRESS(0x004ACDF0, 0x0082B142), this);
+    GameMessage *msg = g_theMessageStream->Append_Message(GameMessage::MSG_FRAME_TICK);
+    unsigned int frame = Get_Frame();
+    msg->Append_Time_Stamp_Arg(frame);
+    static bool playSizzle = false;
+    if (g_theWriteableGlobalData->m_playIntro && !g_theDisplay->Is_Movie_Playing()) {
+        if (g_theGameLODManager != nullptr && g_theGameLODManager->Did_Mem_Pass()) {
+            g_theDisplay->Play_Logo_Movie("EALogoMovie", 5000, 3000);
+        } else {
+            g_theDisplay->Play_Logo_Movie("EALogoMovie640", 5000, 3000);
+        }
+
+        g_theWriteableGlobalData->m_playIntro = false;
+        g_theWriteableGlobalData->m_afterIntro = true;
+        playSizzle = true;
+    }
+
+    if (g_theWriteableGlobalData->m_afterIntro && !g_theDisplay->Is_Movie_Playing()) {
+        if (playSizzle && g_theWriteableGlobalData->m_playSizzle) {
+            g_theWriteableGlobalData->m_allowSkipMovie = true;
+
+            if (g_theGameLODManager != nullptr && g_theGameLODManager->Did_Mem_Pass()) {
+                g_theDisplay->Play_Movie("Sizzle");
+            } else {
+                g_theDisplay->Play_Movie("Sizzle640");
+            }
+
+            playSizzle = false;
+        } else {
+            g_theWriteableGlobalData->m_unkBool26 = true;
+            g_theWriteableGlobalData->m_allowSkipMovie = true;
+
+            if (g_theGameLODManager != nullptr && !g_theGameLODManager->Did_Mem_Pass()) {
+                g_theWriteableGlobalData->m_unkBool26 = false;
+                WindowLayout *layout = g_theWindowManager->Win_Create_Layout("Menus/LegalPage.wnd");
+
+                if (layout != nullptr) {
+                    layout->Hide(false);
+                    layout->Bring_Forward();
+                    unsigned int time = rts::Get_Time();
+
+                    for (;;) {
+                        if (time + 4000 <= rts::Get_Time()) {
+                            break;
+                        }
+
+                        g_theWindowManager->Update();
+                        g_theDisplay->Draw();
+                        rts::Sleep_Ms(100);
+                    }
+
+                    Set_FP_Mode();
+                    layout->Destroy_Windows();
+                    layout->Delete_Instance();
+                }
+
+                g_theWriteableGlobalData->m_unkBool26 = true;
+            }
+
+            g_theShell->Show_Shell_Map(true);
+            g_theShell->Show_Shell(1);
+            g_theWriteableGlobalData->m_afterIntro = false;
+        }
+    }
+
+    if (g_theSnowManager != nullptr) {
+        g_theSnowManager->Update();
+    }
+
+    g_theAnim2DCollection->Update();
+
+    if (g_theKeyboard != nullptr) {
+        g_theKeyboard->Update();
+        g_theKeyboard->Create_Stream_Messages();
+    }
+
+    g_theEva->Update();
+
+    if (g_theMouse != nullptr) {
+        g_theMouse->Update();
+        g_theMouse->Create_Stream_Messages();
+    }
+
+    if (g_theInGameUI->Is_Camera_Tracking_Drawable()) {
+        Drawable *drawable = g_theInGameUI->Get_First_Selected_Drawable();
+
+        if (drawable != nullptr) {
+            g_theTacticalView->Look_At(drawable->Get_Position());
+        } else {
+            g_theInGameUI->Set_Camera_Drawing_Trackable(false);
+        }
+    }
+
+    if (g_theWriteableGlobalData->m_playIntro || g_theWriteableGlobalData->m_afterIntro) {
+        g_theDisplay->Draw();
+        g_theDisplay->Update();
+    } else {
+        g_theWindowManager->Update();
+        g_theVideoPlayer->Update();
+
+        bool is_paused = g_theTacticalView->Is_Time_Frozen() && !g_theTacticalView->Is_Camera_Movement_Finished();
+        is_paused = is_paused || g_theScriptEngine->Is_Time_Frozen_Debug();
+        is_paused = is_paused || g_theScriptEngine->Is_Time_Frozen_Script();
+        is_paused = is_paused || g_theGameLogic->Is_Game_Paused();
+        unsigned int player_index;
+
+        if (g_thePlayerList != nullptr) {
+            player_index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
+        } else {
+            player_index = 0;
+        }
+
+        static unsigned int lastFrame = -1;
+
+        is_paused = is_paused || (lastFrame == m_frame);
+        lastFrame = m_frame;
+
+        if (!is_paused) {
+#ifdef GAME_DEBUG_STRUCTS
+            if (g_theWriteableGlobalData->m_shroudOn)
 #endif
+            {
+                g_theGhostObjectManager->Update_Orphaned_Objects(nullptr, 0);
+            }
+
+            Drawable *next_drawable;
+
+            for (Drawable *draw = First_Drawable(); draw != nullptr; draw = next_drawable) {
+                next_drawable = draw->Get_Next();
+#ifdef GAME_DEBUG_STRUCTS
+                if (g_theWriteableGlobalData->m_shroudOn)
+#endif
+                {
+                    Object *obj = draw->Get_Object();
+
+                    if (obj != nullptr) {
+                        ObjectShroudStatus status = obj->Get_Shrouded_Status(player_index);
+
+                        if (status >= SHROUDED_SEEN && draw->Get_Remain_Visible_Frames() != 0) {
+                            int frames = 60;
+
+                            if (obj->Is_Effectively_Dead()) {
+                                frames += 90;
+                            }
+
+                            if (g_theGameLogic->Get_Frame() < draw->Get_Remain_Visible_Frames() + frames) {
+                                status = SHROUDED_NONE;
+                            }
+                        }
+
+                        draw->Set_Fully_Obscured_By_Shroud(status >= SHROUDED_SEEN);
+                    }
+                }
+
+                draw->Update_Drawable();
+            }
+        }
+
+        if (static_cast<unsigned int>(g_theWriteableGlobalData->m_frameToJumpTo) <= g_theGameLogic->Get_Frame()
+            || g_theGameLogic->Get_Frame() == 0) {
+            if (!is_paused) {
+                g_theParticleSystemManager->Set_Player_Index(player_index);
+            }
+
+            g_theTerrainVisual->Update();
+            g_theDisplay->Update();
+            g_theDisplay->Draw();
+            g_theDisplayStringManager->Update();
+            g_theShell->Update();
+            g_theInGameUI->Update();
+        }
+    }
 }
 
 void GameClient::Register_Drawable(Drawable *drawable)
@@ -507,9 +685,75 @@ void GameClient::Allocate_Shadows()
 
 void GameClient::Preload_Assets(TimeOfDayType tod)
 {
-#ifdef GAME_DLL
-    Call_Method<void, GameClient, TimeOfDayType>(PICK_ADDRESS(0x004AD8B0, 0x0082BD61), this, tod);
-#endif
+    // TODO memory debug logging
+    for (Drawable *draw = Get_Drawable_List(); draw != nullptr; draw = draw->Get_Next()) {
+        draw->Preload_Assets(tod);
+    }
+
+    for (ThingTemplate *thing = g_theThingFactory->First_Template(); thing != nullptr;
+         thing = thing->Friend_Get_Next_Template()) {
+        if (thing->Is_KindOf(KINDOF_PRELOAD) || g_theWriteableGlobalData->m_preloadEverything) {
+            Drawable *draw = g_theThingFactory->New_Drawable(thing, DRAWABLE_STATUS_UNK);
+
+            if (draw != nullptr) {
+                draw->Preload_Assets(tod);
+                g_theGameClient->Destroy_Drawable(draw);
+            }
+        }
+    }
+
+    for (unsigned int i = 0; i < g_debrisModelNamesGlobalHack.size(); i++) {
+        g_theDisplay->Preload_Model_Assets(g_debrisModelNamesGlobalHack[i]);
+    }
+
+    g_debrisModelNamesGlobalHack.clear();
+    g_theControlBar->Preload_Assets(tod);
+    g_theParticleSystemManager->Preload_Assets(tod);
+
+    char *preload_textures[39];
+    preload_textures[0] = "ptspruce01.tga";
+    preload_textures[1] = "exrktflame.tga";
+    preload_textures[2] = "cvlimo3_d2.tga";
+    preload_textures[3] = "exfthrowerstream.tga";
+    preload_textures[4] = "uvrockbug_d1.tga";
+    preload_textures[5] = "arcbackgroundc.tga";
+    preload_textures[6] = "grade3.tga";
+    preload_textures[7] = "framebasec.tga";
+    preload_textures[8] = "gradec.tga";
+    preload_textures[9] = "frametopc.tga";
+    preload_textures[10] = "arcbackgrounda.tga";
+    preload_textures[11] = "arcglow2.tga";
+    preload_textures[12] = "framebasea.tga";
+    preload_textures[13] = "gradea.tga";
+    preload_textures[14] = "frametopa.tga";
+    preload_textures[15] = "sauserinterface256_002.tga";
+    preload_textures[16] = "sauserinterface256_001.tga";
+    preload_textures[17] = "unitbackgrounda.tga";
+    preload_textures[18] = "sauserinterface256_004.tga";
+    preload_textures[19] = "sagentank.tga";
+    preload_textures[20] = "sauserinterface256_005.tga";
+    preload_textures[21] = "sagenair.tga";
+    preload_textures[22] = "sauserinterface256_003.tga";
+    preload_textures[23] = "sagenspec.tga";
+    preload_textures[24] = "snuserinterface256_003.tga";
+    preload_textures[25] = "snuserinterface256_002.tga";
+    preload_textures[26] = "unitbackgroundc.tga";
+    preload_textures[27] = "snuserinterface256_004.tga";
+    preload_textures[28] = "sngenredarm.tga";
+    preload_textures[29] = "snuserinterface256_001.tga";
+    preload_textures[30] = "sngenspewea.tga";
+    preload_textures[31] = "sngensecpol.tga";
+    preload_textures[32] = "ciburn.tga";
+    preload_textures[33] = "ptmaple02.tga";
+    preload_textures[34] = "scuserinterface256_005.tga";
+    preload_textures[35] = "scuserinterface256_002.tga";
+    preload_textures[36] = "sauserinterface256_006.tga";
+    preload_textures[37] = "pmcrates.tga";
+    preload_textures[38] = "";
+
+    for (int i = 0; *preload_textures[i] != '\0'; i++) {
+        g_theDisplay->Preload_Texture_Assets(preload_textures[i]);
+    }
 }
 
 void GameClient::Remove_From_Ray_Effects(Drawable *drawable)
@@ -585,4 +829,51 @@ void GameClient::Flush_Text_Bearing_Drawables()
     }
 
     m_drawableTB.clear();
+}
+
+void GameClient::Update_Fake_Drawables()
+{
+    for (Drawable *draw = Get_Drawable_List(); draw != nullptr; draw = draw->Get_Next()) {
+        Object *obj = draw->Get_Object();
+
+        if (obj != nullptr && obj->Is_KindOf(KINDOF_FS_FAKE)) {
+            Relationship relationship = g_thePlayerList->Get_Local_Player()->Get_Relationship(obj->Get_Team());
+
+            if (relationship == ALLIES || relationship == NEUTRAL) {
+                draw->Set_Terrain_Decal(TERRAIN_DECAL_9);
+            } else {
+                draw->Set_Terrain_Decal(TERRAIN_DECAL_8);
+            }
+        }
+    }
+}
+
+GameClient::DrawableTOCEntry *GameClient::Find_TOC_Entry_By_Name(Utf8String name)
+{
+    for (auto it = m_drawableTOC.begin(); it != m_drawableTOC.end(); it++) {
+        if ((*it).name == name) {
+            return &*it;
+        }
+    }
+
+    return nullptr;
+}
+
+GameClient::DrawableTOCEntry *GameClient::Find_TOC_Entry_By_ID(unsigned short id)
+{
+    for (auto it = m_drawableTOC.begin(); it != m_drawableTOC.end(); it++) {
+        if ((*it).id == id) {
+            return &*it;
+        }
+    }
+
+    return nullptr;
+}
+
+void GameClient::Add_TOC_Entry(Utf8String name, unsigned short id)
+{
+    DrawableTOCEntry entry;
+    entry.name = name;
+    entry.id = id;
+    m_drawableTOC.push_back(entry);
 }

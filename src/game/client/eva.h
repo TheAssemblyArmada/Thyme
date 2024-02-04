@@ -84,7 +84,7 @@ struct EvaSideSounds
     Utf8String m_side;
     std::vector<Utf8String> m_sounds;
 
-    static FieldParse *Get_Field_Parse();
+    static const FieldParse *Get_Field_Parse() { return s_evaSideSounds; }
     static const FieldParse s_evaSideSounds[];
 };
 
@@ -96,18 +96,20 @@ public:
     EvaCheckInfo() : m_messageType(NUM_EVA_MESSAGES), m_timeBetweenChecksMS(900), m_expirationTimeMS(150), m_priority(1) {}
 
 private:
+    static const FieldParse *Get_Field_Parse() { return s_evaEventInfo; }
+    static const FieldParse s_evaEventInfo[];
+
     EvaMessage m_messageType;
     unsigned int m_timeBetweenChecksMS;
     unsigned int m_expirationTimeMS;
     unsigned int m_priority;
     std::vector<EvaSideSounds> m_sideSounds;
+    friend class Eva;
 };
 
 struct EvaCheck
 {
     EvaCheck() : check_info(nullptr), unk1(0xFFFFFFFF), unk2(0), unk3(0) {}
-    static FieldParse *Get_Field_Parse();
-    static const FieldParse s_evaEventInfo[];
 
     EvaCheckInfo *check_info;
     unsigned int unk1;

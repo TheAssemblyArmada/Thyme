@@ -553,6 +553,8 @@ SimpleVecClass<Vector4> &g_planeEQArray = Make_Global<SimpleVecClass<Vector4>>(P
 #include "objectcreationlist.h"
 ObjectCreationListStore *&g_theObjectCreationListStore =
     Make_Global<ObjectCreationListStore *>(PICK_ADDRESS(0x00A2BC44, 0x00E23E3C));
+std::vector<Utf8String> &g_debrisModelNamesGlobalHack =
+    Make_Global<std::vector<Utf8String>>(PICK_ADDRESS(0x00A2BC38, 0x00E23E30));
 
 // partitionmanager.cpp
 #include "partitionmanager.h"

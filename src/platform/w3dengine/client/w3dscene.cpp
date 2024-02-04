@@ -441,7 +441,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
         drawable = info->drawable;
 
         if (!drawable) {
-            shrouded = SHROUDED_UNK3;
+            shrouded = SHROUDED_SEEN;
         }
     }
 
@@ -451,7 +451,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
             return;
         }
 
-        if (shrouded == SHROUDED_UNK3) {
+        if (shrouded == SHROUDED_SEEN) {
             rinfo.m_lightEnvironment = &m_sceneLightEnv;
             robj->Render(rinfo);
             rinfo.m_lightEnvironment = nullptr;
@@ -471,7 +471,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
 
             if (shrouded == SHROUDED_NONE) {
                 drawable->Set_Remain_Visible_Frames(g_theGameLogic->Get_Frame());
-            } else if (shrouded >= SHROUDED_UNK3) {
+            } else if (shrouded >= SHROUDED_SEEN) {
                 if (drawable->Get_Remain_Visible_Frames()) {
                     unsigned int frames = 60;
 
@@ -480,7 +480,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
                     }
 
                     if (g_theGameLogic->Get_Frame() < drawable->Get_Remain_Visible_Frames() + frames) {
-                        shrouded = SHROUDED_PARTIAL;
+                        shrouded = SHROUDED_TRANSITION;
                     }
                 }
             }
@@ -494,8 +494,8 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
             if (info->object_id) {
                 object = g_theGameLogic->Find_Object_By_ID(info->object_id);
                 if (object) {
-                    if (object->Get_Shrouded_Status(local_player_index) >= SHROUDED_UNK3) {
-                        shrouded = SHROUDED_UNK4;
+                    if (object->Get_Shrouded_Status(local_player_index) >= SHROUDED_SEEN) {
+                        shrouded = SHROUDED_NEVERSEEN;
                     }
                 }
             }

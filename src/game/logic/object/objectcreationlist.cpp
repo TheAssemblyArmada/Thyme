@@ -18,6 +18,7 @@
 
 #ifndef GAME_DLL
 ObjectCreationListStore *g_theObjectCreationListStore = nullptr;
+std::vector<Utf8String> g_debrisModelNamesGlobalHack;
 #endif
 
 // zh: 0x004C1310 wb: 0x0075BB30

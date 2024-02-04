@@ -178,3 +178,11 @@ void VideoPlayer::Remove_Stream(VideoStream *stream)
         }
     }
 }
+
+void VideoPlayer::Parse(INI *ini)
+{
+    Video video;
+    video.internal_name = ini->Get_Next_Token();
+    ini->Init_From_INI(&video, g_theVideoPlayer->Get_Field_Parse());
+    g_theVideoPlayer->Add_Video(&video);
+}

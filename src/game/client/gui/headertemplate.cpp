@@ -21,6 +21,15 @@
 HeaderTemplateManager *g_theHeaderTemplateManager;
 #endif
 
+// clang-format off
+const FieldParse HeaderTemplateManager::s_headerFieldParseTable[] = {
+    {"Font", &INI::Parse_Quoted_AsciiString, nullptr, offsetof(HeaderTemplate, m_fontName)},
+    {"Point", &INI::Parse_Int, nullptr, offsetof(HeaderTemplate, m_point)},
+    {"Bold", &INI::Parse_Bool, nullptr, offsetof(HeaderTemplate, m_bold)},
+    {nullptr, nullptr, nullptr, 0}
+};
+// clang-format on
+
 HeaderTemplateManager::HeaderTemplateManager() {}
 
 HeaderTemplateManager::~HeaderTemplateManager()
@@ -77,4 +86,43 @@ void HeaderTemplateManager::Populate_Game_Fonts()
             header->m_point);
         header->m_font = font;
     }
+}
+
+HeaderTemplate *HeaderTemplateManager::New_Header_Template(Utf8String name)
+{
+    HeaderTemplate *header = new HeaderTemplate();
+    captainslog_dbgassert(
+        header != nullptr, "Unable to create a new Header Template in HeaderTemplateManager::New_Header_Template");
+
+    if (header != nullptr) {
+        header->m_name = name;
+        m_templates.push_back(header);
+        return header;
+    } else {
+        return nullptr;
+    }
+}
+
+void HeaderTemplateManager::Parse(INI *ini)
+{
+    Utf8String name;
+    name.Set(ini->Get_Next_Token());
+    HeaderTemplate *header = g_theHeaderTemplateManager->Find_Header_Template(name);
+
+    if (header != nullptr) {
+        captainslog_dbgassert(false,
+            "[LINE: %d in '%s'] Duplicate header Template %s found!",
+            ini->Get_Line_Number(),
+            ini->Get_Filename().Str(),
+            name.Str());
+    } else {
+        header = g_theHeaderTemplateManager->New_Header_Template(name);
+    }
+
+    ini->Init_From_INI(header, Get_Field_Parse());
+}
+
+void HeaderTemplateManager::Header_Notify_Resolution_Change()
+{
+    Populate_Game_Fonts();
 }

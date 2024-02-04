@@ -43,6 +43,7 @@ private:
     int m_voiceLength;
     Utf8String m_generalName;
     friend class CampaignManager;
+    friend class Campaign;
 };
 
 class Campaign : public MemoryPoolObject
@@ -53,9 +54,9 @@ public:
     Campaign();
     virtual ~Campaign() override;
     Utf8String Get_Final_Victory_Movie();
-    void New_Mission(Utf8String mission);
-    Mission *Get_Mission(Utf8String mission);
-    Mission *Get_Next_Mission(Mission *mission);
+    Mission *New_Mission(Utf8String mission_name);
+    Mission *Get_Mission(Utf8String mission_name);
+    Mission *Get_Next_Mission(Mission *mission_name);
 
     bool Is_Challenge_Campaign() const { return m_isChallengeCampaign; }
 
@@ -84,15 +85,16 @@ public:
     virtual void Load_Post_Process() override;
 
     Mission *Goto_Next_Mission();
-    void Set_Campaign_And_Mission(Utf8String campaign, Utf8String mission);
-    void Set_Campaign(Utf8String campaign);
+    void Set_Campaign_And_Mission(Utf8String campaign_name, Utf8String mission);
+    void Set_Campaign(Utf8String campaign_name);
     Utf8String Get_Current_Map();
     int Get_Current_Mission_Number();
-    void New_Campaign(Utf8String campaign);
+    Campaign *New_Campaign(Utf8String campaign_name);
 
     static void Parse_Mission_Part(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse(INI *ini);
-    static FieldParse *Get_Field_Parse();
+    static const FieldParse *Get_Field_Parse() { return s_campaignFieldParseTable; }
+    static const FieldParse s_campaignFieldParseTable[];
 
     Mission *Get_Current_Mission() const { return m_currentMission; }
     Campaign *Get_Current_Campaign() const { return m_currentCampaign; }

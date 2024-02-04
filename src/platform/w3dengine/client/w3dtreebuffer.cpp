@@ -906,7 +906,7 @@ void W3DTreeBuffer::Update_Toppling_Tree(TTree *tree)
         Coord3D loc;
         loc.Set(tree->location.X, tree->location.Y, tree->location.Z);
 
-        if (g_thePartitionManager->Get_Shroud_Status_For_Player(id, &loc) == SHROUDED_UNK3) {
+        if (g_thePartitionManager->Get_Shroud_Status_For_Player(id, &loc) == SHROUDED_SEEN) {
             tree->topple_state = TTree::TOPPLE_TOPPLING;
         } else if (tree->topple_state == TTree::TOPPLE_TOPPLING) {
             tree->angular_velocity = 0.0f;

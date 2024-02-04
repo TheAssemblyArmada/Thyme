@@ -61,7 +61,7 @@ public:
 
     virtual int Result() const override;
 
-    wchar_t Convert_Char_To_Wide(unsigned int wparam);
+    unichar_t Convert_Char_To_Wide(unsigned int wparam);
     void Convert_To_Unicode(char *mbcs, Utf16String &unicode);
     void Update_Composition_String();
     void Get_Results_String();

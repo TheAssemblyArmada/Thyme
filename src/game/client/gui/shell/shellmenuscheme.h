@@ -32,6 +32,7 @@ private:
     ICoord2D m_endPosition;
     int m_width;
     int m_color;
+    friend class ShellMenuSchemeManager;
 };
 
 class ShellMenuSchemeImage
@@ -45,6 +46,7 @@ private:
     ICoord2D m_position;
     ICoord2D m_size;
     Image *m_image;
+    friend class ShellMenuSchemeManager;
 };
 
 class ShellMenuScheme
@@ -60,6 +62,7 @@ private:
     Utf8String m_name;
     std::list<ShellMenuSchemeImage *> m_images;
     std::list<ShellMenuSchemeLine *> m_lines;
+    friend class ShellMenuSchemeManager;
 };
 
 class ShellMenuSchemeManager
@@ -76,7 +79,8 @@ public:
 
     static void Parse_Image_Part(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Line_Part(INI *ini, void *formal, void *store, const void *user_data);
-    static const FieldParse Get_Field_Parse();
+    static void Parse(INI *ini);
+    static const FieldParse *Get_Field_Parse() { return s_shellMenuSchemeFieldParseTable; }
     static const FieldParse s_shellMenuSchemeFieldParseTable[];
 
 private:

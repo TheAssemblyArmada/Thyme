@@ -1205,7 +1205,7 @@ void Drawable_Post_Draw(Drawable *draw, void *user_data)
         ObjectShroudStatus status = obj != nullptr ? obj->Get_Shrouded_Status(index) : SHROUDED_NONE;
 #endif
 
-        if (status <= SHROUDED_PARTIAL) {
+        if (status <= SHROUDED_TRANSITION) {
             draw->Draw_Icon_UI();
 
 #ifdef GAME_DEBUG_STRUCTS

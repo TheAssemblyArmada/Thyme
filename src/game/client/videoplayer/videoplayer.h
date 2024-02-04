@@ -55,6 +55,7 @@ public:
     virtual void Notify_Player_Of_New_Provider(bool unk) {}
 
     void Remove_Stream(VideoStream *stream);
+    static void Parse(INI *ini);
 
 protected:
     std::vector<Video> m_videosAvailableToPlay;

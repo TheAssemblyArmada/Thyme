@@ -220,7 +220,7 @@ bool ParticleSystem::Update(int index)
             Object *object = g_theGameLogic->Find_Object_By_ID(m_attachedToObjectID);
 
             if (object != nullptr) {
-                shrouded = object->Get_Shrouded_Status(index) >= SHROUDED_UNK3;
+                shrouded = object->Get_Shrouded_Status(index) >= SHROUDED_SEEN;
 
                 Drawable *drawable = object->Get_Drawable();
 

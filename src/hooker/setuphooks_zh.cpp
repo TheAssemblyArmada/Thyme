@@ -156,6 +156,7 @@
 #include "setuphooks.h"
 #include "shader.h"
 #include "shadermanager.h"
+#include "shell.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
 #include "skirmishgameoptionsmenu.h"
@@ -3908,4 +3909,12 @@ void Setup_Hooks()
     Hook_Any(0x0050E9E0, InGameUI::Can_Selected_Objects_Do_Special_Power);
     Hook_Any(0x0050ED00, InGameUI::Can_Selected_Objects_Override_Special_Power_Destination);
     Hook_Any(0x0050ED90, InGameUI::Can_Selected_Objects_Effectively_Use_Weapon);
+
+    // gameclient.cpp
+    Hook_Any(0x004AD3E0, GameClient::Update_Fake_Drawables);
+    Hook_Any(0x004ADC90, GameClient::Find_TOC_Entry_By_Name);
+    Hook_Any(0x004ADD80, GameClient::Add_TOC_Entry);
+
+    // shell.cpp
+    Hook_Any(0x005C4BA0, Shell::Hook_Ctor);
 }

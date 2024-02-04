@@ -80,6 +80,8 @@ private:
 
 #ifdef GAME_DLL
 extern ObjectCreationListStore *&g_theObjectCreationListStore;
+extern std::vector<Utf8String> &g_debrisModelNamesGlobalHack;
 #else
 extern ObjectCreationListStore *g_theObjectCreationListStore;
+extern std::vector<Utf8String> g_debrisModelNamesGlobalHack;
 #endif

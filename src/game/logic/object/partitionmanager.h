@@ -153,9 +153,9 @@ enum ObjectShroudStatus : int32_t
 {
     SHROUDED_INVALID,
     SHROUDED_NONE,
-    SHROUDED_PARTIAL,
-    SHROUDED_UNK3,
-    SHROUDED_UNK4,
+    SHROUDED_TRANSITION,
+    SHROUDED_SEEN,
+    SHROUDED_NEVERSEEN,
 };
 
 struct LookerShrouder

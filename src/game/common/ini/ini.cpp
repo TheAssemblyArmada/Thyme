@@ -17,11 +17,13 @@
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "audiosettings.h"
+#include "campaignmanager.h"
 #include "challengegenerals.h"
 #include "color.h"
 #include "colorspace.h"
 #include "controlbar.h"
 #include "coord.h"
+#include "eva.h"
 #include "file.h"
 #include "filesystem.h"
 #include "fpusetting.h"
@@ -33,6 +35,7 @@
 #include "gamewindowtransitions.h"
 #include "globaldata.h"
 #include "globallanguage.h"
+#include "headertemplate.h"
 #include "image.h"
 #include "locomotor.h"
 #include "mouse.h"
@@ -43,12 +46,14 @@
 #include "rankinfo.h"
 #include "science.h"
 #include "scriptengine.h"
+#include "shellmenuscheme.h"
 #include "snow.h"
 #include "specialpower.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
 #include "thingfactory.h"
 #include "upgrade.h"
+#include "videoplayer.h"
 #include "water.h"
 #include "weapon.h"
 #include "xfer.h"
@@ -83,7 +88,7 @@ const BlockParse TheTypeTable[] = {
     {"AudioEvent", AudioEventInfo::Parse_Audio_Event_Definition},
     {"AudioSettings", &AudioSettings::Parse_Audio_Settings_Definition},
     {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definition},
-    {"Campaign", HOOK_BLOCK(0x00517490) /*&INI::parseCampaignDefinition*/},
+    {"Campaign", &CampaignManager::Parse},
     {"ChallengeGenerals", ChallengeGenerals::Parse_Challenge_Mode_Definition},
     {"CommandButton", &ControlBar::Parse_Command_Button_Definition},
     {"CommandMap", HOOK_BLOCK(0x00498480) /*&INI::parseMetaMapDefinition*/},
@@ -96,7 +101,7 @@ const BlockParse TheTypeTable[] = {
     {"DamageFX", HOOK_BLOCK(0x005145E0) /*&INI::parseDamageFXDefinition*/},
     {"DialogEvent", &AudioEventInfo::Parse_Dialog_Definition},
     {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
-    {"EvaEvent", HOOK_BLOCK(0x00512BE0) /*&INI::parseEvaEvent*/},
+    {"EvaEvent", &Eva::Parse},
     {"FXList", &FXListStore::Parse_FXList_Definition},
     {"GameData", &GlobalData::Parse_Game_Data_Definition},
     {"InGameUI", &InGameUI::Parse_In_Game_UI_Definition},
@@ -123,16 +128,16 @@ const BlockParse TheTypeTable[] = {
     {"Science", &ScienceStore::Parse_Science_Definition},
     {"Rank", &RankInfoStore::Parse_Rank_Definition},
     {"SpecialPower", &SpecialPowerStore::Parse_Special_Power_Definition},
-    {"ShellMenuScheme", HOOK_BLOCK(0x00503CE0) /*&INI::parseShellMenuSchemeDefinition*/},
+    {"ShellMenuScheme", &ShellMenuSchemeManager::Parse},
     {"Terrain", &TerrainTypeCollection::Parse_Terrain_Definition},
     {"Upgrade", &UpgradeCenter::Parse_Upgrade_Definition},
-    {"Video", HOOK_BLOCK(0x005039D0) /*&INI::parseVideoDefinition*/},
+    {"Video", &VideoPlayer::Parse},
     {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},
     {"Weather", &WeatherSetting::Parse_Weather_Definition},
     {"Weapon", &WeaponStore::Parse_Weapon_Template_Definition},
     {"WebpageURL", HOOK_BLOCK(0x005028F0) /*&INI::parseWebpageURL*/},
-    {"HeaderTemplate", HOOK_BLOCK(0x00501E50) /*&INI::parseHeaderTemplateDefinition*/},
+    {"HeaderTemplate", &HeaderTemplateManager::Parse},
     {"StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definition},
     {"DynamicGameLOD", &GameLODManager::Parse_Dynamic_LOD_Definition},
     {"LODPreset", &GameLODManager::Parse_LOD_Preset},

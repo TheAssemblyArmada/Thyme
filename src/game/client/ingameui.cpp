@@ -1541,7 +1541,7 @@ void InGameUI::Create_Command_Hint(const GameMessage *msg)
         ObjectShroudStatus shrouded = obj != nullptr ? obj->Get_Shrouded_Status(index) : SHROUDED_NONE;
 #endif
 
-        if (shrouded == SHROUDED_UNK4) {
+        if (shrouded == SHROUDED_NEVERSEEN) {
             type = GameMessage::MSG_DO_MOVETO_HINT;
         }
     }

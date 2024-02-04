@@ -224,7 +224,7 @@ void LaserUpdate::Init_Laser(Object const *source_obj,
     if (!m_muzzleParticleSystemID) {
         Player *player = g_thePlayerList->Get_Local_Player();
 
-        if (!source_obj || source_obj->Get_Shrouded_Status(player->Get_Player_Index()) <= SHROUDED_PARTIAL) {
+        if (!source_obj || source_obj->Get_Shrouded_Status(player->Get_Player_Index()) <= SHROUDED_TRANSITION) {
             if (data->m_muzzleParticleSystem.Is_Not_Empty()) {
                 ParticleSystemTemplate *tmplate = g_theParticleSystemManager->Find_Template(data->m_muzzleParticleSystem);
 

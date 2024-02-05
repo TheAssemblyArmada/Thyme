@@ -44,11 +44,11 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
     m_totalSizeMaybe(0)
 {
     // Copy the name across and replace the extension with dds.
-    strlcpy_tpl(m_name, filename);
-    size_t name_len = strlen(m_name);
-    m_name[name_len - 3] = 'd';
-    m_name[name_len - 2] = 'd';
-    m_name[name_len - 1] = 's';
+    const size_t name_len = strlcpy_tpl(m_name, filename);
+
+    // #BUGFIX Change texture extension safely.
+    // Originally code would just write over name length -3 bytes without any checking.
+    Thyme::Change_Texture_File_Extension(m_name, name_len, "dds");
 
     auto_file_ptr fp(g_theFileFactory, m_name);
 
@@ -638,3 +638,48 @@ unsigned DDSFileClass::Calculate_S3TC_Surface_Size(unsigned width, unsigned heig
 
     return ret;
 }
+
+namespace Thyme
+{
+void Change_Texture_File_Extension(char *str, size_t str_len, size_t str_capacity, const char *new_ext)
+{
+    captainslog_dbgassert(str_len < str_capacity, "String length is expected to be smaller than string capacity");
+
+    char *begin = str;
+    char *end = str + str_capacity - 1u;
+    char *ext = str + str_len;
+
+    while (--ext != begin) {
+        char ch = *ext;
+        if (ch == '.') {
+            // File extension found.
+            ext += 1;
+            break;
+        }
+        if (ch == ':' || ch == '/' || ch == '\\') {
+            // No file extension found.
+            ext = begin + str_len;
+            if (ext != end) {
+                *ext++ = '.';
+            }
+            break;
+        }
+    }
+
+    if (ext == begin) {
+        // No file extension found.
+        ext = begin + str_len;
+        if (ext != end) {
+            *ext++ = '.';
+        }
+    }
+
+    while (ext != end && *new_ext != '\0') {
+        // Write new extension.
+        *ext++ = *new_ext++;
+    }
+
+    // Null terminate.
+    *ext = '\0';
+}
+} // namespace Thyme

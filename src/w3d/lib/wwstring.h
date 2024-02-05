@@ -59,6 +59,7 @@ public:
 
     int Compare(const char *string) const { return strcmp(m_buffer, string); }
     int Compare_No_Case(const char *string) const { return strcasecmp(m_buffer, string); }
+    int Get_Allocated_Length() const;
     int Get_Length() const;
     bool Is_Empty() const { return (m_buffer[0] == m_nullChar); }
     void Erase(int start_index, int char_count);
@@ -100,7 +101,6 @@ private:
     void Store_Length(int length);
     void Store_Allocated_Length(int allocated_length);
     HEADER *Get_Header() const;
-    int Get_Allocated_Length() const;
     void Set_Buffer_And_Allocated_Length(char *buffer, size_t length);
 
     char *m_buffer;

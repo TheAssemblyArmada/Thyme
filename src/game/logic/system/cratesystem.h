@@ -30,7 +30,16 @@ class CrateTemplate : public Overridable
     IMPLEMENT_POOL(CrateTemplate);
 
 public:
+    CrateTemplate();
     virtual ~CrateTemplate() override;
+
+    static void Parse_Crate_Creation_Entry(INI *ini, void *formal, void *store, const void *user_data);
+    static const FieldParse *Build_Field_Parse() { return s_theCrateTemplateFieldParseTable; }
+    static const FieldParse s_theCrateTemplateFieldParseTable[];
+
+    void Set_Name(Utf8String name) { m_name = name; }
+
+    Utf8String Get_Name() const { return m_name; }
 
 private:
     Utf8String m_name;
@@ -50,6 +59,13 @@ public:
     virtual void Init() override;
     virtual void Reset() override;
     virtual void Update() override {}
+
+    CrateTemplate *New_Crate_Template(Utf8String name);
+    CrateTemplate *New_Crate_Template_Override(CrateTemplate *crate);
+    const CrateTemplate *Find_Crate_Template(Utf8String name);
+    CrateTemplate *Friend_Find_Crate_Template(Utf8String name);
+
+    static void Parse_Crate_Template_Definition(INI *ini);
 
 private:
     std::vector<CrateTemplate *> m_crateTemplateVector;

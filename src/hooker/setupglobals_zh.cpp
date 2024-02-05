@@ -860,3 +860,7 @@ IDirect3DIndexBuffer8 *&g_shadowIndexBufferD3D = Make_Global<IDirect3DIndexBuffe
 // lookatxlat.cpp
 class LookAtTranslator;
 LookAtTranslator *&g_theLookAtTranslator = Make_Global<LookAtTranslator *>(PICK_ADDRESS(0x00A2F450, 0x04CAB628));
+
+// eva.cpp
+class CreditsManager;
+CreditsManager *&g_theCredits = Make_Global<CreditsManager *>(PICK_ADDRESS(0x00A2C098, 0x04CA9C44));

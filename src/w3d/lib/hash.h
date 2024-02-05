@@ -32,6 +32,8 @@ private:
 
 class HashTableClass
 {
+    NOT_COPYABLE(HashTableClass)
+
     friend class HashTableIteratorClass;
 
 public:

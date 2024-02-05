@@ -114,7 +114,7 @@ public:
     void Set_Object_Timestamp(unsigned int time) { m_objectTimestamp = time; }
 
     void Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info);
-    void Parse_Structure(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Structure(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     Utf8String m_buildingName;

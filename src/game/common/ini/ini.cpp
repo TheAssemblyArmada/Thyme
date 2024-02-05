@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "ini.h"
+#include "ai.h"
 #include "anim2d.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
@@ -23,6 +24,8 @@
 #include "colorspace.h"
 #include "controlbar.h"
 #include "coord.h"
+#include "cratesystem.h"
+#include "credits.h"
 #include "eva.h"
 #include "file.h"
 #include "filesystem.h"
@@ -82,21 +85,21 @@ const float _DURATION_MULT = 0.029999999f;
 // Replace original function addresses as thyme implementations are written.
 // clang-format off
 const BlockParse TheTypeTable[] = {
-    {"AIData", HOOK_BLOCK(0x00518F00) /*&INI::parseAIDataDefinition*/},
+    {"AIData", AI::Parse_AI_Data_Definition},
     {"Animation", &Anim2DCollection::Parse_Anim2D_Definition /*&INI::parseAnim2DDefinition*/},
     {"Armor", HOOK_BLOCK(0x004B60A0) /*&INI::parseArmorDefinition*/},
-    {"AudioEvent", AudioEventInfo::Parse_Audio_Event_Definition},
+    {"AudioEvent", &AudioEventInfo::Parse_Audio_Event_Definition},
     {"AudioSettings", &AudioSettings::Parse_Audio_Settings_Definition},
     {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definition},
     {"Campaign", &CampaignManager::Parse},
-    {"ChallengeGenerals", ChallengeGenerals::Parse_Challenge_Mode_Definition},
+    {"ChallengeGenerals", &ChallengeGenerals::Parse_Challenge_Mode_Definition},
     {"CommandButton", &ControlBar::Parse_Command_Button_Definition},
     {"CommandMap", HOOK_BLOCK(0x00498480) /*&INI::parseMetaMapDefinition*/},
     {"CommandSet", &ControlBar::Parse_Command_Set_Definition},
     {"ControlBarScheme", &ControlBar::Parse_Control_Bar_Scheme_Definition},
     {"ControlBarResizer", &INI::Parse_Control_Bar_Resizer_Definition},
-    {"CrateData", HOOK_BLOCK(0x00516B90) /*&INI::parseCrateTemplateDefinition*/},
-    {"Credits", HOOK_BLOCK(0x00515A20) /*&INI::parseCredits*/},
+    {"CrateData", &CrateSystem::Parse_Crate_Template_Definition},
+    {"Credits", &CreditsManager::Parse},
     {"WindowTransition", &GameWindowTransitionsHandler::Parse_Window_Transitions},
     {"DamageFX", HOOK_BLOCK(0x005145E0) /*&INI::parseDamageFXDefinition*/},
     {"DialogEvent", &AudioEventInfo::Parse_Dialog_Definition},
@@ -136,7 +139,7 @@ const BlockParse TheTypeTable[] = {
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},
     {"Weather", &WeatherSetting::Parse_Weather_Definition},
     {"Weapon", &WeaponStore::Parse_Weapon_Template_Definition},
-    {"WebpageURL", HOOK_BLOCK(0x005028F0) /*&INI::parseWebpageURL*/},
+    {"WebpageURL", &INI::Parse_Webpage_URL_Definition},
     {"HeaderTemplate", &HeaderTemplateManager::Parse},
     {"StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definition},
     {"DynamicGameLOD", &GameLODManager::Parse_Dynamic_LOD_Definition},
@@ -1151,4 +1154,12 @@ void INI::Parse_Special_Power_Template(INI *ini, void *formal, void *store, cons
         ini->Get_Filename().Str(),
         name);
     *tmplate = special_power_template;
+}
+
+void INI::Parse_Webpage_URL_Definition(INI *ini)
+{
+    captainslog_relassert(false,
+        0,
+        "Web Browser class not implemented because it relies on old Internet Explorer code that isn't present in the "
+        "versions of Windows we run on");
 }

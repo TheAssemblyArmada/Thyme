@@ -172,6 +172,7 @@ public:
     static void Parse_Special_Power_Template(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Object_Definition(INI *ini);
     static void Parse_Object_Reskin_Definition(INI *ini);
+    static void Parse_Webpage_URL_Definition(INI *ini);
 
     // Block Parser functions
     static void Parse_Draw_Group_Info(INI *ini);

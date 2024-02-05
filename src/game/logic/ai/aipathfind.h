@@ -312,6 +312,7 @@ public:
     Path *Find_Ground_Path(const Coord3D *point, const Coord3D *point2, int i, bool b);
     void New_Map();
     void Set_Debug_Path(Path *new_debug_path);
+    void Process_Pathfind_Queue();
 
     void Remove_Object_From_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, false); }
     void Add_Object_To_Pathfind_Map(Object *obj) { Classify_Object_Footprint(obj, true); }

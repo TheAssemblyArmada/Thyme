@@ -412,3 +412,10 @@ void Pathfinder::Set_Debug_Path(Path *new_debug_path)
     Call_Method<void, Pathfinder, Path *>(PICK_ADDRESS(0x0056B600, 0x0089C822), this, new_debug_path);
 #endif
 }
+
+void Pathfinder::Process_Pathfind_Queue()
+{
+#ifdef GAME_DLL
+    Call_Method<void, Pathfinder>(PICK_ADDRESS(0x00563F90, 0x00894D94), this);
+#endif
+}

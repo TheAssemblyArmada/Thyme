@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "buildinfo.h"
+#include "ai.h"
 #include "xfer.h"
 
 BuildListInfo::BuildListInfo() :
@@ -146,4 +147,44 @@ void BuildListInfo::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info)
         Set_Sellable(input.Read_Byte() != 0);
         Set_Repairable(input.Read_Byte() != 0);
     }
+}
+
+void BuildListInfo::Parse_Structure(INI *ini, void *formal, void *store, const void *user_data)
+{
+    static FieldParse myFieldParse[] = {
+        { "Name", &INI::Parse_AsciiString, nullptr, offsetof(BuildListInfo, m_buildingName) },
+        { "Location", &INI::Parse_Coord2D, nullptr, offsetof(BuildListInfo, m_location) },
+        { "Rebuilds", &INI::Parse_Int, nullptr, offsetof(BuildListInfo, m_numRebuilds) },
+        { "Angle", &INI::Parse_Angle_Real, nullptr, offsetof(BuildListInfo, m_angle) },
+        { "InitiallyBuilt", &INI::Parse_Bool, nullptr, offsetof(BuildListInfo, m_isInitiallyBuilt) },
+        { "RallyPointOffset", &INI::Parse_Coord2D, nullptr, offsetof(BuildListInfo, m_rallyPointOffset) },
+        { "AutomaticallyBuild", &INI::Parse_Bool, nullptr, offsetof(BuildListInfo, m_autoBuild) },
+        { nullptr, nullptr, nullptr, 0 }
+    };
+
+    Utf8String name(ini->Get_Next_Token());
+    BuildListInfo *info = new BuildListInfo();
+    info->Set_Template_Name(name);
+    ini->Init_From_INI(info, myFieldParse);
+    static_cast<AISideBuildList *>(formal)->Add_Info(info);
+}
+
+BuildListInfo *BuildListInfo::Duplicate()
+{
+    BuildListInfo *head = new BuildListInfo();
+    *head = *this;
+    head->m_nextBuildList = nullptr;
+    BuildListInfo *list = m_nextBuildList;
+    BuildListInfo *tail = head;
+
+    while (list != nullptr) {
+        BuildListInfo *next = new BuildListInfo();
+        *next = *list;
+        next->m_nextBuildList = nullptr;
+        tail->m_nextBuildList = next;
+        tail = next;
+        list = list->m_nextBuildList;
+    }
+
+    return head;
 }

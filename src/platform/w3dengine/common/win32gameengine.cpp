@@ -158,12 +158,11 @@ Radar *Win32GameEngine::Create_Radar()
 
 WebBrowser *Win32GameEngine::Create_Web_Browser()
 {
-#ifdef GAME_DLL
-    // only exists in game exe, not wb exe
-    return Call_Method<WebBrowser *, Win32GameEngine>(0x00742280, this);
-#else
+    captainslog_relassert(false,
+        0,
+        "Web Browser class not implelented because it relies on old Internet Explorer code that isn't present in the "
+        "versions of Windows we run on");
     return nullptr;
-#endif
 }
 
 ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()

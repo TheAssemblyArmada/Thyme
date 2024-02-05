@@ -86,6 +86,7 @@ set(HOOKER_GAME_SRC
 set(GAMEENGINE_SRC
     game/client/crashpreferences.cpp
     game/client/color.cpp
+    game/client/credits.cpp
     game/client/display.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp

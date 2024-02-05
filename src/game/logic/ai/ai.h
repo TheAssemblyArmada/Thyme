@@ -35,6 +35,7 @@ class SkillSet
 private:
     int m_scienceCount;
     ScienceType m_sciences[20];
+    friend class AI;
 };
 
 class AISideInfo : public MemoryPoolObject
@@ -46,7 +47,7 @@ public:
     virtual ~AISideInfo() override {}
 
 private:
-    Utf8String m_unkString;
+    Utf8String m_name;
     int m_resourceGatherersEasy;
     int m_resourceGatherersNormal;
     int m_resourceGatherersHard;
@@ -54,6 +55,7 @@ private:
     Utf8String m_baseDefenseStructure1;
     AISideInfo *m_next;
     friend class TAiData;
+    friend class AI;
 };
 
 class AISideBuildList : public MemoryPoolObject
@@ -72,6 +74,7 @@ private:
     BuildListInfo *m_buildListInfo;
     AISideBuildList *m_next;
     friend class TAiData;
+    friend class AI;
 };
 
 class TAiData : public SnapShot
@@ -84,7 +87,7 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    void Add_Faction_Build_List(AISideBuildList *list);
+    void Add_Faction_Build_List(AISideBuildList *new_list);
     void Add_Side_Info(AISideInfo *info);
 
     float m_structureSeconds;

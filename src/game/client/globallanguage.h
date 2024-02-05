@@ -57,12 +57,7 @@ public:
 
     int Adjust_Font_Size(int size);
 
-    const FontDesc &Tooltip() const { return m_tooltipFont; }
     const FontDesc &Copyright_Font() const { return m_copyrightFont; }
-    const FontDesc &Debug_Display_Font() const { return m_nativeDebugDisplayFont; }
-    const FontDesc &Default_Window_Font() const { return m_defaultWindowFont; }
-    const FontDesc &Default_Display_String_Font() const { return m_defaultDisplayStringFont; }
-    const FontDesc &Drawable_Caption_Font() const { return m_drawableCaptionFont; }
     const FontDesc &Message_Font() const { return m_messageFont; }
     const FontDesc &Military_Caption_Title_Font() const { return m_militaryCaptionTitleFont; }
     const FontDesc &Military_Caption_Font() const { return m_militaryCaptionFont; }
@@ -70,7 +65,15 @@ public:
     const FontDesc &Superweapon_Countdown_Ready_Font() const { return m_superweaponCountdownReadyFont; }
     const FontDesc &Named_Timer_Countdown_Normal_Font() const { return m_namedTimerCountdownNormalFont; }
     const FontDesc &Named_Timer_Countdown_Ready_Font() const { return m_namedTimerCountdownReadyFont; }
+    const FontDesc &Drawable_Caption_Font() const { return m_drawableCaptionFont; }
+    const FontDesc &Default_Window_Font() const { return m_defaultWindowFont; }
+    const FontDesc &Default_Display_String_Font() const { return m_defaultDisplayStringFont; }
+    const FontDesc &Tooltip() const { return m_tooltipFont; }
+    const FontDesc &Debug_Display_Font() const { return m_nativeDebugDisplayFont; }
     const FontDesc &Draw_Group_Info_Font() const { return m_drawGroupInfoFont; }
+    const FontDesc &Credits_Title_Font() const { return m_drawGroupInfoFont; }
+    const FontDesc &Credits_Minor_Title_Font() const { return m_creditsMinorTitleFont; }
+    const FontDesc &Credits_Normal_Font() const { return m_creditsNormalFont; }
     int Get_Military_Caption_Delay_MS() const { return m_militaryCaptionDelayMs; }
     int Get_Military_Caption_Speed() const { return m_militaryCaptionSpeed; }
 

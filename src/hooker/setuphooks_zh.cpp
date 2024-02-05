@@ -46,6 +46,7 @@
 #include "controlbar.h"
 #include "controlbarscheme.h"
 #include "copyprotect.h"
+#include "cratesystem.h"
 #include "datachunk.h"
 #include "ddsfile.h"
 #include "dict.h"
@@ -3917,4 +3918,7 @@ void Setup_Hooks()
 
     // shell.cpp
     Hook_Any(0x005C4BA0, Shell::Hook_Ctor);
+
+    // cratesystem.cpp
+    Hook_Any(0x0049B940, CrateSystem::Find_Crate_Template);
 }

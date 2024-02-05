@@ -26,7 +26,7 @@ jobs:
         os: [ubuntu-20.04, ubuntu-22.04]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: "recursive"
 
@@ -35,11 +35,11 @@ jobs:
         run: |
           if [ "${{ matrix.platform }}" = "clang" ]
           then
-            echo "::set-output name=cc::clang"
-            echo "::set-output name=cxx::clang++"
+            echo "cc=clang" >> $GITHUB_OUTPUT
+            echo "cxx=clang++" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=cc::gcc"
-            echo "::set-output name=cxx::g++"
+            echo "cc=gcc" >> $GITHUB_OUTPUT
+            echo "cxx=g++" >> $GITHUB_OUTPUT
           fi
 
       - name: Install dependencies

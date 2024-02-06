@@ -113,6 +113,7 @@ public:
     const char *Get_Seps_Percent() const { return m_sepsPercent; }
     const char *Get_Seps_Colon() const { return m_sepsColon; }
     const char *Get_Seps_Quote() const { return m_sepsQuote; }
+    bool Is_EOF() const { return m_endOfFile; }
 
     static bool Is_Declaration_Of_Type(Utf8String block_type, Utf8String block_name, char *buffer_to_check);
     static bool Is_End_Of_Block(char *buffer_to_check);
@@ -170,6 +171,9 @@ public:
     static void Parse_Thing_Template(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Upgrade_Template(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Special_Power_Template(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Veterancy_Level_Flags(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Damage_Type_Flags(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Death_Type_Flags(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Object_Definition(INI *ini);
     static void Parse_Object_Reskin_Definition(INI *ini);
     static void Parse_Webpage_URL_Definition(INI *ini);

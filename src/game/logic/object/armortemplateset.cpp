@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "armortemplateset.h"
+#include "armor.h"
+#include "damagefx.h"
 #include <cstddef>
 
 template<>
@@ -34,18 +36,14 @@ const char *BitFlags<ARMORSET_COUNT>::s_bitNamesList[ARMORSET_COUNT + 1] = { "VE
 void ArmorTemplateSet::Parse_Armor_Template_Set(INI *ini)
 {
     // TODO Requires ArmorTemplate and DamageFX parsers.
-#ifdef GAME_DLL
     static const FieldParse _parse_table[] = {
         { "Conditions", BitFlags<ARMORSET_COUNT>::Parse_From_INI, nullptr, offsetof(ArmorTemplateSet, m_conditions) },
-        // { "Armor", &INI::parseArmorTemplate, nullptr, offsetof(ArmorTemplateSet, m_template) },
-        // { "DamageFX", &INI::parseDamageFX, nullptr, offsetof(ArmorTemplateSet, m_fx) },
-        { "Armor", (inifieldparse_t)0x0041CBB0, nullptr, offsetof(ArmorTemplateSet, m_template) },
-        { "DamageFX", (inifieldparse_t)0x0041CDD0, nullptr, offsetof(ArmorTemplateSet, m_fx) },
+        { "Armor", &ArmorStore::Parse_Armor_Template, nullptr, offsetof(ArmorTemplateSet, m_template) },
+        { "DamageFX", &DamageFXStore::Parse_Damage_FX, nullptr, offsetof(ArmorTemplateSet, m_fx) },
         { nullptr, nullptr, nullptr, 0 }
     };
 
     ini->Init_From_INI(this, _parse_table);
-#endif
 }
 
 void ArmorTemplateSet::Clear()

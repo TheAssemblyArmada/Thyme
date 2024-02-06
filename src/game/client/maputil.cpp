@@ -53,6 +53,48 @@ const char *const MapCache::s_mapDirName = "Maps";
 const char *const MapCache::s_mapExtension = "map";
 const char *const MapCache::s_mapCacheName = "MapCache.ini";
 
+void Parse_Supply_Position_Coord3D(INI *ini, void *formal, void *store, const void *user_data)
+{
+    Coord3D c;
+    INI::Parse_Coord3D(ini, nullptr, &c, nullptr);
+    static_cast<MapMetaDataReader *>(formal)->m_supplyPositions.push_back(c);
+}
+
+void Parse_Tech_Position_Coord3D(INI *ini, void *formal, void *store, const void *user_data)
+{
+    Coord3D c;
+    INI::Parse_Coord3D(ini, nullptr, &c, nullptr);
+    static_cast<MapMetaDataReader *>(formal)->m_techPositions.push_back(c);
+}
+
+// clang-format off
+const FieldParse MapMetaDataReader::s_mapFieldParseTable[] = {
+    {"isOfficial", &INI::Parse_Bool, nullptr, offsetof(MapMetaDataReader, m_isOfficial)},
+    {"isMultiplayer", &INI::Parse_Bool, nullptr, offsetof(MapMetaDataReader, m_isMultiplayer)},
+    {"extentMin", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_extent.lo)},
+    {"extentMax", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_extent.hi)},
+    {"numPlayers", &INI::Parse_Int, nullptr, offsetof(MapMetaDataReader, m_numPlayers)},
+    {"fileSize", &INI::Parse_Unsigned_Int, nullptr, offsetof(MapMetaDataReader, m_filesize)},
+    {"fileCRC", &INI::Parse_Unsigned_Int, nullptr, offsetof(MapMetaDataReader, m_CRC)},
+    {"timestampLo", &INI::Parse_Int, nullptr, offsetof(MapMetaDataReader, m_timestamp.m_lowTimeStamp)},
+    {"timestampHi", &INI::Parse_Int, nullptr, offsetof(MapMetaDataReader, m_timestamp.m_highTimeStamp)},
+    {"displayName", &INI::Parse_AsciiString, nullptr, offsetof(MapMetaDataReader, m_displayName)},
+    {"nameLookupTag", &INI::Parse_AsciiString, nullptr, offsetof(MapMetaDataReader, m_nameLookupTag)},
+    {"supplyPosition", &Parse_Supply_Position_Coord3D, nullptr, 0},
+    {"techPosition", &Parse_Tech_Position_Coord3D, nullptr, 0},
+    {"Player_1_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[0])},
+    {"Player_2_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[1])},
+    {"Player_3_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[2])},
+    {"Player_4_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[3])},
+    {"Player_5_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[4])},
+    {"Player_6_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[5])},
+    {"Player_7_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[6])},
+    {"Player_8_Start", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_waypoints[7])},
+    {"InitialCameraPosition", &INI::Parse_Coord3D, nullptr, offsetof(MapMetaDataReader, m_initialCameraPosition)},
+    {nullptr, nullptr, nullptr, 0}
+};
+// clang-format on
+
 // Updates a waypoint map from the global waypoints map with initial cam position
 // and player start waypoints.
 void WaypointMap::Update()
@@ -973,4 +1015,71 @@ void Find_Draw_Positions(int start_x, int start_y, int width, int height, Region
     ul->y += start_y;
     lr->x += start_x;
     lr->y += start_y;
+}
+
+const FieldParse *MapMetaDataReader::Get_Field_Parse()
+{
+    return MapMetaDataReader::s_mapFieldParseTable;
+}
+
+void MapCache::Parse_Map_Cache_Definition(INI *ini)
+{
+    MapMetaDataReader reader;
+    MapMetaData map;
+    Utf8String str;
+    str.Set(ini->Get_Next_Token(" \n\r\t"));
+    str = Quoted_Printable_To_Ascii_String(str);
+    map.m_waypoints.clear();
+    ini->Init_From_INI(&reader, MapMetaDataReader::Get_Field_Parse());
+    map.m_extent = reader.m_extent;
+    map.m_isOfficial = reader.m_isOfficial;
+    map.m_isMultiplayer = reader.m_isMultiplayer;
+    map.m_numPlayers = reader.m_numPlayers;
+    map.m_fileSize = reader.m_filesize;
+    map.m_CRC = reader.m_CRC;
+    map.m_timestamp = reader.m_timestamp;
+    map.m_waypoints[g_theNameKeyGenerator->Key_To_Name(g_theInitialCameraPositionKey)] = reader.m_initialCameraPosition;
+    map.m_lookupTag = Quoted_Printable_To_Ascii_String(reader.m_nameLookupTag);
+
+    if (map.m_lookupTag.Is_Empty()) {
+        Utf8String display_name;
+        display_name = str.Reverse_Find('\\') + 1;
+        map.m_displayName.Translate(display_name);
+
+        if (map.m_numPlayers >= 2) {
+            Utf16String players;
+            players.Format(U_CHAR(" (%d)"), map.m_numPlayers);
+            map.m_displayName.Concat(players);
+        }
+    } else {
+        map.m_displayName = g_theGameText->Fetch(map.m_lookupTag);
+
+        if (map.m_numPlayers >= 2) {
+            Utf16String players;
+            players.Format(U_CHAR(" (%d)"), map.m_numPlayers);
+            map.m_displayName.Concat(players);
+        }
+    }
+
+    Utf8String start_pos;
+
+    for (int i = 0; i < map.m_numPlayers; i++) {
+        start_pos.Format("Player_%d_Start", i + 1);
+        map.m_waypoints[start_pos] = reader.m_waypoints[i];
+    }
+
+    for (auto it = reader.m_supplyPositions.begin(); it != reader.m_supplyPositions.end(); it++) {
+        map.m_supplyPositions.push_back(*it);
+    }
+
+    for (auto it = reader.m_techPositions.begin(); it != reader.m_techPositions.end(); it++) {
+        map.m_techPositions.push_back(*it);
+    }
+
+    if (g_theMapCache != nullptr && !map.m_displayName.Is_Empty()) {
+        Utf8String filename(str);
+        filename.To_Lower();
+        map.m_mapFilename = filename;
+        (*g_theMapCache)[filename] = map;
+    }
 }

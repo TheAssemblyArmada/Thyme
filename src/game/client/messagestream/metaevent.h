@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "gamemessage.h"
+#include "ini.h"
 #include "mempoolobj.h"
 #include "messagestream.h"
 #include "subsysteminterface.h"
@@ -99,6 +100,17 @@ enum MappableKeyType
     MK_COMMA = 0x33,
     MK_PERIOD = 0x34,
     MK_SLASH = 0x35,
+    MK_KP1 = 0x4F,
+    MK_KP2 = 0x50,
+    MK_KP3 = 0x51,
+    MK_KP4 = 0x4B,
+    MK_KP5 = 0x4C,
+    MK_KP6 = 0x4D,
+    MK_KP7 = 0x47,
+    MK_KP8 = 0x48,
+    MK_KP9 = 0x49,
+    MK_KP0 = 0x52,
+    MK_KPSPLASH = 0xB5,
     MK_UP = 0xc8,
     MK_DOWN = 0xd0,
     MK_LEFT = 0xcb,
@@ -145,7 +157,8 @@ class MetaMapRec : public MemoryPoolObject
     IMPLEMENT_POOL(MetaMapRec);
 
 public:
-    virtual ~MetaMapRec() override;
+    MetaMapRec() {}
+    virtual ~MetaMapRec() override {}
 
     MetaMapRec *m_next;
     GameMessage::MessageType m_meta;
@@ -166,6 +179,10 @@ public:
     virtual void Init() override {}
     virtual void Reset() override {}
     virtual void Update() override {}
+
+    GameMessage::MessageType Find_Game_Message_Meta_Type(const char *type);
+    MetaMapRec *Get_Meta_Map_Rec(GameMessage::MessageType t);
+    static void Parse_Meta_Map(INI *ini);
 
 private:
     MetaMapRec *m_metaMaps;

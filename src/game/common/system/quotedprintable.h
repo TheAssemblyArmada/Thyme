@@ -17,3 +17,4 @@
 #include "asciistring.h"
 
 Utf8String Ascii_String_To_Quoted_Printable(Utf8String string);
+Utf8String Quoted_Printable_To_Ascii_String(Utf8String string);

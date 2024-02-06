@@ -70,6 +70,7 @@ public:
     void Add_Object_Creation_Nugget(ObjectCreationNugget *nugget);
 
     static void Parse_Object_Creation_List_Definition(INI *ini);
+    static void Parse_Object_Creation_List(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     void Clear() { m_nuggets.clear(); }

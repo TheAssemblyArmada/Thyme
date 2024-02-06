@@ -15,6 +15,7 @@
 #include "ini.h"
 #include "ai.h"
 #include "anim2d.h"
+#include "armor.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "audiosettings.h"
@@ -26,6 +27,7 @@
 #include "coord.h"
 #include "cratesystem.h"
 #include "credits.h"
+#include "damagefx.h"
 #include "eva.h"
 #include "file.h"
 #include "filesystem.h"
@@ -41,6 +43,8 @@
 #include "headertemplate.h"
 #include "image.h"
 #include "locomotor.h"
+#include "maputil.h"
+#include "metaevent.h"
 #include "mouse.h"
 #include "multiplayersettings.h"
 #include "objectcreationlist.h"
@@ -76,32 +80,26 @@ const float _SECONDS_PER_LOGICFRAME_REAL_74 = 1.0f / 30.0f;
 const float _ANGLE_MULTIPLIER = 0.0174532925f;
 const float _DURATION_MULT = 0.029999999f;
 
-#ifdef GAME_DLL
-#define HOOK_BLOCK(addr) (iniblockparse_t)(addr)
-#else
-#define HOOK_BLOCK(addr) nullptr
-#endif
-
 // Replace original function addresses as thyme implementations are written.
 // clang-format off
 const BlockParse TheTypeTable[] = {
     {"AIData", AI::Parse_AI_Data_Definition},
-    {"Animation", &Anim2DCollection::Parse_Anim2D_Definition /*&INI::parseAnim2DDefinition*/},
-    {"Armor", HOOK_BLOCK(0x004B60A0) /*&INI::parseArmorDefinition*/},
+    {"Animation", &Anim2DCollection::Parse_Anim2D_Definition},
+    {"Armor", &ArmorStore::Parse_Armor_Definition},
     {"AudioEvent", &AudioEventInfo::Parse_Audio_Event_Definition},
     {"AudioSettings", &AudioSettings::Parse_Audio_Settings_Definition},
     {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definition},
     {"Campaign", &CampaignManager::Parse},
     {"ChallengeGenerals", &ChallengeGenerals::Parse_Challenge_Mode_Definition},
     {"CommandButton", &ControlBar::Parse_Command_Button_Definition},
-    {"CommandMap", HOOK_BLOCK(0x00498480) /*&INI::parseMetaMapDefinition*/},
+    {"CommandMap", &MetaMap::Parse_Meta_Map},
     {"CommandSet", &ControlBar::Parse_Command_Set_Definition},
     {"ControlBarScheme", &ControlBar::Parse_Control_Bar_Scheme_Definition},
     {"ControlBarResizer", &INI::Parse_Control_Bar_Resizer_Definition},
     {"CrateData", &CrateSystem::Parse_Crate_Template_Definition},
     {"Credits", &CreditsManager::Parse},
     {"WindowTransition", &GameWindowTransitionsHandler::Parse_Window_Transitions},
-    {"DamageFX", HOOK_BLOCK(0x005145E0) /*&INI::parseDamageFXDefinition*/},
+    {"DamageFX", &DamageFXStore::Parse_Damage_FX_Definition},
     {"DialogEvent", &AudioEventInfo::Parse_Dialog_Definition},
     {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
     {"EvaEvent", &Eva::Parse},
@@ -110,7 +108,7 @@ const BlockParse TheTypeTable[] = {
     {"InGameUI", &InGameUI::Parse_In_Game_UI_Definition},
     {"Locomotor", &LocomotorStore::Parse_Locomotor_Template_Definition},
     {"Language", &GlobalLanguage::Parse_Language_Definition},
-    {"MapCache", HOOK_BLOCK(0x00506760) /*&INI::parseMapCacheDefinition*/},
+    {"MapCache", &MapCache::Parse_Map_Cache_Definition},
     {"MapData", &INI::Parse_Map_Data_Definition},
     {"MappedImage", &ImageCollection::Parse_Mapped_Image_Definition},
     {"MiscAudio", &MiscAudio::Parse_Misc_Audio},
@@ -325,7 +323,7 @@ void INI::Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_
     captainslog_relassert(what != nullptr, 0xDEAD0006, "Init_From_INI - Invalid parameters supplied.");
 
     while (!done) {
-        captainslog_relassert(!m_endOfFile,
+        captainslog_relassert(!Is_EOF(),
             0xDEAD0006,
             "Error parsing block '%s', in INI file '%s'.  Missing '%s' token",
             m_currentBlock,
@@ -1162,4 +1160,106 @@ void INI::Parse_Webpage_URL_Definition(INI *ini)
         0,
         "Web Browser class not implemented because it relies on old Internet Explorer code that isn't present in the "
         "versions of Windows we run on");
+}
+
+void INI::Parse_Veterancy_Level_Flags(INI *ini, void *formal, void *store, const void *user_data)
+{
+    int flags = -1;
+
+    for (const char *flag = ini->Get_Next_Token(); flag != nullptr; flag = ini->Get_Next_Token_Or_Null()) {
+        if (strcasecmp(flag, "ALL") == 0) {
+            flags = -1;
+        } else if (strcasecmp(flag, "NONE") == 0) {
+            flags = 0;
+        } else if (flag[0] == '+') {
+            int vet_level = ini->Scan_IndexList(flag + 1, g_veterancyNames);
+            flags |= (1 << (vet_level - 1));
+        } else {
+            if (flag[0] != '-') {
+                throw CODE_06;
+            }
+
+            int vet_level = ini->Scan_IndexList(flag + 1, g_veterancyNames);
+            flags &= ~(1 << (vet_level - 1));
+        }
+    }
+
+    *static_cast<int *>(store) = flags;
+}
+
+void INI::Parse_Damage_Type_Flags(INI *ini, void *formal, void *store, const void *user_data)
+{
+    BitFlags<DAMAGE_NUM_TYPES> flags = DAMAGE_TYPE_FLAGS_NONE;
+    flags.Flip();
+
+    for (const char *flag = ini->Get_Next_Token(); flag != nullptr; flag = ini->Get_Next_Token_Or_Null()) {
+        if (strcasecmp(flag, "ALL") == 0) {
+            flags = DAMAGE_TYPE_FLAGS_NONE;
+            flags.Flip();
+        } else if (strcasecmp(flag, "NONE") == 0) {
+            flags = DAMAGE_TYPE_FLAGS_NONE;
+        } else if (flag[0] == '+') {
+            flags =
+                BitFlags<DAMAGE_NUM_TYPES>::Set_Bit(flags, BitFlags<DAMAGE_NUM_TYPES>::Get_Single_Bit_From_Name(flag + 1));
+        } else {
+            if (flag[0] != '-') {
+                throw CODE_06;
+            }
+
+            flags =
+                BitFlags<DAMAGE_NUM_TYPES>::Clear_Bit(flags, BitFlags<DAMAGE_NUM_TYPES>::Get_Single_Bit_From_Name(flag + 1));
+        }
+    }
+
+    *static_cast<BitFlags<DAMAGE_NUM_TYPES> *>(store) = flags;
+}
+
+static const char *s_theDeathTypeNames[] = {
+    "NORMAL",
+    "NONE",
+    "CRUSHED",
+    "BURNED",
+    "EXPLODED",
+    "POISONED",
+    "TOPPLED",
+    "FLOODED",
+    "SUICIDED",
+    "LASERED",
+    "DETONATED",
+    "SPLATTED,",
+    "POISONED_BETA",
+    "EXTRA_2",
+    "EXTRA_3",
+    "EXTRA_4",
+    "EXTRA_5",
+    "EXTRA_6",
+    "EXTRA_7",
+    "EXTRA_8",
+    "POISONED_GAMMA",
+    nullptr,
+};
+
+void INI::Parse_Death_Type_Flags(INI *ini, void *formal, void *store, const void *user_data)
+{
+    int flags = -1;
+
+    for (const char *flag = ini->Get_Next_Token(); flag != nullptr; flag = ini->Get_Next_Token_Or_Null()) {
+        if (strcasecmp(flag, "ALL") == 0) {
+            flags = -1;
+        } else if (strcasecmp(flag, "NONE") == 0) {
+            flags = 0;
+        } else if (flag[0] == '+') {
+            int death_type = ini->Scan_IndexList(flag + 1, s_theDeathTypeNames);
+            flags |= (1 << (death_type - 1));
+        } else {
+            if (flag[0] != '-') {
+                throw CODE_06;
+            }
+
+            int death_type = ini->Scan_IndexList(flag + 1, s_theDeathTypeNames);
+            flags &= ~(1 << (death_type - 1));
+        }
+    }
+
+    *static_cast<int *>(store) = flags;
 }

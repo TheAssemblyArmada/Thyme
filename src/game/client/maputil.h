@@ -16,6 +16,7 @@
 
 #include "asciistring.h"
 #include "coord.h"
+#include "ini.h"
 #include "unicodestring.h"
 #include <list>
 #include <map>
@@ -40,8 +41,9 @@ struct WinTimeStamp
     unsigned int m_highTimeStamp;
 };
 
-struct MapMetaData
+class MapMetaData
 {
+public:
     Utf16String m_displayName;
     Utf8String m_lookupTag;
     Region3D m_extent;
@@ -55,6 +57,26 @@ struct MapMetaData
     std::list<Coord3D> m_supplyPositions;
     std::list<Coord3D> m_techPositions;
     Utf8String m_mapFilename;
+};
+
+class MapMetaDataReader
+{
+public:
+    static const FieldParse *Get_Field_Parse();
+    static const FieldParse s_mapFieldParseTable[];
+    Region3D m_extent;
+    int m_numPlayers;
+    bool m_isMultiplayer;
+    Utf8String m_displayName;
+    Utf8String m_nameLookupTag;
+    bool m_isOfficial;
+    WinTimeStamp m_timestamp;
+    unsigned int m_filesize;
+    unsigned int m_CRC;
+    Coord3D m_waypoints[8];
+    Coord3D m_initialCameraPosition;
+    std::list<Coord3D> m_supplyPositions;
+    std::list<Coord3D> m_techPositions;
 };
 
 class MapCache : public std::map<Utf8String, MapMetaData>
@@ -75,6 +97,7 @@ public:
     bool Load_User_Maps();
     MapMetaData *Find_Map(Utf8String map_name);
     bool Add_Map(Utf8String dir, Utf8String name, FileInfo *info, bool build_cache);
+    static void Parse_Map_Cache_Definition(INI *ini);
 
 private:
     static const char *const s_mapDirName;

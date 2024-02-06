@@ -17,6 +17,7 @@
 #include "namekeygenerator.h"
 #include "rtsutils.h"
 #include "subsysteminterface.h"
+#include "weaponset.h"
 
 #ifdef THYME_USE_STLPORT
 #include <hash_map>
@@ -30,6 +31,25 @@ class DamageFX
 {
 public:
     DamageFX() {}
+
+    void Clear()
+    {
+        for (int i = 0; i < DAMAGE_NUM_TYPES; i++) {
+            for (int j = 0; j < VETERANCY_COUNT; j++) {
+                m_dfx[i][j].Clear();
+            }
+        }
+    }
+
+    unsigned int Get_Damage_FX_Throttle_Time(DamageType t, const Object *obj) const;
+    void Do_Damage_FX(DamageType t, float damage_amount, const Object *source, const Object *victim) const;
+    FXList *Get_Damage_FX_List(DamageType t, float damage_amount, const Object *obj) const;
+
+    static const FieldParse *Get_Field_Parse();
+    static void Parse_Amount(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Major_FX_List(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Minor_FX_List(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Time(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     struct DFX
@@ -50,7 +70,7 @@ private:
         unsigned int m_time;
     };
 
-    DFX m_dfx[9][4];
+    DFX m_dfx[DAMAGE_NUM_TYPES][VETERANCY_COUNT];
 };
 
 #ifdef THYME_USE_STLPORT
@@ -67,6 +87,10 @@ public:
     virtual void Init() override {}
     virtual void Reset() override {}
     virtual void Update() override {}
+
+    const DamageFX *Find_Damage_FX(Utf8String name);
+    static void Parse_Damage_FX_Definition(INI *ini);
+    static void Parse_Damage_FX(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     damagefxmap_t m_dfxmap;

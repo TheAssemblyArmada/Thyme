@@ -107,3 +107,11 @@ void ObjectCreationList::Create_Internal(const Object *primary, const Object *se
         PICK_ADDRESS(0x004C1230, 0x00756B17), this, primary, secondary, unk);
 #endif
 }
+
+void ObjectCreationListStore::Parse_Object_Creation_List(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *name = ini->Get_Next_Token();
+    ObjectCreationList *list = g_theObjectCreationListStore->Find_Object_Creation_List(name);
+    captainslog_dbgassert(list != nullptr || strcasecmp(name, "None") == 0, "ObjectCreationList %s not found!", name);
+    *static_cast<ObjectCreationList **>(store) = list;
+}

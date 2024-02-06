@@ -33,9 +33,13 @@ public:
     void Clear()
     {
         for (int i = 0; i < DAMAGE_NUM_TYPES; i++) {
-            m_damageCoefficient[i] = 0.0f;
+            m_damageCoefficient[i] = 1.0f;
         }
     }
+
+    float Adjust_Damage(DamageType t, float damage);
+
+    static void Parse_Armor_Coefficients(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     float m_damageCoefficient[DAMAGE_NUM_TYPES];
@@ -55,6 +59,11 @@ public:
     virtual void Init() override {}
     virtual void Reset() override {}
     virtual void Update() override {}
+
+    const ArmorTemplate *Find_Armor_Template(Utf8String name) const;
+
+    static void Parse_Armor_Definition(INI *ini);
+    static void Parse_Armor_Template(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     armormap_t m_armorTemplates;

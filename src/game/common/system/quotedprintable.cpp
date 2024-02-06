@@ -49,3 +49,48 @@ Utf8String Ascii_String_To_Quoted_Printable(Utf8String string)
     dest[count] = '\0';
     return dest;
 }
+
+int Hex_Digit_To_Int(char c)
+{
+    if (c <= '9' && c >= '0') {
+        return c - '0';
+    }
+
+    if (c <= 'f' && c >= 'a') {
+        return c - ('a' - 10);
+    }
+
+    if (c > 'F' || c < 'A') {
+        return 0;
+    }
+
+    return c - ('A' - 10);
+}
+
+Utf8String Quoted_Printable_To_Ascii_String(Utf8String string)
+{
+    static char dest[1024];
+    char *buf = dest;
+
+    for (const char *c = string.Str(); c[0] != '\0'; c++) {
+        if (c[0] == '_') {
+            if (c[1] == '\0') {
+                break;
+            }
+
+            *buf = Hex_Digit_To_Int(*++c);
+
+            if (c[1] != '\0') {
+                *buf *= 16;
+                *buf = Hex_Digit_To_Int(*++c) | *buf;
+            }
+        } else {
+            *buf = c[0];
+        }
+
+        buf++;
+    }
+
+    *buf = '\0';
+    return dest;
+}

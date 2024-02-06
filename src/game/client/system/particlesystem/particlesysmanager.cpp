@@ -460,3 +460,11 @@ void ParticleSystemManager::Parse_Particle_System_Definition(INI *ini)
 
     ini->Init_From_INI(particle_template, ParticleSystemTemplate::Get_Particle_System_Template_Field_Parse_Table());
 }
+
+void ParticleSystemManager::Parse_Particle_System_Template(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *name = ini->Get_Next_Token();
+    ParticleSystemTemplate *tmplate = g_theParticleSystemManager->Find_Template(name);
+    captainslog_dbgassert(tmplate != nullptr || strcasecmp(name, "None") == 0, "ParticleSystem %s not found!", name);
+    *static_cast<ParticleSystemTemplate **>(store) = tmplate;
+}

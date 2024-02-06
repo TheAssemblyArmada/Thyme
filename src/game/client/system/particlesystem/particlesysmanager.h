@@ -95,6 +95,7 @@ public:
     ParticleSystemID Create_Attached_Particle_System_ID(
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
     static void Parse_Particle_System_Definition(INI *ini);
+    static void Parse_Particle_System_Template(INI *ini, void *formal, void *store, const void *user_data);
 
 protected:
     Particle *m_allParticlesHead[PARTICLE_PRIORITY_COUNT];

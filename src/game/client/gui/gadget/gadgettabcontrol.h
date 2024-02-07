@@ -45,8 +45,8 @@ WindowMsgHandledType Gadget_Tab_Control_System(
     GameWindow *tab_control, unsigned int message, unsigned int data_1, unsigned int data_2);
 
 void Gadget_Tab_Control_Compute_Tab_Region(GameWindow *tab_control);
-void Gadget_Tab_Control_Compute_Sub_Pane_Size(GameWindow *tab_control, int width, int height, int x, int y);
 void Gadget_Tab_Control_Show_Sub_Pane(GameWindow *tab_control, int which_pane);
 void Gadget_Tab_Control_Create_Sub_Panes(GameWindow *tab_control);
-void Gadget_Tab_Control_Resize_Sub_Panes(GameWindow *tab_control);
 void Gadget_Tab_Control_Fixup_Sub_Pane_List(GameWindow *tab_control);
+void Gadget_Tab_Control_Compute_Sub_Pane_Size(GameWindow *tab_control, int *width, int *height, int *x, int *y);
+void Gadget_Tab_Control_Resize_Sub_Panes(GameWindow *tab_control);

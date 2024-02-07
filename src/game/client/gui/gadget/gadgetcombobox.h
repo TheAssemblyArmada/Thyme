@@ -245,7 +245,7 @@ void Gadget_Combo_Box_Set_Max_Chars(GameWindow *combo_box, int max_chars);
 void Gadget_Combo_Box_Set_Max_Display(GameWindow *combo_box, int max_display);
 Utf16String Gadget_Combo_Box_Get_Text(GameWindow *combo_box);
 void Gadget_Combo_Box_Set_Text(GameWindow *combo_box, Utf16String text);
-void Gadget_Combo_Box_Add_Entry(GameWindow *combo_box, Utf16String text, int color);
+int Gadget_Combo_Box_Add_Entry(GameWindow *combo_box, Utf16String text, int color);
 void Gadget_Combo_Box_Reset(GameWindow *combo_box);
 void Gadget_Combo_Box_Hide_List(GameWindow *combo_box);
 void Gadget_Combo_Box_Get_Selected_Pos(GameWindow *combo_box, int *selected_index);

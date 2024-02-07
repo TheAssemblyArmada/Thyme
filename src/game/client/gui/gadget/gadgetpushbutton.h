@@ -16,6 +16,18 @@
 #include "always.h"
 #include "gamewindow.h"
 
+struct _PushButtonData
+{
+    char m_drawClock;
+    int m_percentClock;
+    int m_colorClock;
+    bool m_drawBorder;
+    int m_colorBorder;
+    void *m_userData;
+    const Image *m_overlayImage;
+    Utf8String m_altSound;
+};
+
 inline void Gadget_Button_Set_Enabled_Image(GameWindow *push_button, const Image *image)
 {
     push_button->Win_Set_Enabled_Image(0, image);
@@ -162,6 +174,6 @@ void Gadget_Button_Set_Border(GameWindow *push_button, int color, bool draw_bord
 void Gadget_Button_Draw_Clock(GameWindow *push_button, int percent, int color);
 void Gadget_Button_Draw_Inverse_Clock(GameWindow *push_button, int percent, int color);
 void Gadget_Button_Draw_Overlay_Image(GameWindow *push_button, const Image *image);
-void Gadget_Button_Set_Data(GameWindow *push_button, void *data);
+void Gadget_Button_Set_Data(GameWindow *push_button, void *user_data);
 void *Gadget_Button_Get_Data(GameWindow *push_button);
 void Gadget_Button_Set_Alt_Sound(GameWindow *push_button, Utf8String alt_sound);

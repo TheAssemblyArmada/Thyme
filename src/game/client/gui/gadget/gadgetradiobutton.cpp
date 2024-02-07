@@ -15,12 +15,27 @@
 #include "gadgetradiobutton.h"
 #include "gamewindowmanager.h"
 
-void Gadget_Radio_Set_Text(GameWindow *radio_button, Utf16String text)
+void Do_Radio_Unselect(GameWindow *radio_button, int group, int screen, GameWindow *except)
 {
-#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
-                // pointer to an unsigned int on 64 bit
-    g_theWindowManager->Win_Send_System_Msg(radio_button, GGM_SET_LABEL, reinterpret_cast<unsigned int>(&text), 0);
-#endif
+    if (radio_button != except && (radio_button->Win_Get_Style() & GWS_RADIO_BUTTON) != 0) {
+        _RadioButtonData *data = static_cast<_RadioButtonData *>(radio_button->Win_Get_User_Data());
+
+        if (data->m_group == group && data->m_screen == screen) {
+            radio_button->Win_Get_Instance_Data()->m_state &= ~4;
+        }
+    }
+
+    for (GameWindow *child = radio_button->Win_Get_Child(); child != nullptr; child = child->Win_Get_Next()) {
+        Do_Radio_Unselect(child, group, screen, except);
+    }
+}
+
+void Unselect_Other_Radio_Of_Group(int group, int screen, GameWindow *except)
+{
+    for (GameWindow *window = g_theWindowManager->Win_Get_Window_List(); window != nullptr;
+         window = window->Win_Get_Next()) {
+        Do_Radio_Unselect(window, group, screen, except);
+    }
 }
 
 WindowMsgHandledType Gadget_Radio_Button_Input(
@@ -43,4 +58,30 @@ WindowMsgHandledType Gadget_Radio_Button_System(
 #else
     return MSG_IGNORED;
 #endif
+}
+
+void Gadget_Radio_Set_Text(GameWindow *radio_button, Utf16String text)
+{
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+    g_theWindowManager->Win_Send_System_Msg(radio_button, GGM_SET_LABEL, reinterpret_cast<unsigned int>(&text), 0);
+#endif
+}
+
+void Gadget_Radio_Set_Group(GameWindow *radio_button, int group, int screen)
+{
+    _RadioButtonData *data = static_cast<_RadioButtonData *>(radio_button->Win_Get_User_Data());
+    data->m_group = group;
+    data->m_screen = screen;
+}
+
+void Gadget_Radio_Set_Selection(GameWindow *radio_button, bool send_msg)
+{
+    if (radio_button != nullptr) {
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+        g_theWindowManager->Win_Send_System_Msg(
+            radio_button, GBM_SET_SELECTION, reinterpret_cast<unsigned int>(&send_msg), 0);
+#endif
+    }
 }

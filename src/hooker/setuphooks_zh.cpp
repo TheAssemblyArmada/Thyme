@@ -67,12 +67,15 @@
 #include "framemetrics.h"
 #include "functionlexicon.h"
 #include "fxlist.h"
+#include "gadgetcheckbox.h"
 #include "gadgetcombobox.h"
 #include "gadgetlistbox.h"
 #include "gadgetprogressbar.h"
 #include "gadgetpushbutton.h"
+#include "gadgetradiobutton.h"
 #include "gadgetstatictext.h"
 #include "gadgettabcontrol.h"
+#include "gadgettextentry.h"
 #include "gameclient.h"
 #include "gamelogic.h"
 #include "gamemath.h"
@@ -3533,12 +3536,6 @@ void Setup_Hooks()
     Hook_Any(0x004FC9C0, GameWindowManager::Go_Go_Gadget_Static_Text);
     Hook_Any(0x004FCB60, GameWindowManager::Go_Go_Gadget_Text_Entry);
 
-    // Because some code checks if the input function for a push button is Gadget_Push_Button_Input or not, we need to make
-    // sure the checks point to our version, not the original.
-    Hook_Memory(0x009DF1E0, Gadget_Push_Button_Input);
-    Hook_Memory(0x0045FD27, Gadget_Push_Button_Input);
-    Hook_Memory(0x005AC723, Gadget_Push_Button_Input);
-
     Hook_Any(0x004FCE70, GameWindowManager::Assign_Default_Gadget_Look);
     Hook_Any(0x004FFC40, GameWindowManager::Win_Text_Label_To_Text);
     Hook_Any(0x004FFD30, GameWindowManager::Get_Window_Under_Cursor);
@@ -3552,41 +3549,6 @@ void Setup_Hooks()
     Hook_Any(0x00515280, GameWindowTransitionsHandler::Reverse);
     Hook_Any(0x00515450, GameWindowTransitionsHandler::Remove);
     Hook_Any(0x00515760, GameWindowTransitionsHandler::Is_Finished);
-
-    // gadgetcombobox.h
-    Hook_Any(0x005C4430, Gadget_Combo_Box_Set_Colors);
-    Hook_Any(0x00A538AF, Gadget_Combo_Box_Set_Is_Editable);
-    Hook_Any(0x005C4710, Gadget_Combo_Box_Set_Max_Chars);
-    Hook_Any(0x005C4730, Gadget_Combo_Box_Set_Max_Display);
-
-    // gadgetlistbox.h
-    Hook_Any(0x005E76A0, Gadget_List_Box_Set_Colors);
-    Hook_Any(0x005E85C0, Gadget_List_Box_Set_Audio_Feedback);
-    Hook_Any(0x005E8540, Gadget_List_Box_Set_Top_Visible_Entry);
-    Hook_Function(0x005E83E0, static_cast<void (*)(GameWindow *, int, int *)>(&Gadget_List_Box_Set_Selected));
-    Hook_Any(0x005E8440, Gadget_List_Box_Set_Item_Data);
-    Hook_Any(0x005E8410, Gadget_List_Box_Reset);
-    Hook_Any(0x005E84F0, Gadget_List_Box_Get_Top_Visible_Entry);
-    Hook_Any(0x005E85E0, Gadget_List_Box_Get_Num_Columns);
-    Hook_Any(0x005E8600, Gadget_List_Box_Get_Column_Width);
-    Hook_Any(0x005E84D0, Gadget_List_Box_Get_Bottom_Visible_Entry);
-    Hook_Any(0x005E7B60, Gadget_List_Box_Add_Entry_Text);
-    Hook_Function(0x005E7D60,
-        static_cast<int (*)(GameWindow *, const Image *, int, int, int, int, bool, int)>(&Gadget_List_Box_Add_Entry_Image));
-    Hook_Function(0x005E83B0, static_cast<void (*)(GameWindow *, int)>(&Gadget_List_Box_Set_Selected));
-
-    // gadgetprogressbar.h
-    Hook_Any(0x005A2C60, Gadget_Progress_Bar_System);
-    Hook_Any(0x005A2C90, Gadget_Progress_Bar_Set_Progress);
-
-    // gadgetstatictext.h
-    Hook_Any(0x005A2CC0, Gadget_Static_Text_Input);
-    Hook_Any(0x005A2DF0, Gadget_Static_Text_System);
-    Hook_Any(0x005A2EF0, Gadget_Static_Text_Set_Text);
-    Hook_Any(0x005A2F60, Gadget_Static_Text_Get_Text);
-
-    // gadgettabcontrol.h
-    Hook_Any(0x006D8390, Gadget_Tab_Control_Show_Sub_Pane);
 
     // w3dprogressbar.h
     Hook_Any(0x007CB2F0, W3D_Gadget_Progress_Bar_Draw);
@@ -3921,4 +3883,109 @@ void Setup_Hooks()
 
     // cratesystem.cpp
     Hook_Any(0x0049B940, CrateSystem::Find_Crate_Template);
+
+    // gadgetcheckbox.h
+    Hook_Any(0x005C2F10, Gadget_Check_Box_Input);
+    Hook_Any(0x005C3210, Gadget_Check_Box_System);
+    Hook_Any(0x005C32C0, Gadget_Check_Box_Set_Text);
+    Hook_Any(0x005C3330, Gadget_Check_Box_Set_Checked);
+    Hook_Any(0x005C3380, Gadget_Check_Box_Toggle);
+    Hook_Any(0x005C33D0, Gadget_Check_Box_Is_Checked);
+
+    // gadgetcombobox.h
+    Hook_Any(0x005C4430, Gadget_Combo_Box_Set_Colors);
+    Hook_Any(0x00A538AF, Gadget_Combo_Box_Set_Is_Editable);
+    Hook_Any(0x005C4710, Gadget_Combo_Box_Set_Max_Chars);
+    Hook_Any(0x005C4730, Gadget_Combo_Box_Set_Max_Display);
+    Hook_Any(0x005C4750, Gadget_Combo_Box_Get_Text);
+    Hook_Any(0x005C47B0, Gadget_Combo_Box_Set_Text);
+    Hook_Any(0x005C4820, Gadget_Combo_Box_Get_Edit_Box);
+    Hook_Any(0x005C4840, Gadget_Combo_Box_Add_Entry);
+    Hook_Any(0x005C48D0, Gadget_Combo_Box_Reset);
+    Hook_Any(0x005C4900, Gadget_Combo_Box_Hide_List);
+    Hook_Any(0x005C4930, Gadget_Combo_Box_Set_Font);
+    Hook_Any(0x005C49B0, Gadget_Combo_Box_Set_Enabled_Text_Colors);
+    Hook_Any(0x005C49F0, Gadget_Combo_Box_Set_Disabled_Text_Colors);
+    Hook_Any(0x005C4A30, Gadget_Combo_Box_Set_Hilite_Text_Colors);
+    Hook_Any(0x005C4A70, Gadget_Combo_Box_Set_IME_Composite_Text_Colors);
+    Hook_Any(0x005C4AB0, Gadget_Combo_Box_Get_Selected_Pos);
+    Hook_Any(0x005C4AE0, Gadget_Combo_Box_Set_Selected_Pos);
+    Hook_Any(0x005C4B10, Gadget_Combo_Box_Set_Item_Data);
+    Hook_Any(0x005C4B40, Gadget_Combo_Box_Get_Item_Data);
+    Hook_Any(0x005C4B80, Gadget_Combo_Box_Get_Length);
+
+    // gadgetlistbox.h
+    Hook_Any(0x005E4F90, Gadget_List_Box_Get_Entry_Based_On_XY);
+    Hook_Any(0x005E76A0, Gadget_List_Box_Set_Colors);
+    Hook_Any(0x005E7A20, Gadget_List_Box_Get_Text);
+    Hook_Any(0x005E7A50, Gadget_List_Box_Get_Text_And_Color);
+    Hook_Any(0x005E7B60, Gadget_List_Box_Add_Entry_Text);
+    Hook_Function(0x005E7D60,
+        static_cast<int (*)(GameWindow *, const Image *, int, int, int, int, bool, int)>(&Gadget_List_Box_Add_Entry_Image));
+    Hook_Function(0x005E7DD0,
+        static_cast<int (*)(GameWindow *, const Image *, int, int, bool, int)>(&Gadget_List_Box_Add_Entry_Image));
+    Hook_Any(0x005E7E30, Gadget_List_Box_Set_Font);
+    Hook_Any(0x005E7EF0, Gadget_List_Box_Create_Scroll_Bar);
+    Hook_Any(0x005E8110, Gadget_List_Box_Set_List_Length);
+    Hook_Any(0x005E8340, Gadget_List_Box_Get_List_Length);
+    Hook_Any(0x005E8360, Gadget_List_Box_Get_Num_Entries);
+    Hook_Any(0x005E8380, Gadget_List_Box_Get_Selected);
+    Hook_Function(0x005E83B0, static_cast<void (*)(GameWindow *, int)>(&Gadget_List_Box_Set_Selected));
+    Hook_Function(0x005E83E0, static_cast<void (*)(GameWindow *, int, int *)>(&Gadget_List_Box_Set_Selected));
+    Hook_Any(0x005E8410, Gadget_List_Box_Reset);
+    Hook_Any(0x005E8440, Gadget_List_Box_Set_Item_Data);
+    Hook_Any(0x005E8480, Gadget_List_Box_Get_Item_Data);
+    Hook_Any(0x005E84D0, Gadget_List_Box_Get_Bottom_Visible_Entry);
+    Hook_Any(0x005E84F0, Gadget_List_Box_Get_Top_Visible_Entry);
+    Hook_Any(0x005E8540, Gadget_List_Box_Set_Top_Visible_Entry);
+    Hook_Any(0x005E85C0, Gadget_List_Box_Set_Audio_Feedback);
+    Hook_Any(0x005E85E0, Gadget_List_Box_Get_Num_Columns);
+    Hook_Any(0x005E8600, Gadget_List_Box_Get_Column_Width);
+
+    // gadgetprogressbar.h
+    Hook_Any(0x005A2C60, Gadget_Progress_Bar_System);
+    Hook_Any(0x005A2C90, Gadget_Progress_Bar_Set_Progress);
+
+    // gadgetpushbutton.h
+    // Because some code checks if the input function for a push button is Gadget_Push_Button_Input or not, we need to make
+    // sure the checks point to our version, not the original.
+    Hook_Memory(0x009DF1E0, Gadget_Push_Button_Input);
+    Hook_Memory(0x0045FD27, Gadget_Push_Button_Input);
+    Hook_Memory(0x005AC723, Gadget_Push_Button_Input);
+    // Hook_Any(0x005ABB40, Gadget_Push_Button_Input);
+    Hook_Any(0x005AC1B0, Gadget_Push_Button_System);
+    Hook_Any(0x005AC2B0, Gadget_Check_Like_Button_Set_Visual_Check);
+    Hook_Any(0x005AC300, Gadget_Button_Enable_Check_Like);
+    Hook_Any(0x005AC350, Gadget_Button_Set_Text);
+    Hook_Any(0x005AC3F0, Gadget_Button_Set_Border);
+    Hook_Any(0x005AC430, Gadget_Button_Draw_Inverse_Clock);
+    Hook_Any(0x005AC470, Gadget_Button_Draw_Overlay_Image);
+    Hook_Any(0x005AC4A0, Gadget_Button_Set_Data);
+    Hook_Any(0x005AC4D0, Gadget_Button_Get_Data);
+    Hook_Any(0x005AC4F0, Gadget_Button_Set_Alt_Sound);
+
+    // gadgetradiobutton.h
+    Hook_Any(0x006D8C50, Gadget_Radio_Set_Text);
+    Hook_Any(0x006D8CC0, Gadget_Radio_Set_Selection);
+
+    // gadgetstatictext.h
+    Hook_Any(0x005A2CC0, Gadget_Static_Text_Input);
+    Hook_Any(0x005A2DF0, Gadget_Static_Text_System);
+    Hook_Any(0x005A2EF0, Gadget_Static_Text_Set_Text);
+    Hook_Any(0x005A2F60, Gadget_Static_Text_Get_Text);
+    Hook_Any(0x005A2FB0, Gadget_Static_Text_Set_Font);
+
+    // gadgettabcontrol.h
+    Hook_Any(0x006D7F60, Gadget_Tab_Control_Input);
+    Hook_Any(0x006D8070, Gadget_Tab_Control_System);
+    Hook_Any(0x006D8160, Gadget_Tab_Control_Compute_Tab_Region);
+    Hook_Any(0x006D82D0, Gadget_Tab_Control_Compute_Sub_Pane_Size);
+    Hook_Any(0x006D8390, Gadget_Tab_Control_Show_Sub_Pane);
+    Hook_Any(0x006D83F0, Gadget_Tab_Control_Create_Sub_Panes);
+    Hook_Any(0x006D85B0, Gadget_Tab_Control_Fixup_Sub_Pane_List);
+
+    // gadgettextentry.h
+    Hook_Any(0x005CB380, Gadget_Text_Entry_Input);
+    Hook_Any(0x005CB7C0, Gadget_Text_Entry_System);
+    Hook_Any(0x005CBA20, Gadget_Text_Entry_Set_Font);
 }

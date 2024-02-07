@@ -362,7 +362,7 @@ void Utf16String::Remove_Last_Char()
 
     if (len > 0) {
         Ensure_Unique_Buffer_Of_Size(len + 1, true);
-        Peek()[len] = U_CHAR('\0');
+        Peek()[len - 1] = U_CHAR('\0');
     }
 }
 

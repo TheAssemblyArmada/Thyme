@@ -30,8 +30,8 @@ struct _EntryData
     bool m_receivedUnichar;
     bool m_noInput;
     GameWindow *m_constructList;
-    short m_charPos;
-    short m_conCharPos;
+    unsigned short m_charPos;
+    unsigned short m_conCharPos;
 };
 
 inline void Gadget_Text_Entry_Set_Enabled_Item_Left_End_Image(GameWindow *text_entry, const Image *image)

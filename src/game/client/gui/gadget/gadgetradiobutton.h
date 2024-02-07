@@ -165,4 +165,4 @@ WindowMsgHandledType Gadget_Radio_Button_System(
 
 void Gadget_Radio_Set_Text(GameWindow *radio_button, Utf16String text);
 void Gadget_Radio_Set_Group(GameWindow *radio_button, int group, int screen);
-void Gadget_Radio_Set_Selection(GameWindow *radio_button, int send_msg);
+void Gadget_Radio_Set_Selection(GameWindow *radio_button, bool send_msg);

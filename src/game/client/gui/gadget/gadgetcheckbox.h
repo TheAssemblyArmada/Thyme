@@ -159,5 +159,5 @@ WindowMsgHandledType Gadget_Check_Box_System(
 
 void Gadget_Check_Box_Set_Text(GameWindow *check_box, Utf16String text);
 void Gadget_Check_Box_Set_Checked(GameWindow *check_box, bool is_checked);
-void Gadget_check_Box_Toggle(GameWindow *check_box);
-bool Gadget_Check_Box_Is_checked(GameWindow *check_box);
+void Gadget_Check_Box_Toggle(GameWindow *check_box);
+bool Gadget_Check_Box_Is_Checked(GameWindow *check_box);

@@ -19,90 +19,21 @@
 #include "gadgettextentry.h"
 #include "gamewindow.h"
 
-void Gadget_Combo_Box_Set_Enabled_Text_Colors(GameWindow *combo_box, int color, int border_color)
-{
-    if (combo_box != nullptr) {
-        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
-
-        if (data->m_listBox != nullptr) {
-            data->m_listBox->Win_Set_Enabled_Text_Colors(color, border_color);
-        }
-
-        if (data->m_editBox != nullptr) {
-            data->m_editBox->Win_Set_Enabled_Text_Colors(color, border_color);
-        }
-    }
-}
-
-void Gadget_Combo_Box_Set_Disabled_Text_Colors(GameWindow *combo_box, int color, int border_color)
-{
-    if (combo_box != nullptr) {
-        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
-
-        if (data->m_listBox != nullptr) {
-            data->m_listBox->Win_Set_Disabled_Text_Colors(color, border_color);
-        }
-
-        if (data->m_editBox != nullptr) {
-            data->m_editBox->Win_Set_Disabled_Text_Colors(color, border_color);
-        }
-    }
-}
-
-void Gadget_Combo_Box_Set_Hilite_Text_Colors(GameWindow *combo_box, int color, int border_color)
-{
-    if (combo_box != nullptr) {
-        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
-
-        if (data->m_listBox != nullptr) {
-            data->m_listBox->Win_Set_Hilite_Text_Colors(color, border_color);
-        }
-
-        if (data->m_editBox != nullptr) {
-            data->m_editBox->Win_Set_Hilite_Text_Colors(color, border_color);
-        }
-    }
-}
-
-void Gadget_Combo_Box_Set_IME_Composite_Text_Colors(GameWindow *combo_box, int color, int border_color)
-{
-    if (combo_box != nullptr) {
-        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
-
-        if (data->m_listBox != nullptr) {
-            data->m_listBox->Win_Set_IME_Composite_Text_Colors(color, border_color);
-        }
-
-        if (data->m_editBox != nullptr) {
-            data->m_editBox->Win_Set_IME_Composite_Text_Colors(color, border_color);
-        }
-    }
-}
-
-void Gadget_Combo_Box_Set_Font(GameWindow *combo_box, GameFont *font)
+void Hide_List_Box(GameWindow *combo_box)
 {
     GameWindow *list_box = Gadget_Combo_Box_Get_List_Box(combo_box);
 
     if (list_box != nullptr) {
-        list_box->Win_Set_Font(font);
-    }
-
-    GameWindow *edit_box = Gadget_Combo_Box_Get_Edit_Box(combo_box);
-
-    if (edit_box != nullptr) {
-        edit_box->Win_Set_Font(font);
-    }
-
-    DisplayString *string = combo_box->Win_Get_Instance_Data()->Get_Text_DisplayString();
-
-    if (string != nullptr) {
-        string->Set_Font(font);
-    }
-
-    DisplayString *tooltip_string = combo_box->Win_Get_Instance_Data()->Get_Tooltip_DisplayString();
-
-    if (tooltip_string != nullptr) {
-        tooltip_string->Set_Font(font);
+        if (!list_box->Win_Is_Hidden()) {
+            list_box->Win_Hide(true);
+            int combo_width;
+            int combo_height;
+            int edit_width;
+            int edit_height;
+            Gadget_Combo_Box_Get_Edit_Box(combo_box)->Win_Get_Size(&edit_width, &edit_height);
+            combo_box->Win_Get_Size(&combo_width, &combo_height);
+            combo_box->Win_Set_Size(combo_width, edit_height);
+        }
     }
 }
 
@@ -222,6 +153,30 @@ void Gadget_Combo_Box_Set_Is_Editable(GameWindow *combo_box, bool is_editable)
     }
 }
 
+void Gadget_Combo_Box_Set_Letters_And_Numbers_Only(GameWindow *combo_box, bool letters_and_numbers_only)
+{
+    if (combo_box != nullptr) {
+        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
+        data->m_lettersAndNumbersOnly = letters_and_numbers_only;
+
+        if (data->m_entryData != nullptr) {
+            data->m_entryData->m_alphaNumericalOnly = letters_and_numbers_only;
+        }
+    }
+}
+
+void Gadget_Combo_Box_Set_Ascii_Only(GameWindow *combo_box, bool ascii_only)
+{
+    if (combo_box != nullptr) {
+        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
+        data->m_asciiOnly = ascii_only;
+
+        if (data->m_entryData != nullptr) {
+            data->m_entryData->m_asciiOnly = ascii_only;
+        }
+    }
+}
+
 void Gadget_Combo_Box_Set_Max_Chars(GameWindow *combo_box, int max_chars)
 {
     if (combo_box != nullptr) {
@@ -235,4 +190,194 @@ void Gadget_Combo_Box_Set_Max_Display(GameWindow *combo_box, int max_display)
 {
     _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
     data->m_maxDisplay = max_display;
+}
+
+Utf16String Gadget_Combo_Box_Get_Text(GameWindow *combo_box)
+{
+    if (combo_box != nullptr) {
+        if ((combo_box->Win_Get_Style() & GWS_COMBO_BOX) != 0) {
+            return Gadget_Text_Entry_Get_Text(Gadget_Combo_Box_Get_Edit_Box(combo_box));
+        } else {
+            return Utf16String::s_emptyString;
+        }
+    } else {
+        return Utf16String::s_emptyString;
+    }
+}
+
+void Gadget_Combo_Box_Set_Text(GameWindow *combo_box, Utf16String text)
+{
+    if (combo_box != nullptr) {
+        Gadget_Text_Entry_Set_Text(Gadget_Combo_Box_Get_Edit_Box(combo_box), text);
+    }
+}
+
+int Gadget_Combo_Box_Add_Entry(GameWindow *combo_box, Utf16String text, int color)
+{
+    if (combo_box != nullptr) {
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+        return g_theWindowManager->Win_Send_System_Msg(
+            combo_box, GCM_ADD_ENTRY, reinterpret_cast<unsigned int>(&text), color);
+#else
+        return -1;
+#endif
+    } else {
+        return -1;
+    }
+}
+
+void Gadget_Combo_Box_Reset(GameWindow *combo_box)
+{
+    if (combo_box != nullptr) {
+        g_theWindowManager->Win_Send_System_Msg(combo_box, GCM_DEL_ALL, 0, 0);
+    }
+}
+
+void Gadget_Combo_Box_Set_Font(GameWindow *combo_box, GameFont *font)
+{
+    GameWindow *list_box = Gadget_Combo_Box_Get_List_Box(combo_box);
+
+    if (list_box != nullptr) {
+        list_box->Win_Set_Font(font);
+    }
+
+    GameWindow *edit_box = Gadget_Combo_Box_Get_Edit_Box(combo_box);
+
+    if (edit_box != nullptr) {
+        edit_box->Win_Set_Font(font);
+    }
+
+    DisplayString *string = combo_box->Win_Get_Instance_Data()->Get_Text_DisplayString();
+
+    if (string != nullptr) {
+        string->Set_Font(font);
+    }
+
+    DisplayString *tooltip_string = combo_box->Win_Get_Instance_Data()->Get_Tooltip_DisplayString();
+
+    if (tooltip_string != nullptr) {
+        tooltip_string->Set_Font(font);
+    }
+}
+
+void Gadget_Combo_Box_Hide_List(GameWindow *combo_box)
+{
+    if (combo_box != nullptr) {
+        g_theWindowManager->Win_Send_System_Msg(combo_box, GGM_CLOSE, 0, 0);
+    }
+}
+
+void Gadget_Combo_Box_Set_Enabled_Text_Colors(GameWindow *combo_box, int color, int border_color)
+{
+    if (combo_box != nullptr) {
+        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
+
+        if (data->m_listBox != nullptr) {
+            data->m_listBox->Win_Set_Enabled_Text_Colors(color, border_color);
+        }
+
+        if (data->m_editBox != nullptr) {
+            data->m_editBox->Win_Set_Enabled_Text_Colors(color, border_color);
+        }
+    }
+}
+
+void Gadget_Combo_Box_Set_Disabled_Text_Colors(GameWindow *combo_box, int color, int border_color)
+{
+    if (combo_box != nullptr) {
+        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
+
+        if (data->m_listBox != nullptr) {
+            data->m_listBox->Win_Set_Disabled_Text_Colors(color, border_color);
+        }
+
+        if (data->m_editBox != nullptr) {
+            data->m_editBox->Win_Set_Disabled_Text_Colors(color, border_color);
+        }
+    }
+}
+
+void Gadget_Combo_Box_Set_Hilite_Text_Colors(GameWindow *combo_box, int color, int border_color)
+{
+    if (combo_box != nullptr) {
+        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
+
+        if (data->m_listBox != nullptr) {
+            data->m_listBox->Win_Set_Hilite_Text_Colors(color, border_color);
+        }
+
+        if (data->m_editBox != nullptr) {
+            data->m_editBox->Win_Set_Hilite_Text_Colors(color, border_color);
+        }
+    }
+}
+
+void Gadget_Combo_Box_Set_IME_Composite_Text_Colors(GameWindow *combo_box, int color, int border_color)
+{
+    if (combo_box != nullptr) {
+        _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
+
+        if (data->m_listBox != nullptr) {
+            data->m_listBox->Win_Set_IME_Composite_Text_Colors(color, border_color);
+        }
+
+        if (data->m_editBox != nullptr) {
+            data->m_editBox->Win_Set_IME_Composite_Text_Colors(color, border_color);
+        }
+    }
+}
+
+void Gadget_Combo_Box_Get_Selected_Pos(GameWindow *combo_box, int *selected_index)
+{
+    if (combo_box != nullptr) {
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+        g_theWindowManager->Win_Send_System_Msg(
+            combo_box, GCM_GET_SELECTION, 0, reinterpret_cast<unsigned int>(selected_index));
+#endif
+    }
+}
+
+void Gadget_Combo_Box_Set_Selected_Pos(GameWindow *combo_box, int selected_index, bool dont_hide)
+{
+    if (combo_box != nullptr) {
+        // pointer to an unsigned int on 64 bit
+        g_theWindowManager->Win_Send_System_Msg(combo_box, GCM_SET_SELECTION, selected_index, dont_hide);
+    }
+}
+
+void Gadget_Combo_Box_Set_Item_Data(GameWindow *combo_box, int index, void *data)
+{
+    if (combo_box != nullptr) {
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+        g_theWindowManager->Win_Send_System_Msg(combo_box, GCM_SET_ITEM_DATA, index, reinterpret_cast<unsigned int>(data));
+#endif
+    }
+}
+
+void *Gadget_Combo_Box_Get_Item_Data(GameWindow *combo_box, int index)
+{
+    void *data = nullptr;
+
+    if (combo_box != nullptr) {
+#ifdef GAME_DLL // temporary since we can't change the definition of Win_Send_System_Msg at this point and we can't cast a
+                // pointer to an unsigned int on 64 bit
+        g_theWindowManager->Win_Send_System_Msg(combo_box, GCM_GET_ITEM_DATA, index, reinterpret_cast<unsigned int>(&data));
+#endif
+    }
+
+    return data;
+}
+
+int Gadget_Combo_Box_Get_Length(GameWindow *combo_box)
+{
+    _ComboBoxData *data = static_cast<_ComboBoxData *>(combo_box->Win_Get_User_Data());
+
+    if (data != nullptr) {
+        return data->m_entryCount;
+    } else {
+        return 0;
+    }
 }

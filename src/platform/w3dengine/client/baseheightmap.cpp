@@ -969,78 +969,89 @@ void BaseHeightMapRenderObjClass::Do_The_Light(VertexFormatXYZDUV2 *vb,
 
 float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord3D *pos) const
 {
-    WorldHeightMap *map;
+    WorldHeightMap *height_map;
 
+    // Check if terrain visual is available, otherwise use default map
     if (g_theTerrainVisual != nullptr) {
-        map = g_theTerrainVisual->Get_Logic_Height_Map();
+        height_map = g_theTerrainVisual->Get_Logic_Height_Map();
     } else {
-        map = m_map;
+        height_map = m_map;
     }
 
-    if (map != nullptr) {
-        float f1 = x * 0.1f;
-        float f2 = y * 0.1f;
-        float f3 = GameMath::Fast_Float_Floor(f1);
-        float f4 = GameMath::Fast_Float_Floor(f2);
-        float f5 = f1 - f3;
-        float f6 = f2 - f4;
-        int i1 = map->Border_Size() + GameMath::Lrintf(f3);
-        int i2 = map->Border_Size() + GameMath::Lrintf(f4);
-        int x_extent = map->Get_X_Extent();
+    if (height_map != nullptr) {
+        float scaled_x = x * 0.1f;
+        float scaled_y = y * 0.1f;
+        float floor_x = GameMath::Fast_Float_Floor(scaled_x);
+        float floor_y = GameMath::Fast_Float_Floor(scaled_y);
+        float fract_x = scaled_x - floor_x;
+        float fract_y = scaled_y - floor_y;
+        int index_x = height_map->Border_Size() + GameMath::Lrintf(floor_x);
+        int index_y = height_map->Border_Size() + GameMath::Lrintf(floor_y);
+        int map_width = height_map->Get_X_Extent();
 
-        if (i1 <= x_extent - 3 && i2 <= map->Get_Y_Extent() - 3 && i2 >= 1 && i1 >= 1) {
-            unsigned char *data = map->Get_Data_Ptr();
-            int i3 = x_extent * i2 + i1;
-            float f7 = data[i3];
-            float f8 = data[x_extent + 1 + i3];
-            float f9;
+        // Check if the indices are within valid bounds
+        if (index_x <= map_width - 3 && index_y <= height_map->Get_Y_Extent() - 3 && index_y >= 1 && index_x >= 1) {
+            unsigned char *height_data = height_map->Get_Data_Ptr();
+            int current_point_index = map_width * index_y + index_x;
+            float current_point_height = height_data[current_point_index];
+            float top_right_neighbor_height = height_data[map_width + 1 + current_point_index];
+            float interpolated_height;
 
-            if (f6 <= f5) {
-                float f10 = data[i3 + 1];
-                f9 = ((f8 - f10) * f6 + f10 + (1.0f - f5) * (f7 - f10)) * HEIGHTMAP_SCALE;
+            // Calculate the height based on interpolation
+            // If fractional y is less than or equal to fractional x, our point is in the top right triangle of the cell
+            if (fract_y <= fract_x) {
+                float right_neighbor_height = height_data[current_point_index + 1];
+                interpolated_height = ((top_right_neighbor_height - right_neighbor_height) * fract_y + right_neighbor_height
+                                          + (1.0f - fract_x) * (current_point_height - right_neighbor_height))
+                    * HEIGHTMAP_SCALE;
             } else {
-                float f10 = data[x_extent + i3];
-                f9 = ((1.0f - f6) * (f7 - f10) + f10 + (f8 - f10) * f5) * HEIGHTMAP_SCALE;
+                float top_neighbor_height = height_data[map_width + current_point_index];
+                interpolated_height = ((1.0f - fract_y) * (current_point_height - top_neighbor_height) + top_neighbor_height
+                                          + (top_right_neighbor_height - top_neighbor_height) * fract_x)
+                    * HEIGHTMAP_SCALE;
             }
 
+            // Calculate the normal vector if pos is provided
             if (pos != nullptr) {
-                int i4 = x_extent * (i2 - 1) + i1;
-                int i5 = x_extent * i2 + i1;
-                int i6 = x_extent + i5;
-                int i7 = x_extent * (i2 + 2) + i1;
-                unsigned char c1 = data[i5];
-                unsigned char c2 = data[i5 + 1];
-                unsigned char c3 = data[x_extent + 1 + i5];
-                unsigned char c4 = data[x_extent + i5];
-                unsigned char c5 = data[i4];
-                unsigned char c6 = data[i4 + 1];
-                unsigned char c7 = data[i7 + 1];
-                unsigned char c8 = data[i7];
-                float f11 = c2 - data[i5 - 1];
-                float f12 = data[i5 + 2] - c1;
-                float f13 = data[x_extent + 2 + i5] - c4;
-                float f14 = c4 - c5;
-                float f15 = c3 - c6;
-                float f16 = c7 - c2;
-                float f17 = c8 - c1;
-                float f18 = (1.0f - f5) * f11 + f5 * f12;
-                float f19 = (1.0f - f5) * f12 + f5 * f13;
-                float f20 = f18 * (1.0f - f6) + f6 * f19;
-                float f21 = (1.0f - f5) * f14 + f5 * f17;
-                float f22 = (1.0f - f5) * f15 + f5 * f16;
-                float f23 = f21 * (1.0f - f6) + f6 * f22;
-                Vector3 v1;
-                Vector3 v2;
-                Vector3 v3;
-                v1.Set(32.0f, 0.0f, f20);
-                v2.Set(0.0f, 32.0f, f23);
-                Vector3::Normalized_Cross_Product(v1, v2, &v3);
-                pos->x = v3.X;
-                pos->y = v3.Y;
-                pos->z = v3.Z;
+                int prev_row_cell_index = map_width * (index_y - 1) + index_x;
+                int current_cell_index = map_width * index_y + index_x;
+                int next_row_cell_index = map_width + current_cell_index;
+                int next_next_row_cell_index = map_width * (index_y + 2) + index_x;
+                unsigned char current_cell_height_data = height_data[current_cell_index];
+                unsigned char right = height_data[current_cell_index + 1];
+                unsigned char up_right = height_data[map_width + 1 + current_cell_index];
+                unsigned char up = height_data[map_width + current_cell_index];
+                unsigned char down = height_data[prev_row_cell_index];
+                unsigned char down_right = height_data[prev_row_cell_index + 1];
+                unsigned char up_up_right = height_data[next_next_row_cell_index + 1];
+                unsigned char up_up = height_data[next_next_row_cell_index];
+                float slope_1 = right - height_data[current_cell_index - 1];
+                float slope_2 = height_data[current_cell_index + 2] - current_cell_height_data;
+                float slope_3 = height_data[map_width + 2 + current_cell_index] - up;
+                float slope_4 = up - down;
+                float slope_5 = up_right - down_right;
+                float slope_6 = up_up_right - right;
+                float slope_7 = up_up - current_cell_height_data;
+                float interpolated_slope_x_difference = (1.0f - fract_x) * slope_1 + fract_x * slope_2;
+                float interpolated_slope_y_difference = (1.0f - fract_x) * slope_2 + fract_x * slope_3;
+                float interpolated_normal_x =
+                    interpolated_slope_x_difference * (1.0f - fract_y) + fract_y * interpolated_slope_y_difference;
+                float interpolated_height_x_difference = (1.0f - fract_x) * slope_4 + fract_x * slope_7;
+                float interpolated_height_y_difference = (1.0f - fract_x) * slope_5 + fract_x * slope_6;
+                float interpolated_normal_y =
+                    interpolated_height_x_difference * (1.0f - fract_y) + fract_y * interpolated_height_y_difference;
+                Vector3 v_x_axis;
+                Vector3 v_y_axis;
+                Vector3 normal_vector;
+                v_x_axis.Set(32.0f, 0.0f, interpolated_normal_x);
+                v_y_axis.Set(0.0f, 32.0f, interpolated_normal_y);
+                Vector3::Normalized_Cross_Product(v_x_axis, v_y_axis, &normal_vector);
+                pos->x = normal_vector.X;
+                pos->y = normal_vector.Y;
+                pos->z = normal_vector.Z;
             }
 
-            return f9;
+            return interpolated_height;
         } else {
             if (pos != nullptr) {
                 pos->x = 0.0f;
@@ -1048,10 +1059,10 @@ float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord
                 pos->z = 1.0f;
             }
 
-            return Get_Clip_Height(i1, i2) * HEIGHTMAP_SCALE;
+            return Get_Clip_Height(index_x, index_y) * HEIGHTMAP_SCALE;
         }
     } else {
-        if (pos) {
+        if (pos != nullptr) {
             pos->x = 0.0f;
             pos->y = 0.0f;
             pos->z = 1.0f;

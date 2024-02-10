@@ -259,6 +259,11 @@ W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Get_Slot(VBM_FVF_TYPES 
     int size_index = (size / 32) - 1;
 
     captainslog_dbgassert(size_index < MAX_IB_SIZES && size, "Allocating too large vertex buffer slot");
+    // #BUGFIX Protect against indexing slots beyond the max size.
+    // This will happen when a mesh is too complex to draw shadows with.
+    if (size_index >= MAX_VB_SIZES) {
+        return nullptr;
+    }
 
     W3DVertexBufferSlot *vb_slot = m_W3DVertexBufferSlots[fvf_type][size_index];
 
@@ -291,6 +296,11 @@ void W3DBufferManager::Release_Slot(W3DVertexBufferSlot *vb_slot)
 W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int size)
 {
     captainslog_dbgassert(m_numEmptyVertexSlotsAllocated < MAX_NUMBER_SLOTS, "Nore more VB Slots");
+    // #BUGFIX Protect against allocating slot storage beyond the max size.
+    // This will happen when there are too many meshes in the scene to draw shadows with.
+    if (m_numEmptyVertexSlotsAllocated >= MAX_NUMBER_SLOTS) {
+        return nullptr;
+    }
 
     for (W3DVertexBuffer *vb = m_W3DVertexBuffers[fvf_type]; vb != nullptr; vb = vb->m_nextVB) {
 
@@ -365,6 +375,11 @@ W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Get_Slot(int size)
     int size_index = (size / 32) - 1;
 
     captainslog_dbgassert(size_index < MAX_IB_SIZES && size, "Allocating too large index buffer slot");
+    // #BUGFIX Protect against indexing slots beyond the max size.
+    // This will happen when a mesh is too complex to draw shadows with.
+    if (size_index >= MAX_IB_SIZES) {
+        return nullptr;
+    }
 
     W3DIndexBufferSlot *ib_slot = m_W3DIndexBufferSlots[size_index];
 
@@ -396,6 +411,11 @@ void W3DBufferManager::Release_Slot(W3DIndexBufferSlot *ib_slot)
 W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(int size)
 {
     captainslog_dbgassert(m_numEmptyIndexSlotsAllocated < MAX_NUMBER_SLOTS, "Nore more IB Slots");
+    // #BUGFIX Protect against allocating slot storage beyond the max size.
+    // This will happen when there are too many meshes in the scene to draw shadows with.
+    if (m_numEmptyIndexSlotsAllocated >= MAX_NUMBER_SLOTS) {
+        return nullptr;
+    }
 
     for (W3DIndexBuffer *ib = m_W3DIndexBuffers; ib != nullptr; ib = ib->m_nextIB) {
 

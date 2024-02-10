@@ -107,13 +107,17 @@ public:
 
     enum
     {
-        // #BUGFIX Double the original sizes to avoid crash when many 3D shadows are drawn on screen.
-        // #TODO Investigate crash further by reducing sizes and make it work even if sizes are exceeded.
+        // The number of slots corresponds to number of meshes casting shadows in the scene.
+        // The more meshes there are, the larger the slots needs to be.
+        // #BUGFIX Double the original sizes to allow for twice as many shadows to be created in the scene.
         MAX_NUMBER_SLOTS = 4096 * 2,
+
         MAX_VERTEX_BUFFERS_CREATED = 32 * 2,
         MAX_INDEX_BUFFERS_CREATED = 32 * 2,
 
-        // Don't change these two yet. Changing these breaks shadows, meaning something elsewhere relies on them.
+        // The max sizes correspond to a number of vertices and indices of a mesh casting shadows in the scene.
+        // The more vertices the meshes are supposed to have, the higher these limits need to be.
+        // Multiplying these numbers by 32 gives the max supported amount of vertices and indices.
         MAX_VB_SIZES = 128,
         MAX_IB_SIZES = 128,
     };

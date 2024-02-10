@@ -95,7 +95,7 @@ public:
     void Delete_On_Close() { m_deleteOnClose = true; }
 
 protected:
-    File() : m_access(0), m_open(false), m_deleteOnClose(false) { Set_Name("<no file>"); }
+    File();
 
 protected:
     Utf8String m_name;

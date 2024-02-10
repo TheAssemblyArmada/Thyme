@@ -44,7 +44,17 @@ bool Decode_Buffered_File_Mode(int mode, int &buffer_size)
     }
     return false;
 }
+
+// Optimization to reduce string allocations.
+const Utf8String s_defaultFileName("<no file>");
+
 } // namespace Thyme
+
+File::File() : m_access(0), m_open(false), m_deleteOnClose(false)
+{
+    // Set_Name("<no file>");
+    m_name = Thyme::s_defaultFileName;
+}
 
 File::~File()
 {
@@ -93,7 +103,8 @@ bool File::Open(const char *filename, int mode)
 void File::Close()
 {
     if (m_open) {
-        Set_Name("<no file>");
+        // Set_Name("<no file>");
+        m_name = Thyme::s_defaultFileName;
         m_open = false;
 
         if (m_deleteOnClose) {

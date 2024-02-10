@@ -329,10 +329,9 @@ W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(V
 
         W3DVertexBuffer *buf = m_W3DVertexBuffers[fvf_type];
 
-        // #TODO investigate
+        // TODO investigate
         // We allocate count for vertex buffer but size and start index is set by the original size
-        // As it stands this doesn't seem to make any sense.
-        // A 4 byte alignment on the buffer would be understandable but this...
+        // As it stands this doesn't seem to make any sense, i'd understand a 4 byte alignement on the buffer but this...
         int vb_size = std::max(8192, size);
 
         buf->m_DX8VertexBuffer =
@@ -340,7 +339,7 @@ W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(V
         buf->m_format = fvf_type;
         buf->m_startFreeIndex = size;
         buf->m_size = vb_size;
-        // #BUGFIX Original didn't clear this
+        // BUGFIX Original didn't clear this
         buf->m_renderTaskList = nullptr;
 
         W3DVertexBufferSlot *slot = &m_W3DVertexBufferEmptySlots[m_numEmptyVertexSlotsAllocated++];

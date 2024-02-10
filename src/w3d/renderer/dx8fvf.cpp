@@ -32,7 +32,7 @@ FVFInfoClass::FVFInfoClass(unsigned int fvf_, unsigned int fvf_size_)
 #ifdef BUILD_WITH_D3D8
     m_FVF = fvf_;
 
-    if (fvf_) {
+    if (fvf_ != 0) {
         m_fvfSize = Get_FVF_Vertex_Size(m_FVF);
     } else {
         m_fvfSize = fvf_size_;

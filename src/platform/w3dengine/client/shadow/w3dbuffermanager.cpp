@@ -290,7 +290,7 @@ void W3DBufferManager::Release_Slot(W3DVertexBufferSlot *vb_slot)
 
 W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int size)
 {
-    captainslog_dbgassert(m_numEmptyVertexSlotsAllocated < MAX_NUMBER_SLOTS, "Nore more VB Slots");
+    captainslog_dbgassert(m_numEmptyVertexSlotsAllocated < MAX_NUMBER_SLOTS, "No more VB Slots");
 
     for (W3DVertexBuffer *vb = m_W3DVertexBuffers[fvf_type]; vb != nullptr; vb = vb->m_nextVB) {
 
@@ -395,7 +395,7 @@ void W3DBufferManager::Release_Slot(W3DIndexBufferSlot *ib_slot)
 
 W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(int size)
 {
-    captainslog_dbgassert(m_numEmptyIndexSlotsAllocated < MAX_NUMBER_SLOTS, "Nore more IB Slots");
+    captainslog_dbgassert(m_numEmptyIndexSlotsAllocated < MAX_NUMBER_SLOTS, "No more IB Slots");
 
     for (W3DIndexBuffer *ib = m_W3DIndexBuffers; ib != nullptr; ib = ib->m_nextIB) {
 

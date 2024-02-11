@@ -36,6 +36,9 @@ if(MSVC)
         string(REGEX REPLACE "/RTC[^ ]*" "" ${flag_var} "${${flag_var}}")
     endforeach(flag_var)
     
+    # Build with multiple processes: speeds up build on multi core processors
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+
     # Use x87 floating point instructions
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:IA32")
 

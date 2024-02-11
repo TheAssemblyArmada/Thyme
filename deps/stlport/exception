@@ -57,9 +57,7 @@
 # if defined (_STLP_NO_NEW_NEW_HEADER)
 #  include _STLP_NATIVE_CPP_RUNTIME_HEADER(exception.h)
 # else
-#   if defined (_STLP_MSVC) && (_STLP_MSVC >= 1900)
-#     include _STLP_NATIVE_CPP_RUNTIME_HEADER(xstddef)
-#   endif
+//#   include _STLP_NATIVE_CPP_RUNTIME_HEADER(xstddef)
 #   include _STLP_NATIVE_CPP_RUNTIME_HEADER(exception)
 # endif
 

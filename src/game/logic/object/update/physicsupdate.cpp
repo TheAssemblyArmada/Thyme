@@ -662,33 +662,43 @@ float PhysicsBehavior::Get_Velocity_Magnitude() const
     return m_velMag;
 }
 
-// TODO investigate doesn't account for diagonal movement
 float PhysicsBehavior::Get_Forward_Speed_2D() const
 {
     const Coord3D *dir = Get_Object()->Get_Unit_Dir_Vector2D();
-    float x = m_vel.x * dir->x;
-    float y = m_vel.y * dir->y;
-    float xy = x + y;
-    float len = GameMath::Sqrt(x * x + y * y);
 
-    if (xy < 0.0f) {
+    // #BUGFIX square root the velocities separately to fix issue where units move faster diagonally.
+    const float vel_len = GameMath::Sqrt(m_vel.x * m_vel.x + m_vel.y * m_vel.y);
+    const float dir_len = GameMath::Sqrt(dir->x * dir->x + dir->y * dir->y);
+    float len = vel_len * dir_len;
+    // Scale len by (1 + sqrt(2)) / 2 to adjust to the average of the former min/max movement speed.
+    len /= 1.20710678f;
+
+    const float x = m_vel.x * dir->x;
+    const float y = m_vel.y * dir->y;
+
+    if (x + y < 0.0f) {
         return -len;
     } else {
         return len;
     }
 }
 
-// TODO investigate doesn't account for diagonal movement
 float PhysicsBehavior::Get_Forward_Speed_3D() const
 {
     Vector3 xv = Get_Object()->Get_Transform_Matrix()->Get_X_Vector();
-    float x = xv.X * m_vel.x;
-    float y = xv.Y * m_vel.y;
-    float z = xv.Z * m_vel.z;
-    float xyz = x + y + z;
-    float len = GameMath::Sqrt(x * x + y * y + z * z);
 
-    if (xyz < 0.0f) {
+    // #BUGFIX square root the velocities separately to fix issue where units move faster diagonally (cubic).
+    const float vel_len = GameMath::Sqrt(m_vel.x * m_vel.x + m_vel.y * m_vel.y + m_vel.z * m_vel.z);
+    const float xv_len = GameMath::Sqrt(xv.X * xv.X + xv.Y * xv.Y + xv.Z * xv.Z);
+    float len = vel_len * xv_len;
+    // Scale len by (1 + sqrt(3)) / 2 to adjust to the average of the former min/max movement speed.
+    len /= 1.36602540f;
+
+    const float x = m_vel.x * xv.X;
+    const float y = m_vel.y * xv.Y;
+    const float z = m_vel.z * xv.Z;
+
+    if (x + y + z < 0.0f) {
         return -len;
     } else {
         return len;

@@ -38,13 +38,13 @@ int SysTimeClass::Get()
         _is_init = true;
     }
 
-    int time = rts::Get_Time();
+    unsigned int time = rts::Get_Time();
 
-    if (time < m_startTime) {
-        return m_negTime + time;
+    if (time > m_startTime) {
+        return time - m_startTime;
     }
 
-    return time - m_startTime;
+    return time + m_negTime;
 }
 
 bool SysTimeClass::Is_Getting_Late()

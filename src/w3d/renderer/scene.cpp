@@ -70,7 +70,7 @@ void SceneClass::Render(RenderInfoClass &rinfo)
             DX8Wrapper::Set_DX8_Render_State(D3DRS_ZBIAS, 7); // BFME2 calls Set_DX8_ZBias(7.0f) here
 #endif
             Customized_Render(rinfo);
-        } else if (m_extraPassPolyRenderMode == EXTRA_PASS_LINE) {
+        } else if (m_extraPassPolyRenderMode == EXTRA_PASS_CLEAR_LINE) {
             DX8Wrapper::Clear(true, false, { 0, 0, 0 }, 0.0f);
             W3D::Enable_Texturing(false);
 #ifdef BUILD_WITH_D3D8

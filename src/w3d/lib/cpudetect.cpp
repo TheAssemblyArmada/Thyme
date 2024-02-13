@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "cpudetect.h"
+#include "intrinsics.h"
 #include "systimer.h"
 #include <cstdio>
 #include <cstring>

@@ -21,7 +21,6 @@
 
 #include "bittype.h"
 #include "compiler.h"
-#include "intrinsics.h"
 #include "macros.h"
 #include "platform.h"
 #include "stringex.h"

@@ -20,6 +20,9 @@
 #include <captainslog.h>
 #include <cctype>
 #include <cstdio>
+#if defined PLATFORM_WINDOWS
+#include <utf.h>
+#endif
 
 Utf8String const Utf8String::s_emptyString(nullptr);
 

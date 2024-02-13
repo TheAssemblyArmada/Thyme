@@ -28,7 +28,6 @@
 #include "unichar.h"
 
 #ifdef PLATFORM_WINDOWS
-#include "utf.h"
 #include <windef.h>
 #define NAME_MAX FILENAME_MAX
 

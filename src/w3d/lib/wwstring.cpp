@@ -15,6 +15,9 @@
  */
 #include "wwstring.h"
 #include <cstdio>
+#if defined PLATFORM_WINDOWS
+#include <utf.h>
+#endif
 
 #ifndef GAME_DLL
 FastCriticalSectionClass StringClass::m_mutex;

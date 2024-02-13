@@ -73,7 +73,7 @@ public:
     WinInstanceData &operator=(const WinInstanceData &that);
 
 #ifdef GAME_DLL
-    WinInstanceData *Hook_Ctor() { return new (this) WinInstanceData; }
+    WinInstanceData *Hook_Ctor();
 #endif
 
 public:

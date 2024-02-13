@@ -655,3 +655,15 @@ void Utf8String::Debug_Ignore_Leaks()
     // TODO, does not seem to be implemented anywhere? It is called though...
 }
 #endif // GAME_DEBUG
+
+#ifdef GAME_DLL
+#include <new>
+Utf8String *Utf8String::Hook_Ctor1(const char *s)
+{
+    return new (this) Utf8String(s);
+}
+Utf8String *Utf8String::Hook_Ctor2(Utf8String const &string)
+{
+    return new (this) Utf8String(string);
+}
+#endif // GAME_DLL

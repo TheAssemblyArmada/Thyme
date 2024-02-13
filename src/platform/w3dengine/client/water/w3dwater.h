@@ -86,7 +86,7 @@ public:
     WaterRenderObjClass();
 
 #ifdef GAME_DLL
-    WaterRenderObjClass *Hook_Ctor() { return new (this) WaterRenderObjClass(); }
+    WaterRenderObjClass *Hook_Ctor();
 #endif
 
     virtual ~WaterRenderObjClass() override;

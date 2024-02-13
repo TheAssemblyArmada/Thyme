@@ -17,8 +17,9 @@
 #include "unichar.h"
 #include <cstdarg>
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
-#include <new>
+#include <stdint.h>
 #include <strings.h>
 
 // Using STLPort seems to screw up some of the C++11 header inclusions.
@@ -188,9 +189,9 @@ public:
 public:
     static Utf8String const s_emptyString;
 
-#ifdef GAME_DLL // This define is only set when building a hooking DLL.
-    Utf8String *Hook_Ctor1(const char *s) { return new (this) Utf8String(s); }
-    Utf8String *Hook_Ctor2(Utf8String const &string) { return new (this) Utf8String(string); }
+#ifdef GAME_DLL
+    Utf8String *Hook_Ctor1(const char *s);
+    Utf8String *Hook_Ctor2(Utf8String const &string);
 #endif
 
 protected:

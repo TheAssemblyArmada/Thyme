@@ -14,6 +14,7 @@
  */
 #include "xfercrc.h"
 #include "endiantype.h"
+#include "snapshot.h"
 
 // \brief Adds val to rotl m_crc
 void XferCRC::Add_CRC(uint32_t val)

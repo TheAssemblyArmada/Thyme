@@ -15,18 +15,27 @@
 #pragma once
 
 #include "asciistring.h"
-#include "color.h"
-#include "coord.h"
 #include "gametype.h"
 #include "kindof.h"
-#include "matrix3d.h"
 #include "science.h"
-#include "snapshot.h"
-#include "unicodestring.h"
 #include <list>
 #include <vector>
 
 template<int bits> class BitFlags;
+class Coord3D;
+class Coord2D;
+class ICoord2D;
+class ICoord3D;
+class IRegion2D;
+class IRegion3D;
+class Matrix3D;
+class Region2D;
+class Region3D;
+class RGBColor;
+class RGBAColorReal;
+class RGBAColorInt;
+class Utf16String;
+class SnapShot;
 
 struct RealRange
 {

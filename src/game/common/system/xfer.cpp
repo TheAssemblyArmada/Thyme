@@ -12,8 +12,8 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "xfer.h"
 #include "bitflags.h"
+#include "color.h"
 #include "endiantype.h"
 #include "gamestate.h"
 #include "matrix3d.h"

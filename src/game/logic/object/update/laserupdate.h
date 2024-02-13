@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "clientupdatemodule.h"
+#include "coord.h"
 #include "particlesysmanager.h"
 
 class LaserUpdateModuleData : public ModuleData

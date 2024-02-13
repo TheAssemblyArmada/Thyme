@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "asciistring.h"
 #include "bitflags.h"
 #include "ini.h"
 #include "mempoolobj.h"

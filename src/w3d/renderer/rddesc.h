@@ -19,10 +19,6 @@
 #include "w3dtypes.h"
 #include "wwstring.h"
 
-#ifdef BUILD_WITH_D3D8
-#include <d3d8.h>
-#endif
-
 class ResolutionDescClass
 {
 public:

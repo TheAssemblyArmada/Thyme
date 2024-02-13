@@ -15,7 +15,6 @@
 #pragma once
 
 #include "always.h"
-#include "asciistring.h"
 #include "bitflags.h"
 #include "gametype.h"
 #include "rtsutils.h"

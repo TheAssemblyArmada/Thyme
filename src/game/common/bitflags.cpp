@@ -186,6 +186,3 @@ const char *BitFlags<MODELCONDITION_COUNT>::s_bitNamesList[] = {
     "DISGUISED",
     nullptr,
 };
-
-// TODO Temp to force instantiation. Fixes issue with Parameter::Read_Parameter.
-// template class BitFlags<KIND_OF_COUNT>;

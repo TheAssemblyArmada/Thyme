@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "gamemain.h"
-#include "bitflags.h"
 #include "disabledtypes.h"
 #include "main.h"
 #include "win32gameengine.h"

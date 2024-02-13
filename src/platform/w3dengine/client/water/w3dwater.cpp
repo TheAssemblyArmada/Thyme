@@ -2419,3 +2419,11 @@ void WaterRenderObjClass::Setup_Jba_Water_Shader()
     }
 #endif
 }
+
+#ifdef GAME_DLL
+#include <new>
+WaterRenderObjClass *WaterRenderObjClass::Hook_Ctor()
+{
+    return new (this) WaterRenderObjClass();
+}
+#endif

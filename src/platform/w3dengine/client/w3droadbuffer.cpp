@@ -2709,3 +2709,15 @@ void W3DRoadBuffer::Insert_Curve_Segment_At(int ndx1, int ndx2)
         }
     }
 }
+
+#ifdef GAME_DLL
+#include <new>
+W3DRoadBuffer *W3DRoadBuffer::Hook_Ctor()
+{
+    return new (this) W3DRoadBuffer();
+}
+void W3DRoadBuffer::Hook_Dtor()
+{
+    W3DRoadBuffer::~W3DRoadBuffer();
+}
+#endif

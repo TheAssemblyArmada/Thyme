@@ -187,3 +187,11 @@ WinInstanceData &WinInstanceData::operator=(const WinInstanceData &that)
 
     return *this;
 }
+
+#ifdef GAME_DLL
+#include <new>
+WinInstanceData *WinInstanceData::Hook_Ctor()
+{
+    return new (this) WinInstanceData;
+}
+#endif

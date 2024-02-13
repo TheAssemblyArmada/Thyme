@@ -19,13 +19,10 @@
 #include "config.h"
 #include "targetver.h"
 
-#include "bittype.h"
 #include "compiler.h"
-#include "macros.h"
 #include "platform.h"
 #include "stringex.h"
 #include "typeoperators.h"
-#include "unichar.h"
 
 #ifdef PLATFORM_WINDOWS
 #include <windef.h>

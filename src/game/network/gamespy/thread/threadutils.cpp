@@ -13,6 +13,9 @@
  *            LICENSE
  */
 #include "threadutils.h"
+#if defined PLATFORM_WINDOWS
+#include <utf.h>
+#endif
 
 std::wstring MultiByteToWideCharSingleLine(const char *orig)
 {

@@ -18,6 +18,9 @@
 #include "ini.h"
 #include "namekeygenerator.h"
 #include <stdio.h>
+#if defined PLATFORM_WINDOWS
+#include <utf.h>
+#endif
 
 #ifndef GAME_DLL
 ImageCollection *g_theMappedImageCollection = nullptr;

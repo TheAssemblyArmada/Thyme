@@ -18,6 +18,9 @@
 #include "memdynalloc.h"
 #include <captainslog.h>
 #include <stdio.h>
+#if defined PLATFORM_WINDOWS
+#include <utf.h>
+#endif
 
 #if !defined BUILD_WITH_ICU && defined PLATFORM_WINDOWS
 #include <wctype.h>

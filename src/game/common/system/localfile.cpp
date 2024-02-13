@@ -27,6 +27,7 @@
 #define O_BINARY 0
 #elif defined PLATFORM_WINDOWS
 #include <io.h>
+#include <utf.h>
 // Wraps the wide string call with an adapter from utf8.
 #undef open
 #define open(filename, oflags, ...) _wopen(UTF8To16(filename), oflags, ##__VA_ARGS__)

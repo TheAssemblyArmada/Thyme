@@ -20,6 +20,7 @@
 #ifdef PLATFORM_WINDOWS
 #include <direct.h>
 #include <io.h>
+#include <utf.h>
 #else
 #include <dirent.h>
 #include <sys/stat.h>

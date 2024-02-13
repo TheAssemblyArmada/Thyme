@@ -14,8 +14,8 @@
  */
 #pragma once
 
-#include "always.h"
 #include "critsection.h"
+#include "unichar.h"
 #include <cstdarg>
 #include <cstddef>
 

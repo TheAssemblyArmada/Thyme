@@ -131,8 +131,16 @@ void captainslog_free_varg_str(char *str);
 #if __has_builtin(__builtin_debugtrap)
 #define captainslog_debugtrap __builtin_debugtrap
 #elif defined _WIN32 && !defined __WATCOMC__
-#include <intrin.h>
-#define captainslog_debugtrap __debugbreak
+# if defined(_M_IX86)
+// Avoids including <intrin.h> for faster compilation in MSVC.
+trap_inline void captainslog_debugtrap(void)
+{
+    __asm int 3
+}
+# else
+#  include <intrin.h>
+#  define captainslog_debugtrap __debugbreak
+# endif
 /* If we have GCC or compiler that tries to be compatible, use GCC inline assembly. */
 #elif defined __GNUC__ || defined __clang__
 #if defined(__i386__) || defined(__x86_64__)

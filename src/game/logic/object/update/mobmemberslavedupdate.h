@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "color.h"
 #include "updatemodule.h"
 
 class MobMemberSlavedUpdate : public UpdateModule, public SlavedUpdateInterface

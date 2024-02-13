@@ -15,6 +15,7 @@
 #include "objectdefectionhelper.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
+#include "color.h"
 #include "drawable.h"
 #include "gamelogic.h"
 

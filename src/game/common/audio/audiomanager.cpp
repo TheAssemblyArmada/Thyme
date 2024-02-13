@@ -16,6 +16,7 @@
 #include "filesystem.h"
 #include "gamemusic.h"
 #include "gamesounds.h"
+#include "matrix3d.h"
 #include "terrainlogic.h"
 #include "w3dview.h"
 #include <algorithm>

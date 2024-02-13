@@ -14,6 +14,8 @@
  */
 #ifndef BASE_UNICHAR_H
 #define BASE_UNICHAR_H
+
+#include "macros.h"
 #include <wchar.h>
 
 #ifdef U_CHAR

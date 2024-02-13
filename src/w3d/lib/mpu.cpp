@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "mpu.h"
+#include "intrinsics.h"
 
 unsigned long Get_CPU_Clock(unsigned long &high)
 {

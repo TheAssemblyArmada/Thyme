@@ -15,6 +15,9 @@
 #include "rcfile.h"
 
 #ifdef PLATFORM_WINDOWS
+
+#include <cstdlib>
+
 RCFileClass::RCFileClass(HMODULE module, const char *name) :
     m_name(nullptr), m_unk(0), m_startPointer(nullptr), m_currentPointer(nullptr), m_endPointer(nullptr)
 {
@@ -104,4 +107,5 @@ off_t RCFileClass::Seek(off_t offset, int whence)
 
     return m_currentPointer - m_startPointer;
 }
+
 #endif

@@ -554,10 +554,10 @@ Utf8String AudioManager::Prev_Track_Name(Utf8String track) const
  */
 void AudioManager::Lose_Focus()
 {
-    // BUGFIX clean up the memory leak
-    // WB debug printed when it occured but didn't clean up
     if (m_savedVolumes != nullptr) {
         captainslog_warn("deleting m_savedVolumes to prevent leaking memory!");
+        // #BUGFIX clean up the memory leak
+        // WB debug printed when it occurred but didn't clean up
         delete[] m_savedVolumes;
     }
 
@@ -565,7 +565,7 @@ void AudioManager::Lose_Focus()
     m_savedVolumes[0] = m_initialMusicVolume;
     m_savedVolumes[1] = m_initialSoundVolume;
     m_savedVolumes[2] = m_initial3DSoundVolume;
-    m_savedVolumes[3] = m_initialMusicVolume;
+    m_savedVolumes[3] = m_initialSpeechVolume;
     Set_Volume(0.0f, AUDIOAFFECT_MUSIC | AUDIOAFFECT_SOUND | AUDIOAFFECT_3DSOUND | AUDIOAFFECT_SPEECH | AUDIOAFFECT_BASEVOL);
 }
 

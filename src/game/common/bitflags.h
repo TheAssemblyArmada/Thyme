@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "asciistring.h"
 #include "ini.h"
 #include "xfer.h"

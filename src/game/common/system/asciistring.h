@@ -14,7 +14,7 @@
  */
 #pragma once
 
-#include "unichar.h"
+#include "always.h"
 #include <cstdarg>
 #include <cstddef>
 #include <cstdlib>

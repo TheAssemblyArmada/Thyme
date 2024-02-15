@@ -67,6 +67,7 @@ inline bool AABoxIntersectionTestClass::Cull(const Vector3 &cull_min, const Vect
         return true;
     }
 
+    // #BUGFIX Return a value.
     return false;
 }
 
@@ -89,6 +90,7 @@ inline bool AABoxIntersectionTestClass::Cull(const AABoxClass &cull_box)
         return true;
     }
 
+    // #BUGFIX Return a value.
     return false;
 }
 

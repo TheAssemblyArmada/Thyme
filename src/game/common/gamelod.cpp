@@ -240,11 +240,11 @@ StaticGameLODLevel GameLODManager::Find_Static_LOD_Level()
         }
 
         for (int i = STATLOD_HIGH; i >= STATLOD_LOW; --i) {
-            for (int j = 0; j < m_staticLODPresetCount[j]; ++j) {
-                if (m_cpuType == m_LODPresets[i][j].cpu_type) {
-                    if ((double)m_cpuMHz / (double)m_LODPresets[i][j].mhz >= 0.94
-                        && m_gpuType >= m_LODPresets[i][j].video_type
-                        && (double)(m_physicalMem / 0x100000) / (double)m_LODPresets[i][j].video_mem >= 0.94) {
+            for (int k = 0; k < m_staticLODPresetCount[i]; ++k) {
+                if (m_cpuType == m_LODPresets[i][k].cpu_type) {
+                    if ((double)m_cpuMHz / (double)m_LODPresets[i][k].mhz >= 0.94
+                        && m_gpuType >= m_LODPresets[i][k].video_type
+                        && (double)(m_physicalMem / 0x100000) / (double)m_LODPresets[i][k].video_mem >= 0.94) {
                         m_idealStaticGameDetail = (StaticGameLODLevel)i;
                         break;
                     }

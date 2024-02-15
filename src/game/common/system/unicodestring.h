@@ -171,11 +171,11 @@ public:
 
     friend bool operator<(Utf16String const &left, Utf16String const &right) { return left.Compare(right) < 0; }
     friend bool operator<(Utf16String const &left, const unichar_t *right) { return left.Compare(right) < 0; }
-    friend bool operator<(const unichar_t *left, Utf16String const &right) { return right.Compare(left) < 0; }
+    friend bool operator<(const unichar_t *left, Utf16String const &right) { return !(right.Compare(left) < 0); }
 
     friend bool operator>(Utf16String const &left, Utf16String const &right) { return left.Compare(right) > 0; }
     friend bool operator>(Utf16String const &left, const unichar_t *right) { return left.Compare(right) > 0; }
-    friend bool operator>(const unichar_t *left, Utf16String const &right) { return right.Compare(left) > 0; }
+    friend bool operator>(const unichar_t *left, Utf16String const &right) { return !(right.Compare(left) > 0); }
 
 public:
     static Utf16String const s_emptyString;

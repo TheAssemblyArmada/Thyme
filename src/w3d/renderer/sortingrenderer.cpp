@@ -564,7 +564,7 @@ void SortingRendererClass::Deinit()
 
     while (g_cleanList.Head() != nullptr) {
         auto head = g_cleanList.Head();
-        g_sortedList.Remove_Head();
+        g_cleanList.Remove_Head();
         delete head;
     }
 

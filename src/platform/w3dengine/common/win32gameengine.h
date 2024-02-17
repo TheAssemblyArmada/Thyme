@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "gameengine.h"
 
 class Win32GameEngine : public GameEngine

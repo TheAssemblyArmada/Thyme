@@ -15,6 +15,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "localfile.h"
 #include <cstdio>
 

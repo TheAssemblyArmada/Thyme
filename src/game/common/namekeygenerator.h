@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "asciistring.h"
 #include "bittype.h"
 #include "ini.h"

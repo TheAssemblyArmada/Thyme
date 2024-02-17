@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "file.h"
 #include "rtsutils.h"
 #include "subsysteminterface.h"

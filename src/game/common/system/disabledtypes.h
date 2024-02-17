@@ -14,6 +14,8 @@
  */
 #pragma once
 
+#include "always.h"
+
 template<int> class BitFlags;
 
 enum DisabledType

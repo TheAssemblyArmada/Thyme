@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "archivefilesystem.h"
 
 class Win32BIGFileSystem : public ArchiveFileSystem

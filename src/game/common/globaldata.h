@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "asciistring.h"
 #include "color.h"
 #include "coord.h"

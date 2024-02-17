@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "asciistring.h"
 #include "coord.h"
 #include "gametype.h"

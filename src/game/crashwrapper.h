@@ -14,6 +14,8 @@
  */
 #pragma once
 
+#include "always.h"
+
 class CrashPreferences;
 
 class CrashPrefWrapper

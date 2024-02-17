@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "part_buf.h"
 #include "quat.h"
 #include "random.h"

@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "critsection.h"
 #include "wwfile.h"
 #include "wwstring.h"

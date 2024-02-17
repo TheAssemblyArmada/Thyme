@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "gametype.h"
 #include "mempoolobj.h"
 #include "snapshot.h"

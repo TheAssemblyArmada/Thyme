@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "player.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"

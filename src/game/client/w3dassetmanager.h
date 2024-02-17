@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "asciistring.h"
 #include "assetmgr.h"
 #include "mempoolobj.h"

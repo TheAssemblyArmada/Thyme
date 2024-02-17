@@ -65,10 +65,10 @@ bool Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String &d
     bool success = getStringFromReg(HKEY_LOCAL_MACHINE, key, value, destination);
 
     if (!success) {
-        return getStringFromReg(HKEY_CURRENT_USER, key, value, destination);
+        success = getStringFromReg(HKEY_CURRENT_USER, key, value, destination);
     }
 
-    return false;
+    return success;
 #else
     return false;
 #endif
@@ -83,10 +83,10 @@ bool Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8
     bool success = getStringFromReg(HKEY_LOCAL_MACHINE, key, value, destination);
 
     if (!success) {
-        return getStringFromReg(HKEY_CURRENT_USER, key, value, destination);
+        success = getStringFromReg(HKEY_CURRENT_USER, key, value, destination);
     }
 
-    return false;
+    return success;
 #else
     return false;
 #endif

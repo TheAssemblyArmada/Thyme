@@ -12,6 +12,8 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#pragma once
+
 #include "asciistring.h"
 #include "assetmgr.h"
 #include "mempoolobj.h"

@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef THINGTEMPLATE_H
-#define THINGTEMPLATE_H
-
 #include "always.h"
 #include "armortemplateset.h"
 #include "asciistring.h"
@@ -421,5 +418,3 @@ private:
     static const FieldParse s_objectFieldParseTable[];
     static const FieldParse s_objectReskinFieldParseTable[];
 };
-
-#endif // THINGTEMPLATE_H

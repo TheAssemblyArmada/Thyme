@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef WEAPONTEMPLATESET_H
-#define WEAPONTEMPLATESET_H
-
 #include "always.h"
 #include "bitflags.h"
 #include "gametype.h"
@@ -82,5 +79,3 @@ private:
     bool m_shareWeaponReloadTime;
     bool m_weaponLockSharedAcrossSets;
 };
-
-#endif // WEAPONTEMPLATESET_H

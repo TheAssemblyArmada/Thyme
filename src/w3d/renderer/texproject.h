@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "cullsys.h"
 #include "matpass.h"
 #include "matrix3d.h"

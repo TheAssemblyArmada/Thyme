@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "particlesysmanager.h"
 #include "sharebuf.h"
 #include "vector3.h"

@@ -14,11 +14,11 @@
  */
 #pragma once
 
-#include "always.h"
 #include "coltype.h"
 #include "matrix3d.h"
 #include "sphere.h"
 #include "vector3.h"
+
 class RenderObjClass;
 
 typedef unsigned short POLYGONINDEX;

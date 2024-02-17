@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "mempoolobj.h"
 #include "script.h"
 #include "scriptgroup.h"

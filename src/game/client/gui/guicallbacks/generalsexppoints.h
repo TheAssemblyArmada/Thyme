@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 WindowMsgHandledType Generals_Exp_Points_Input(

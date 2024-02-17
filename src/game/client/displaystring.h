@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "coord.h"
 #include "gamefont.h"
 #include "mempoolobj.h"

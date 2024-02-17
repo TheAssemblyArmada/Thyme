@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "aigroup.h"
 #include "actionmanager.h"
 #include "ai.h"

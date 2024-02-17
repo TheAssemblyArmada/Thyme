@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dcheckbox.h"
 
 void W3D_Gadget_Check_Box_Draw(GameWindow *check_box, WinInstanceData *data)

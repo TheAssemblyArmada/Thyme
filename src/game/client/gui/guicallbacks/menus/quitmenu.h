@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
 
 void Hide_Quit_Menu();
 void Toggle_Quit_Menu();

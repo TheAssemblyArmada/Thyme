@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamemessage.h"
 #include "mempoolobj.h"
 #include <new>

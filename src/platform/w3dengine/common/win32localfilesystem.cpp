@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "win32localfilesystem.h"
 #include "standardfile.h"
 #include "win32localfile.h"

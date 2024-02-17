@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include <algorithm>
 #include <captainslog.h>
 #include <cstring>

@@ -13,17 +13,19 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "bitflags.h"
 #include "gametype.h"
 #include "module.h"
 #include "object.h"
+
 class DebrisDrawInterface;
 class TracerDrawInterface;
 class RopeDrawInterface;
 class LaserDrawInterface;
 class Matrix3D;
 class OBBoxClass;
+
 #ifdef GAME_DEBUG_STRUCTS
 class DebugDrawStats
 {

@@ -12,7 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-
+#include "always.h"
 #include "win32mouse.h"
 #include "editmain.h"
 #include "gameclient.h"

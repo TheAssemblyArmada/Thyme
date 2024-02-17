@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Cameo_Movie_Draw(GameWindow *window, WinInstanceData *instance);

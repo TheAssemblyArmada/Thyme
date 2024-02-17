@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "w3dmpo.h"
 
 template<typename T> class DLNodeClass;

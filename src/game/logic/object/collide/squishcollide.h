@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "collidemodule.h"
 
 class SquishCollide : public CollideModule

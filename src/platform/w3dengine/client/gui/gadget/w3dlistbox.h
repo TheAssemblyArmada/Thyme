@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Gadget_List_Box_Draw(GameWindow *list_box, WinInstanceData *data);

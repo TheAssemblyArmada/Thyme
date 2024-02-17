@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "datachunk.h"
 #include "mempoolobj.h"
 #include "scriptparam.h"

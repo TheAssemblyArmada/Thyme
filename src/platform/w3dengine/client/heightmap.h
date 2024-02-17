@@ -14,8 +14,9 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "baseheightmap.h"
+
 class W3DDynamicLight;
 
 class HeightMapRenderObjClass : public BaseHeightMapRenderObjClass

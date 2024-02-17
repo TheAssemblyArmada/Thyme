@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "coord.h"
 #include "gametype.h"
 #include "snapshot.h"

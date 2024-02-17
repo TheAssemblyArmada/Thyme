@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "localfile.h"
 #include "ramfile.h"
 #include <captainslog.h>
@@ -33,16 +34,16 @@
 #define open(filename, oflags, ...) _wopen(UTF8To16(filename), oflags, ##__VA_ARGS__)
 
 // Make lseek 64bit on windows to match other platforms behaviour?
-//#ifdef lseek
+// #ifdef lseek
 //    #undef lseek
-//#endif
+// #endif
 
-//#ifdef off_t
-//    #undef off_t
-//#endif
+// #ifdef off_t
+//     #undef off_t
+// #endif
 
-//#define lseek _lseeki64
-// typedef __int64 off_t;
+// #define lseek _lseeki64
+//  typedef __int64 off_t;
 #else
 #error Headers for posix IO needed in localfile.cpp
 #endif

@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "drawmodule.h"
 
 class SegmentedLineClass;

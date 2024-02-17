@@ -13,6 +13,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "mapper.h"
 #include "dx8wrapper.h"
 #include "gamemath.h"

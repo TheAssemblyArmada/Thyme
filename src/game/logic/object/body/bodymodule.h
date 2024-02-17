@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "armortemplateset.h"
 #include "gametype.h"
 #include "object.h"

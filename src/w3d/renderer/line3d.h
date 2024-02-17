@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "rendobj.h"
 #include "shader.h"
 #include "w3dmpo.h"

@@ -12,14 +12,14 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-
+#include "always.h"
+#include "ffmpegaudiofilecache.h"
 extern "C" {
 #include <libavcodec/avcodec.h>
 }
 
 #include "audioeventrts.h"
 #include "audiomanager.h"
-#include "ffmpegaudiofilecache.h"
 #include "filesystem.h"
 #include <captainslog.h>
 #include <list>

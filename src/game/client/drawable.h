@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "anim2d.h"
 #include "module.h"
 #include "object.h"

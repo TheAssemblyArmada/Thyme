@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "bittype.h"
 #include "colmath.h"
 #include "meshgeometry.h"

@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "ini.h"
 #include "ai.h"
 #include "anim2d.h"

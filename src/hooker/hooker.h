@@ -26,7 +26,6 @@
 #error This file must not be compiled into standalone binary
 #endif
 
-#include "always.h"
 #include <memoryapi.h>
 #include <processthreadsapi.h>
 

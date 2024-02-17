@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gametype.h"
 #include "vector3.h"
 #include <new>

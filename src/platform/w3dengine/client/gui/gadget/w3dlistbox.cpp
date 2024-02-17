@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dlistbox.h"
 
 void W3D_Gadget_List_Box_Draw(GameWindow *list_box, WinInstanceData *data)

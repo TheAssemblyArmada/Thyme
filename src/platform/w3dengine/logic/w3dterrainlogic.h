@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "terrainlogic.h"
 
 class W3DTerrainLogic : public TerrainLogic

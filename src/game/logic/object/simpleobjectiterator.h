@@ -13,9 +13,10 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "mempoolobj.h"
 #include "partitionmanager.h"
+
 class Object;
 
 class ObjectIterator : public MemoryPoolObject

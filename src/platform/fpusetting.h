@@ -14,6 +14,4 @@
  */
 #pragma once
 
-#include "always.h"
-
 void Set_FP_Mode();

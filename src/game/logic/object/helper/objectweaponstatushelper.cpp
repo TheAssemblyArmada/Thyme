@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "objectweaponstatushelper.h"
 
 ObjectWeaponStatusHelper::ObjectWeaponStatusHelper(Thing *thing, const ModuleData *module_data) :

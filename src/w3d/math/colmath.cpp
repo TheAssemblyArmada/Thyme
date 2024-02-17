@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "colmath.h"
 
 const float CollisionMath::COINCIDENCE_EPSILON = .000001f;

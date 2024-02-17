@@ -1,3 +1,19 @@
+/**
+ * @file
+ *
+ * @author feliwir
+ *
+ * @brief Video stream implementation using FFmpeg.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#include "always.h"
+#include "ffmpegvideostream.h"
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
@@ -5,7 +21,6 @@ extern "C" {
 
 #include "ffmpegfile.h"
 #include "ffmpegvideoplayer.h"
-#include "ffmpegvideostream.h"
 #include "videobuffer.h"
 
 #ifdef BUILD_WITH_OPENAL

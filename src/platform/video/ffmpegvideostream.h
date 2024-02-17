@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "videostream.h"
 
 struct AVFrame;
@@ -22,6 +21,7 @@ struct SwsContext;
 
 namespace Thyme
 {
+class ALAudioStream;
 class FFmpegFile;
 class FFmpegVideoStream final : public VideoStream
 {

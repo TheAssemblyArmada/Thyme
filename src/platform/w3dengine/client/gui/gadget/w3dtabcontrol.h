@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Gadget_Tab_Control_Draw(GameWindow *tab_control, WinInstanceData *data);

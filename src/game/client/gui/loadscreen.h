@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 class GameWindow;
 class GameInfo;
 

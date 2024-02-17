@@ -12,7 +12,6 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-
 #include "always.h"
 #include "scorekeeper.h"
 #include "gamelogic.h"

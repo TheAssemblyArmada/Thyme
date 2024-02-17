@@ -18,7 +18,6 @@
 #error Only include sdl2keybd.h when building with SDL2
 #endif
 
-#include "always.h"
 #include "keyboard.h"
 #include <new>
 

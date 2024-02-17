@@ -13,8 +13,9 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "object.h"
+
 class OpenContain;
 class Player;
 

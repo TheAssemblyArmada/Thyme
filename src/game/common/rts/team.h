@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "aiupdate.h"
 #include "bitflags.h"
 #include "coord.h"

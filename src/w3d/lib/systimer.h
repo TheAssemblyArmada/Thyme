@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>
 #else

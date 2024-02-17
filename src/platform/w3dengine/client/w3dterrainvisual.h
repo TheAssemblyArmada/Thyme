@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "terrainvisual.h"
 
 class BaseHeightMapRenderObjClass;

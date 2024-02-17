@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "createmodule.h"
 
 class VeterancyGainCreateModuleData : public CreateModuleData

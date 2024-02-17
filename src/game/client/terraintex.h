@@ -14,9 +14,9 @@
  */
 #pragma once
 
-#include "always.h"
 #include "asciistring.h"
 #include "texture.h"
+
 class WorldHeightMap;
 
 class TerrainTextureClass : public TextureClass

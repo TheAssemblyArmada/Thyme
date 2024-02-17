@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gameinfo.h"
 #include "gametype.h"
 #include "subsysteminterface.h"

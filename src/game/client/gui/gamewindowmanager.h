@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "gamewindow.h"
 #include "subsysteminterface.h"
 #include "wininstancedata.h"

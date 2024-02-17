@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "sdl2keybd.h"
 #include "main.h"
 #include <captainslog.h>

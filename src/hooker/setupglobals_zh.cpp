@@ -2,6 +2,7 @@
 #error This file must not be compiled into standalone binary
 #endif
 
+#include "always.h"
 #include "hooker.h"
 #include "view.h"
 

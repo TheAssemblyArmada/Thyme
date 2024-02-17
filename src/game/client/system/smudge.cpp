@@ -12,7 +12,9 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "smudge.h"
+
 DLListClass<Smudge> SmudgeSet::s_freeSmudgeList;
 
 SmudgeSet::SmudgeSet() : m_smudgeCount(0) {}

@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "matrix3d.h"
 #include "vector3.h"
 

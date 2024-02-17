@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "lightenv.h"
 #include "scene.h"
 #include "shadermanager.h"

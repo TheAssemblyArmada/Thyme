@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "commandxlat.h"
 
 void Pick_And_Play_Unit_Voice_Response(

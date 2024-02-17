@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "colmath.h"
 #include "frustum.h"
 #include "matrix4.h"

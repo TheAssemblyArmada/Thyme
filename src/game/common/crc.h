@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "array.h"
 #include "bittype.h"
 

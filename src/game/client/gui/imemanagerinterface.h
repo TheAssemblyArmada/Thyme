@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "subsysteminterface.h"
 
 class GameWindow;

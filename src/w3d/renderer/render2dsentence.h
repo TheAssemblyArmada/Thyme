@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "rect.h"
 #include "refcount.h"
 #include "shader.h"

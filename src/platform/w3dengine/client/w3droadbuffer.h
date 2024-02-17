@@ -13,11 +13,12 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "asciistring.h"
 #include "multilist.h"
 #include "sphere.h"
 #include "vector2.h"
+
 class TextureClass;
 class DX8VertexBufferClass;
 class DX8IndexBufferClass;

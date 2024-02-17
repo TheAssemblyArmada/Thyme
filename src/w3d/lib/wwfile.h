@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #ifdef PLATFORM_WINDOWS
 #include <Windows.h>
 #endif

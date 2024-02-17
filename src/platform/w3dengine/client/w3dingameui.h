@@ -13,8 +13,9 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "ingameui.h"
+
 class RenderObjClass;
 class HAnimClass;
 

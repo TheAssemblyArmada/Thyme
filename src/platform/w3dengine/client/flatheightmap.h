@@ -13,8 +13,9 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "baseheightmap.h"
+
 class W3DTerrainBackground;
 
 class FlatHeightMapRenderObjClass : public BaseHeightMapRenderObjClass

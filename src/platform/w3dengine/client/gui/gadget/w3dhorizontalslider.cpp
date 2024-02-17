@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dslider.h"
 
 void W3D_Gadget_Horizontal_Slider_Draw(GameWindow *slider, WinInstanceData *data)

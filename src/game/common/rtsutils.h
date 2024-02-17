@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "asciistring.h"
 #include "endiantype.h"
 #include "rtsutilsw3d.h"

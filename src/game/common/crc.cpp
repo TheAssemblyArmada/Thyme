@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "crc.h"
 
 void CRC::Add_CRC(uint8_t byte)

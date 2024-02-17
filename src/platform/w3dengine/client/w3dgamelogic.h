@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamelogic.h"
 
 class W3DGameLogic : public GameLogic

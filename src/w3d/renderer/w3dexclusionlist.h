@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "hashtemplate.h"
 #include "vector.h"
 #include "wwstring.h"

@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "coord.h"
 #include "globaldata.h"
 #include "matrix3d.h"

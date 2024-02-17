@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "matpass.h"
 #include "texture.h"
 #include "w3dtypes.h"

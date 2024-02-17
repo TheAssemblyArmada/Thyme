@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "asciistring.h"
 #include "money.h"
 #include "unicodestring.h"

@@ -13,10 +13,11 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "quat.h"
 #include "w3d_file.h"
 #include "w3dmpo.h"
+
 class ChunkLoadClass;
 
 class MotionChannelClass : public W3DMPO

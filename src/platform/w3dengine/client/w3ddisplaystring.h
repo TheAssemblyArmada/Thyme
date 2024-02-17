@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "displaystring.h"
 #include "render2dsentence.h"
 

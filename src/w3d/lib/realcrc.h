@@ -14,8 +14,8 @@
  */
 #pragma once
 
-#include "always.h"
 #include "array.h"
+
 uint32_t CRC_Memory(void const *data, size_t bytes, uint32_t crc);
 uint32_t CRC_String(const char *string, uint32_t crc);
 uint32_t CRC_Stringi(const char *string, uint32_t crc);

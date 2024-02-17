@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "buildassistant.h"
 #include "module.h"
 #include "opencontain.h"

@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "dx8wrapper.h"
 #include "gamelod.h"
 #include "texture.h"

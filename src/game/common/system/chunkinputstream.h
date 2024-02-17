@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "inputstream.h"
 
 class ChunkInputStream : public InputStream

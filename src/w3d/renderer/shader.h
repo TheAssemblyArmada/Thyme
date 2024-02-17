@@ -16,8 +16,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 class StringClass;
 struct W3dMaterial3Struct;
 

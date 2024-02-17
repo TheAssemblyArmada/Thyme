@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "vector2.h"
 #include <algorithm>
 

@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "updatemodule.h"
 
 class AssistedTargetingUpdate : public UpdateModule

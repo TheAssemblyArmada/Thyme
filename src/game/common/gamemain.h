@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 void Game_Main(int argc, char *argv[]);
 
 #ifdef GAME_DLL

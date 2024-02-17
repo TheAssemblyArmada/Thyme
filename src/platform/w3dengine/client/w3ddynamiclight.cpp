@@ -12,7 +12,9 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3ddynamiclight.h"
+
 void W3DDynamicLight::On_Frame_Update()
 {
     if (m_enabled) {

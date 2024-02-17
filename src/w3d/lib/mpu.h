@@ -13,5 +13,5 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 unsigned long Get_CPU_Clock(unsigned long &high);

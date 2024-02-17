@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "messagestream.h"
 
 class GUICommandTranslator : public GameMessageTranslator

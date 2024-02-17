@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "w3dmodeldraw.h"
 
 class W3DPropDrawModuleData : public ModuleData

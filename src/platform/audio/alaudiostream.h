@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include <AL/al.h>
 
 #define AL_STREAM_BUFFER_COUNT 32

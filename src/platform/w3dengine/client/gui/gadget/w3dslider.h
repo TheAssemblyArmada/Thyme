@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Gadget_Horizontal_Slider_Draw(GameWindow *slider, WinInstanceData *data);

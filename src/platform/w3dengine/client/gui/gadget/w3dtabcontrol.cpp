@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dtabcontrol.h"
 
 void W3D_Gadget_Tab_Control_Draw(GameWindow *tab_control, WinInstanceData *data)

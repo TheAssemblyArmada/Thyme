@@ -13,8 +13,9 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "dynamesh.h"
+
 class Bitmap2D : public DynamicScreenMeshClass
 {
 public:

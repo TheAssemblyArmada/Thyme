@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "globaldata.h"
 #include "shadermanager.h"
 #ifdef BUILD_WITH_D3D8

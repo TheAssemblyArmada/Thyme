@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "modulefactory.h"
 
 class W3DModuleFactory : public ModuleFactory

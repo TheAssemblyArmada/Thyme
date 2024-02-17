@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "part_emt.h"
 #include "assetmgr.h"
 #include "part_ldr.h"

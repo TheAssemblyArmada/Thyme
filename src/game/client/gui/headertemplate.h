@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamefont.h"
 #include "ini.h"
 #include <list>

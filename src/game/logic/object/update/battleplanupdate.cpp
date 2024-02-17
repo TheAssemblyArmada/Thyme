@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "battleplanupdate.h"
 
 BattlePlanStatus BattlePlanUpdate::Get_Active_Battle_Plan()

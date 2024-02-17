@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "aistates.h"
 #include "damage.h"
 #include "locomotor.h"

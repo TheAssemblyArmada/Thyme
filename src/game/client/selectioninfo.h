@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "view.h"
 
 PickType Get_Pick_Types_For_Context(bool force_to_attack);

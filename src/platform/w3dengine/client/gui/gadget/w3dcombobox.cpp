@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dcombobox.h"
 
 void W3D_Gadget_Combo_Box_Draw(GameWindow *combo_box, WinInstanceData *data)

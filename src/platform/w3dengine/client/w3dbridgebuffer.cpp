@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dbridgebuffer.h"
 #include "assetmgr.h"
 #include "baseheightmap.h"
@@ -28,6 +29,7 @@
 #include "w3dshroud.h"
 #include "w3dterrainlogic.h"
 #include <cstring>
+
 using std::strcat;
 using std::strcpy;
 

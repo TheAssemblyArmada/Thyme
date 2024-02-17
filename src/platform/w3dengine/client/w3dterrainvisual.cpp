@@ -13,6 +13,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dterrainvisual.h"
 #include "cachedfileinputstream.h"
 #include "colorspace.h"

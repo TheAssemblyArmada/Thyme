@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "ffactory.h"
 #include "bufffile.h"
 #include "captainslog.h"

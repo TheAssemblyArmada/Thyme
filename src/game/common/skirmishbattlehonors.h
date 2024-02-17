@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "userpreferences.h"
 
 class SkirmishBattleHonors : public UserPreferences

@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "displaystringmanager.h"
 
 class W3DDisplayStringManager : public DisplayStringManager

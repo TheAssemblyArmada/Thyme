@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "aabox.h"
 #include "rendobj.h"
 #include "shader.h"

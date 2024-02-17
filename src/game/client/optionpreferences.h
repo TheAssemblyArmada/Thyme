@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "asciistring.h"
 #include "gamelod.h"
 #include "userpreferences.h"

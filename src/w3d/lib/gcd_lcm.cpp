@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "gcd_lcm.h"
 
 unsigned int Greatest_Common_Divisor(unsigned int a, unsigned int b)

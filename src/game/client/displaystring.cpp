@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "displaystring.h"
 
 DisplayString::DisplayString() : m_textString(), m_font(nullptr), m_next(nullptr), m_prev(nullptr) {}

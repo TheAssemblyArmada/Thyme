@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dbibbuffer.h"
 #include "dx8indexbuffer.h"
 #include "dx8vertexbuffer.h"

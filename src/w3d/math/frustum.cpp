@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "frustum.h"
 
 void FrustumClass::Init(const Matrix3D &camera, const Vector2 &vpmin, const Vector2 &vpmax, float znear, float zfar)

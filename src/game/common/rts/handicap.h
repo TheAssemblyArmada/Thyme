@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "thingtemplate.h"
 
 class Dict;

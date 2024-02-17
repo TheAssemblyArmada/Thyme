@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 enum CompressionType : int32_t
 {
     COMPRESSION_NONE,

@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
 
 template<class T> class LatchRestore
 {

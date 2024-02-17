@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "aabox.h"
 #include "shader.h"
 #include "sphere.h"

@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "array.h"
 #include <captainslog.h>
 #include <cfloat>
@@ -458,11 +457,11 @@ inline int Float_To_Long(float f)
 // Do we want any double math?
 // inline long Float_To_Long(double f)
 //{
-//#ifdef PROCESSOR_X86
+// #ifdef PROCESSOR_X86
 //    return _mm_cvttsd_si32(_mm_load_pd(&f));
-//#else
+// #else
 //    return (int)(f);
-//#endif
+// #endif
 //}
 
 inline uint8_t Unit_Float_To_Byte(float f)

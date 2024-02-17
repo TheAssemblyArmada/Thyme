@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "asciistring.h"
 #include "mempoolobj.h"
 #include "subsysteminterface.h"

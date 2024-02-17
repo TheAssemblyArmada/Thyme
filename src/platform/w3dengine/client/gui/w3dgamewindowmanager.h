@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindowmanager.h"
 
 class W3DGameWindowManager : public GameWindowManager

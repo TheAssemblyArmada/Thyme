@@ -15,8 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 class RandomClass
 {
 public:

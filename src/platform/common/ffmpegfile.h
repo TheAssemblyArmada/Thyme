@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "filesystem.h"
 
 struct AVFormatContext;

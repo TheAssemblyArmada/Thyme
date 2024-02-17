@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "asciistring.h"
 
 Utf8String Get_Registry_Language();

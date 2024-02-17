@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "bitflags.h"
 #include "buildassistant.h"
 #include "color.h"

@@ -13,6 +13,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "random.h"
 
 RandomClass::RandomClass(unsigned seed) : m_seed(seed) {}

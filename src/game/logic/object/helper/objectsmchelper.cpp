@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "objectsmchelper.h"
 
 ObjectSMCHelper::ObjectSMCHelper(Thing *thing, const ModuleData *module_data) : ObjectHelper(thing, module_data) {}

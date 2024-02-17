@@ -13,6 +13,6 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 int Find_POT(int i);
 unsigned Find_POT_Log2(unsigned i);

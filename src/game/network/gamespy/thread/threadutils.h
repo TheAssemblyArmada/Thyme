@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include <string>
 
 std::wstring MultiByteToWideCharSingleLine(const char *orig);

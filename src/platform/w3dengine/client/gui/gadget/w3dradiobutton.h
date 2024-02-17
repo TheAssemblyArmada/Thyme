@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Gadget_Radio_Button_Draw(GameWindow *radio_button, WinInstanceData *data);

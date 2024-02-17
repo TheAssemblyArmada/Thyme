@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 #ifndef GAME_DLL
 #include <atomic>
 #endif

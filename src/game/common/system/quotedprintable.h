@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "asciistring.h"
 
 Utf8String Ascii_String_To_Quoted_Printable(Utf8String string);

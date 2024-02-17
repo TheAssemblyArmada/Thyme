@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "dx8caps.h"
 #include "dx8indexbuffer.h"
 #include "dx8vertexbuffer.h"

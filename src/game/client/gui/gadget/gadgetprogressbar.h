@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 inline void Gadget_Progress_Bar_Set_Enabled_Left_End_Image(GameWindow *progress_bar, const Image *image)

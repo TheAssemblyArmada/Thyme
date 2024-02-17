@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "endiantype.h"
 #include "wwfile.h"
 

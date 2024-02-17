@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Gadget_Progress_Bar_Draw(GameWindow *progress_bar, WinInstanceData *data);

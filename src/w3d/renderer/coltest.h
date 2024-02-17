@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "aabox.h"
 #include "castres.h"
 #include "colmath.h"

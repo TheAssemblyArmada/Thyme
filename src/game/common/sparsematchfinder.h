@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include <map>
 
 template<typename Type, typename Key> class SparseMatchFinder

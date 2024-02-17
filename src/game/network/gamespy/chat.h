@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif

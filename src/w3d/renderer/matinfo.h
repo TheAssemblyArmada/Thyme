@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "shader.h"
 #include "texture.h"
 #include "vector.h"

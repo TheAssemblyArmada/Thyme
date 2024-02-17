@@ -16,6 +16,7 @@
 #error This file must not be compiled into standalone binary
 #endif
 
+#include "always.h"
 #include "aabtree.h"
 #include "ai.h"
 #include "aigroup.h"

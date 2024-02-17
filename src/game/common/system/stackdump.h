@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "asciistring.h"
 
 #ifdef PLATFORM_WINDOWS

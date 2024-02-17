@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "critsection.h"
 #include "textureloadtasklist.h"
 

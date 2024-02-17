@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "diemodule.h"
 
 class SpecialPowerCompletionDie : public DieModule

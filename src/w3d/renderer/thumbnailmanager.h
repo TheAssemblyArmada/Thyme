@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "dllist.h"
 #include "hashtemplate.h"
 #include "wwstring.h"

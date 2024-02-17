@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "objecthelper.h"
 
 class ObjectWeaponStatusHelperModuleData : public ModuleData

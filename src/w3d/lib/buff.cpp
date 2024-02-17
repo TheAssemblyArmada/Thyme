@@ -12,7 +12,9 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "buff.h"
+
 Buffer::Buffer(void *buffer, long size) : m_bufferPtr(buffer), m_size(size), m_isAllocated(false) {}
 
 Buffer::Buffer(char *buffer, long size) : m_bufferPtr(buffer), m_size(size), m_isAllocated(false) {}

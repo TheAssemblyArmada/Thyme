@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "buildinfo.h"
 #include "dict.h"
 #include "scriptlist.h"

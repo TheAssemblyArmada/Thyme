@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
 
 typedef enum _GPEnum
 {

@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "w3dtankdraw.h"
 
 class W3DOverlordTankDrawModuleData : public W3DTankDrawModuleData

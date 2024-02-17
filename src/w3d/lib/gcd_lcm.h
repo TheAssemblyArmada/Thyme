@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
 
 unsigned int Greatest_Common_Divisor(unsigned int a, unsigned int b);
 unsigned int Least_Common_Multiple(unsigned int a, unsigned int b);

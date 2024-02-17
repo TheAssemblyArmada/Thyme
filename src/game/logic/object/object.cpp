@@ -13,6 +13,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "object.h"
 #include "ai.h"
 #include "aipathfind.h"

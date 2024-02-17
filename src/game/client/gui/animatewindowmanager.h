@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "coord.h"
 #include "mempoolobj.h"
 #include "processanimatewindow.h"

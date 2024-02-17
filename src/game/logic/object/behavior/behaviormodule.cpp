@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "behaviormodule.h"
 
 BehaviorModule::BehaviorModule(Thing *thing, const ModuleData *module_data) : ObjectModule(thing, module_data) {}

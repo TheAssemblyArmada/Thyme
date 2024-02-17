@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 enum TimeOfDayType : int32_t
 {
     TIME_OF_DAY_INVALID = 0,

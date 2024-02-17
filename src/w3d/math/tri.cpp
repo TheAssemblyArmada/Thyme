@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "tri.h"
 
 void TriClass::Find_Dominant_Plane(int *axis1, int *axis2) const

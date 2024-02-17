@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "assetmgr.h"
 #include "display.h"
 #include "shadermanager.h"

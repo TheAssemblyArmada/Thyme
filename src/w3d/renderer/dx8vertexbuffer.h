@@ -14,7 +14,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "dx8fvf.h"
 #include "refcount.h"
 #include "vector2.h"

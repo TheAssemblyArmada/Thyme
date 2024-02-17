@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "upgrademodule.h"
 
 class RadarUpgradeModuleData : public ModuleData

@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "matrix3d.h"
 #include "pivot.h"
 #include "w3dmpo.h"

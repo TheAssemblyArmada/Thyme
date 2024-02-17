@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 
 int MAX_FRAMES_AHEAD = 128;
 int MIN_RUNAHEAD = 10;

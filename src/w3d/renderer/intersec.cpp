@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "intersec.h"
 
 Vector3 IntersectionClass::s_rayLocation(0, 0, 0);

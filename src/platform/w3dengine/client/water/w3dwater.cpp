@@ -13,6 +13,7 @@
  *            LICENSE
  */
 // TODO figure out 0.0625, heightmap scale?
+#include "always.h"
 #include "w3dwater.h"
 #include "baseheightmap.h"
 #include "camera.h"

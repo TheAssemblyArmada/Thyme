@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Gadget_Combo_Box_Draw(GameWindow *combo_box, WinInstanceData *data);

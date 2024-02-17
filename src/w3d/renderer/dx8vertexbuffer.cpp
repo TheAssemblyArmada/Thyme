@@ -13,6 +13,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "dx8vertexbuffer.h"
 #include "dx8caps.h"
 #include "dx8wrapper.h"

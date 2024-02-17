@@ -12,8 +12,10 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "archivefile.h"
 #include "file.h"
+
 bool Search_String_Matches(Utf8String string, Utf8String search);
 
 const ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &filename) const

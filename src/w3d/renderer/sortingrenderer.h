@@ -13,8 +13,9 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "w3dtypes.h"
+
 struct SortingNodeStruct;
 class SphereClass;
 

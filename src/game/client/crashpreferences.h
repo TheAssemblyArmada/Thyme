@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "userpreferences.h"
 
 class CrashPreferences : public UserPreferences

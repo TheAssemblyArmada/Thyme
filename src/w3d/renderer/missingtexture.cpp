@@ -13,6 +13,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "missingtexture.h"
 #include "dx8wrapper.h"
 #include "w3dformat.h"

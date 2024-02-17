@@ -12,7 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-
+#include "always.h"
 #include "snow.h"
 
 #ifndef GAME_DLL

@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "w3dformat.h"
 
 class Vector3;

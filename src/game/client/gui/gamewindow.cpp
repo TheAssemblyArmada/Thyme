@@ -12,7 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-
+#include "always.h"
 #include "gamewindow.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"

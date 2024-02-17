@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 #ifdef BUILD_WITH_D3D8
 #include <d3d8.h>
 #include <d3d8types.h>

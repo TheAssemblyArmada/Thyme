@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "tiledata.h"
 
 void TileData::Do_Mip(unsigned char *hi_res, int hi_row, unsigned char *lo_res)

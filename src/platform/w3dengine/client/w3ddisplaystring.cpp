@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3ddisplaystring.h"
 #include "gameclient.h"
 #include "globallanguage.h"

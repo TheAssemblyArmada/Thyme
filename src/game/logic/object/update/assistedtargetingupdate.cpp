@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "assistedtargetingupdate.h"
 
 bool AssistedTargetingUpdate::Is_Free_To_Assist() const

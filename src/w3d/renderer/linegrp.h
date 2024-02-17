@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "shader.h"
 #include "sharebuf.h"
 #include "vector3.h"

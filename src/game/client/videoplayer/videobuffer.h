@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "rect.h"
 #include "w3dformat.h"
 

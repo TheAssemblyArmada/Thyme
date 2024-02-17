@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "hanim.h"
 #include "motchan.h"
 #include "w3d_file.h"

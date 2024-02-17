@@ -14,8 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 struct PoolInitRec
 {
     const char *pool_name;

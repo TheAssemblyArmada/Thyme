@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "updatemodule.h"
 
 class DockUpdate : public UpdateModule, public DockUpdateInterface

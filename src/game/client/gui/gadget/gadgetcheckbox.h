@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 inline void Gadget_Check_Box_Set_Enabled_Image(GameWindow *check_box, const Image *image)

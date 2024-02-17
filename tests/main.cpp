@@ -1,3 +1,4 @@
+#include <always.h>
 #include <captainslog.h>
 #include <gtest/gtest.h>
 #include <iostream>

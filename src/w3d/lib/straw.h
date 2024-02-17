@@ -15,8 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
-
 enum StrawControl
 {
     STRAW_DECODE = 1,

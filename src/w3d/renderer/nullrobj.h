@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "proto.h"
 #include "rendobj.h"
 #include "w3d_file.h"

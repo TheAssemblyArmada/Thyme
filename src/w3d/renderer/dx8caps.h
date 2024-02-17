@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "w3dformat.h"
 #include "w3dtypes.h"
 #include "wwstring.h"

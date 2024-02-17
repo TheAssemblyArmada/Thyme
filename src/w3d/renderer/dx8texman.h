@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "multilist.h"
 #include "texturebase.h"
 #include "w3dformat.h"

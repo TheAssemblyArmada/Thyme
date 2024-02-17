@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "gamewindow.h"
 
 void W3D_Gadget_Text_Entry_Draw(GameWindow *text_entry, WinInstanceData *data);

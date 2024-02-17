@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "color.h"
 #include "coord.h"
 #include "displaystring.h"

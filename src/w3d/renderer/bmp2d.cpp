@@ -12,8 +12,10 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "bmp2d.h"
 #include "pot.h"
+
 Bitmap2D::Bitmap2D(
     TextureClass *texture, float x, float y, bool adjust_xy, bool additive, bool create_material, bool opaque) :
     DynamicScreenMeshClass(2, 4, 1.0f)

@@ -13,6 +13,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "render2d.h"
 #include "assetmgr.h"
 #include "dx8indexbuffer.h"

@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "toppleupdate.h"
 
 bool ToppleUpdate::Is_Able_To_Be_Toppled() const

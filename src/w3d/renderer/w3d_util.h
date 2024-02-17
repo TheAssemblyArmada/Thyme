@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
 
 struct IOVector3Struct;
 class ShaderClass;

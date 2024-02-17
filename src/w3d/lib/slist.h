@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "autopool.h"
 
 template<typename T> class SList;

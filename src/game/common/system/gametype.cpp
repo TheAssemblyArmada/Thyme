@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "gametype.h"
 
 const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1] = {

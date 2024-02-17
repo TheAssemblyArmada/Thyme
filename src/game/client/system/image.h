@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "coord.h"
 #include "ini.h"
 #include "mempoolobj.h"

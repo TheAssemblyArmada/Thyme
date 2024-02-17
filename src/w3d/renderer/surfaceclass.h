@@ -16,7 +16,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "refcount.h"
 #include "w3dformat.h"
 #include "w3dmpo.h"

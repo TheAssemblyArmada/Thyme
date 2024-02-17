@@ -14,6 +14,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "gamemath.h"
 #ifdef GAME_DLL
 #include "hooker.h"

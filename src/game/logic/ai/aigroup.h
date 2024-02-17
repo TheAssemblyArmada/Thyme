@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "aiupdate.h"
 #include "controlbar.h"
 #include "gametype.h"

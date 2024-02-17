@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "wwfile.h"
 
 #ifdef PLATFORM_WINDOWS

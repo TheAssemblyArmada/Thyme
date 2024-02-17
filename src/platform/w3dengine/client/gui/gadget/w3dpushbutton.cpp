@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dpushbutton.h"
 
 void W3D_Gadget_Push_Button_Draw(GameWindow *push_button, WinInstanceData *data)

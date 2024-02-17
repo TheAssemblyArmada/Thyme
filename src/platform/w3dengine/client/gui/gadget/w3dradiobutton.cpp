@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "w3dradiobutton.h"
 
 void W3D_Gadget_Radio_Button_Draw(GameWindow *radio_button, WinInstanceData *data)

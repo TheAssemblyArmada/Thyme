@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "w3dtruckdraw.h"
 
 class W3DDynamicLight;

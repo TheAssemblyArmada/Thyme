@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "aabtree.h"
 #include "aabtreebuilder.h"
 #include "camera.h"

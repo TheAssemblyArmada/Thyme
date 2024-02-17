@@ -14,7 +14,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "gamemath.h"
 
 using GameMath::Sqrt;

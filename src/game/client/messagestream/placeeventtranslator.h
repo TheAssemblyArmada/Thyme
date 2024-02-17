@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+
 #include "messagestream.h"
 
 class PlaceEventTranslator : public GameMessageTranslator

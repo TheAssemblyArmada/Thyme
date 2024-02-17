@@ -14,6 +14,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "textureloadtask.h"
 #include "bitmaphandler.h"
 #include "ddsfile.h"

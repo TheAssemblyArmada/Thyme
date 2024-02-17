@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "always.h"
 #include "rawfile.h"
 #include <captainslog.h>
 #include <cerrno>
@@ -27,16 +28,16 @@
 #include <io.h>
 #include <winbase.h>
 // Make lseek 64bit on windows to match other platforms behaviour?
-//#ifdef lseek
+// #ifdef lseek
 //    #undef lseek
-//#endif
+// #endif
 
-//#ifdef off_t
-//    #undef off_t
-//#endif
+// #ifdef off_t
+//     #undef off_t
+// #endif
 
-//#define lseek _lseeki64
-// typedef __int64 off_t;
+// #define lseek _lseeki64
+//  typedef __int64 off_t;
 #endif
 
 #ifdef HAVE_UNISTD_H

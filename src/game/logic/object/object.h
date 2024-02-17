@@ -15,7 +15,6 @@
  */
 #pragma once
 
-#include "always.h"
 #include "armortemplateset.h"
 #include "bitflags.h"
 #include "disabledtypes.h"

@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef ARMORTEMPLATESET_H
-#define ARMORTEMPLATESET_H
-
 #include "always.h"
 #include "bitflags.h"
 #include "ini.h"
@@ -54,5 +51,3 @@ private:
     ArmorTemplate *m_template;
     DamageFX *m_fx;
 };
-
-#endif // ARMORTEMPLATESET_H

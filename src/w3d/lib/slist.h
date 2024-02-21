@@ -12,8 +12,11 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#pragma once
+
 #include "always.h"
 #include "autopool.h"
+
 template<typename T> class SList;
 
 class GenericSLNode : public AutoPoolClass<GenericSLNode, 256>

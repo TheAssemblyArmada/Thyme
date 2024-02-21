@@ -12,7 +12,10 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#pragma once
+
 #include "w3dafx.h"
+
 void DrawSunkenRect(BYTE *bits, RECT *rect, int stride);
 void DrawRaisedRect(BYTE *bits, RECT *rect, int stride);
 void DrawOutlinedRect(BYTE *bits, RECT *rect, int color, int stride);

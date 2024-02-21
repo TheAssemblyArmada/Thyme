@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef PRODUCTIONPREREQUISITE_H
-#define PRODUCTIONPREREQUISITE_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "science.h"
@@ -58,5 +55,3 @@ private:
     std::vector<PrereqUnitRec> m_prereqUnit;
     std::vector<ScienceType> m_prereqScience;
 };
-
-#endif // PRODUCTIONPREREQUISITE_H

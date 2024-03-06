@@ -1017,25 +1017,25 @@ float Weapon::Get_Percent_Ready_To_Fire() const
             unsigned int next_shot = Get_Next_Shot();
             captainslog_dbgassert(now >= m_whenLastReloadStarted, "now >= m_whenLastReloadStarted");
 
-            if (now < next_shot) {
-                captainslog_dbgassert(next_shot >= m_whenLastReloadStarted, "next_shot >= m_whenLastReloadStarted");
-                unsigned int time_left = next_shot - m_whenLastReloadStarted;
-
-                if (time_left != 0) {
-                    unsigned int total_time = next_shot - now;
-                    captainslog_dbgassert(time_left <= total_time, "time_left <= total_time");
-
-                    if (time_left - total_time < time_left) {
-                        return (float)(time_left - total_time) / (float)time_left;
-                    } else {
-                        return 1.0f;
-                    }
-                } else {
-                    return 1.0f;
-                }
-            } else {
+            if (now >= next_shot) {
                 return 1.0f;
             }
+
+            captainslog_dbgassert(next_shot >= m_whenLastReloadStarted, "next_shot >= m_whenLastReloadStarted");
+            unsigned int total_time = next_shot - m_whenLastReloadStarted;
+
+            if (total_time == 0) {
+                return 1.0f;
+            }
+
+            unsigned int time_left = next_shot - now;
+            captainslog_dbgassert(time_left <= total_time, "time_left <= total_time");
+
+            if (total_time - time_left >= total_time) {
+                return 1.0f;
+            }
+
+            return (float)(total_time - time_left) / (float)total_time;
         }
         default:
             captainslog_dbgassert(false, "should not get here");

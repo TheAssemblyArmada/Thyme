@@ -732,5 +732,6 @@ void User_Memory_Init_Pools()
                 }
             }
         }
+        fclose(fp);
     }
 }

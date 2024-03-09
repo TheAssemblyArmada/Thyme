@@ -1271,14 +1271,14 @@ Shadow *W3DProjectedShadowManager::Add_Decal(Shadow::ShadowTypeInfo *shadow_info
 
     if (!tex) {
         TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
+        captainslog_dbgassert(t != nullptr, "Could not load decal texture: %s", fname);
+        if (t == nullptr) {
+            return nullptr;
+        }
+
         t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_NONE);
-        captainslog_dbgassert(t, "Could not load decal texture: %s", fname);
-
-        if (!t) {
-            return nullptr;
-        }
 
         tex = new W3DShadowTexture();
         tex->Set_Name(fname);
@@ -1364,14 +1364,14 @@ Shadow *W3DProjectedShadowManager::Add_Decal(RenderObjClass *robj, Shadow::Shado
 
     if (!tex) {
         TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
+        captainslog_dbgassert(t != nullptr, "Could not load decal texture: %s", fname);
+        if (t == nullptr) {
+            return nullptr;
+        }
+
         t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_NONE);
-        captainslog_dbgassert(t, "Could not load decal texture: %s", fname);
-
-        if (!t) {
-            return nullptr;
-        }
 
         tex = new W3DShadowTexture();
         tex->Set_Name(fname);
@@ -1492,14 +1492,14 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
 
             if (!tex) {
                 TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
+                captainslog_dbgassert(t != nullptr, "Could not load decal texture: %s", fname);
+                if (t == nullptr) {
+                    return nullptr;
+                }
+
                 t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
                 t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
                 t->Get_Texture_Filter()->Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_NONE);
-                captainslog_dbgassert(t, "Could not load decal texture: %s", fname);
-
-                if (!t) {
-                    return nullptr;
-                }
 
                 tex = new W3DShadowTexture();
                 tex->Set_Name(fname);
@@ -1527,10 +1527,9 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
             if (!tex) {
                 m_W3DShadowTextureManager->Create_Texture(robj, fname);
                 tex = m_W3DShadowTextureManager->Get_Texture(fname);
-                captainslog_dbgassert(tex, "Could not create shadow texture");
-
-                if (!tex) {
-                    return 0;
+                captainslog_dbgassert(tex != nullptr, "Could not create shadow texture: %s", fname);
+                if (tex == nullptr) {
+                    return nullptr;
                 }
             }
 
@@ -1649,14 +1648,14 @@ W3DProjectedShadow *W3DProjectedShadowManager::Create_Decal_Shadow(Shadow::Shado
 
     if (!tex) {
         TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
+        captainslog_dbgassert(t != nullptr, "Could not load decal texture: %s", fname);
+        if (t == nullptr) {
+            return nullptr;
+        }
+
         t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_NONE);
-        captainslog_dbgassert(t, "Could not load decal texture");
-
-        if (!t) {
-            return nullptr;
-        }
 
         tex = new W3DShadowTexture();
         tex->Set_Name(fname);

@@ -30,36 +30,32 @@ TeamsInfoRec::~TeamsInfoRec()
  */
 void TeamsInfoRec::Add_Team(const Dict *team)
 {
+    captainslog_dbgassert(m_numTeams < 2048, "%d teams have been allocated (so far). This seems excessive.", m_numTeams);
+
     // If we have too many teams for our current allocation to handle, reallocate more.
     if (m_numTeams >= m_numTeamsAllocated) {
-        TeamsInfo *ti = new TeamsInfo[m_numTeamsAllocated + TEAMINFO_GROWTH_STEP];
+        const int allocsz = m_numTeamsAllocated + TEAMINFO_GROWTH_STEP;
+        captainslog_assert(m_numTeams < allocsz);
+
+        TeamsInfo *ti = new TeamsInfo[allocsz];
 
         // Copy existing data across to new array.
-        int i;
-        for (i = 0; i < m_numTeams; ++i) {
+        int i = 0;
+        for (; i < m_numTeams; ++i) {
             ti[i] = m_teams[i];
         }
 
-        for (; i < m_numTeamsAllocated + TEAMINFO_GROWTH_STEP; ++i) {
+        // Reset the rest.
+        for (; i < allocsz; ++i) {
             ti[i].Clear();
         }
 
-        // Delete old array and replace with new one.
-        if (m_teams != nullptr) {
-            delete[] m_teams;
-        }
-
+        delete[] m_teams;
         m_teams = ti;
         m_numTeamsAllocated += TEAMINFO_GROWTH_STEP;
     }
 
-    m_teams[m_numTeams].Clear();
-
-    if (team != nullptr) {
-        m_teams[m_numTeams].Init(team);
-    }
-
-    ++m_numTeams;
+    m_teams[m_numTeams++].Init(team);
 }
 
 /**

@@ -163,11 +163,18 @@ void GameEngine::Update()
 #endif
 
     // TODO WB has extra subsystem debug stuff here, not implemented yet
-    g_theRadar->Update();
-    g_theAudio->Update();
-    g_theGameClient->Update();
-    g_theMessageStream->Propagate_Messages();
-
+    if (g_theRadar != nullptr) {
+        g_theRadar->Update();
+    }
+    if (g_theAudio != nullptr) {
+        g_theAudio->Update();
+    }
+    if (g_theGameClient != nullptr) {
+        g_theGameClient->Update();
+    }
+    if (g_theMessageStream != nullptr) {
+        g_theMessageStream->Propagate_Messages();
+    }
     if (g_theNetwork != nullptr) {
         g_theNetwork->Update();
     }
@@ -278,13 +285,6 @@ void GameEngine::Real_Init(int argc, char *argv[])
     // textures are DDS in the release build anyhow.
     //}
 
-    // We don't support most after this
-#ifndef GAME_DLL
-#pragma message("SKIPPING NOT YET SUPPORTED SUBSYSTEMS !!!")
-    captainslog_info("Skipping not yet supported subsystems");
-    return;
-#endif
-
     ini.Load("Data/INI/Default/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
@@ -342,9 +342,11 @@ void GameEngine::Real_Init(int argc, char *argv[])
 
     Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
 
+#ifdef GAME_DLL
     if (!g_theAudio->Is_Music_Already_Loaded()) {
         Set_Quitting(true);
     }
+#endif
 
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug(
@@ -372,6 +374,7 @@ void GameEngine::Real_Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
+#ifdef GAME_DLL
     Init_Subsystem(
         g_theFXListStore, "TheFXListStore", new FXListStore, &xfer, "Data/INI/Default/FXList.ini", "Data/INI/FXList.ini");
     Init_Subsystem(g_theWeaponStore, "TheWeaponStore", new WeaponStore, &xfer, nullptr, "Data/INI/Weapon.ini");
@@ -381,7 +384,9 @@ void GameEngine::Real_Init(int argc, char *argv[])
         &xfer,
         "Data/INI/Default/ObjectCreationList.ini",
         "Data/INI/ObjectCreationList.ini");
+#endif
     Init_Subsystem(g_theLocomotorStore, "TheLocomotorStore", new LocomotorStore, &xfer, nullptr, "Data/INI/Locomotor.ini");
+#ifdef GAME_DLL
     Init_Subsystem(g_theSpecialPowerStore,
         "TheSpecialPowerStore",
         new SpecialPowerStore,
@@ -390,6 +395,7 @@ void GameEngine::Real_Init(int argc, char *argv[])
         "Data/INI/SpecialPower.ini");
     Init_Subsystem(g_theDamageFXStore, "TheDamageFXStore", new DamageFXStore, &xfer, nullptr, "Data/INI/DamageFX.ini");
     Init_Subsystem(g_theArmorStore, "TheArmorStore", new ArmorStore, &xfer, nullptr, "Data/INI/Armor.ini");
+#endif
 
     Init_Subsystem(g_theBuildAssistant, "TheBuildAssistant", new BuildAssistant);
 #ifdef GAME_DEBUG_STRUCTS
@@ -398,6 +404,7 @@ void GameEngine::Real_Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
+#ifdef GAME_DLL
     Init_Subsystem(g_theThingFactory,
         "TheThingFactory",
         new ThingFactory,
@@ -410,7 +417,7 @@ void GameEngine::Real_Init(int argc, char *argv[])
         "----------------------------------------------------------------------------After TheThingFactory = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
-
+#endif
     Init_Subsystem(g_theUpgradeCenter,
         "TheUpgradeCenter",
         new UpgradeCenter,
@@ -418,47 +425,50 @@ void GameEngine::Real_Init(int argc, char *argv[])
         "Data/INI/Default/Upgrade.ini",
         "Data/INI/Upgrade.ini");
 
+#ifdef GAME_DLL
     Init_Subsystem(g_theGameClient, "TheGameClient", Create_Game_Client());
+#endif
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug(
         "----------------------------------------------------------------------------After TheGameClient = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
 
+#ifdef GAME_DLL
     Init_Subsystem(g_theAI, "TheAI", new AI, &xfer, "Data/INI/Default/AIData.ini", "Data/INI/AIData.ini");
     Init_Subsystem(g_theGameLogic, "TheGameLogic", Create_Game_Logic());
+#endif
     Init_Subsystem(g_theTeamFactory, "TheTeamFactory", new TeamFactory);
+#ifdef GAME_DLL
     Init_Subsystem(
         g_theCrateSystem, "TheCrateSystem", new CrateSystem, &xfer, "Data/INI/Default/Crate.ini", "Data/INI/Crate.ini");
     Init_Subsystem(g_thePlayerList, "ThePlayerList", new PlayerList);
     Init_Subsystem(g_theRecorder, "TheRecorder", Create_Recorder());
     Init_Subsystem(g_theRadar, "TheRadar", Create_Radar());
-
     Init_Subsystem(g_theVictoryConditions, "TheVictoryConditions", Create_Victory_Conditions());
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug("----------------------------------------------------------------------------After "
                       "TheVictoryConditions = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
-
     Utf8String name;
     name.Format("Data\\%s\\CommandMap.ini", Get_Registry_Language().Str());
     Init_Subsystem(g_theMetaMap, "TheMetaMap", new MetaMap(), nullptr, name.Str(), "Data\\INI\\CommandMap.ini");
 #ifdef GAME_DEBUG_STRUCTS
     ini.Load("Data\\INI\\CommandMapDebug.ini", INI_LOAD_UNK, nullptr);
 #endif
-
+#endif
     Init_Subsystem(g_theActionManager, "TheActionManager", new ActionManager);
     Init_Subsystem(g_theGameStateMap, "TheGameStateMap", new GameStateMap);
     Init_Subsystem(g_theGameState, "TheGameState", new GameState);
-
+#ifdef GAME_DLL
     Init_Subsystem(g_theGameResultsQueue, "TheGameResultsQueue", GameResultsInterface::Create_New_Game_Results_Interface());
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug("----------------------------------------------------------------------------After "
                       "TheGameResultsQueue = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
-
+#endif
     xfer.Close();
     g_theWriteableGlobalData->m_iniCRC = xfer.Get_CRC();
     captainslog_debug("INI CRC is 0x%8.8X", g_theWriteableGlobalData->m_iniCRC);
@@ -472,11 +482,11 @@ void GameEngine::Real_Init(int argc, char *argv[])
 
 #ifndef GAME_DEBUG_STRUCTS
     if (strcasecmp(g_theArchiveFileSystem->Get_Archive_Filename_For_File("generalsbzh.sec").Str(), "genseczh.big") != 0) {
-        m_isQuitting = true;
+        Set_Quitting(true);
     }
 
     if (strcasecmp(g_theArchiveFileSystem->Get_Archive_Filename_For_File("generalsazh.sec").Str(), "musiczh.big") != 0) {
-        m_isQuitting = true;
+        Set_Quitting(true);
     }
 #endif
 

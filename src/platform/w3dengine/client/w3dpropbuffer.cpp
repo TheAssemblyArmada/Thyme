@@ -208,16 +208,9 @@ void W3DPropBuffer::Draw_Props(RenderInfoClass &rinfo)
         if (m_props[i].is_visible && m_props[i].render_obj != nullptr) {
             if (g_thePlayerList == nullptr || g_thePartitionManager == nullptr) {
                 m_props[i].shroud_status = SHROUDED_NONE;
-            }
 
-            if (m_props[i].shroud_status == SHROUDED_INVALID) {
-                int index;
-
-                if (g_thePlayerList != nullptr) {
-                    index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
-                } else {
-                    index = 0;
-                }
+            } else if (m_props[i].shroud_status == SHROUDED_INVALID) {
+                const int index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
 
                 m_props[i].shroud_status =
                     g_thePartitionManager->Get_Prop_Shroud_Status_For_Player(index, &m_props[i].position);

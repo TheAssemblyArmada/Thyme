@@ -115,27 +115,26 @@ void File::Close()
 
 bool File::Print(const char *format, ...)
 {
-    va_list va;
-    char buffer[10240];
+    // Thyme specific: Function body was refactored.
+    bool success = false;
 
-    va_start(va, format);
+    if ((m_access & TEXT) != 0) {
+        va_list va;
+        va_start(va, format);
+        // Format the message to be written out.
+        char buffer[10240];
+        const int length = vsnprintf(buffer, sizeof(buffer), format, va);
 
-    if ((m_access & TEXT) == 0) {
+        if (length < sizeof(buffer)) {
+            // Only write if the message was not truncated.
+            const int written = Write(buffer, length);
+            success = written == length;
+        }
+
         va_end(va);
-        return false;
     }
 
-    // Format our message to be written out
-    int length = vsnprintf(buffer, sizeof(buffer), format, va);
-
-    // Only write if we didn't truncate due to buffer overrun.
-    if (length >= sizeof(buffer)) {
-        va_end(va);
-        return false;
-    }
-
-    va_end(va);
-    return length == Write(buffer, length);
+    return success;
 }
 
 int File::Size()

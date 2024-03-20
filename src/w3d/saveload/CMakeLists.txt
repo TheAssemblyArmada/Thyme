@@ -1,0 +1,2 @@
+add_library(w3d_saveload INTERFACE)
+target_include_directories(w3d_saveload INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

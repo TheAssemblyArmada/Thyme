@@ -232,7 +232,7 @@ endif()
 add_subdirectory(deps/baseconfig EXCLUDE_FROM_ALL)
 
 if(ICU_FOUND)
-    target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)
+    target_compile_definitions(base PUBLIC -DBUILD_WITH_ICU)
 endif()
 
 # Enable Thyme debug logging.

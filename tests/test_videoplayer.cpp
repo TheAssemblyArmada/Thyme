@@ -24,8 +24,6 @@
 #include <alaudiostream.h>
 #endif
 
-extern LocalFileSystem *g_theLocalFileSystem;
-
 #ifdef BUILD_WITH_FFMPEG
 TEST(video, ffmpegvideoplayer)
 {

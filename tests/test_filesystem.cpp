@@ -20,8 +20,6 @@
 #include <stdlocalfilesystem.h>
 #endif
 
-extern LocalFileSystem *g_theLocalFileSystem;
-
 TEST(filesystem, win32bigfile)
 {
     g_theLocalFileSystem = new Win32LocalFileSystem;

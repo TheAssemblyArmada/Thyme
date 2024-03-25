@@ -775,6 +775,9 @@ GameInfo *&g_theGameInfo = Make_Global<GameInfo *>(PICK_ADDRESS(0x00A2C2B8, 0x04
 SkirmishGameInfo *&g_theSkirmishGameInfo = Make_Global<SkirmishGameInfo *>(PICK_ADDRESS(0x00A2DF10, 0x04CA9F00));
 SkirmishGameInfo *&g_theChallengeGameInfo = Make_Global<SkirmishGameInfo *>(PICK_ADDRESS(0x00A2F374, 0x04CA9E20));
 
+// skirmishbattlehonors.cpp
+int &g_rowsToSkip = Make_Global<int>(PICK_ADDRESS(0x00A2FC68, 0x0098D078));
+
 // eva.cpp
 class Eva;
 Eva *&g_theEva = Make_Global<Eva *>(PICK_ADDRESS(0x00A2C090, 0x04CA9C28));

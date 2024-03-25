@@ -39,6 +39,26 @@ static bool getStringFromReg(HKEY hkey, Utf8String subkey, Utf8String key, Utf8S
 
     return false;
 }
+
+static bool Get_Unsigned_Int_From_Registry(HKEY hkey, Utf8String subkey, Utf8String key, unsigned int &result)
+{
+    HKEY phk_result;
+    if (RegOpenKeyExA(hkey, subkey.Str(), 0, KEY_READ, &phk_result) == ERROR_SUCCESS) {
+        DWORD data;
+        DWORD data_len = sizeof(DWORD);
+        DWORD type;
+        LSTATUS query_result = RegQueryValueExA(phk_result, key.Str(), 0, &type, reinterpret_cast<LPBYTE>(&data), &data_len);
+        RegCloseKey(phk_result);
+
+        if (query_result == ERROR_SUCCESS) {
+            result = static_cast<unsigned int>(data);
+
+            return true;
+        }
+    }
+
+    return false;
+}
 #endif
 
 Utf8String Get_Registry_Language()
@@ -84,6 +104,24 @@ bool Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8
 
     if (!success) {
         success = getStringFromReg(HKEY_CURRENT_USER, key, value, destination);
+    }
+
+    return success;
+#else
+    return false;
+#endif
+}
+
+bool Get_Unsigned_Int_From_Registry(Utf8String subkey, Utf8String value, unsigned int &destination)
+{
+#ifdef PLATFORM_WINDOWS
+    Utf8String key = "SOFTWARE\\Electronic Arts\\EA Games\\Command and Conquer Generals Zero Hour";
+    key += subkey;
+    captainslog_trace("Get_Unsigned_Int_From_Generals_Registry - looking in %s for key %s", key.Str(), value.Str());
+    bool success = Get_Unsigned_Int_From_Registry(HKEY_LOCAL_MACHINE, key, value, destination);
+
+    if (!success) {
+        success = Get_Unsigned_Int_From_Registry(HKEY_CURRENT_USER, key, value, destination);
     }
 
     return success;

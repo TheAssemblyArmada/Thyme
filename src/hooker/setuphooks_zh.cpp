@@ -163,6 +163,7 @@
 #include "shell.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
+#include "skirmishbattlehonors.h"
 #include "skirmishgameoptionsmenu.h"
 #include "smudge.h"
 #include "sortingrenderer.h"
@@ -3700,6 +3701,9 @@ void Setup_Hooks()
     // skirmishgameoptionsmenu.h
     Hook_Any(0x005F22A0, Position_Additional_Images);
     Hook_Any(0x005F1DB0, Map_Selector_Tooltip);
+
+    // skirmishbattlehonors.h
+    Hook_Any(0x005F5620, Populate_Skirmish_Battle_Honors);
 
     // maputil.h
     Hook_Any(0x00483510, Find_Draw_Positions);

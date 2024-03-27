@@ -43,5 +43,5 @@ void Populate_Skirmish_Battle_Honors();
 #ifdef GAME_DLL
 extern int &g_rowsToSkip;
 #else
-int g_rowsToSkip;
+extern int g_rowsToSkip;
 #endif

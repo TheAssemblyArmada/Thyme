@@ -26,6 +26,10 @@
 #include "namekeygenerator.h"
 #include "registryget.h"
 
+#ifndef GAME_DLL
+int g_rowsToSkip;
+#endif
+
 SkirmishBattleHonors::SkirmishBattleHonors()
 {
     Load("SkirmishStats.ini");
@@ -376,7 +380,7 @@ void Populate_Skirmish_Battle_Honors()
     }
 
     int wins = battle_honors->Get_Wins();
-    str.Format(L"%10d", wins);
+    str.Format(U_CHAR("%10d"), wins);
     if (wins >= 10000) {
         image = g_theMappedImageCollection->Find_Image_By_Name("Domination_10000");
         Insert_Battle_Honor(listbox, image, true, DOMINATION, &row, &column, 0, wins);
@@ -427,8 +431,8 @@ void Battle_Honor_Tooltip(GameWindow *listbox, WinInstanceData *instance, unsign
         str = g_theGameText->Fetch("TOOLTIP:BattleHonors", nullptr);
         g_theMouse->Set_Cursor_Tooltip(str, -1, 0, 1.0f);
     } else {
-        honor = (int)Gadget_List_Box_Get_Item_Data(listbox, row, column);
-        score = (int)Gadget_List_Box_Get_Item_Data(listbox, row - 1, column);
+        honor = (int)reinterpret_cast<uintptr_t>(Gadget_List_Box_Get_Item_Data(listbox, row, column));
+        score = (int)reinterpret_cast<uintptr_t>(Gadget_List_Box_Get_Item_Data(listbox, row - 1, column));
         if (honor == 0) {
             str = g_theGameText->Fetch("TOOLTIP:BattleHonors", nullptr);
             g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.0f);

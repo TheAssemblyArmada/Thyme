@@ -308,14 +308,14 @@ void Populate_Skirmish_Battle_Honors()
     gold = true;
     for (auto it = g_theMapCache->begin(); it != g_theMapCache->end(); it++) {
         if (it->second.m_isOfficial && it->second.m_isMultiplayer) {
-            int beatHard = battle_honors->Get_Endurance_Medal(it->first, 4);
-            if (!beatHard) {
+            int beat_hard = battle_honors->Get_Endurance_Medal(it->first, 4);
+            if (!beat_hard) {
                 gold = false;
-                int beatMedium = battle_honors->Get_Endurance_Medal(it->first, 3);
-                if (!beatMedium) {
+                int beat_medium = battle_honors->Get_Endurance_Medal(it->first, 3);
+                if (!beat_medium) {
                     silver = false;
-                    int beatEasy = battle_honors->Get_Endurance_Medal(it->first, 2);
-                    if (!beatEasy) {
+                    int beat_easy = battle_honors->Get_Endurance_Medal(it->first, 2);
+                    if (!beat_easy) {
                         bronze = false;
                         break;
                     }
@@ -353,30 +353,30 @@ void Populate_Skirmish_Battle_Honors()
         Insert_Battle_Honor(listbox, image, false, BLITZ_10, &row, &column, 0, 0);
     }
 
-    int bestWinStreak = battle_honors->Get_Best_Win_Streak();
+    int best_win_streak = battle_honors->Get_Best_Win_Streak();
     Utf16String str;
-    str.Format(U_CHAR("%10d"), bestWinStreak);
-    if (bestWinStreak >= 1000) {
+    str.Format(U_CHAR("%10d"), best_win_streak);
+    if (best_win_streak >= 1000) {
         image = g_theMappedImageCollection->Find_Image_By_Name("HonorStreak_1000");
-        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, bestWinStreak);
-    } else if (bestWinStreak >= 500) {
+        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, best_win_streak);
+    } else if (best_win_streak >= 500) {
         image = g_theMappedImageCollection->Find_Image_By_Name("HonorStreak_500");
-        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, bestWinStreak);
-    } else if (bestWinStreak >= 100) {
+        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, best_win_streak);
+    } else if (best_win_streak >= 100) {
         image = g_theMappedImageCollection->Find_Image_By_Name("HonorStreak_100");
-        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, bestWinStreak);
-    } else if (bestWinStreak >= 25) {
+        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, best_win_streak);
+    } else if (best_win_streak >= 25) {
         image = g_theMappedImageCollection->Find_Image_By_Name("HonorStreak_G");
-        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, bestWinStreak);
-    } else if (bestWinStreak >= 10) {
+        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, best_win_streak);
+    } else if (best_win_streak >= 10) {
         image = g_theMappedImageCollection->Find_Image_By_Name("HonorStreak_S");
-        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, bestWinStreak);
-    } else if (bestWinStreak >= 3) {
+        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, best_win_streak);
+    } else if (best_win_streak >= 3) {
         image = g_theMappedImageCollection->Find_Image_By_Name("HonorStreak_B");
-        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, bestWinStreak);
+        Insert_Battle_Honor(listbox, image, true, STREAK, &row, &column, 0, best_win_streak);
     } else {
         image = g_theMappedImageCollection->Find_Image_By_Name("HonorStreak_B");
-        Insert_Battle_Honor(listbox, image, false, STREAK, &row, &column, 0, bestWinStreak);
+        Insert_Battle_Honor(listbox, image, false, STREAK, &row, &column, 0, best_win_streak);
     }
 
     int wins = battle_honors->Get_Wins();
@@ -499,80 +499,61 @@ void Battle_Honor_Tooltip(GameWindow *listbox, WinInstanceData *instance, unsign
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorDominationOnlineDisabled", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
                 }
-            }
-            if (honor & LOYALTY_USA) {
+            } else if (honor & LOYALTY_USA) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorLoyaltyUSA", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & LOYALTY_CHINA) {
+            } else if (honor & LOYALTY_CHINA) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorLoyaltyChina", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & LOYALTY_GLA) {
+            } else if (honor & LOYALTY_GLA) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorLoyaltyGLA", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & BATTLE_TANK) {
+            } else if (honor & BATTLE_TANK) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorBattleTank", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & AIR_WING) {
+            } else if (honor & AIR_WING) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorAirWing", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & ENDURANCE) {
+            } else if (honor & ENDURANCE) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorEndurance", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & CAMPAIGN_USA) {
+            } else if (honor & CAMPAIGN_USA) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorCampaignUSA", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & CAMPAIGN_CHINA) {
+            } else if (honor & CAMPAIGN_CHINA) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorCampaignChina", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & CAMPAIGN_GLA) {
+            } else if (honor & CAMPAIGN_GLA) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorCampaignGLA", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & BLITZ_5) {
+            } else if (honor & BLITZ_5) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorBlitz5", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & BLITZ_10) {
+            } else if (honor & BLITZ_10) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorBlitz10", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & FAIR_PLAY) {
+            } else if (honor & FAIR_PLAY) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorFairPlay", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & APOCALYPSE) {
+            } else if (honor & APOCALYPSE) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorApocalypse", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & OFFICERS_CLUB) {
+            } else if (honor & OFFICERS_CLUB) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorOfficersClub", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & CAMPAIGN_CHALLENGE) {
+            } else if (honor & CAMPAIGN_CHALLENGE) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorCampaignChallenge", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & ULTIMATE) {
+            } else if (honor & ULTIMATE) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorUltimate", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & GLOBAL_GENERAL) {
+            } else if (honor & GLOBAL_GENERAL) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorGlobalGeneral", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & CHALLENGE) {
+            } else if (honor & CHALLENGE) {
                 str = g_theGameText->Fetch("TOOLTIP:BattleHonorChallenge", nullptr);
                 g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
-            }
-            if (honor & STREAK) {
+            } else if (honor & STREAK) {
                 if (score >= 1000) {
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorStreak1000", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
@@ -595,8 +576,7 @@ void Battle_Honor_Tooltip(GameWindow *listbox, WinInstanceData *instance, unsign
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorStreakDisabled", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
                 }
-            }
-            if (honor & STREAK_ONLINE) {
+            } else if (honor & STREAK_ONLINE) {
                 if (score >= 1000) {
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorStreak1000Online", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
@@ -616,11 +596,10 @@ void Battle_Honor_Tooltip(GameWindow *listbox, WinInstanceData *instance, unsign
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorStreak3Online", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
                 } else {
-                    str = g_theGameText->Fetch("TOOLTIP:BattleHonorStreakDisabledOnline", nullptr);
+                    str = g_theGameText->Fetch("TOOLTIP:BattleHonorStreakOnlineDisabled", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
                 }
-            }
-            if (honor & DOMINATION) {
+            } else if (honor & DOMINATION) {
                 if (score >= 1000) {
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorDomination10000", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
@@ -637,8 +616,7 @@ void Battle_Honor_Tooltip(GameWindow *listbox, WinInstanceData *instance, unsign
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorDominationDisabled", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
                 }
-            }
-            if (honor & DOMINATION_ONLINE) {
+            } else if (honor & DOMINATION_ONLINE) {
                 if (score >= 10000) {
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorDomination10000Online", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
@@ -652,7 +630,7 @@ void Battle_Honor_Tooltip(GameWindow *listbox, WinInstanceData *instance, unsign
                     str = g_theGameText->Fetch("TOOLTIP:BattleHonorDomination100Online", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
                 } else {
-                    str = g_theGameText->Fetch("TOOLTIP:BattleHonorDominationDisabledOnline", nullptr);
+                    str = g_theGameText->Fetch("TOOLTIP:BattleHonorDominationOnlineDisabled", nullptr);
                     g_theMouse->Set_Cursor_Tooltip(str, -1, nullptr, 1.5f);
                 }
             }

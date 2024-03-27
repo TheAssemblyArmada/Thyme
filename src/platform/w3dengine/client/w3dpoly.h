@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #pragma once
+
+#include "always.h"
 #include "simplevec.h"
 
 class PlaneClass;

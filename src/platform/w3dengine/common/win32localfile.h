@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "localfile.h"
 
 namespace Thyme

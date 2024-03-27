@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "archivefile.h"
 
 class Win32BIGFile : public ArchiveFile

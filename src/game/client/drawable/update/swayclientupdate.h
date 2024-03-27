@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "bittype.h"
 #include "clientupdatemodule.h"
 #include "namekeygenerator.h"

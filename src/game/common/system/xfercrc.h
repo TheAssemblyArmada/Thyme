@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "xfer.h"
 
 class XferCRC : public Xfer

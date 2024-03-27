@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "localfilesystem.h"
 #include "win32localfile.h"
 #include <captainslog.h>

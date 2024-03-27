@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "color.h"
 #include "gametype.h"
 #include "ini.h"

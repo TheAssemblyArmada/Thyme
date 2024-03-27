@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "gamewindow.h"
 #include "namekeygenerator.h"
 #include "subsysteminterface.h"

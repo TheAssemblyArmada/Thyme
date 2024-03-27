@@ -13,6 +13,9 @@
  *            LICENSE
  */
 #pragma once
+
+#include "always.h"
+
 class ChunkLoadClass;
 class PrototypeClass;
 class RenderObjClass;

@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #pragma once
+
+#include "always.h"
 #include "bitflags.h"
 #include "coord.h"
 #include "gametype.h"

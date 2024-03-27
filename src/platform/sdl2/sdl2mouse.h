@@ -18,6 +18,7 @@
 #error Only include sdl2mouse.h when building with SDL2
 #endif
 
+#include "always.h"
 #include "mouse.h"
 
 #include <SDL.h>

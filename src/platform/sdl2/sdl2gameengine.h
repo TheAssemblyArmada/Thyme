@@ -14,11 +14,12 @@
  */
 #pragma once
 
-#include "gameengine.h"
-
 #ifndef BUILD_WITH_SDL2
 #error Only include sdl2gameengine.h when building with SDL2
 #endif
+
+#include "always.h"
+#include "gameengine.h"
 
 #include <SDL.h>
 

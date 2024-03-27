@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #pragma once
+
+#include "always.h"
 #include "gamefont.h"
 
 class W3DFontLibrary : public FontLibrary

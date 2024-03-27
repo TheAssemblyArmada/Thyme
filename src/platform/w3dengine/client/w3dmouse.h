@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "image.h"
 #include "rendobj.h"
 #include "surfaceclass.h"

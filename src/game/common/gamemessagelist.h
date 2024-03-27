@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "gamemessage.h"
 #include "subsysteminterface.h"
 

@@ -14,6 +14,7 @@
  */
 #pragma once
 
+#include "always.h"
 #include "functionlexicon.h"
 
 class W3DFunctionLexicon : public FunctionLexicon

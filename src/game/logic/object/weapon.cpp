@@ -2577,7 +2577,7 @@ unsigned int WeaponTemplate::Fire_Weapon_Template(const Object *source_obj,
                 return frame;
             } else {
                 if (do_damage) {
-                    Deal_Damage_Internal(source_id, target_id, &pos, bonus, is_projectile_detonation);
+                    Deal_Damage_Internal(source_id, target_id, pos3, bonus, is_projectile_detonation);
                 }
 
 #ifdef GAME_DEBUG_STRUCTS

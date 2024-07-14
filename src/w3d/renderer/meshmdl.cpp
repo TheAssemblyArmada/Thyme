@@ -681,9 +681,7 @@ TextureClass *Load_Texture(ChunkLoadClass &cload)
 W3DErrorType MeshModelClass::Read_Textures(ChunkLoadClass &cload, MeshLoadContextClass *context)
 {
     for (TextureClass *newtex = Load_Texture(cload); newtex != nullptr; newtex = Load_Texture(cload)) {
-
         context->Add_Texture(newtex);
-        newtex->Release_Ref();
     }
 
     return W3D_ERROR_OK;

@@ -467,7 +467,7 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool useRegularCameraRes
     }
 
     robj->Set_Animation();
-    m_model = robj;
+    Ref_Ptr_Set(m_model, robj);
     Matrix3D tm(true);
     m_model->Set_Transform(tm);
     SceneClass *scene;

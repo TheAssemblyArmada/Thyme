@@ -467,7 +467,9 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool useRegularCameraRes
     }
 
     robj->Set_Animation();
-    Ref_Ptr_Set(m_model, robj);
+    captainslog_relassert(m_model == nullptr, "Expected nullptr, otherwise leaks"); // Thyme specific
+    m_model = robj;
+    m_model->Add_Ref();
     Matrix3D tm(true);
     m_model->Set_Transform(tm);
     SceneClass *scene;

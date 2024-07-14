@@ -17,6 +17,7 @@
 
 #include "always.h"
 #include "autopool.h"
+#include "refcount.h"
 #include <captainslog.h>
 
 // #TODO investigate C casts in this file.

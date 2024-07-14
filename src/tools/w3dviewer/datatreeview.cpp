@@ -103,10 +103,6 @@ void CDataTreeView::OnDeleteItem(NMHDR *pNMHDR, LRESULT *pResult)
     AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(nm->itemOld.lParam);
 
     if (info != nullptr) {
-        if (info->m_type == ASSET_TYPE_TEXTURE) {
-            Ref_Ptr_Release(info->m_texture);
-        }
-
         delete info;
     }
 

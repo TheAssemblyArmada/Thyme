@@ -385,6 +385,7 @@ TextureClass *W3DAssetManager::Get_Texture(const char *filename,
                 return nullptr;
             }
 
+            captainslog_dbgassert(!m_textureHash.Exists(new_texture), "Texture hash collision occurred"); // Thyme specific
             m_textureHash.Insert(new_texture->Get_Name(), new_texture);
         }
 

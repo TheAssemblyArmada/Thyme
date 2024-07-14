@@ -357,44 +357,42 @@ TextureClass *W3DAssetManager::Get_Texture(const char *filename,
         mip_level_count = MipCountType::MIP_LEVELS_1;
     }
 
-    if (filename == nullptr || strlen(filename) == 0) {
-        return nullptr;
+    if (filename != nullptr && strlen(filename) != 0) {
+        StringClass name = { filename };
+        name.To_Lower();
+
+        TextureClass *new_texture = m_textureHash.Get(name);
+
+        if (new_texture == nullptr) {
+
+            switch (asset_type) {
+                case TexAssetType::ASSET_STANDARD:
+                    new_texture = new TextureClass{
+                        name, nullptr, mip_level_count, texture_format, allow_compression, allow_reduction
+                    };
+                    break;
+                case TexAssetType::ASSET_CUBE:
+                    captainslog_dbgassert(false, "CubeTextureClass is not used");
+                    break;
+                case TexAssetType::ASSET_VOLUME:
+                    captainslog_dbgassert(false, "VolumeTextureClass is not used");
+                    break;
+                default:
+                    break;
+            }
+
+            if (new_texture == nullptr) {
+                return nullptr;
+            }
+
+            m_textureHash.Insert(new_texture->Get_Name(), new_texture);
+        }
+
+        new_texture->Add_Ref();
+        return new_texture;
     }
 
-    StringClass name = { filename };
-    name.To_Lower();
-    TextureClass *texture = m_textureHash.Get(name);
-
-    if (texture != nullptr) {
-        texture->Add_Ref();
-        return texture;
-    }
-
-    TextureClass *new_texture = nullptr;
-
-    switch (asset_type) {
-        case TexAssetType::ASSET_STANDARD:
-            new_texture =
-                new TextureClass{ name, nullptr, mip_level_count, texture_format, allow_compression, allow_reduction };
-            break;
-        case TexAssetType::ASSET_CUBE:
-            captainslog_dbgassert(false, "CubeTextureClass is not used");
-            break;
-        case TexAssetType::ASSET_VOLUME:
-            captainslog_dbgassert(false, "VolumeTextureClass is not used");
-            break;
-        default:
-            break;
-    }
-
-    if (new_texture == nullptr) {
-        return nullptr;
-    }
-
-    m_textureHash.Insert(new_texture->Get_Name(), new_texture);
-
-    new_texture->Add_Ref();
-    return new_texture;
+    return nullptr;
 }
 
 // 0x00815C90

@@ -141,7 +141,11 @@ public:
         proto->Add_Ref();
     }
 
-    virtual ~PrimitivePrototypeClass() override { m_proto->Release_Ref(); }
+    virtual ~PrimitivePrototypeClass() override
+    {
+        if (m_proto != nullptr)
+            m_proto->Release_Ref();
+    }
     virtual const char *Get_Name() const override { return m_proto->Get_Name(); }
     virtual int Get_Class_ID() const override { return m_proto->Class_ID(); }
     virtual RenderObjClass *Create() override { return m_proto->Clone(); }

@@ -603,14 +603,14 @@ TextureClass *Load_Texture(ChunkLoadClass &cload)
 
     while (cload.Open_Chunk()) {
         int id = cload.Cur_Chunk_ID();
-        if (id == W3D_CHUNK_TEXTURE_NAME) {
-            cload.Read(name, cload.Cur_Chunk_Length());
-        } else if (id == W3D_CHUNK_TEXTURE_INFO) {
-            if (id == 1) {
-                cload.Read(&info, 12);
-            }
-
-            texinfo = true;
+        switch (id) {
+            case W3D_CHUNK_TEXTURE_NAME:
+                cload.Read(name, cload.Cur_Chunk_Length());
+                break;
+            case W3D_CHUNK_TEXTURE_INFO:
+                cload.Read(&info, sizeof(info));
+                texinfo = true;
+                break;
         }
 
         cload.Close_Chunk();
@@ -638,6 +638,7 @@ TextureClass *Load_Texture(ChunkLoadClass &cload)
             case W3DTEXTURE_MIP_LEVELS_4:
                 mips = MipCountType::MIP_LEVELS_4;
                 break;
+            case W3DTEXTURE_MIP_LEVELS_ALL:
             default:
                 mips = MipCountType::MIP_LEVELS_ALL;
                 break;
@@ -646,20 +647,27 @@ TextureClass *Load_Texture(ChunkLoadClass &cload)
 
     WW3DFormat format = WW3D_FORMAT_UNKNOWN;
 
-    if ((info.Attributes & W3DTEXTURE_TYPE_MASK) == W3DTEXTURE_TYPE_BUMPMAP) {
-        if (DX8Wrapper::Is_Initted()) {
-            if (DX8Wrapper::Get_Current_Caps()->Support_Bump_Envmap()) {
-                mips = MipCountType::MIP_LEVELS_1;
+    switch (info.Attributes & W3DTEXTURE_TYPE_MASK) {
+        case W3DTEXTURE_TYPE_COLORMAP:
+            break;
+        case W3DTEXTURE_TYPE_BUMPMAP:
+            if (DX8Wrapper::Is_Initted()) {
+                if (DX8Wrapper::Get_Current_Caps()->Support_Bump_Envmap()) {
+                    mips = MipCountType::MIP_LEVELS_1;
 
-                if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_U8V8)) {
-                    format = WW3D_FORMAT_U8V8;
-                } else if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_X8L8V8U8)) {
-                    format = WW3D_FORMAT_X8L8V8U8;
-                } else if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_L6V5U5)) {
-                    format = WW3D_FORMAT_L6V5U5;
+                    if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_U8V8)) {
+                        format = WW3D_FORMAT_U8V8;
+                    } else if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_X8L8V8U8)) {
+                        format = WW3D_FORMAT_X8L8V8U8;
+                    } else if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_L6V5U5)) {
+                        format = WW3D_FORMAT_L6V5U5;
+                    }
                 }
             }
-        }
+            break;
+        default:
+            captainslog_assert(false);
+            break;
     }
 
     TextureClass *tex = W3DAssetManager::Get_Instance()->Get_Texture(name, mips, format);

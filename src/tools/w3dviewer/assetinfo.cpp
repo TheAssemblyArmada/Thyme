@@ -16,20 +16,15 @@
 #include "assetmgr.h"
 
 AssetInfoClass::AssetInfoClass(const char *name, AssetType type, RenderObjClass *robj, TextureClass *texture) :
-    m_name(name), m_type(type), m_texture(texture), m_renderObj(robj)
+    m_name(name), m_type(type), m_texture(texture), m_renderObj(nullptr)
 {
-    if (m_texture != nullptr)
-        m_texture->Add_Ref();
-
-    if (m_renderObj != nullptr)
-        m_renderObj->Add_Ref();
-
+    // Note: The reference for m_texture is added and removed externally (bad).
+    Ref_Ptr_Set(m_renderObj, robj);
     GetHierarchyName();
 }
 
 AssetInfoClass::~AssetInfoClass()
 {
-    Ref_Ptr_Release(m_texture);
     Ref_Ptr_Release(m_renderObj);
 }
 

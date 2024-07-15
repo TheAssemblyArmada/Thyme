@@ -103,6 +103,10 @@ void CDataTreeView::OnDeleteItem(NMHDR *pNMHDR, LRESULT *pResult)
     AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(nm->itemOld.lParam);
 
     if (info != nullptr) {
+        if (info->m_type == ASSET_TYPE_TEXTURE) {
+            Ref_Ptr_Release(info->m_texture);
+        }
+
         delete info;
     }
 
@@ -454,6 +458,7 @@ void CDataTreeView::AddTextures()
                 m_categoryTreeItems[CATEGORY_MATERIAL],
                 TVI_SORT);
 
+            texture->Add_Ref();
             AssetInfoClass *info = new AssetInfoClass(texture->Get_Name(), ASSET_TYPE_TEXTURE, nullptr, texture);
             GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
         }

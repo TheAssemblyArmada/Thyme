@@ -19,6 +19,12 @@
 #include <algorithm>
 #include <cstring>
 
+// losely based on
+// http://www.nvidia.com/view.asp?IO=dxtc_decompression_code
+// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dx8_c/hh/dx8_c/graphics_using_0j03.asp
+// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dx8_c/directx_cpp/Graphics/ProgrammersGuide/Appendix/DDSFileFormat/ovwDDSFileFormat.asp
+// As the links are now dead use archive.org to access them
+
 using rts::FourCC;
 using std::memcpy;
 using std::strlen;
@@ -382,7 +388,7 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
     // Gen and ZH only handle DXT1 and DXT5
     switch (m_format) {
         case WW3D_FORMAT_DXT1: {
-            int offset = (src_x / 4) + (src_y / 4) * (Get_Width(level) / 4);
+            int offset = (src_x / 4) * 8 + ((src_y / 4) * (Get_Width(level) / 4));
             unsigned dst_pixel = 0;
             uint8_t *block_mem = &Get_Memory_Pointer(level)[8 * offset];
             uint32_t color_a = Decode_Packed_565(block_mem);
@@ -405,29 +411,26 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
                     dst_ptr += dst_pitch;
 
                     for (int i = 0; i < 4; ++i) {
-                        uint32_t final_color = 0;
 
                         switch (block_mem[j + 4] & 3) {
                             case 0:
-                                final_color = color_a;
+                                dst_pixel = color_a;
                                 break;
                             case 1:
-                                final_color = color_b;
+                                dst_pixel = color_b;
                                 break;
                             case 2:
-                                final_color = ((85 * (color_b & 0xFF00) + 170 * (color_a & 0xFF00)) >> 8) & 0xFF00
-                                    | ((85 * (color_b & 0xFF00FF) + 170 * (color_a & 0xFF00FF)) >> 8) & 0xFF00FF;
+                                dst_pixel = Merge_Color(color_b, color_a, 85);
                                 break;
                             case 3:
-                                final_color = ((85 * (color_a & 0xFF00) + 170 * (color_b & 0xFF00)) >> 8) & 0xFF00
-                                    | ((85 * (color_a & 0xFF00FF) + 170 * (color_b & 0xFF00FF)) >> 8) & 0xFF00FF;
+                                dst_pixel = Merge_Color(color_a, color_b, 85);
                                 break;
                             default:
                                 break;
                         }
 
-                        final_color |= 0xFF000000;
-                        Color_To_Format(putp, final_color, dst_format);
+                        dst_pixel |= 0xFF000000;
+                        Color_To_Format(putp, dst_pixel, dst_format);
                         putp += dst_bpp;
                     }
                 }
@@ -447,29 +450,26 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
                     dst_ptr += dst_pitch;
 
                     for (int i = 0; i < 4; ++i) {
-                        uint32_t final_color = 0;
 
                         switch (block_mem[j + 4] & 3) {
                             case 0:
-                                final_color = color_a;
+                                dst_pixel = color_a;
                                 break;
                             case 1:
-                                final_color = color_b;
+                                dst_pixel = color_b;
                                 break;
                             case 2:
-                                final_color =
-                                    ((127 * (color_a & 0xFF00) + ((uint16_t)(color_b & 0xFF00) << 7)) >> 8) & 0xFF00
-                                    | ((((color_b & 0xFF00FF) << 7) + 0x7F * (color_a & 0xFF00FF)) >> 8) & 0xFF00FF;
+                                dst_pixel = Merge_Color(color_b, color_a, 128);
                                 break;
                             case 3:
-                                final_color = 0;
+                                dst_pixel = 0;
                                 break;
                             default:
                                 break;
                         }
 
-                        final_color |= 0xFF000000;
-                        Color_To_Format(putp, final_color, dst_format);
+                        dst_pixel |= 0xFF000000;
+                        Color_To_Format(putp, dst_pixel, dst_format);
                         putp += dst_bpp;
                     }
                 }
@@ -479,7 +479,7 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
         }
             return has_alpha;
         case WW3D_FORMAT_DXT5: {
-            int offset = (src_x / 4) + (src_y / 4) * (Get_Width(level) / 4);
+            int offset = (src_x / 4) * 16 + ((src_y / 4) * (Get_Width(level) / 4));
             unsigned dst_pixel = 0;
             uint8_t *block_mem = &Get_Memory_Pointer(level)[16 * offset];
 
@@ -490,20 +490,23 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
             alphas[0] = alpha0;
             alphas[1] = alpha1;
 
+            // 8-alpha or 6-alpha block?
             if (alpha0 > alpha1) {
-                alphas[2] = (alpha1 + 6 * alpha0 + 3) / 7;
-                alphas[3] = (5 * alpha0 + 2 * alpha1 + 3) / 7;
-                alphas[4] = (3 * alpha1 + 3 + 4 * alpha0) / 7;
-                alphas[5] = (3 * alpha0 + 3 + 4 * alpha1) / 7;
-                alphas[6] = (5 * alpha1 + 2 * alpha0 + 3) / 7;
-                alphas[7] = (alpha0 + 6 * alpha1 + 3) / 7;
+                alphas[2] = (6 * alpha1 + alpha0 + 3) / 7; // Bit code 010
+                alphas[3] = (5 * alpha0 + 2 * alpha1 + 3) / 7; // Bit code 011
+                alphas[4] = (3 * alpha1 + 4 * alpha0 + 3) / 7; // Bit code 100
+                alphas[5] = (3 * alpha0 + 4 * alpha1 + 3) / 7; // Bit code 101
+                alphas[6] = (5 * alpha1 + 2 * alpha0 + 3) / 7; // Bit code 110
+                alphas[7] = (alpha0 + 6 * alpha1 + 3) / 7; // Bit code 111
             } else {
-                alphas[2] = (alpha1 + 4 * alpha0 + 2) / 5;
-                alphas[6] = 0;
-                alphas[7] = 255;
-                alphas[3] = (3 * alpha0 + 2 * alpha1 + 2) / 5;
-                alphas[4] = (3 * alpha1 + 2 * alpha0 + 2) / 5;
-                alphas[5] = (alpha0 + 4 * alpha1 + 2) / 5;
+                // 6-alpha block:  derive the other alphas.
+                // 000 = alpha_0, 001 = alpha_1, others are interpolated
+                alphas[2] = (4 * alpha0 + alpha1 + 2) / 5; // Bit code 010
+                alphas[3] = (3 * alpha0 + 2 * alpha1 + 2) / 5; // Bit code 011
+                alphas[4] = (3 * alpha1 + 2 * alpha0 + 2) / 5; // Bit code 100
+                alphas[5] = (alpha0 + 4 * alpha1 + 2) / 5; // Bit code 101
+                alphas[6] = 0; // Bit code 110
+                alphas[7] = 255; // Bit code 111
             }
 
             uint32_t color_a = Decode_Packed_565(block_mem + 8);
@@ -533,27 +536,24 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
                 for (int i = 0; i < 4; i++) {
                     unsigned alpha = alphas[alpha_indices[j * 4 + i]];
                     has_alpha = alpha < 255;
-                    uint32_t final_color = 0;
 
                     switch (((block_mem[j + 12]) >> (2 * i)) & 3) {
                         case 0:
-                            final_color = color_a | (alpha << 24);
+                            dst_pixel = color_a | (alpha << 24);
                             break;
                         case 1:
-                            final_color = color_b | (alpha << 24);
+                            dst_pixel = color_b | (alpha << 24);
                             break;
                         case 2:
-                            final_color = ((85 * (color_b & 0xFF00) + 170 * (color_a & 0xFF00)) >> 8) & 0xFF00
-                                | ((85 * (color_b & 0xFF00FF) + 170 * (color_a & 0xFF00FF)) >> 8) & 0xFF00FF;
+                            dst_pixel = Merge_Color(color_b, color_a, 85);
                             break;
                         case 3:
-                            final_color = ((85 * (color_a & 0xFF00) + 170 * (color_b & 0xFF00)) >> 8) & 0xFF00
-                                | ((85 * (color_a & 0xFF00FF) + 170 * (color_b & 0xFF00FF)) >> 8) & 0xFF00FF;
+                            dst_pixel = Merge_Color(color_b, color_a, 85);
                             break;
                     }
 
-                    final_color |= alpha;
-                    Color_To_Format(putp, final_color, dst_format);
+                    dst_pixel |= alpha;
+                    Color_To_Format(putp, dst_pixel, dst_format);
                     putp += dst_bpp;
                 }
             }

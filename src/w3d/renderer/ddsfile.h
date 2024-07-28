@@ -151,6 +151,7 @@ private:
     static unsigned Calculate_S3TC_Surface_Size(unsigned width, unsigned height, WW3DFormat format);
     static uint32_t Decode_Packed_565(uint8_t *packed);
     static uint32_t Decode_Line_Code(uint8_t *packed);
+    static uint32_t Merge_Color(uint32_t color_a, uint32_t color_b, uint32_t s1);
 
 private:
     unsigned m_width;
@@ -176,6 +177,16 @@ inline uint32_t DDSFileClass::Decode_Packed_565(uint8_t *packed)
 {
     uint16_t value = uint16_t(packed[0]) | (uint16_t(packed[1]) << 8);
     return ((value & 0x1F) | ((value & 0x7E0) | ((value & 0xF800) << 3) << 2)) << 3;
+}
+
+inline uint32_t DDSFileClass::Merge_Color(uint32_t color_a, uint32_t color_b, uint32_t color_b_amount)
+{
+    uint32_t color_a_amount = 0xFF - color_b_amount;
+    const uint32_t G_MASK = 0x0000FF00;
+    const uint32_t R_B_MASK = 0x00FF00FF;
+
+    return ((color_a_amount * (color_a & G_MASK)) + (color_b_amount * (color_b & G_MASK)) >> 8) & G_MASK
+        | ((color_a_amount * (color_a & R_B_MASK)) + (color_b_amount * (color_b & R_B_MASK)) >> 8) & R_B_MASK;
 }
 
 inline uint32_t DDSFileClass::Decode_Line_Code(uint8_t *packed)

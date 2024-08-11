@@ -185,8 +185,8 @@ inline uint32_t DDSFileClass::Merge_Color(uint32_t color_a, uint32_t color_b, ui
     const uint32_t G_MASK = 0x0000FF00;
     const uint32_t R_B_MASK = 0x00FF00FF;
 
-    return ((color_a_amount * (color_a & G_MASK)) + (color_b_amount * (color_b & G_MASK)) >> 8) & G_MASK
-        | ((color_a_amount * (color_a & R_B_MASK)) + (color_b_amount * (color_b & R_B_MASK)) >> 8) & R_B_MASK;
+    return (((color_a_amount * (color_a & G_MASK)) + (color_b_amount * (color_b & G_MASK))) >> 8) & G_MASK
+        | (((color_a_amount * (color_a & R_B_MASK)) + (color_b_amount * (color_b & R_B_MASK))) >> 8) & R_B_MASK;
 }
 
 inline uint32_t DDSFileClass::Decode_Line_Code(uint8_t *packed)

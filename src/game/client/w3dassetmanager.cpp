@@ -401,7 +401,8 @@ TextureClass *GameAssetManager::Recolor_Texture_One_Time(TextureClass *texture, 
     char buffer[512];
     Create_Color_Texture_Name(buffer, name, color);
     new_texture->Set_Texture_Name(buffer);
-    captainslog_dbgassert(!m_textureHash.Exists(new_texture), "Texture hash collision occurred"); // Thyme specific
+    captainslog_dbgassert(
+        !m_textureHash.Exists(new_texture->Get_Name()), "Texture hash collision occurred"); // Thyme specific
     m_textureHash.Insert(new_texture->Get_Name(), new_texture);
     new_texture->Add_Ref();
     Ref_Ptr_Release(surface);

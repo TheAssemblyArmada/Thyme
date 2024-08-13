@@ -388,9 +388,10 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
     // Gen and ZH only handle DXT1 and DXT5
     switch (m_format) {
         case WW3D_FORMAT_DXT1: {
-            int offset = (src_x / 4) * 8 + ((src_y / 4) * (Get_Width(level) / 4));
+            int offset = (src_x / 4) + ((src_y / 4) * (Get_Width(level) / 4));
             unsigned dst_pixel = 0;
             uint8_t *block_mem = &Get_Memory_Pointer(level)[8 * offset];
+
             uint32_t color_a = Decode_Packed_565(block_mem);
             uint32_t color_b = Decode_Packed_565(block_mem + 2);
             // uint32_t code = Decode_Line_Code(block_mem + 4);
@@ -479,7 +480,7 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
         }
             return has_alpha;
         case WW3D_FORMAT_DXT5: {
-            int offset = (src_x / 4) * 16 + ((src_y / 4) * (Get_Width(level) / 4));
+            int offset = (src_x / 4) + ((src_y / 4) * (Get_Width(level) / 4));
             unsigned dst_pixel = 0;
             uint8_t *block_mem = &Get_Memory_Pointer(level)[16 * offset];
 

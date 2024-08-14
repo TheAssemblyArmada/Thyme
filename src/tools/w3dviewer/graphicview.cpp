@@ -236,10 +236,10 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 
         v.X = (((float)point.x - (float)(r.right >> 1)) / (float)(r.right >> 1)
                   - ((float)m_mousePos.x - (float)(r.right >> 1)) / (float)(r.right >> 1))
-            * m_radius;
+            * m_radius * -1.0f;
 
-        v.Y = (((float)point.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1)
-                  - ((float)m_mousePos.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1))
+        v.Y = (((float)(r.bottom >> 1) - (float)point.y) / (float)(r.bottom >> 1)
+                  - ((float)(r.bottom >> 1) - (float)m_mousePos.y) / (float)(r.bottom >> 1))
             * m_radius * -1.0f;
 
         v.Z = 0.0f;

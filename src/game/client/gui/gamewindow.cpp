@@ -52,7 +52,7 @@ GameWindow::GameWindow() :
     Win_Set_Draw_Func(g_theWindowManager->Get_Default_Draw());
     Win_Set_Input_Func(g_theWindowManager->Get_Default_Input());
     Win_Set_System_Func(g_theWindowManager->Get_Default_System());
-    Win_Set_Tooltip_Func(g_theWindowManager->Get_Default_Tooltip());
+    Win_Set_Tooltip_Func(nullptr);
 }
 
 GameWindow::~GameWindow()

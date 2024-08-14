@@ -286,17 +286,17 @@ bool GameWindowManager::Is_Enabled(GameWindow *window)
 bool GameWindowManager::Is_Hidden(GameWindow *window)
 {
     if (window == nullptr) {
-        return false;
+        return true;
     }
 
-    if ((window->m_status & WIN_STATUS_HIDDEN) == 0) {
+    if ((window->m_status & WIN_STATUS_HIDDEN) != 0) {
         return true;
     }
 
     while (window->m_parent != nullptr) {
         window = window->m_parent;
 
-        if ((window->m_status & WIN_STATUS_HIDDEN) == 0) {
+        if ((window->m_status & WIN_STATUS_HIDDEN) != 0) {
             return true;
         }
     }

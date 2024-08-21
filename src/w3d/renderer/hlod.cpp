@@ -498,7 +498,7 @@ HLodClass::HLodClass(const char *name, RenderObjClass **lods, int count) :
     m_lodCount = count;
     captainslog_assert(m_lodCount >= 1);
 
-    m_lod = new HLodClass::ModelArrayClass[m_lodCount];
+    m_lod = new ModelArrayClass[m_lodCount];
     captainslog_assert(m_lod);
 
     m_cost = new float[m_lodCount];
@@ -1742,6 +1742,9 @@ void HLodClass::Free()
     m_lodCount = 0;
     delete[] m_cost;
     delete[] m_value;
+    m_lod = nullptr;
+    m_cost = nullptr;
+    m_value = nullptr;
 
     for (int i = 0; i < m_additionalModels.Count(); i++) {
         RenderObjClass *robj = m_additionalModels[i].m_model;

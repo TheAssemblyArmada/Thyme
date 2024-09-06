@@ -237,12 +237,13 @@ int AABTreeClass::Cast_Semi_Infinite_Axis_Aligned_Ray_Recursive(CullNodeStruct *
     int direction,
     unsigned char &flags)
 {
-    static const float sign[2] = { -1.0f, 1.0f };
-    float bounds[2], start[2];
-    bounds[0] = -node->m_min[axis_r];
-    bounds[1] = node->m_max[axis_r];
-    start[0] = -start_point[axis_r];
-    start[1] = start_point[axis_r];
+    constexpr float sign[2] = { -1.0f, 1.0f };
+    float bounds[2];
+    float start[2];
+    bounds[0] = node->m_min[axis_r] * sign[0];
+    bounds[1] = node->m_max[axis_r] * sign[1];
+    start[0] = start_point[axis_r] * sign[0];
+    start[1] = start_point[axis_r] * sign[1];
 
     if (start_point[axis_1] < node->m_min[axis_1] || start_point[axis_2] < node->m_min[axis_2]
         || start_point[axis_1] > node->m_max[axis_1] || start_point[axis_2] > node->m_max[axis_2]

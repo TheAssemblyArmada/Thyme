@@ -1583,11 +1583,11 @@ GameWindow *Parse_Window(File *in_file, char *buffer)
 GameWindow *GameWindowManager::Win_Create_From_Script(Utf8String filename, WindowLayoutInfo *info)
 {
     static char buffer[2096];
-    char path[260];
+    char path[PATH_MAX];
     const char *fname = filename.Str();
     GameWindow *window = nullptr;
+    memset(path, 0, sizeof(path));
     strcpy(path, "Window\\");
-    memset(&path[8], 0, 0xFCu);
     WindowLayoutInfo new_info;
     Utf8String str;
     Reset_Window_Stack();

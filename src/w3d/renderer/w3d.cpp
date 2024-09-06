@@ -75,7 +75,7 @@ public:
 class DefaultStaticSortListClass : public StaticSortListClass
 {
 public:
-    DefaultStaticSortListClass() : m_minLevel(1), m_maxLevel(32) {}
+    DefaultStaticSortListClass() : m_minLevel(1), m_maxLevel(ARRAY_SIZE(m_lists) - 1) {}
     virtual ~DefaultStaticSortListClass() override {}
     virtual void Add_To_List(RenderObjClass *robj, unsigned int sort_level) override;
     virtual void Render_And_Clear(RenderInfoClass &rinfo) override;
@@ -88,7 +88,7 @@ private:
 
 void DefaultStaticSortListClass::Add_To_List(RenderObjClass *robj, unsigned int sort_level)
 {
-    if (sort_level >= 1 && sort_level <= 32) {
+    if (sort_level >= 1 && sort_level <= ARRAY_SIZE(m_lists) - 1) {
         m_lists[sort_level].Add_Tail(robj, false);
     } else {
         captainslog_assert(0);

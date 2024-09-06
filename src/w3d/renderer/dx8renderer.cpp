@@ -81,7 +81,7 @@ bool Textures_Material_And_Shader_Booking_Struct::Add_Textures_Material_And_Shad
     for (unsigned int i = 0; i < m_addedTypeCount; i++) {
         bool b = true;
 
-        for (int j = 0; j < 2; j++) {
+        for (int j = 0; j < ARRAY_SIZE(m_addedTextures); j++) {
             b = b && texs[j] == m_addedTextures[j][i];
         }
 
@@ -91,7 +91,7 @@ bool Textures_Material_And_Shader_Booking_Struct::Add_Textures_Material_And_Shad
     }
 
     captainslog_assert(m_addedTypeCount < MAX_ADDED_TYPE_COUNT);
-    for (int k = 0; k < 2; k++) {
+    for (int k = 0; k < ARRAY_SIZE(m_addedTextures); k++) {
         m_addedTextures[k][m_addedTypeCount] = texs[k];
     }
 
@@ -207,7 +207,7 @@ TextureClass *Vertex_Split_Table::Peek_Texture(unsigned int pidx, unsigned int p
         if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Peek_Texture(pidx, pass, stage);
         } else {
-            captainslog_dbgassert(0, "GapFillerClass removed");
+            captainslog_dbgassert(false, "GapFillerClass removed");
             return nullptr;
         }
     } else {
@@ -221,7 +221,7 @@ VertexMaterialClass *Vertex_Split_Table::Peek_Material(unsigned int pidx, unsign
         if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Peek_Material(m_mmc->Get_Polygon_Array()[pidx][0], pass);
         } else {
-            captainslog_dbgassert(0, "GapFillerClass removed");
+            captainslog_dbgassert(false, "GapFillerClass removed");
             return nullptr;
         }
     } else {
@@ -235,7 +235,7 @@ ShaderClass Vertex_Split_Table::Peek_Shader(unsigned int pidx, unsigned int pass
         if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Get_Shader(pidx, pass);
         } else {
-            captainslog_dbgassert(0, "GapFillerClass removed");
+            captainslog_dbgassert(false, "GapFillerClass removed");
             return ShaderClass();
         }
     } else {
@@ -471,7 +471,7 @@ DX8TextureCategoryClass::DX8TextureCategoryClass(
     captainslog_assert(pass >= 0);
     captainslog_assert(pass < DX8FVFCategoryContainer::MAX_PASSES);
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < ARRAY_SIZE(m_textures); i++) {
         m_textures[i] = nullptr;
         Ref_Ptr_Set(m_textures[i], texs[i]);
     }
@@ -493,7 +493,7 @@ DX8TextureCategoryClass::~DX8TextureCategoryClass()
         g_theDX8MeshRenderer.Unregister_Mesh_Type(r->Get_Mesh_Model_Class());
     }
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < ARRAY_SIZE(m_textures); i++) {
         Ref_Ptr_Release(m_textures[i]);
     }
 
@@ -510,7 +510,7 @@ void DX8TextureCategoryClass::Add_Render_Task(DX8PolygonRendererClass *p_rendere
 
 void DX8TextureCategoryClass::Render()
 {
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < ARRAY_SIZE(m_textures); i++) {
         DX8Wrapper::Set_Texture(i, Peek_Texture(i));
     }
 
@@ -931,7 +931,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Texture(MultiListClass<DX8
                         DX8TextureCategoryClass *tc = Find_Matching_Texture_Category(new_texture, pass, stage, texcat);
 
                         if (tc == nullptr) {
-                            TextureClass *tmp_textures[2];
+                            TextureClass *tmp_textures[DX8TextureCategoryClass::TextureSize];
                             tmp_textures[0] = texcat->Peek_Texture(0);
                             tmp_textures[1] = texcat->Peek_Texture(1);
                             tmp_textures[stage] = new_texture;
@@ -1012,7 +1012,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Material(
                         DX8TextureCategoryClass *tc = Find_Matching_Texture_Category(new_vmat, pass, texcat);
 
                         if (tc == nullptr) {
-                            TextureClass *tmp_textures[2];
+                            TextureClass *tmp_textures[DX8TextureCategoryClass::TextureSize];
                             tmp_textures[0] = texcat->Peek_Texture(0);
                             tmp_textures[1] = texcat->Peek_Texture(1);
                             tc = new DX8TextureCategoryClass(this, tmp_textures, texcat->Get_Shader(), new_vmat, pass);
@@ -1132,7 +1132,7 @@ DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category
             DX8TextureCategoryClass *tc = dest_it.Peek_Obj();
             bool b = true;
 
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < DX8TextureCategoryClass::TextureSize; i++) {
                 b = b && (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
             }
 
@@ -1159,7 +1159,7 @@ DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category
             DX8TextureCategoryClass *tc = dest_it.Peek_Obj();
             bool b = true;
 
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < DX8TextureCategoryClass::TextureSize; i++) {
                 if (stage != i) {
                     b = b && (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
                 }
@@ -1253,7 +1253,7 @@ void DX8FVFCategoryContainer::Generate_Texture_Categories(Vertex_Split_Table &sp
         int old_used_indices = m_usedIndices;
 
         for (int j = 0; j < polygon_count; j++) {
-            TextureClass *texs[2];
+            TextureClass *texs[DX8TextureCategoryClass::TextureSize];
             texs[0] = split_table.Peek_Texture(j, i, 0);
             texs[1] = split_table.Peek_Texture(j, i, 1);
             VertexMaterialClass *vmat = split_table.Peek_Material(j, i);

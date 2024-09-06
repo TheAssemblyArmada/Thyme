@@ -206,7 +206,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
     }
 
     TargaImage targa;
-    targa.Open(texture, 0);
+    targa.Open(texture, TargaImage::TARGA_READ);
     targa.Toggle_Flip_Y();
     WW3DFormat dest_format;
     WW3DFormat src_format;

@@ -646,7 +646,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
         file.Read_Byte_Array(reinterpret_cast<uint8_t *>(m_extraBlendTileNdxes), 2 * m_dataSize);
 
         if (!g_theWriteableGlobalData->m_use3WayTerrainBlends) {
-            memset(m_extraBlendTileNdxes, 0, 2 * m_dataSize);
+            memset(m_extraBlendTileNdxes, 0, sizeof(short) * m_dataSize);
         }
     }
 
@@ -2033,7 +2033,7 @@ void WorldHeightMap::Setup_Alpha_Tiles()
     if (!s_alphaTiles[0]) {
         for (int i = 0; i < 12; i++) {
             bool b[16];
-            memset(b, false, 16);
+            memset(b, false, sizeof(b));
             int i2 = i;
 
             if (i >= 6) {

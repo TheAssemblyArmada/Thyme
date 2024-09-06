@@ -115,6 +115,7 @@ AudioDataHandle MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
         open_audio.wave_data = file_data;
     }
 
+    static_assert(sizeof(open_audio.info) == sizeof(sound_info), "Expected equal");
     memcpy(&open_audio.info, &sound_info, sizeof(sound_info));
     open_audio.data_size = file_size;
     open_audio.ref_count = 1;

@@ -1133,7 +1133,7 @@ DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category
             bool b = true;
 
             for (int i = 0; i < 2; i++) {
-                b = b & (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
+                b = b && (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
             }
 
             if (b) {
@@ -1161,7 +1161,7 @@ DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category
 
             for (int i = 0; i < 2; i++) {
                 if (stage != i) {
-                    b = b & (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
+                    b = b && (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
                 }
             }
 

@@ -1251,8 +1251,11 @@ void CMainFrame::OnCopyScreenSize()
     str.Format("MaxScreenSize=%f", size);
     int len = str.GetLength() + 1;
     HGLOBAL global = GlobalAlloc(GHND, len);
-    memcpy(GlobalLock(global), static_cast<const char *>(str), len);
-    GlobalUnlock(global);
+    LPVOID mem = GlobalLock(global);
+    if (mem != NULL) {
+        memcpy(mem, static_cast<const char *>(str), len);
+        GlobalUnlock(global);
+    }
     OpenClipboard();
     EmptyClipboard();
     SetClipboardData(CF_TEXT, global);

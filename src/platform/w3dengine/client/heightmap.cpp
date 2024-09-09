@@ -479,7 +479,7 @@ int HeightMapRenderObjClass::Init_Height_Data(
                     if (map->Get_Extra_Alpha_UV_Data(x_pos, y_pos, u, v, alpha, &need_flip, &is_cliff)) {
                         if (m_numExtraBlendTiles >= m_extraBlendTilePositionsSize) {
                             unsigned int *tiles = new unsigned int[m_extraBlendTilePositionsSize + 512];
-                            memcpy(tiles, m_extraBlendTilePositions, 4 * m_extraBlendTilePositionsSize);
+                            memcpy(tiles, m_extraBlendTilePositions, sizeof(unsigned int) * m_extraBlendTilePositionsSize);
                             delete[] m_extraBlendTilePositions;
                             m_extraBlendTilePositions = tiles;
                             m_extraBlendTilePositionsSize += 512;

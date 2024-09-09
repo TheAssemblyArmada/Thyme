@@ -120,7 +120,7 @@ W3DAssetManager::W3DAssetManager() :
     Register_Prototype_Loader(&s_sphereLoader);
     Register_Prototype_Loader(&s_particleEmitterLoader);
     m_prototypeHashTable = new PrototypeClass *[PROTOTYPE_HASH_TABLE_SIZE];
-    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(uintptr_t));
+    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(PrototypeClass *));
 }
 
 // 0x008143C0
@@ -191,7 +191,7 @@ void W3DAssetManager::Free_Assets()
         }
     }
 
-    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(uintptr_t));
+    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(PrototypeClass *));
     m_hAnimManager.Free_All_Anims();
     m_hTreeManager.Free_All_Trees();
     Release_All_Textures();
@@ -219,7 +219,7 @@ void W3DAssetManager::Free_Assets_With_Exclusion_List(DynamicVectorClass<StringC
     }
 
     m_prototypes.Reset_Active();
-    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(uintptr_t));
+    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(PrototypeClass *));
 
     for (int i = 0; i < vector.Count(); i++) {
         Add_Prototype(vector[i]);
@@ -262,9 +262,9 @@ RenderObjClass *W3DAssetManager::Create_Render_Obj(const char *name)
         char asset_filename[256]{};
         auto *period = strchr(name, '.');
         if (period == nullptr) {
-            snprintf(asset_filename, 256, "%s.w3d", name);
+            snprintf(asset_filename, ARRAY_SIZE(asset_filename), "%s.w3d", name);
         } else {
-            snprintf(asset_filename, 256, "%s.w3d", period + 1);
+            snprintf(asset_filename, ARRAY_SIZE(asset_filename), "%s.w3d", period + 1);
         }
 
         if (Load_3D_Assets(asset_filename) == false) {
@@ -324,7 +324,7 @@ HAnimClass *W3DAssetManager::Get_HAnim(const char *name)
     asset++;
 
     char asset_filename[256]{};
-    snprintf(asset_filename, 256, "%s.w3d", asset);
+    snprintf(asset_filename, ARRAY_SIZE(asset_filename), "%s.w3d", asset);
 
     if (Load_3D_Assets(asset_filename) == false) {
         StringClass new_filename = StringClass{ "..\\", true } + asset_filename;
@@ -410,8 +410,7 @@ void W3DAssetManager::Release_All_Textures()
 // 0x00815D90
 void W3DAssetManager::Release_Unused_Textures()
 {
-    constexpr int unused_textures_size = 256;
-    TextureClass *unused_textures[unused_textures_size]{};
+    TextureClass *unused_textures[256]{};
     int unused_textures_count = 0;
 
     for (HashTemplateIterator<StringClass, TextureClass *> texture(m_textureHash); !texture.Is_Done(); texture.Next()) {
@@ -421,7 +420,7 @@ void W3DAssetManager::Release_Unused_Textures()
 
         unused_textures[unused_textures_count++] = texture.Peek_Value();
 
-        if (unused_textures_count < unused_textures_size) {
+        if (unused_textures_count < ARRAY_SIZE(unused_textures)) {
             continue;
         }
 
@@ -508,7 +507,7 @@ HTreeClass *W3DAssetManager::Get_HTree(const char *name)
     }
 
     char asset_filename[256]{};
-    snprintf(asset_filename, 256, "%s.w3d", name);
+    snprintf(asset_filename, ARRAY_SIZE(asset_filename), "%s.w3d", name);
 
     if (Load_3D_Assets(asset_filename) == false) {
         StringClass new_filename = StringClass{ "..\\", true } + asset_filename;

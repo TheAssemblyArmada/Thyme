@@ -365,7 +365,7 @@ W3DErrorType MeshModelClass::Load_W3D(ChunkLoadClass &cload)
     m_w3dAttributes = context->m_header.Attributes;
     m_sortLevel = context->m_header.SortLevel;
     tmpname = new char[namelen];
-    memset(tmpname, 0, namelen);
+    memset(tmpname, 0, sizeof(char) * namelen);
 
     if (strlen(context->m_header.ContainerName) > 0) {
         strcpy(tmpname, context->m_header.ContainerName);

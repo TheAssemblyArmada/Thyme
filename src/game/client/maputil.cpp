@@ -461,7 +461,7 @@ bool Load_Map(Utf8String name)
     char name_without_ext[PATH_MAX];
 
     if (len >= 4) {
-        memset(name_without_ext, 0, PATH_MAX);
+        memset(name_without_ext, 0, sizeof(name_without_ext));
         strncpy(name_without_ext, name_copy, len - 4);
     }
 
@@ -499,7 +499,7 @@ unsigned int Calc_CRC(Utf8String dir, Utf8String name)
     char name_without_ext[PATH_MAX];
 
     if (len >= 4) {
-        memset(name_without_ext, 0, PATH_MAX);
+        memset(name_without_ext, 0, sizeof(name_without_ext));
         strncpy(name_without_ext, name_copy, len - 4);
     }
 

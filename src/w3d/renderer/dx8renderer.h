@@ -122,6 +122,9 @@ private:
 #else
     static bool s_forceMultiply;
 #endif
+
+public:
+    static constexpr int TextureSize = ARRAY_SIZE(m_textures); // Thyme specific
 };
 
 class DX8FVFCategoryContainer : public MultiListObjectClass

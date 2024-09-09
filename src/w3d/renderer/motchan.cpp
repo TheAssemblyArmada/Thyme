@@ -545,14 +545,14 @@ float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigne
         m_cacheFrame = frame_idx;
         return m_cacheData[vector_idx];
     } else if (frame_idx == m_cacheFrame + 2) {
-        memcpy(m_cacheData, &m_cacheData[m_vectorLen], 4 * m_vectorLen);
+        memcpy(m_cacheData, &m_cacheData[m_vectorLen], sizeof(float) * m_vectorLen);
         Decompress(++m_cacheFrame, m_cacheData, frame_idx, &m_cacheData[m_vectorLen]);
         return m_cacheData[vector_idx + m_vectorLen];
     } else {
 
         captainslog_assert(m_vectorLen < 4);
 
-        memcpy(dst, &m_cacheData[m_vectorLen], 4 * m_vectorLen);
+        memcpy(dst, &m_cacheData[m_vectorLen], sizeof(float) * m_vectorLen);
         Decompress(m_cacheFrame, dst, frame_idx, m_cacheData);
         m_cacheFrame = frame_idx;
 

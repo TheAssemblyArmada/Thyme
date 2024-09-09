@@ -91,7 +91,7 @@ FileClass *SimpleFileFactoryClass::Get_File(const char *filename)
                     new_name.Format("%s%s", token, stripped_name.Peek_Buffer());
                     file->Set_Name(new_name);
 
-                    if (file->Open(1)) {
+                    if (file->Open(FM_READ)) {
                         file->Close();
                         break;
                     }

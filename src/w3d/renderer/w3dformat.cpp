@@ -110,7 +110,7 @@ uint32_t WW3DFormat_To_D3DFormat(WW3DFormat format)
 
 WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
 {
-    char buff[5];
+    char buff[sizeof(format) + 1];
 
     switch (format) {
         case FourCC<'D', 'X', 'T', '1'>::value:
@@ -133,7 +133,7 @@ WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
 
     // Log if the engine tries to load a DDS format we don't currently handle.
     memcpy(buff, &format, sizeof(format));
-    buff[4] = '\0';
+    buff[sizeof(format)] = '\0';
     captainslog_error("TODO Unhandled format FourCC '%s', implementations welcome.", buff);
 
     return WW3D_FORMAT_UNKNOWN;

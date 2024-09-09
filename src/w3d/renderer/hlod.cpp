@@ -168,8 +168,8 @@ bool HLodDefClass::SubObjectArrayClass::Save_W3D(ChunkSaveClass &csave)
                         W3dHLodSubObjectStruct subobjheader;
                         memset(&subobjheader, 0, sizeof(subobjheader));
                         subobjheader.BoneIndex = m_boneIndex[i];
-                        strncpy(subobjheader.Name, m_modelName[i], 32);
-                        subobjheader.Name[31] = 0;
+                        strncpy(subobjheader.Name, m_modelName[i], ARRAY_SIZE(subobjheader.Name));
+                        subobjheader.Name[ARRAY_SIZE(subobjheader.Name) - 1] = 0;
                         b = csave.Write(&subobjheader, sizeof(W3dHLodSubObjectStruct)) == sizeof(W3dHLodSubObjectStruct);
                         csave.End_Chunk();
                     }
@@ -336,10 +336,10 @@ W3DErrorType HLodDefClass::Save_Header(ChunkSaveClass &csave)
     memset(&header, 0, sizeof(header));
     header.Version = 0x10000;
     header.LodCount = m_lodCount;
-    strncpy(header.Name, m_name, 16);
-    header.Name[15] = 0;
-    strncpy(header.HierarchyName, m_hierarchyTreeName, 16);
-    header.HierarchyName[15] = 0;
+    strncpy(header.Name, m_name, ARRAY_SIZE(header.Name));
+    header.Name[ARRAY_SIZE(header.Name) - 1] = 0;
+    strncpy(header.HierarchyName, m_hierarchyTreeName, ARRAY_SIZE(header.HierarchyName));
+    header.HierarchyName[ARRAY_SIZE(header.HierarchyName) - 1] = 0;
 
     W3DErrorType error = W3D_ERROR_OK;
 
@@ -1226,8 +1226,8 @@ void HLodClass::Include_NULL_Lod(bool include)
 
             float *costs = new float[m_lodCount];
             float *values = new float[m_lodCount + 1];
-            memcpy(costs, &m_cost + 1, m_lodCount * 4);
-            memcpy(values, &m_value + 1, (m_lodCount * 4) + 4);
+            memcpy(costs, &m_cost + 1, m_lodCount * sizeof(float));
+            memcpy(values, &m_value + 1, (m_lodCount * sizeof(float)) + sizeof(float));
 
             delete[] m_lod;
             delete[] m_cost;
@@ -1253,8 +1253,8 @@ void HLodClass::Include_NULL_Lod(bool include)
 
             float *costs = new float[m_lodCount];
             float *values = new float[m_lodCount + 1];
-            memcpy(costs + 1, &m_cost, m_lodCount * 4);
-            memcpy(values + 1, &m_value, (m_lodCount * 4) + 4);
+            memcpy(costs + 1, &m_cost, m_lodCount * sizeof(float));
+            memcpy(values + 1, &m_value, (m_lodCount * sizeof(float)) + sizeof(float));
 
             delete[] m_lod;
             delete[] m_cost;

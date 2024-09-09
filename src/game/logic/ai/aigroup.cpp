@@ -718,13 +718,13 @@ bool AIGroup::Friend_Move_Infantry_To_Pos(const Coord3D *pos, CommandSourceType 
                     int i7 = 10000;
                     int i8 = 10000;
 
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < ARRAY_SIZE(counts1); j++) {
                         if (counts1[j] < i7) {
                             i7 = counts1[j];
                         }
                     }
 
-                    for (int j = 0; j < 5; j++) {
+                    for (int j = 0; j < ARRAY_SIZE(counts2); j++) {
                         if (counts2[j] < i8) {
                             i8 = counts2[j];
                         }
@@ -733,7 +733,7 @@ bool AIGroup::Friend_Move_Infantry_To_Pos(const Coord3D *pos, CommandSourceType 
                     int i9 = 10000;
                     int i10 = -1;
 
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < ARRAY_SIZE(counts1); j++) {
                         if (counts1[j] == i7) {
                             int i11 = i6 + 1 - j;
 
@@ -756,7 +756,7 @@ bool AIGroup::Friend_Move_Infantry_To_Pos(const Coord3D *pos, CommandSourceType 
                     i9 = 10000;
                     i10 = -1;
 
-                    for (int j = 0; j < 5; j++) {
+                    for (int j = 0; j < ARRAY_SIZE(counts2); j++) {
                         if (counts2[j] == i8) {
                             int i12 = i5 + 2 - j;
 
@@ -1204,12 +1204,12 @@ bool AIGroup::Friend_Move_Vehicle_To_Pos(const Coord3D *pos, CommandSourceType c
                     int i7 = 10000;
                     int i8 = 10000;
 
-                    for (int j = 0; j < 3; j += 2) {
+                    for (int j = 0; j < ARRAY_SIZE(counts1); j += 2) {
                         if (counts1[j] < i7) {
                             i7 = counts1[j];
                         }
                     }
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < ARRAY_SIZE(counts2); j++) {
                         if (counts2[j] < i8) {
                             i8 = counts2[j];
                         }
@@ -1218,7 +1218,7 @@ bool AIGroup::Friend_Move_Vehicle_To_Pos(const Coord3D *pos, CommandSourceType c
                     int i9 = 10000;
                     int i10 = -1;
 
-                    for (int j = 0; j < 3; j += 2) {
+                    for (int j = 0; j < ARRAY_SIZE(counts1); j += 2) {
                         if (counts1[j] == i7) {
                             int i11 = i6 + 1 - j;
 
@@ -1241,7 +1241,7 @@ bool AIGroup::Friend_Move_Vehicle_To_Pos(const Coord3D *pos, CommandSourceType c
                     i9 = 10000;
                     i10 = -1;
 
-                    for (int j = 0; j < 3; j++) {
+                    for (int j = 0; j < ARRAY_SIZE(counts2); j++) {
                         if (counts2[j] == i8) {
                             int i12 = i5 + 1 - j;
 

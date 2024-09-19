@@ -94,6 +94,7 @@ void Init_Memory_Manager()
         captainslog_dbgassert(g_thePreMainInitFlag, "memory manager is already inited");
     }
 
+#if defined GAME_DEBUG
     // Check that new and delete both use our custom implementation.
     g_theLinkChecker = 0;
 
@@ -111,6 +112,7 @@ void Init_Memory_Manager()
         captainslog_fatal("Wrong operator new/delete linked in! Fix this...");
         exit(-1);
     }
+#endif
 
     g_theMainInitFlag = true;
 }

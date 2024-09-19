@@ -195,7 +195,7 @@ void *operator new[](size_t bytes)
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
-void operator delete(void *ptr)
+void operator delete(void *ptr) noexcept
 {
     ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
@@ -204,7 +204,7 @@ void operator delete(void *ptr)
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 
-void operator delete[](void *ptr)
+void operator delete[](void *ptr) noexcept
 {
     ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
@@ -212,3 +212,15 @@ void operator delete[](void *ptr)
 
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
+
+//#if __cplusplus >= 201402L
+void operator delete(void *ptr, size_t sz) noexcept
+{
+    operator delete(ptr);
+}
+
+void operator delete[](void *ptr, size_t sz) noexcept
+{
+    operator delete[](ptr);
+}
+//#endif

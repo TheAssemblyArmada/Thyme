@@ -99,6 +99,9 @@ int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 
 void *MemoryPool::Allocate_Block_No_Zero()
 {
+#ifdef __SANITIZE_ADDRESS__
+    return malloc(m_allocationSize);
+#else
     ScopedCriticalSectionClass scs(g_memoryPoolCriticalSection);
 
     if (m_firstBlobWithFreeBlocks != nullptr && m_firstBlobWithFreeBlocks->m_firstFreeBlock == nullptr) {
@@ -124,6 +127,7 @@ void *MemoryPool::Allocate_Block_No_Zero()
     m_peakUsedBlocksInPool = std::max(m_peakUsedBlocksInPool, m_usedBlocksInPool);
 
     return block->Get_User_Data();
+#endif
 }
 
 void *MemoryPool::Allocate_Block()
@@ -139,7 +143,9 @@ void MemoryPool::Free_Block(void *block)
     if (block == nullptr) {
         return;
     }
-
+#ifdef __SANITIZE_ADDRESS__
+    free(block);
+#else
     ScopedCriticalSectionClass scs(g_memoryPoolCriticalSection);
     MemoryPoolSingleBlock *mp_block = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);
     MemoryPoolBlob *mp_blob = mp_block->m_owningBlob;
@@ -152,6 +158,7 @@ void MemoryPool::Free_Block(void *block)
         m_firstBlobWithFreeBlocks = mp_blob;
         --m_usedBlocksInPool;
     }
+#endif
 }
 
 int MemoryPool::Count_Blobs()

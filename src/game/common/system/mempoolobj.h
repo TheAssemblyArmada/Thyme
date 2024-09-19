@@ -33,10 +33,9 @@ protected:
     virtual ~MemoryPoolObject() {}
     virtual MemoryPool *Get_Object_Pool() = 0;
 
-#ifndef __SANITIZE_ADDRESS__
     void *operator new(size_t) = delete;
     void operator delete(void *) { captainslog_dbgassert(0, "This should be impossible to call"); }
-#endif
+
     // Class implementing Get_Object_Pool needs to provide these
     // use macros below to generated them.
 };
@@ -45,20 +44,6 @@ protected:
 // based class to implement required functions. "classname" must match
 // the name of the class in which it is used, "poolname" should match a
 // gamememoryinit.cpp entry.
-#ifdef __SANITIZE_ADDRESS__
-#define IMPLEMENT_NAMED_POOL(classname, poolname) \
-private: \
-    virtual MemoryPool *Get_Object_Pool() override { return nullptr; } \
-\
-public: \
-    enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED = 0 };
-
-#define IMPLEMENT_ABSTRACT_POOL(classname) \
-protected: \
-    virtual MemoryPool *Get_Object_Pool() override { throw CODE_01; } \
-\
-private:
-#else
 #define IMPLEMENT_NAMED_POOL(classname, poolname) \
 private: \
     static MemoryPool *Get_Class_Pool() \
@@ -117,7 +102,6 @@ protected: \
     } \
 \
 private:
-#endif
 
 #define IMPLEMENT_POOL(classname) IMPLEMENT_NAMED_POOL(classname, classname);
 // NEW_POOL_OBJ is obsolete. Can be removed.
@@ -129,13 +113,9 @@ private:
 inline void MemoryPoolObject::Delete_Instance()
 {
     if (this != nullptr) {
-#ifdef __SANITIZE_ADDRESS__
-        delete this;
-#else
         MemoryPool *pool = Get_Object_Pool();
         this->~MemoryPoolObject();
         pool->Free_Block(this);
-#endif
     }
 }
 

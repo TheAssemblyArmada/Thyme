@@ -94,8 +94,6 @@ void Init_Memory_Manager()
         captainslog_dbgassert(g_thePreMainInitFlag, "memory manager is already inited");
     }
 
-#if defined GAME_DEBUG && !defined __SANITIZE_ADDRESS__
-
     // Check that new and delete both use our custom implementation.
     g_theLinkChecker = 0;
 
@@ -113,7 +111,6 @@ void Init_Memory_Manager()
         captainslog_fatal("Wrong operator new/delete linked in! Fix this...");
         exit(-1);
     }
-#endif
 
     g_theMainInitFlag = true;
 }
@@ -180,7 +177,6 @@ void Free_From_W3D_Mem_Pool(void *pool, void *data)
 }
 
 // These all override the global news and deletes just by being linked.
-#ifndef __SANITIZE_ADDRESS__
 void *operator new(size_t bytes)
 {
     ++g_theLinkChecker;
@@ -216,4 +212,3 @@ void operator delete[](void *ptr)
 
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
-#endif

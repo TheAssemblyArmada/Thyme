@@ -36,7 +36,6 @@ DynamicMemoryAllocator::DynamicMemoryAllocator() :
 
 void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, PoolInitRec const *const params)
 {
-#ifndef __SANITIZE_ADDRESS__
     PoolInitRec const defaults[7] = {
         { "dmaPool_16", 16, 64, 64 },
         { "dmaPool_32", 32, 64, 64 },
@@ -66,7 +65,6 @@ void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, Pool
     for (int i = 0; i < m_poolCount; ++i) {
         m_pools[i] = m_factory->Create_Memory_Pool(&init_list[i]);
     }
-#endif
 }
 
 DynamicMemoryAllocator::~DynamicMemoryAllocator()

@@ -61,9 +61,9 @@ jobs:
         7z a artifact/thyme_${{ steps.vars.outputs.arc_path }}.zip ./build/thyme.exe ./build/thyme.pdb ./build/DebugWindow.dll ./build/DebugWindow.pdb ./build/thymecrashhandler.exe ./build/thymecrashhandler.pdb ./build/w3dview.exe ./build/w3dview.pdb ./build/wdump.exe ./build/wdump.pdb
         if [ ${{ matrix.platform }} = "x86" ]; then 7z u artifact/thyme_${{ steps.vars.outputs.arc_path }}.zip ./build/thyme.dll ./build/thymedll.pdb ./build/avifil32.dll ./build/proxydll.pdb ;fi
     - name: Upload artifact
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
-        name: thyme
+        name: thyme-win-${{ matrix.platform }}
         path: artifact
         
     - name: Upload development release

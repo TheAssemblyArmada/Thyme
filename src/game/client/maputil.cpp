@@ -114,7 +114,7 @@ void WaypointMap::Update()
             key_name.Format("Player_%d_Start", i);
             it = g_waypoints->find(key_name);
 
-            if (it != g_waypoints->end()) {
+            if (it == g_waypoints->end()) {
                 break;
             }
 
@@ -431,7 +431,7 @@ bool Parse_Object_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *d
 
     if (object->Get_Properties()->Get_Type(g_waypointIDKey) == Dict::DICT_INT) {
         object->Set_Is_Waypoint();
-        (*s_waypoints)[object->Get_Waypoint_Name()] = loc;
+        (*g_waypoints)[object->Get_Waypoint_Name()] = loc;
     } else if (object->Get_Thing_Template() != nullptr && object->Get_Thing_Template()->Is_KindOf(KINDOF_TECH_BUILDING)) {
         s_techPositions.push_back(loc);
     } else if (object->Get_Thing_Template() != nullptr) {
@@ -470,7 +470,7 @@ bool Load_Map(Utf8String name)
 
     if (stream.Open(name_copy2)) {
         DataChunkInput input(&stream);
-        s_waypoints = new WaypointMap();
+        g_waypoints = new WaypointMap();
         input.Register_Parser("HeightMapData", Utf8String::s_emptyString, Parse_Size_Only_In_Chunk, nullptr);
         input.Register_Parser("WorldInfo", Utf8String::s_emptyString, Parse_World_Dict_Data_Chunk, nullptr);
         input.Register_Parser("ObjectsList", Utf8String::s_emptyString, Parse_Objects_Data_Chunk, nullptr);
@@ -528,9 +528,9 @@ unsigned int Calc_CRC(Utf8String dir, Utf8String name)
 
 void Reset_Map()
 {
-    if (s_waypoints != nullptr) {
-        delete s_waypoints;
-        s_waypoints = nullptr;
+    if (g_waypoints != nullptr) {
+        delete g_waypoints;
+        g_waypoints = nullptr;
     }
 
     s_techPositions.clear();

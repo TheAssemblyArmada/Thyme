@@ -34,8 +34,8 @@
 #include <algorithm>
 
 #ifndef GAME_DLL
-WaypointMap *g_waypoints;
-MapCache *g_theMapCache;
+WaypointMap *g_waypoints = nullptr;
+MapCache *g_theMapCache = nullptr;
 #endif
 
 static std::vector<ICoord2D> s_boundaries;
@@ -45,7 +45,6 @@ static std::list<Coord3D> s_techPositions;
 static unsigned int s_width = 0;
 static unsigned int s_height = 0;
 static int s_borderSize = 0;
-static WaypointMap *s_waypoints = nullptr;
 static int s_mapDX = 0;
 static int s_mapDY = 0;
 

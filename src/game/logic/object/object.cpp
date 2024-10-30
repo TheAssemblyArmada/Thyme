@@ -4203,11 +4203,13 @@ void Object::Do_Command_Button(const CommandButton *button, CommandSourceType ty
                     const UpgradeTemplate *upgrade = button->Get_Upgrade_Template();
                     captainslog_dbgassert(upgrade != nullptr, "Undefined upgrade '%s' in player upgrade command", "UNKNOWN");
 
-                    if (upgrade != nullptr
-                        && upgrade->Get_Type() == UPGRADE_TYPE_OBJECT
-                            && (Has_Upgrade(upgrade) || !Affected_By_Upgrade(upgrade))) {
+                    if (upgrade == nullptr) {
                         break;
+                    }
 
+                    if (upgrade->Get_Type() == UPGRADE_TYPE_OBJECT
+                        && (Has_Upgrade(upgrade) || !Affected_By_Upgrade(upgrade))) {
+                        break;
                     }
 
                     ProductionUpdateInterface *production = Get_Production_Update_Interface();

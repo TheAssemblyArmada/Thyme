@@ -69,10 +69,11 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
     // Try loading a dds version of a texture first, then fall back to looking for targa.
     if (mips != 0 && dds.Load()) {
         m_time = dds.Get_Time();
-        int len = m_filename.Get_Length();
-        m_filename[len - 3] = 'd';
-        m_filename[len - 2] = 'd';
-        m_filename[len - 1] = 's';
+
+        // #BUGFIX Change texture extension safely.
+        // Originally code would just write over name length -3 bytes without any checking.
+        Thyme::Change_Texture_File_Extension(
+            m_filename.Peek_Buffer(), m_filename.Get_Length(), m_filename.Get_Allocated_Length(), "dds");
 
         unsigned levels = 0;
         while (levels < mips - 1 && (dds.Get_Width(levels) > 32 || dds.Get_Height(levels) > 32)) {
@@ -143,10 +144,11 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
                 ptr->Close();
             }
 
-            int len = m_filename.Get_Length();
-            m_filename[len - 3] = 't';
-            m_filename[len - 2] = 'g';
-            m_filename[len - 1] = 'a';
+            // #BUGFIX Change texture extension safely.
+            // Originally code would just write over name length -3 bytes without any checking.
+            Thyme::Change_Texture_File_Extension(
+                m_filename.Peek_Buffer(), m_filename.Get_Length(), m_filename.Get_Allocated_Length(), "tga");
+
             m_bitmap = new uint8_t[2 * m_width * m_height];
             m_isAllocated = true;
 

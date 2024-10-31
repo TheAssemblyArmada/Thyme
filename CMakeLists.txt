@@ -232,6 +232,7 @@ endif()
 add_subdirectory(deps/baseconfig EXCLUDE_FROM_ALL)
 
 if(ICU_FOUND)
+    target_link_libraries(base PRIVATE ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
     target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)
 endif()
 

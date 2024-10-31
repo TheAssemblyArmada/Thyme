@@ -126,6 +126,7 @@ public:
 
     void Trim();
     void To_Lower();
+    void To_Upper(); // Not in original code.
     void Remove_Last_Char();
 
     void Format(const char *format, ...);

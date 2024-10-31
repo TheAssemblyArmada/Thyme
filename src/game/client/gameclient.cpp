@@ -710,7 +710,7 @@ void GameClient::Preload_Assets(TimeOfDayType tod)
     g_theControlBar->Preload_Assets(tod);
     g_theParticleSystemManager->Preload_Assets(tod);
 
-    char *preload_textures[39];
+    const char *preload_textures[39];
     preload_textures[0] = "ptspruce01.tga";
     preload_textures[1] = "exrktflame.tga";
     preload_textures[2] = "cvlimo3_d2.tga";

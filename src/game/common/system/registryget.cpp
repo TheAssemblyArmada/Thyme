@@ -90,7 +90,18 @@ bool Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String &d
 
     return success;
 #else
-    return false;
+    Utf8String key = "CNC_ZH_";
+    key += value;
+    key.To_Upper();
+    captainslog_info(
+        "Get_String_From_Registry (environment) - looking in %s for key %s\n", key.Str(), value.Str());
+    const char *env_value = getenv(key.Str());
+    bool success = env_value != nullptr;
+    if (success) {
+        destination = env_value;
+    }
+
+    return success;
 #endif
 }
 
@@ -108,7 +119,18 @@ bool Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8
 
     return success;
 #else
-    return false;
+    Utf8String key = "CNC_GEN_";
+    key += value;
+    key.To_Upper();
+    captainslog_info(
+        "Get_String_From_Generals_Registry (environment) - looking in %s for key %s\n", key.Str(), value.Str());
+    const char *env_value = getenv(key.Str());
+    bool success = env_value != nullptr;
+    if (success) {
+        destination = env_value;
+    }
+
+    return success;
 #endif
 }
 

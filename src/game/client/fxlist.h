@@ -15,7 +15,10 @@
 #pragma once
 
 #include "always.h"
+#include "color.h"
+#include "coord.h"
 #include "namekeygenerator.h"
+#include "randomvalue.h"
 #include "rtsutils.h"
 #include "subsysteminterface.h"
 #include <list>
@@ -36,7 +39,7 @@ class FXNugget : public MemoryPoolObject
     IMPLEMENT_ABSTRACT_POOL(FXNugget);
 
 public:
-    virtual ~FXNugget(){};
+    virtual ~FXNugget() {};
     virtual void Do_FX_Pos(const Coord3D *primary,
         const Matrix3D *primary_mtx,
         float primary_speed,
@@ -103,8 +106,8 @@ class SoundFXNugget : public FXNugget
     IMPLEMENT_POOL(SoundFXNugget);
 
 public:
-    SoundFXNugget(){};
-    virtual ~SoundFXNugget() override{};
+    SoundFXNugget() {};
+    virtual ~SoundFXNugget() override {};
 
     virtual void Do_FX_Pos(const Coord3D *primary,
         const Matrix3D *primary_mtx,
@@ -117,4 +120,153 @@ public:
 
 private:
     Utf8String m_soundName;
+};
+
+class TracerFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(TracerFXNugget);
+
+public:
+    TracerFXNugget() {};
+    virtual ~TracerFXNugget() override {};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override;
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    int m_decayAt;
+    int m_length;
+    float m_width;
+    RGBColor m_color;
+    int speed;
+    float probability;
+};
+
+class LightPulseFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(LightPulseFXNugget);
+
+public:
+    LightPulseFXNugget() : m_radiusAsPercentOfObjectSize(0.0f) {};
+    virtual ~LightPulseFXNugget() override {};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override;
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    RGBColor m_color;
+    int m_radius;
+    float m_radiusAsPercentOfObjectSize;
+    int m_increaseTime;
+    int m_decreaseTime;
+};
+
+class ViewShakeFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(ViewShakeFXNugget);
+
+public:
+    ViewShakeFXNugget() {};
+    virtual ~ViewShakeFXNugget() override {};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override;
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    ShakeIntensities m_type;
+};
+
+class TerrainScorchFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(TerrainScorchFXNugget);
+
+public:
+    TerrainScorchFXNugget() {};
+    virtual ~TerrainScorchFXNugget() override {};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override;
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    Utf8String m_type;
+    int m_radius;
+};
+
+class ParticleSystemFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(ParticleSystemFXNugget);
+
+public:
+    ParticleSystemFXNugget() {};
+    virtual ~ParticleSystemFXNugget() override {};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override;
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    Utf8String m_sysName;
+    int m_count;
+    GameClientRandomVariable m_radius;
+    Coord3D m_offset;
+    GameClientRandomVariable m_height;
+    bool m_attachToObject;
+    GameClientRandomVariable m_initialDelay;
+    bool m_orientToObject;
+    float m_rotateY;
+    bool m_ricochet;
+    bool m_createAtGroundHeight;
+    bool m_useCallersRadius;
+};
+
+struct FXListAtBonePosFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(FXListAtBonePosFXNugget);
+
+public:
+    FXListAtBonePosFXNugget() {};
+    virtual ~FXListAtBonePosFXNugget() override {};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override;
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    FXList *m_fx;
+    Utf8String m_boneName;
+    bool m_orientToBone;
 };

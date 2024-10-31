@@ -390,6 +390,27 @@ void Utf8String::To_Lower()
 }
 
 /**
+ * Converts this string to upper case
+ */
+void Utf8String::To_Upper()
+{
+    // Size specifically matches original code for compatibility.
+    char buf[MAX_TO_LOWER_BUF_LEN];
+
+    if (m_data == nullptr) {
+        return;
+    }
+
+    strcpy(buf, Peek());
+
+    for (char *c = buf; *c != '\0'; ++c) {
+        *c = toupper(*c);
+    }
+
+    Set(buf);
+}
+
+/**
  * @brief Convert any windows path separators to posix ('\' to '/').
  */
 Utf8String Utf8String::Posix_Path() const

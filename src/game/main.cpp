@@ -109,8 +109,17 @@ bool g_noBorder = false;
 /**
  * @brief Sets the working directory, some code currently expects data to be in this directory.
  */
-inline void Set_Working_Directory()
+inline void Set_Working_Directory(int argc, char **argv)
 {
+    const char *workdir = nullptr;
+    for (int i = 0; i < argc && i < 20; ++i) {
+        // DEBUG_LOG("Argument %d was %s\n", i, argv[i]);
+
+        if (strcasecmp(argv[i], "-workdir") == 0) {
+            ++i;
+            workdir = argv[i];
+        }
+    }
 #if defined(PLATFORM_WINDOWS)
     char path[MAX_PATH];
 
@@ -127,9 +136,13 @@ inline void Set_Working_Directory()
 
 #elif defined(PLATFORM_LINUX) // posix otherwise, really just linux currently
     // TODO /proc/curproc/file for FreeBSD /proc/self/path/a.out Solaris
-    char path[PATH_MAX];
-    readlink("/proc/self/exe", path, PATH_MAX);
-    chdir(dirname(path));
+    if (workdir == nullptr) {
+        char path[PATH_MAX];
+        readlink("/proc/self/exe", path, PATH_MAX);
+        chdir(dirname(path));
+    } else {
+        chdir(workdir);
+    }
 
 #elif defined(PLATFORM_OSX) // osx otherwise
     char path[PATH_MAX];
@@ -652,7 +665,7 @@ int main(int argc, char **argv)
 
     // Set working directory to the exe directory.
     // DEBUG_LOG("Setting working directory.\n");
-    Set_Working_Directory();
+    Set_Working_Directory(argc, argv);
 
     Check_Windowed(argc, argv);
 

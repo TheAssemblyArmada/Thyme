@@ -79,6 +79,10 @@ const ModuleFactory::ModuleTemplate *ModuleFactory::Find_Module_Template(const U
         return &it->second;
     }
 
+    if (name == "InactiveBody") {
+        return nullptr;
+    }
+
     captainslog_dbgassert(0, "Module name '%s' not found", name.Str());
     return nullptr;
 }

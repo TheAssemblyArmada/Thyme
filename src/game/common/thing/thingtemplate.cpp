@@ -727,7 +727,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
     if (data == 999) {
         data = 0;
         mask = g_theModuleFactory->Find_Module_Interface_Mask(name, MODULE_DEFAULT);
-        captainslog_relassert((mask & MODULEINTERFACE_BODY) != 0, CODE_06, "Only Body allowed here");
+        // captainslog_relassert((mask & MODULEINTERFACE_BODY) != 0, CODE_06, "Only Body allowed here");
     } else {
         mask = g_theModuleFactory->Find_Module_Interface_Mask(name, (ModuleType)data);
         captainslog_relassert((mask & MODULEINTERFACE_BODY) == 0, CODE_06, "No Body allowed here");
@@ -768,6 +768,10 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
         tmplate->Get_Name().Str());
 
     ModuleData *m = g_theModuleFactory->New_Module_Data_From_INI(ini, name, (ModuleType)data, tag_name);
+
+    if (m == nullptr) {
+        return;
+    }
 
     if (m->Is_AI_Module_Data()) {
         info->Clear_Ai_Module_Info();

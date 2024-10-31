@@ -844,7 +844,7 @@ bool DX8Wrapper::Set_Render_Device(
     captainslog_warn("Reset/Create_Device done, reset_device=%d, restore_assets=%d", reset_device, restore_assets);
     return res;
 #else
-    return false;
+    return true;
 #endif
 }
 

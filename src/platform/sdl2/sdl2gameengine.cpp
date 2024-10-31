@@ -19,12 +19,19 @@
 #include "sdl2keybd.h"
 #include "sdl2mouse.h"
 #include "w3dfunctionlexicon.h"
+#include "w3dgameclient.h"
+#include "w3dgamelogic.h"
 #include "w3dmodulefactory.h"
+#include "w3dparticlesys.h"
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
 #ifdef BUILD_WITH_STDFS
 #include "stdlocalfilesystem.h"
+#endif
+
+#ifdef BUILD_WITH_OPENAL
+#include "alaudiomanager.h"
 #endif
 
 SDL_Window *g_applicationWindow = nullptr;
@@ -123,12 +130,12 @@ ArchiveFileSystem *SDL2GameEngine::Create_Archive_File_System()
 
 GameLogic *SDL2GameEngine::Create_Game_Logic()
 {
-    return nullptr;
+    return new W3DGameLogic;
 }
 
 GameClient *SDL2GameEngine::Create_Game_Client()
 {
-    return nullptr;
+    return new W3DGameClient();
 }
 
 ModuleFactory *SDL2GameEngine::Create_Module_Factory()
@@ -158,12 +165,16 @@ WebBrowser *SDL2GameEngine::Create_Web_Browser()
 
 ParticleSystemManager *SDL2GameEngine::Create_Particle_System_Manager()
 {
-    return nullptr;
+    return new W3DParticleSystemManager();
 }
 
 AudioManager *SDL2GameEngine::Create_Audio_Manager()
 {
+#ifdef BUILD_WITH_OPENAL
+    return new Thyme::ALAudioManager;
+#else
     return nullptr;
+#endif
 }
 
 NetworkInterface *SDL2GameEngine::Create_Network()

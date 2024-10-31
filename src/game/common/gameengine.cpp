@@ -278,13 +278,6 @@ void GameEngine::Real_Init(int argc, char *argv[])
     // textures are DDS in the release build anyhow.
     //}
 
-    // We don't support most after this
-#ifndef GAME_DLL
-#pragma message("SKIPPING NOT YET SUPPORTED SUBSYSTEMS !!!")
-    captainslog_info("Skipping not yet supported subsystems");
-    return;
-#endif
-
     ini.Load("Data/INI/Default/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Water.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
@@ -375,12 +368,14 @@ void GameEngine::Real_Init(int argc, char *argv[])
     Init_Subsystem(
         g_theFXListStore, "TheFXListStore", new FXListStore, &xfer, "Data/INI/Default/FXList.ini", "Data/INI/FXList.ini");
     Init_Subsystem(g_theWeaponStore, "TheWeaponStore", new WeaponStore, &xfer, nullptr, "Data/INI/Weapon.ini");
+#ifdef GAME_DLL
     Init_Subsystem(g_theObjectCreationListStore,
         "TheObjectCreationListStore",
         new ObjectCreationListStore,
         &xfer,
         "Data/INI/Default/ObjectCreationList.ini",
         "Data/INI/ObjectCreationList.ini");
+#endif
     Init_Subsystem(g_theLocomotorStore, "TheLocomotorStore", new LocomotorStore, &xfer, nullptr, "Data/INI/Locomotor.ini");
     Init_Subsystem(g_theSpecialPowerStore,
         "TheSpecialPowerStore",
@@ -397,7 +392,6 @@ void GameEngine::Real_Init(int argc, char *argv[])
         "----------------------------------------------------------------------------After TheBuildAssistant = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
-
     Init_Subsystem(g_theThingFactory,
         "TheThingFactory",
         new ThingFactory,
@@ -410,14 +404,12 @@ void GameEngine::Real_Init(int argc, char *argv[])
         "----------------------------------------------------------------------------After TheThingFactory = %f seconds ",
         0.0f); // TODO processor frequency stuff
 #endif
-
     Init_Subsystem(g_theUpgradeCenter,
         "TheUpgradeCenter",
         new UpgradeCenter,
         &xfer,
         "Data/INI/Default/Upgrade.ini",
         "Data/INI/Upgrade.ini");
-
     Init_Subsystem(g_theGameClient, "TheGameClient", Create_Game_Client());
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug(

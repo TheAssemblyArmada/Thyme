@@ -2998,7 +2998,7 @@ void Player::Do_Bounty_For_Kill(const Object *killer, const Object *killed)
 {
     if (killer != nullptr && killed != nullptr && !killed->Get_Status(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
         unsigned int amount =
-            GameMath::Fast_To_Int_Floor(killed->Get_Template()->Calc_Cost_To_Build(this) * m_bountyCostToBuild);
+            GameMath::Fast_To_Int_Ceil(killed->Get_Template()->Calc_Cost_To_Build(this) * m_bountyCostToBuild);
 
         if (amount != 0) {
             Get_Money()->Deposit(amount, true);

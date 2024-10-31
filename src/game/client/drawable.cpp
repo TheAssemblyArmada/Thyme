@@ -3185,7 +3185,7 @@ void Drawable::Update_Drawable()
                 (*modules)->Set_Terrain_Decal_Opacity(m_terrainDecalOpacity);
             }
 
-            if (m_terrainDecalFadeTarget2 < 0.0f || m_terrainDecalOpacity <= 0.0f) {
+            if (m_terrainDecalFadeTarget2 < 0.0f && m_terrainDecalOpacity <= 0.0f) {
                 m_terrainDecalFadeTarget2 = 0.0f;
                 m_terrainDecalOpacity = 0.0f;
                 Set_Terrain_Decal(TERRAIN_DECAL_8);

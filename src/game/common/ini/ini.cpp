@@ -481,7 +481,7 @@ float INI::Scan_PercentToReal(const char *token)
     int res = sscanf(token, "%f", &value);
     captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse percentage from token %s.", token);
 
-    return (value / 100.0f);
+    return (value * 0.01f);
 }
 
 float INI::Scan_Real(const char *token)

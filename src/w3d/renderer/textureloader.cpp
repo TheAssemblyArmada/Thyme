@@ -81,9 +81,18 @@ w3dtexture_t Load_Compressed_Texture(
 void LoaderThreadClass::Thread_Function()
 {
     while (m_isRunning) {
-        if (!g_backgroundQueue.Empty()) {
+        bool backgroundQueueEmpty;
+        {
             FastCriticalSectionClass::LockClass background_lock(g_backgroundCritSec);
-            TextureLoadTaskClass *task = g_backgroundQueue.Pop_Front();
+            backgroundQueueEmpty = g_backgroundQueue.Empty();
+        }
+
+        if (!backgroundQueueEmpty) {
+            TextureLoadTaskClass *task;
+            {
+                FastCriticalSectionClass::LockClass background_lock(g_backgroundCritSec);
+                task = g_backgroundQueue.Pop_Front();
+            }
             if (task) {
                 task->Load();
                 FastCriticalSectionClass::LockClass foreground_lock(g_foregroundCritSec);
@@ -282,7 +291,6 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
  */
 void TextureLoader::Request_Thumbnail(TextureBaseClass *texture)
 {
-    FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
     if (texture->Peek_Platform_Base_Texture() == W3D_TYPE_INVALID_TEXTURE) {
         if (TextureLoader::Is_DX8_Thread()) {
             Load_Thumbnail(texture);
@@ -290,13 +298,17 @@ void TextureLoader::Request_Thumbnail(TextureBaseClass *texture)
             // Possibly this code isn't ever actually used with Thumbnail code in general being minimally
             // called.
             if (texture->Get_Thumbnail_Load_Task() != nullptr) {
-                g_foregroundQueue.Remove(texture->Get_Thumbnail_Load_Task());
+                {
+                    FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+                    g_foregroundQueue.Remove(texture->Get_Thumbnail_Load_Task());
+                }
                 texture->Get_Thumbnail_Load_Task()->Destroy();
             }
         } else {
             if (texture->Get_Thumbnail_Load_Task() == nullptr) {
                 if (texture->Get_Normal_Load_Task() == nullptr
                     || texture->Get_Normal_Load_Task()->Get_Load_State() == TextureLoadTaskClass::STATE_NONE) {
+                    FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
                     g_foregroundQueue.Push_Back(TextureLoadTaskClass::Create(
                         texture, TextureLoadTaskClass::TASK_THUMBNAIL, TextureLoadTaskClass::PRIORITY_BACKGROUND));
                 }
@@ -312,8 +324,6 @@ void TextureLoader::Request_Thumbnail(TextureBaseClass *texture)
  */
 void TextureLoader::Request_Background_Loading(TextureBaseClass *texture)
 {
-    FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
-
     if (!texture->Is_Initialized() && texture->Get_Normal_Load_Task() == nullptr) {
         TextureLoadTaskClass *task = TextureLoadTaskClass::Create(
             texture, TextureLoadTaskClass::TASK_LOAD, TextureLoadTaskClass::PRIORITY_BACKGROUND);
@@ -321,6 +331,7 @@ void TextureLoader::Request_Background_Loading(TextureBaseClass *texture)
         if (TextureLoader::Is_DX8_Thread()) {
             TextureLoader::Begin_Load_And_Queue(task);
         } else {
+            FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
             g_foregroundQueue.Push_Back(task);
         }
     }
@@ -334,7 +345,6 @@ void TextureLoader::Request_Background_Loading(TextureBaseClass *texture)
 void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
 {
     captainslog_assert(texture != nullptr);
-    FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
 
     if (texture->Is_Initialized()) {
         return;
@@ -344,32 +354,47 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
     TextureLoadTaskClass *thumb_task = texture->Get_Thumbnail_Load_Task();
 
     if (!TextureLoader::Is_DX8_Thread()) {
-        FastCriticalSectionClass::LockClass lock2(g_backgroundCritSec);
         if (thumb_task != nullptr) {
             thumb_task->Set_Load_State(TextureLoadTaskClass::STATE_FOREGROUND_OVERRIDE);
         }
 
         if (task != nullptr) {
             if (task->Get_Parent() == &g_backgroundQueue) {
-                g_backgroundQueue.Remove(task);
-                g_foregroundQueue.Push_Back(task);
+                {
+                    FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+                    g_backgroundQueue.Remove(task);
+                }
+                {
+                    FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+                    g_foregroundQueue.Push_Back(task);
+                }
             }
 
             task->Set_Priority(TextureLoadTaskClass::PRIORITY_FOREGROUND);
         } else {
+            FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
             g_foregroundQueue.Push_Back(TextureLoadTaskClass::Create(
                 texture, TextureLoadTaskClass::TASK_LOAD, TextureLoadTaskClass::PRIORITY_FOREGROUND));
         }
     } else {
         if (thumb_task != nullptr) {
-            g_foregroundQueue.Remove(thumb_task);
+            {
+                FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+                g_foregroundQueue.Remove(thumb_task);
+            }
             thumb_task->Destroy();
         }
 
         if (task != nullptr) {
             FastCriticalSectionClass::LockClass lock2(g_backgroundCritSec);
-            g_foregroundQueue.Remove(task);
-            g_backgroundQueue.Remove(task);
+            {
+                FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+                g_foregroundQueue.Remove(task);
+            }
+            {
+                FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+                g_backgroundQueue.Remove(task);
+            }
         } else {
             task = TextureLoadTaskClass::Create(
                 texture, TextureLoadTaskClass::TASK_LOAD, TextureLoadTaskClass::PRIORITY_FOREGROUND);
@@ -385,9 +410,17 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
  */
 bool TextureLoader::Queues_Not_Empty()
 {
-    FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
-
-    return !g_backgroundQueue.Empty() && !g_foregroundQueue.Empty();
+    bool backgroundQueueEmpty;
+    bool foregroundQueueEmpty;
+    {
+        FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+        backgroundQueueEmpty = g_backgroundQueue.Empty();
+    }
+    {
+        FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+        foregroundQueueEmpty = g_foregroundQueue.Empty();
+    }
+    return !backgroundQueueEmpty && !foregroundQueueEmpty;
 }
 
 bool TextureLoader::Is_Format_Compressed(WW3DFormat format, bool allow_compressed)
@@ -424,11 +457,19 @@ void TextureLoader::Flush_Pending_Load_Tasks()
 void TextureLoader::Update(void (*update)(void))
 {
     if (!s_textureLoadSuspended) {
-        FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+
         int time = rts::Get_Time();
         TextureLoadTaskClass *task;
 
-        while ((task = g_foregroundQueue.Pop_Front()) != nullptr) {
+        while (true) {
+            {
+                FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+                task = g_foregroundQueue.Pop_Front();
+            }
+            if (task == nullptr) {
+                break;
+            }
+
             if (update != nullptr) {
                 int time2 = rts::Get_Time();
 
@@ -457,7 +498,8 @@ void TextureLoader::Process_Foreground_Thumbnail(TextureLoadTaskClass *task)
     switch (task->Get_Load_State()) {
         case TextureLoadTaskClass::STATE_NONE:
             Load_Thumbnail(task->Get_Texture());
-        case TextureLoadTaskClass::STATE_FOREGROUND_OVERRIDE: // Fallthrough
+            [[fallthrough]];
+        case TextureLoadTaskClass::STATE_FOREGROUND_OVERRIDE:
             task->Destroy();
             break;
         default:
@@ -503,6 +545,7 @@ void TextureLoader::Begin_Load_And_Queue(TextureLoadTaskClass *task)
 
     // If we can't start the load of either a dds or tga for the filename in the task set it to missing.
     if (task->Begin_Load()) {
+        FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
         g_backgroundQueue.Push_Front(task);
     } else {
         task->Apply_Missing_Texture();

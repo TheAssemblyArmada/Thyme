@@ -234,6 +234,7 @@ WorldHeightMap::~WorldHeightMap()
 
     Ref_Ptr_Release(m_terrainTex);
     Ref_Ptr_Release(m_alphaTerrainTex);
+    Ref_Ptr_Release(m_alphaEdgeTex);
 }
 
 void WorldHeightMap::Free_List_Of_Map_Objects()

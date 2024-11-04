@@ -689,11 +689,12 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
     captainslog_dbgassert(m_numTextureClasses > 0 || m_numTextureClasses < 16193, "Unlikely m_numTextureClasses.");
 
     for (int i = 0; i < m_numTextureClasses; i++) {
-        m_textureClasses[i].global_texture_class = 0xFFFFFFFF;
+        m_textureClasses[i].global_texture_class = -1;
         m_textureClasses[i].first_tile = file.Read_Int32();
         m_textureClasses[i].num_tiles = file.Read_Int32();
         m_textureClasses[i].width = file.Read_Int32();
-        file.Read_Int32();
+        // #BUGFIX Actually use returned value to set blend edge tile.
+        m_textureClasses[i].is_blend_edge_tile = file.Read_Int32();
         m_textureClasses[i].name = file.Read_AsciiString();
         Read_Tex_Class(&m_textureClasses[i], m_sourceTiles);
     }
@@ -706,7 +707,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
         m_numEdgeTextureClasses = file.Read_Int32();
 
         for (int i = 0; i < m_numEdgeTextureClasses; i++) {
-            m_edgeTextureClasses[i].global_texture_class = 0xFFFFFFFF;
+            m_edgeTextureClasses[i].global_texture_class = -1;
             m_edgeTextureClasses[i].first_tile = file.Read_Int32();
             m_edgeTextureClasses[i].num_tiles = file.Read_Int32();
             m_edgeTextureClasses[i].width = file.Read_Int32();
@@ -736,7 +737,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
         if (info->version >= 4) {
             m_blendedTiles[i].custom_blend_edge_class = file.Read_Int32();
         } else {
-            m_blendedTiles[i].custom_blend_edge_class = 0xFFFFFFFF;
+            m_blendedTiles[i].custom_blend_edge_class = -1;
         }
 
         int flag = file.Read_Int32();

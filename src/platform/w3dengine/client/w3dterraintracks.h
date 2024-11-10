@@ -33,7 +33,7 @@ class TerrainTracksRenderObjClass : public W3DMPO, public RenderObjClass
 
 public:
     TerrainTracksRenderObjClass();
-    virtual ~TerrainTracksRenderObjClass() override {}
+    virtual ~TerrainTracksRenderObjClass() override { Free_Terrain_Tracks_Resources(); }
     virtual RenderObjClass *Clone() const override { return nullptr; }
     virtual int Class_ID() const override { return CLASSID_TERRAINTRACKS; }
     virtual void Render(RenderInfoClass &rinfo) override;

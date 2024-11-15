@@ -440,7 +440,7 @@ W3DProjectedShadowManager::W3DProjectedShadowManager() :
 W3DProjectedShadowManager::~W3DProjectedShadowManager()
 {
     Release_Resources();
-    m_dynamicRenderTarget = nullptr;
+
     m_renderTargetHasAlpha = false;
 
     if (m_shadowContext) {

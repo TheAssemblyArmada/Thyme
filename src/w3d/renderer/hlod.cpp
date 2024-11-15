@@ -868,6 +868,7 @@ int HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
     for (int i = 0; i < m_lodCount && !deleted; i++) {
         for (int j = 0; j < m_lod[i].Count() && !deleted; j++) {
             if (m_lod[i][j].m_model == subobj) {
+                m_lod[i][j].m_model->Release_Ref();
                 m_lod[i].Delete(j);
                 deleted = true;
 
@@ -880,6 +881,7 @@ int HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
 
     for (int i = 0; i < m_additionalModels.Count() && !deleted; i++) {
         if (m_additionalModels[i].m_model == subobj) {
+            m_additionalModels[i].m_model->Release_Ref();
             m_additionalModels.Delete(i);
             deleted = true;
             iscurrent = true;
@@ -898,7 +900,6 @@ int HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
         }
     }
 
-    subobj->Release_Ref();
     Update_Sub_Object_Bits();
     Update_Obj_Space_Bounding_Volumes();
     return 1;

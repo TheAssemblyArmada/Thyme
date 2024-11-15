@@ -1641,14 +1641,18 @@ void Get_Helicopter_Offset(Coord3D &pos, int count)
     }
 }
 
+/**
+Group_Tighten_To_Position - Performs tightening of the group members towards a target position.
+This method iterates over the group members, calculates their distances to the target position,
+and sorts them in ascending order based on the squared distance. It then applies tightening
+behavior to each member based on the specified conditions.
+
+@param target_pos The target position to tighten towards.
+@param append A flag indicating whether to append to existing waypoints or not.
+@param cmd_source The source of the command.
+*/
 void AIGroup::Group_Tighten_To_Position(const Coord3D *target_pos, bool append, CommandSourceType cmd_source)
 {
-    if (cmd_source == COMMANDSOURCE_PLAYER && g_theWriteableGlobalData->m_groupMoveClickToGatherAreaFactor > 0.0f) {
-        Coord2D min;
-        Coord2D max;
-        Coord3D center;
-        Get_Min_Max_And_Center(&min, &max, &center);
-    }
 
     MemoryPoolObjectHolder holder(nullptr);
     SimpleObjectIterator *iter = new SimpleObjectIterator();

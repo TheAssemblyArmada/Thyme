@@ -157,6 +157,8 @@ W3DLaserDraw::~W3DLaserDraw()
     }
 
     delete[] m_line3D;
+
+    Ref_Ptr_Release(m_texture);
 }
 
 float W3DLaserDraw::Get_Laser_Template_Width() const

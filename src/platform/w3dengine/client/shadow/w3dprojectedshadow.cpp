@@ -609,14 +609,13 @@ int W3DProjectedShadowManager::Render_Projected_Terrain_Shadow(W3DProjectedShado
 
     if (g_nShadowVertsInBuf <= SHADOW_VERTEX_SIZE - num_verts) {
 
-        if (g_shadowVertexBufferD3D->Lock(
-                12 * g_nShadowVertsInBuf, 12 * num_verts, reinterpret_cast<BYTE **>(&vertices), D3DLOCK_NOOVERWRITE)
-            != S_OK) {
+        if (FAILED(g_shadowVertexBufferD3D->Lock(
+                12 * g_nShadowVertsInBuf, 12 * num_verts, reinterpret_cast<BYTE **>(&vertices), D3DLOCK_NOOVERWRITE))) {
             return 0;
         }
     } else {
-        if (g_shadowVertexBufferD3D->Lock(0, 12 * num_verts, reinterpret_cast<BYTE **>(&vertices), D3DLOCK_DISCARD)
-            != S_OK) {
+        if (FAILED(
+                g_shadowVertexBufferD3D->Lock(0, 12 * num_verts, reinterpret_cast<BYTE **>(&vertices), D3DLOCK_DISCARD))) {
             return 0;
         }
 

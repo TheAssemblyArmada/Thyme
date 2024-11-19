@@ -282,8 +282,6 @@ void PolygonTrigger::Clear_Selected()
     }
 }
 
-// #TODO Check if maxTriggerId must be incremented before assigning to new PolygonTrigger. 2 PolygonTriggers may share same
-// ID.
 bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *user_data)
 {
     int maxTriggerId = 0;
@@ -359,8 +357,9 @@ bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, Dat
     if (info->version == 1) {
         PolygonTrigger *trigger = NEW_POOL_OBJ(PolygonTrigger, 4);
         trigger->Set_Water_Area(true);
-        trigger->m_triggerID = maxTriggerId;
-        maxTriggerId++;
+
+        // #BUGFIX Pre-increment to avoid having two Polygon Triggers share the same ID.
+        trigger->m_triggerID = ++maxTriggerId;
 
         ICoord3D loc;
         loc.x = -300;

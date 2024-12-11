@@ -563,7 +563,7 @@ void IMEManager::Update_Candidate_List(int candidate_flags)
                 DWORD size = ImmGetCandidateListCountW(m_context, &count);
 
                 if (size > 0 || (is_unicode = false, size = ImmGetCandidateListCountA(m_context, &count), size > 0)) {
-                    CANDIDATELIST *list = new CANDIDATELIST[size];
+                    CANDIDATELIST *list = new CANDIDATELIST[count];
 
                     if (list != nullptr) {
                         memset(list, 0, size);

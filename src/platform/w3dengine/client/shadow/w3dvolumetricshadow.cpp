@@ -371,7 +371,7 @@ int W3DShadowGeometry::Init_From_HLOD(RenderObjClass *robj)
 
         if (lod_model != nullptr) {
             if (lod_model->Class_ID() == RenderObjClass::CLASSID_SHDMESH) {
-                captainslog_dbgassert(0, "Meshes using shaders are not supported! How did you end up here!?");
+                captainslog_dbgassert(false, "Meshes using shaders are not supported! How did you end up here!?");
             }
         }
     }
@@ -611,7 +611,7 @@ bool W3DVolumetricShadowManager::Re_Acquire_Resources()
     Release_Resources();
 #ifdef BUILD_WITH_D3D8
     IDirect3DDevice8 *device = DX8Wrapper::Get_D3D_Device8();
-    captainslog_dbgassert(device, "Trying to Re_Acquire_Resources on W3DVolumetricShadowManager without device");
+    captainslog_dbgassert(device != nullptr, "Trying to Re_Acquire_Resources on W3DVolumetricShadowManager without device");
 
     if (FAILED(device->CreateIndexBuffer(sizeof(unsigned short) * SHADOW_INDEX_SIZE,
             D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
@@ -621,7 +621,7 @@ bool W3DVolumetricShadowManager::Re_Acquire_Resources()
         return false;
     }
 
-    if (!g_shadowVertexBufferD3D
+    if (g_shadowVertexBufferD3D == nullptr
         && FAILED(device->CreateVertexBuffer(sizeof(Vector3) * SHADOW_VERTEX_SIZE,
             D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY,
             0,

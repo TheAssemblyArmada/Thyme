@@ -258,7 +258,7 @@ W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Get_Slot(VBM_FVF_TYPES 
     size = (size + 31) & ~31;
     int size_index = (size / 32) - 1;
 
-    captainslog_dbgassert(size_index < MAX_IB_SIZES && size, "Allocating too large vertex buffer slot");
+    captainslog_dbgassert(size_index < MAX_VB_SIZES && size != 0, "Allocating too large vertex buffer slot");
 
     W3DVertexBufferSlot *vb_slot = m_W3DVertexBufferSlots[fvf_type][size_index];
 
@@ -364,7 +364,7 @@ W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Get_Slot(int size)
     size = (size + 31) & ~31;
     int size_index = (size / 32) - 1;
 
-    captainslog_dbgassert(size_index < MAX_IB_SIZES && size, "Allocating too large index buffer slot");
+    captainslog_dbgassert(size_index < MAX_IB_SIZES && size != 0, "Allocating too large index buffer slot");
 
     W3DIndexBufferSlot *ib_slot = m_W3DIndexBufferSlots[size_index];
 

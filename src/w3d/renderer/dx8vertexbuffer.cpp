@@ -32,10 +32,10 @@ unsigned short g_dynamicDX8VertexBufferSize = 5000;
 unsigned short g_dynamicDX8VertexBufferOffset;
 
 VertexBufferClass::VertexBufferClass(
-    unsigned int type_, unsigned int fvf, unsigned short vertex_count_, unsigned int vertex_size) :
-    m_type(type_), m_vertexCount(vertex_count_), m_engineRefs(0)
+    unsigned int type_, unsigned int fvf, unsigned short vertex_count, unsigned int vertex_size) :
+    m_type(type_), m_vertexCount(vertex_count), m_engineRefs(0)
 {
-    captainslog_assert(m_vertexCount);
+    captainslog_assert(m_vertexCount != 0);
     captainslog_assert(m_type == BUFFER_TYPE_DX8 || m_type == BUFFER_TYPE_SORTING);
     captainslog_assert((fvf != 0 && vertex_size == 0) || (fvf == 0 && vertex_size != 0));
     m_fvfInfo = new FVFInfoClass(fvf, vertex_size);
@@ -50,7 +50,7 @@ VertexBufferClass::~VertexBufferClass()
     g_vertexBufferTotalVertices -= m_vertexCount;
     g_vertexBufferTotalSize -= m_vertexCount * m_fvfInfo->Get_FVF_Size();
 
-    if (m_fvfInfo) {
+    if (m_fvfInfo != nullptr) {
         delete m_fvfInfo;
     }
 }
@@ -85,7 +85,7 @@ VertexBufferClass::WriteLockClass::WriteLockClass(VertexBufferClass *vertex_buff
     VertexBufferLockClass(vertex_buffer)
 {
     captainslog_assert(vertex_buffer);
-    captainslog_assert(!vertex_buffer->Engine_Refs());
+    captainslog_assert(vertex_buffer->Engine_Refs() == 0);
     vertex_buffer->Add_Ref();
 
     switch (vertex_buffer->Type()) {
@@ -102,7 +102,7 @@ VertexBufferClass::WriteLockClass::WriteLockClass(VertexBufferClass *vertex_buff
             break;
         }
         default:
-            captainslog_assert(0);
+            captainslog_assert(false);
             break;
     }
 }
@@ -119,7 +119,7 @@ VertexBufferClass::WriteLockClass::~WriteLockClass()
         case BUFFER_TYPE_SORTING:
             break;
         default:
-            captainslog_assert(0);
+            captainslog_assert(false);
             break;
     }
 
@@ -131,7 +131,7 @@ VertexBufferClass::AppendLockClass::AppendLockClass(
     VertexBufferLockClass(vertex_buffer)
 {
     captainslog_assert(vertex_buffer);
-    captainslog_assert(!vertex_buffer->Engine_Refs());
+    captainslog_assert(vertex_buffer->Engine_Refs() == 0);
     captainslog_assert(start_index + index_range <= vertex_buffer->Get_Vertex_Count());
     vertex_buffer->Add_Ref();
 
@@ -152,7 +152,7 @@ VertexBufferClass::AppendLockClass::AppendLockClass(
             break;
         }
         default:
-            captainslog_assert(0);
+            captainslog_assert(false);
             break;
     }
 }
@@ -169,7 +169,7 @@ VertexBufferClass::AppendLockClass::~AppendLockClass()
         case BUFFER_TYPE_SORTING:
             break;
         default:
-            captainslog_assert(0);
+            captainslog_assert(false);
             break;
     }
 
@@ -188,8 +188,8 @@ SortingVertexBufferClass::~SortingVertexBufferClass()
 }
 
 DX8VertexBufferClass::DX8VertexBufferClass(
-    unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags) :
-    VertexBufferClass(BUFFER_TYPE_DX8, fvf, vertex_count_, flags)
+    unsigned int fvf, unsigned short vertex_count, UsageType usage, unsigned int vertex_size) :
+    VertexBufferClass(BUFFER_TYPE_DX8, fvf, vertex_count, vertex_size)
 #ifdef BUILD_WITH_D3D8
     ,
     m_vertexBuffer(nullptr)
@@ -208,7 +208,7 @@ DX8VertexBufferClass::~DX8VertexBufferClass()
 void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
 {
 #ifdef BUILD_WITH_D3D8
-    captainslog_assert(!m_vertexBuffer);
+    captainslog_assert(m_vertexBuffer == nullptr);
     int d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
         | ((usage & USAGE_SOFTWAREPROCESSING) >= 1 ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 
@@ -269,7 +269,7 @@ DynamicVBAccessClass::~DynamicVBAccessClass()
 
 void DynamicVBAccessClass::Deinit()
 {
-    if (g_dynamicDX8VertexBuffer) {
+    if (g_dynamicDX8VertexBuffer != nullptr) {
         captainslog_assert((g_dynamicDX8VertexBuffer == NULL) || (g_dynamicDX8VertexBuffer->Num_Refs() == 1));
         g_dynamicDX8VertexBuffer->Release_Ref();
     }
@@ -279,7 +279,7 @@ void DynamicVBAccessClass::Deinit()
     g_dynamicDX8VertexBufferSize = 5000;
     g_dynamicDX8VertexBufferOffset = 0;
 
-    if (g_dynamicSortingVertexArray) {
+    if (g_dynamicSortingVertexArray != nullptr) {
         captainslog_assert((g_dynamicSortingVertexArray == NULL) || (g_dynamicSortingVertexArray->Num_Refs() == 1));
         g_dynamicSortingVertexArray->Release_Ref();
     }
@@ -304,7 +304,7 @@ void DynamicVBAccessClass::Allocate_DX8_Dynamic_Buffer()
         }
     }
 
-    if (!g_dynamicDX8VertexBuffer) {
+    if (g_dynamicDX8VertexBuffer == nullptr) {
         DX8VertexBufferClass::UsageType usage = DX8VertexBufferClass::USAGE_DYNAMIC;
         g_dynamicDX8VertexBuffer = new DX8VertexBufferClass(DX8_FVF_XYZNDUV2, g_dynamicDX8VertexBufferSize, usage, 0);
         g_dynamicDX8VertexBufferOffset = 0;
@@ -335,7 +335,7 @@ void DynamicVBAccessClass::Allocate_Sorting_Dynamic_Buffer()
         }
     }
 
-    if (!g_dynamicSortingVertexArray) {
+    if (g_dynamicSortingVertexArray == nullptr) {
         g_dynamicSortingVertexArray = new SortingVertexBufferClass(g_dynamicSortingVertexArraySize);
         g_dynamicSortingVertexArrayOffset = 0;
     }

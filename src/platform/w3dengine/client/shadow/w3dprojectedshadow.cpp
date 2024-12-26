@@ -306,7 +306,7 @@ W3DProjectedShadow::W3DProjectedShadow()
 
 void W3DProjectedShadow::Init()
 {
-    captainslog_dbgassert(!m_shadowProjector, "Init of existing shadow projector");
+    captainslog_dbgassert(m_shadowProjector == nullptr, "Init of existing shadow projector");
 
     if (m_type == SHADOW_PROJECTION) {
         m_shadowProjector = new TexProjectClass();
@@ -459,14 +459,14 @@ W3DProjectedShadowManager::~W3DProjectedShadowManager()
 
     m_W3DShadowTextureManager = nullptr;
 
-    captainslog_dbgassert(!m_shadowList, "Destroy of non-empty projected shadow list");
-    captainslog_dbgassert(!m_decalList, "Destroy of non-empty projected decal list");
+    captainslog_dbgassert(m_shadowList == nullptr, "Destroy of non-empty projected shadow list");
+    captainslog_dbgassert(m_decalList == nullptr, "Destroy of non-empty projected decal list");
 }
 
 void W3DProjectedShadowManager::Reset()
 {
-    captainslog_dbgassert(!m_shadowList, "Reset of non-empty projected shadow list");
-    captainslog_dbgassert(!m_decalList, "Reset of non-empty projected decal list");
+    captainslog_dbgassert(m_shadowList == nullptr, "Reset of non-empty projected shadow list");
+    captainslog_dbgassert(m_decalList == nullptr, "Reset of non-empty projected decal list");
     m_W3DShadowTextureManager->Free_All_Textures();
 }
 
@@ -482,7 +482,7 @@ bool W3DProjectedShadowManager::Init()
 bool W3DProjectedShadowManager::Re_Acquire_Resources()
 {
 #ifdef BUILD_WITH_D3D8
-    captainslog_dbgassert(!m_dynamicRenderTarget, "Acquire of existing shadow render target");
+    captainslog_dbgassert(m_dynamicRenderTarget == nullptr, "Acquire of existing shadow render target");
 
     m_renderTargetHasAlpha = true;
     m_dynamicRenderTarget = DX8Wrapper::Create_Render_Target(512, 512, WW3D_FORMAT_A8R8G8B8);
@@ -493,8 +493,9 @@ bool W3DProjectedShadowManager::Re_Acquire_Resources()
     }
 
     IDirect3DDevice8 *dev = DX8Wrapper::Get_D3D_Device8();
-    captainslog_dbgassert(dev, "Trying to ReAquireResources on W3DProjectedShadowManager without device");
-    captainslog_dbgassert(!g_shadowDecalIndexBufferD3D, "ReAquireResources not released in W3DProjectedShadowManager");
+    captainslog_dbgassert(dev != nullptr, "Trying to ReAquireResources on W3DProjectedShadowManager without device");
+    captainslog_dbgassert(
+        g_shadowDecalIndexBufferD3D == nullptr, "ReAquireResources not released in W3DProjectedShadowManager");
 
     if (FAILED(dev->CreateIndexBuffer(2 * g_shadowDecalIndexSize,
             D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
@@ -1269,7 +1270,7 @@ Shadow *W3DProjectedShadowManager::Add_Decal(Shadow::ShadowTypeInfo *shadow_info
     strcpy(&fname[len], ".tga");
     tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
-    if (!tex) {
+    if (tex == nullptr) {
         TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
         t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
@@ -1362,7 +1363,7 @@ Shadow *W3DProjectedShadowManager::Add_Decal(RenderObjClass *robj, Shadow::Shado
     strcpy(&fname[len], ".tga");
     tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
-    if (!tex) {
+    if (tex == nullptr) {
         TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
         t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
@@ -1490,7 +1491,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
 
             tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
-            if (!tex) {
+            if (tex == nullptr) {
                 TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
                 t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
                 t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
@@ -1524,7 +1525,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
 
             tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
-            if (!tex) {
+            if (tex == nullptr) {
                 m_W3DShadowTextureManager->Create_Texture(robj, fname);
                 tex = m_W3DShadowTextureManager->Get_Texture(fname);
                 captainslog_dbgassert(tex, "Could not create shadow texture");
@@ -1647,7 +1648,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Create_Decal_Shadow(Shadow::Shado
 
     tex = m_W3DShadowTextureManager->Get_Texture(fname);
 
-    if (!tex) {
+    if (tex == nullptr) {
         TextureClass *t = W3DAssetManager::Get_Instance()->Get_Texture(fname);
         t->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
         t->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_CLAMP);

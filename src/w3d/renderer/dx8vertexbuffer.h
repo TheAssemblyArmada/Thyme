@@ -119,7 +119,7 @@ public:
     };
 
 public:
-    VertexBufferClass(unsigned int type_, unsigned int fvf, unsigned short vertex_count_, unsigned int vertex_size);
+    VertexBufferClass(unsigned int type_, unsigned int fvf, unsigned short vertex_count, unsigned int vertex_size);
     ~VertexBufferClass();
     void Add_Engine_Ref() const;
     void Release_Engine_Ref();
@@ -149,7 +149,7 @@ public:
         USAGE_DYNAMIC = 1,
         USAGE_SOFTWAREPROCESSING = 2,
     };
-    DX8VertexBufferClass(unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags);
+    DX8VertexBufferClass(unsigned int fvf, unsigned short vertex_count, UsageType usage, unsigned int vertex_size);
     DX8VertexBufferClass(
         Vector3 *vertices, Vector3 *normals, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
     DX8VertexBufferClass(Vector3 *vertices, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);

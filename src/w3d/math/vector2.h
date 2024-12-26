@@ -308,8 +308,9 @@ __forceinline float Quick_Distance(float x1, float y1, float x2, float y2)
 {
     float x_diff = x1 - x2;
     float y_diff = y1 - y2;
-    GameMath::Fabs(x_diff);
-    GameMath::Fabs(y_diff);
+    // #BUGFIX Actually use the return values.
+    x_diff = GameMath::Fabs(x_diff);
+    y_diff = GameMath::Fabs(y_diff);
 
     if (x_diff > y_diff) {
         return (y_diff / 2) + x_diff;

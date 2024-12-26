@@ -14,8 +14,7 @@ cd /d "%SolutionDir%"
 "%CMakeDir%\bin\cmake.exe" ^
     -G "%GeneratorName%" ^
     -A Win32 ^
-    -S "%ProjectDir%" ^
-    -DCMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD=1
+    -S "%ProjectDir%"
 
 cd /d "%cd%"
 :: Open cmake gui for user customizations
